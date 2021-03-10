@@ -1,0 +1,13 @@
+[package]
+name = "razor"
+version = "0.1.0"
+authors = ["The RepliXio developers <info@replixio.com>"]
+edition = "2018"
+description = "ZFS Manager with simple API"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[features]
+pedantic = []
