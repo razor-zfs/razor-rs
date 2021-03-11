@@ -1,5 +1,5 @@
 #![cfg_attr(feature = "pedantic", warn(clippy::pedantic))]
-#![warn(clippy::use_self)]
+// #![warn(clippy::use_self)]
 #![warn(deprecated_in_future)]
 #![warn(future_incompatible)]
 #![warn(unreachable_pub)]
@@ -8,6 +8,9 @@
 #![warn(rust_2018_idioms)]
 #![warn(unused)]
 #![deny(warnings)]
+
+pub mod state;
+pub mod zfs;
 
 fn main() {
     println!("razor {}", env!("CARGO_PKG_VERSION"));
