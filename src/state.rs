@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 use std::io;
 
 use indexmap::IndexMap;
@@ -10,7 +11,7 @@ static ZFS: Lazy<Mutex<Zfs>> = Lazy::new(|| Mutex::new(Zfs::default()));
 
 #[derive(Debug, Default)]
 pub struct Zfs {
-    pools: IndexMap<zfs::Guid, zfs::ZPool>,
+    pools: IndexMap<zfs::Guid, zfs::Zpool>,
     datasets: IndexMap<zfs::Name, zfs::Dataset>,
 }
 
@@ -19,7 +20,7 @@ impl Zfs {
         ZFS.lock()
     }
 
-    pub fn pools() -> MappedMutexGuard<'static, IndexMap<zfs::Guid, zfs::ZPool>> {
+    pub fn pools() -> MappedMutexGuard<'static, IndexMap<zfs::Guid, zfs::Zpool>> {
         let all = Self::get();
         MutexGuard::map(all, |all| &mut all.pools)
     }
@@ -40,10 +41,17 @@ impl Zfs {
     }
 
     fn load_from_zfs_get(&mut self, text: impl AsRef<str>) {
-        let datasets = zfs::property::parse_zfs_get(text)
-            .into_iter()
-            .map(|(name, bunch)| (zfs::Name::from(name), zfs::Dataset::from(bunch)))
-            .collect();
+        let mut datasets = IndexMap::new();
+
+        for (name, properties) in zfs::property::parse_zfs_get(text) {
+            let name = zfs::Name::from(name);
+            if let Ok(dataset) = zfs::Dataset::try_from(properties) {
+                datasets.insert(name, dataset);
+            } else {
+                // TODO log error while converting bunch to Dataset
+            }
+        }
+
         self.datasets = datasets;
     }
 }

@@ -1,4 +1,11 @@
+//
+// Copyright (c) 2021 RepliXio Ltd. All rights reserved.
+// Use is subject to license terms.
+//
+use std::convert::TryFrom;
+
 use serde::{Deserialize, Serialize};
+use serde_json as json;
 
 pub use guid::Guid;
 pub use name::Name;
@@ -10,7 +17,7 @@ pub mod property;
 const ZFS_GET_DELIMITER: char = '\t';
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ZPool {
+pub struct Zpool {
     guid: Guid,
     load_guid: Guid,
     name: String,
@@ -23,8 +30,12 @@ pub struct Dataset {
     compressratio: property::CompressRatio,
 }
 
-impl From<property::Bunch> for Dataset {
-    fn from(_bunch: property::Bunch) -> Self {
-        todo!()
+impl TryFrom<property::Bunch> for Dataset {
+    type Error = json::Error;
+
+    fn try_from(bunch: property::Bunch) -> Result<Self, Self::Error> {
+        let value = json::to_value(bunch)?;
+        let dataset = json::from_value(value)?;
+        Ok(dataset)
     }
 }
