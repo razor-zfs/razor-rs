@@ -9,9 +9,16 @@
 #![warn(unused)]
 #![deny(warnings)]
 
+use std::io;
+
+mod rest;
+
 pub mod state;
 pub mod zfs;
 
-fn main() {
+#[tokio::main]
+async fn main() -> io::Result<()> {
     println!("razor {}", env!("CARGO_PKG_VERSION"));
+    rest::serve().await;
+    Ok(())
 }
