@@ -2,7 +2,7 @@ use rweb::{get, http, reply, Filter, Rejection, Reply};
 
 use crate::state;
 
-const DEFAULT_LISTEN_ADDR: ([u8; 4], u16) = ([0, 0, 0, 0], 80);
+const DEFAULT_LISTEN_ADDR: ([u8; 4], u16) = ([0, 0, 0, 0], 8080);
 
 pub(crate) async fn serve() {
     rweb::serve(zpool().or(zfs()))
