@@ -1,13 +1,15 @@
 use std::convert::TryFrom;
 use std::io;
+use std::sync::Arc;
 
 use indexmap::IndexMap;
 use once_cell::sync::Lazy;
-use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
+use tokio::sync::Mutex;
 
+use crate::sys;
 use crate::zfs;
 
-static ZFS: Lazy<Mutex<Zfs>> = Lazy::new(|| Mutex::new(Zfs::default()));
+static ZFS: Lazy<Arc<Mutex<Zfs>>> = Lazy::new(|| Arc::new(Mutex::new(Zfs::default())));
 
 #[derive(Debug, Default)]
 pub struct Zfs {
@@ -16,26 +18,32 @@ pub struct Zfs {
 }
 
 impl Zfs {
-    pub fn get() -> MutexGuard<'static, Self> {
-        ZFS.lock()
+    pub fn get() -> Arc<Mutex<Self>> {
+        Arc::clone(&*ZFS)
     }
 
-    pub fn pools() -> MappedMutexGuard<'static, IndexMap<zfs::Guid, zfs::Zpool>> {
-        let all = Self::get();
-        MutexGuard::map(all, |all| &mut all.pools)
+    pub fn pools(&self) -> &IndexMap<zfs::Guid, zfs::Zpool> {
+        &self.pools
     }
 
-    pub fn datasets() -> MappedMutexGuard<'static, IndexMap<zfs::Name, zfs::Dataset>> {
-        let all = Self::get();
-        MutexGuard::map(all, |all| &mut all.datasets)
+    pub fn datasets(&self) -> &IndexMap<zfs::Name, zfs::Dataset> {
+        &self.datasets
     }
 
-    pub fn load(&mut self) -> io::Result<()> {
-        self.load_impl(None)
+    pub async fn load(&mut self) -> io::Result<()> {
+        self.load_zfs(None).await?;
+        self.load_zpool(None).await?;
+        Ok(())
     }
 
-    fn load_impl(&mut self, _dataset: impl IntoIterator<Item = zfs::Name>) -> io::Result<()> {
-        let text = "zfs get -pH -o all all";
+    async fn load_zfs(&mut self, _dataset: impl IntoIterator<Item = zfs::Name>) -> io::Result<()> {
+        let text = sys::ZfsImpl::zfs_get_all().await?;
+        self.load_from_zfs_get(text);
+        Ok(())
+    }
+
+    async fn load_zpool(&mut self, _zpool: impl IntoIterator<Item = zfs::Name>) -> io::Result<()> {
+        let text = sys::ZfsImpl::zpool_get_all().await?;
         self.load_from_zfs_get(text);
         Ok(())
     }
@@ -43,7 +51,7 @@ impl Zfs {
     fn load_from_zfs_get(&mut self, text: impl AsRef<str>) {
         let mut datasets = IndexMap::new();
 
-        for (name, properties) in zfs::property::parse_zfs_get(text) {
+        for (name, properties) in sys::parse_zfs_get(text) {
             let name = zfs::Name::from(name);
             if let Ok(dataset) = zfs::Dataset::try_from(properties) {
                 datasets.insert(name, dataset);

@@ -14,6 +14,7 @@ use std::io;
 mod rest;
 
 pub mod state;
+pub mod sys;
 pub mod zfs;
 
 #[tokio::main]
