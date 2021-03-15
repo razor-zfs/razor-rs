@@ -49,7 +49,7 @@ impl Zfs {
     }
 
     fn load_from_zfs_get(&mut self, text: impl AsRef<str>) {
-        println!("ZFS Got\n{}", text.as_ref());
+        // println!("ZFS Got\n{}", text.as_ref());
         let mut datasets = IndexMap::new();
 
         for (name, properties) in sys::parse_zfs_get(text) {
