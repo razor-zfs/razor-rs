@@ -1,4 +1,4 @@
-// use std::convert::TryFrom;
+use std::convert::TryFrom;
 use std::io;
 use std::sync::Arc;
 
@@ -53,14 +53,14 @@ impl Zfs {
 
         for (name, properties) in sys::parse_zfs_get(text) {
             let name = zfs::Name::from(name);
-            datasets.insert(name, properties);
+            // datasets.insert(name, properties);
 
-            // match zfs::Dataset::try_from(properties) {
-            //     Ok(dataset) => {
-            //         datasets.insert(name, dataset);
-            //     }
-            //     Err(err) => println!("{}", err),
-            // }
+            match zfs::Dataset::try_from(properties) {
+                Ok(dataset) => {
+                    datasets.insert(name, dataset);
+                }
+                Err(err) => println!("{}", err),
+            }
         }
 
         self.datasets = datasets;

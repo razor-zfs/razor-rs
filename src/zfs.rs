@@ -1,7 +1,7 @@
-// use std::convert::TryFrom;
+use std::convert::TryFrom;
 
 use serde::{Deserialize, Serialize};
-// use serde_json as json;
+use serde_json as json;
 
 pub use guid::Guid;
 pub use name::Name;
@@ -21,22 +21,22 @@ pub struct Zpool {
     name: String,
 }
 
-pub type Dataset = sys::Bunch;
+// pub type Dataset = sys::Bunch;
 
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct Dataset {
-//     guid: Guid,
-//     name: String,
-//     available: property::Available,
-//     compressratio: property::CompressRatio,
-// }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Dataset {
+    guid: Guid,
+    name: String,
+    available: property::Available,
+    compressratio: property::CompressRatio,
+}
 
-// impl TryFrom<sys::Bunch> for Dataset {
-//     type Error = json::Error;
+impl TryFrom<sys::Bunch> for Dataset {
+    type Error = json::Error;
 
-//     fn try_from(bunch: sys::Bunch) -> Result<Self, Self::Error> {
-//         let value = json::to_value(bunch)?;
-//         let dataset = json::from_value(value)?;
-//         Ok(dataset)
-//     }
-// }
+    fn try_from(bunch: sys::Bunch) -> Result<Self, Self::Error> {
+        let value = json::to_value(bunch)?;
+        let dataset = json::from_value(value)?;
+        Ok(dataset)
+    }
+}
