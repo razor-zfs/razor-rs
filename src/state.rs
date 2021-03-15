@@ -49,15 +49,15 @@ impl Zfs {
     }
 
     fn load_from_zfs_get(&mut self, text: impl AsRef<str>) {
-        // println!("ZFS Got\n{}", text.as_ref());
         let mut datasets = IndexMap::new();
 
         for (name, properties) in sys::parse_zfs_get(text) {
             let name = zfs::Name::from(name);
-            if let Ok(dataset) = zfs::Dataset::try_from(properties) {
-                datasets.insert(name, dataset);
-            } else {
-                // TODO log error while converting bunch to Dataset
+            match zfs::Dataset::try_from(properties) {
+                Ok(dataset) => {
+                    datasets.insert(name, dataset);
+                }
+                Err(err) => println!("{}", err),
             }
         }
 
