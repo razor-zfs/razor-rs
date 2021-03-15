@@ -19,6 +19,7 @@ pub mod zfs;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
+    pretty_env_logger::init();
     println!("razor {}", env!("CARGO_PKG_VERSION"));
     rest::serve().await;
     Ok(())
