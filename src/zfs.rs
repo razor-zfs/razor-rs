@@ -20,20 +20,23 @@ pub struct Zpool {
     load_guid: Guid,
     name: String,
 }
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Dataset {
-    guid: Guid,
-    name: String,
-    available: property::Available,
-    compressratio: property::CompressRatio,
-}
 
-impl TryFrom<sys::Bunch> for Dataset {
-    type Error = json::Error;
+pub type Dataset = sys::Bunch;
 
-    fn try_from(bunch: sys::Bunch) -> Result<Self, Self::Error> {
-        let value = json::to_value(bunch)?;
-        let dataset = json::from_value(value)?;
-        Ok(dataset)
-    }
-}
+// #[derive(Debug, Serialize, Deserialize)]
+// pub struct Dataset {
+//     guid: Guid,
+//     name: String,
+//     available: property::Available,
+//     compressratio: property::CompressRatio,
+// }
+
+// impl TryFrom<sys::Bunch> for Dataset {
+//     type Error = json::Error;
+
+//     fn try_from(bunch: sys::Bunch) -> Result<Self, Self::Error> {
+//         let value = json::to_value(bunch)?;
+//         let dataset = json::from_value(value)?;
+//         Ok(dataset)
+//     }
+// }
