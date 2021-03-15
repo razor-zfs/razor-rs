@@ -25,8 +25,8 @@ pub struct Zpool {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Dataset {
-    guid: Guid,
-    name: String,
+    guid: property::Guid,
+    name: property::Name,
     available: property::Available,
     compressratio: property::CompressRatio,
 }

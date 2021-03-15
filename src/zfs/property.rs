@@ -8,6 +8,8 @@ pub(crate) use source::Source;
 
 mod source;
 
+pub type Guid = Property<u64>;
+pub type Name = Property<String>;
 pub type Available = Property<u128>;
 pub type CompressRatio = Property<f64>;
 
