@@ -11,10 +11,19 @@ impl Bunch {
     }
 }
 
-// impl std::ops::Deref for Bunch {
-//     type Target = IndexMap<String, super::RawProperty>;
+impl IntoIterator for Bunch {
+    type Item = (String, super::RawProperty);
+    type IntoIter = indexmap::map::IntoIter<String, super::RawProperty>;
 
-//     fn deref(&self) -> &Self::Target {
-//         &self.0
-//     }
-// }
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl std::ops::Deref for Bunch {
+    type Target = IndexMap<String, super::RawProperty>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}

@@ -53,6 +53,10 @@ impl RawProperty {
             source,
         }
     }
+
+    pub fn into_value(self) -> String {
+        self.value
+    }
 }
 
 impl FromStr for RawProperty {

@@ -1,5 +1,6 @@
 use std::convert::TryFrom;
 
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
 
@@ -35,7 +36,11 @@ impl TryFrom<sys::Bunch> for Dataset {
     type Error = json::Error;
 
     fn try_from(bunch: sys::Bunch) -> Result<Self, Self::Error> {
-        let value = json::to_value(bunch)?;
+        let props = bunch
+            .into_iter()
+            .map(|(name, prop)| (name, prop.into_value()))
+            .collect::<IndexMap<_, _>>();
+        let value = json::to_value(props)?;
         let dataset = json::from_value(value)?;
         Ok(dataset)
     }
