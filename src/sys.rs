@@ -33,7 +33,7 @@ impl ZfsImpl {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub(crate) struct RawProperty {
+pub struct RawProperty {
     property: String,
     value: String,
     received: String,

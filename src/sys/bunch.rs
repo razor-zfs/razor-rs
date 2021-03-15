@@ -2,10 +2,10 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Serialize, Deserialize)]
-pub(crate) struct Bunch(IndexMap<String, super::RawProperty>);
+pub struct Bunch(IndexMap<String, super::RawProperty>);
 
 impl Bunch {
-    pub(crate) fn insert(&mut self, property: super::RawProperty) {
+    pub fn insert(&mut self, property: super::RawProperty) {
         let name = property.property.clone();
         self.0.insert(name, property);
     }
