@@ -5,7 +5,7 @@ use crate::state;
 const DEFAULT_LISTEN_ADDR: ([u8; 4], u16) = ([0, 0, 0, 0], 8080);
 
 pub(crate) async fn serve() {
-    rweb::serve(zpool().or(zfs()))
+    rweb::serve(zpool().or(zfs()).or(refresh()))
         .run(DEFAULT_LISTEN_ADDR)
         .await
 }
