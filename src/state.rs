@@ -44,11 +44,12 @@ impl Zfs {
 
     async fn load_zpool(&mut self, _zpool: impl IntoIterator<Item = zfs::Name>) -> io::Result<()> {
         let text = sys::ZfsImpl::zpool_get_all().await?;
-        self.load_from_zfs_get(text);
+        self.load_from_zpool_get(text);
         Ok(())
     }
 
     fn load_from_zfs_get(&mut self, text: impl AsRef<str>) {
+        println!("ZFS Got\n{}", text.as_ref());
         let mut datasets = IndexMap::new();
 
         for (name, properties) in sys::parse_zfs_get(text) {
@@ -61,5 +62,10 @@ impl Zfs {
         }
 
         self.datasets = datasets;
+    }
+
+    fn load_from_zpool_get(&mut self, text: impl AsRef<str>) {
+        println!("ZPOOL Got\n{}", text.as_ref());
+        println!("But load_from_zpool_get() is not implemented yet");
     }
 }

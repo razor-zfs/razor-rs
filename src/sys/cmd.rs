@@ -26,8 +26,10 @@ impl Cmd {
         let stderr = String::from_utf8_lossy(&output.stderr).trim().to_owned();
 
         if output.status.success() {
+            println!("SUCCESS:\n{}", stdout);
             Ok(stdout)
         } else {
+            println!("FAILURE:\n{}", stderr);
             Err(io::Error::new(io::ErrorKind::Other, stderr))
         }
     }
