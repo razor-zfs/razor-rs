@@ -63,6 +63,8 @@ where
 
 #[derive(Debug, Error)]
 pub enum InvalidProperty {
+    #[error("No such property")]
+    NoSuchProperty,
     #[error("Invalid source")]
     InvalidSource,
     #[error("Invalid value")]
