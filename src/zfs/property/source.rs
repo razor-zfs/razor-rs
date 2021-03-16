@@ -5,7 +5,7 @@ use thiserror::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub(crate) enum Source {
+pub enum Source {
     #[serde(rename = "-")]
     None,
     Default,
@@ -17,7 +17,7 @@ pub(crate) enum Source {
 
 #[derive(Debug, Error)]
 #[error("Invalid source variant (`{0}`)")]
-pub(crate) struct InvalidSource(String);
+pub struct InvalidSource(String);
 
 impl<T: AsRef<str>> From<T> for InvalidSource {
     fn from(text: T) -> Self {

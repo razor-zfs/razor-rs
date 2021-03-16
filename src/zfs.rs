@@ -1,8 +1,8 @@
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
+use std::str::FromStr;
 
-use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use serde_json as json;
+use thiserror::Error;
 
 pub use guid::Guid;
 pub use name::Name;
@@ -12,8 +12,6 @@ use crate::sys;
 mod guid;
 mod name;
 pub mod property;
-
-// const ZFS_GET_DELIMITER: char = '\t';
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Zpool {
@@ -32,16 +30,45 @@ pub struct Dataset {
     compressratio: property::CompressRatio,
 }
 
-impl TryFrom<sys::Bunch> for Dataset {
-    type Error = json::Error;
+impl Dataset {
+    fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, property::InvalidProperty> {
+        let guid = extract_from_bunch(&mut bunch, "guid")?;
+        let name = extract_from_bunch(&mut bunch, "name")?;
+        let available = extract_from_bunch(&mut bunch, "available")?;
+        let compressratio = extract_from_bunch(&mut bunch, "compressratio")?;
 
-    fn try_from(bunch: sys::Bunch) -> Result<Self, Self::Error> {
-        let props = bunch
-            .into_iter()
-            .map(|(name, prop)| (name, prop.into_value()))
-            .collect::<IndexMap<_, _>>();
-        let value = json::to_value(props)?;
-        let dataset = json::from_value(value)?;
+        let dataset = Self {
+            guid,
+            name,
+            available,
+            compressratio,
+        };
         Ok(dataset)
     }
+}
+
+impl TryFrom<sys::Bunch> for Dataset {
+    type Error = property::InvalidProperty;
+
+    fn try_from(bunch: sys::Bunch) -> Result<Self, Self::Error> {
+        Self::from_bunch(bunch)
+    }
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid input")]
+pub struct InvalidInput;
+
+fn extract_from_bunch<T>(
+    bunch: &mut sys::Bunch,
+    key: &str,
+) -> Result<property::Property<T>, property::InvalidProperty>
+where
+    T: FromStr,
+{
+    let prop = bunch
+        .remove(key)
+        .ok_or(property::InvalidProperty::InvalidValue)?
+        .try_into()?;
+    Ok(prop)
 }

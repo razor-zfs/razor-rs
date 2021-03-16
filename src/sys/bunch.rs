@@ -1,3 +1,5 @@
+use std::ops;
+
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
@@ -20,10 +22,16 @@ impl IntoIterator for Bunch {
     }
 }
 
-impl std::ops::Deref for Bunch {
+impl ops::Deref for Bunch {
     type Target = IndexMap<String, super::RawProperty>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl ops::DerefMut for Bunch {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }

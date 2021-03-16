@@ -34,10 +34,10 @@ impl ZfsImpl {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RawProperty {
-    property: String,
-    value: String,
-    received: String,
-    source: String,
+    pub property: String,
+    pub value: String,
+    pub received: String,
+    pub source: String,
 }
 
 impl RawProperty {
@@ -56,6 +56,22 @@ impl RawProperty {
 
     pub fn into_value(self) -> String {
         self.value
+    }
+
+    pub fn name(&self) -> &str {
+        &self.property
+    }
+
+    pub fn value(&self) -> &str {
+        &self.value
+    }
+
+    pub fn received(&self) -> &str {
+        &self.received
+    }
+
+    pub fn source(&self) -> &str {
+        &self.source
     }
 }
 
