@@ -16,11 +16,13 @@ mod onoff;
 mod onoffnoauto;
 mod source;
 mod timestamp;
+mod yesno;
 
 pub use dataset::Type as DatasetType;
 pub use onoff::OnOff;
 pub use onoffnoauto::OnOffNoAuto;
 pub use timestamp::TimeStamp;
+pub use yesno::YesNo;
 
 pub type Guid = Property<u64>;
 pub type Name = Property<String>;
@@ -39,6 +41,7 @@ pub type Written = Property<u64>;
 pub type ObjSetId = Property<u64>;
 pub type Atime = Property<OnOff>;
 pub type CanMount = Property<OnOffNoAuto>;
+pub type Mounted = Property<YesNo>;
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
