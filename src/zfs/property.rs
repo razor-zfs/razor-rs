@@ -13,8 +13,10 @@ pub use source::{InvalidSource, Source};
 
 mod dataset;
 mod source;
+mod timestamp;
 
 pub use dataset::Type as DatasetType;
+pub use timestamp::TimeStamp;
 
 pub type Guid = Property<u64>;
 pub type Name = Property<String>;
@@ -24,6 +26,7 @@ pub type Type = Property<DatasetType>;
 pub type Used = Property<u128>;
 pub type Referenced = Property<u128>;
 pub type CreateTxg = Property<u64>;
+pub type Creation = Property<TimeStamp>;
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]

@@ -43,6 +43,7 @@ pub struct Bookmark {
 #[derive(Debug, Serialize, Deserialize)]
 struct CommonProperties {
     guid: property::Guid,
+    creation: property::Creation,
     compressratio: property::CompressRatio,
     used: property::Used,
     referenced: property::Referenced,
@@ -111,12 +112,14 @@ impl TryFrom<sys::Bunch> for CommonProperties {
 
     fn try_from(mut bunch: sys::Bunch) -> Result<Self, Self::Error> {
         let guid = extract_from_bunch(&mut bunch, "guid")?;
+        let creation = extract_from_bunch(&mut bunch, "creation")?;
         let compressratio = extract_from_bunch(&mut bunch, "compressratio")?;
         let used = extract_from_bunch(&mut bunch, "used")?;
         let referenced = extract_from_bunch(&mut bunch, "referenced")?;
 
         let properties = Self {
             guid,
+            creation,
             compressratio,
             used,
             referenced,
