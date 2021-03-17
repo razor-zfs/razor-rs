@@ -1,5 +1,5 @@
 use std::convert::TryFrom;
-use std::fmt::Display;
+use std::fmt;
 use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
@@ -10,30 +10,23 @@ use crate::sys;
 
 pub use source::{InvalidSource, Source};
 
+mod dataset;
 mod source;
 
 pub type Guid = Property<u64>;
 pub type Name = Property<String>;
 pub type Available = Property<u128>;
 pub type CompressRatio = Property<f64>;
+pub type Type = Property<dataset::Type>;
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Property<T> {
     name: String,
     source: Source,
-    #[serde(bound = "T: Display + FromStr, <T as FromStr>::Err: Display")]
+    #[serde(bound = "T: fmt::Display + FromStr, <T as FromStr>::Err: fmt::Display")]
     #[serde_as(as = "DisplayFromStr")]
     value: T,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum Type {
-    Filesystem,
-    Volume,
-    Snapshot,
-    Bookmark,
 }
 
 impl<T> TryFrom<sys::RawProperty> for Property<T>

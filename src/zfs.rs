@@ -25,7 +25,7 @@ pub struct Zpool {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Dataset {
     guid: property::Guid,
-    name: property::Name,
+    r#type: property::Type,
     available: property::Available,
     compressratio: property::CompressRatio,
 }
@@ -33,13 +33,13 @@ pub struct Dataset {
 impl Dataset {
     fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, property::InvalidProperty> {
         let guid = extract_from_bunch(&mut bunch, "guid")?;
-        let name = extract_from_bunch(&mut bunch, "name")?;
+        let r#type = extract_from_bunch(&mut bunch, "type")?;
         let available = extract_from_bunch(&mut bunch, "available")?;
         let compressratio = extract_from_bunch(&mut bunch, "compressratio")?;
 
         let dataset = Self {
             guid,
-            name,
+            r#type,
             available,
             compressratio,
         };
