@@ -12,6 +12,7 @@ use crate::sys;
 pub use source::{InvalidSource, Source};
 
 mod checksum;
+mod compression;
 mod dataset;
 mod onoff;
 mod onoffnoauto;
@@ -20,6 +21,7 @@ mod timestamp;
 mod yesno;
 
 pub use checksum::CheckSum as CheckSumAlgo;
+pub use compression::Compression as CompressionAlgo;
 pub use dataset::Type as DatasetType;
 pub use onoff::OnOff;
 pub use onoffnoauto::OnOffNoAuto;
@@ -45,6 +47,7 @@ pub type Atime = Property<OnOff>;
 pub type CanMount = Property<OnOffNoAuto>;
 pub type Mounted = Property<YesNo>;
 pub type CheckSum = Property<CheckSumAlgo>;
+pub type Compression = Property<CompressionAlgo>;
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]

@@ -23,6 +23,7 @@ pub struct Filesystem {
     canmount: property::CanMount,
     mounted: property::Mounted,
     checksum: property::CheckSum,
+    compression: property::Compression,
     #[serde(flatten)]
     common: CommonProperties,
 }
@@ -34,6 +35,7 @@ pub struct Volume {
     volblocksize: property::VolBlockSize,
     logicalused: property::LogicalUsed,
     checksum: property::CheckSum,
+    compression: property::Compression,
     #[serde(flatten)]
     common: CommonProperties,
 }
@@ -93,6 +95,7 @@ impl Dataset {
         let canmount = extract_from_bunch(&mut bunch, "canmount")?;
         let mounted = extract_from_bunch(&mut bunch, "mounted")?;
         let checksum = extract_from_bunch(&mut bunch, "checksum")?;
+        let compression = extract_from_bunch(&mut bunch, "compression")?;
         let common = CommonProperties::try_from(bunch)?;
         let filesystem = Filesystem {
             available,
@@ -101,6 +104,7 @@ impl Dataset {
             canmount,
             mounted,
             checksum,
+            compression,
             common,
         };
         Ok(filesystem)
@@ -112,6 +116,7 @@ impl Dataset {
         let volblocksize = extract_from_bunch(&mut bunch, "volblocksize")?;
         let logicalused = extract_from_bunch(&mut bunch, "logicalused")?;
         let checksum = extract_from_bunch(&mut bunch, "checksum")?;
+        let compression = extract_from_bunch(&mut bunch, "compression")?;
         let common = CommonProperties::try_from(bunch)?;
         let volume = Volume {
             available,
@@ -119,6 +124,7 @@ impl Dataset {
             volblocksize,
             logicalused,
             checksum,
+            compression,
             common,
         };
         Ok(volume)
