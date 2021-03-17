@@ -26,22 +26,28 @@ pub struct Zpool {
 pub struct Dataset {
     guid: property::Guid,
     r#type: property::Type,
-    available: property::Available,
+    // available: property::Available,
     compressratio: property::CompressRatio,
+    used: property::Used,
+    referenced: property::Referenced,
 }
 
 impl Dataset {
     fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, property::InvalidProperty> {
         let guid = extract_from_bunch(&mut bunch, "guid")?;
         let r#type = extract_from_bunch(&mut bunch, "type")?;
-        let available = extract_from_bunch(&mut bunch, "available")?;
+        // let available = extract_from_bunch(&mut bunch, "available")?;
         let compressratio = extract_from_bunch(&mut bunch, "compressratio")?;
+        let used = extract_from_bunch(&mut bunch, "used")?;
+        let referenced = extract_from_bunch(&mut bunch, "referenced")?;
 
         let dataset = Self {
             guid,
             r#type,
-            available,
+            // available,
             compressratio,
+            used,
+            referenced,
         };
         Ok(dataset)
     }

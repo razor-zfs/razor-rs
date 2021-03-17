@@ -18,6 +18,9 @@ pub type Name = Property<String>;
 pub type Available = Property<u128>;
 pub type CompressRatio = Property<f64>;
 pub type Type = Property<dataset::Type>;
+pub type Used = Property<u128>;
+pub type Referenced = Property<u128>;
+pub type CreateTxg = Property<u64>;
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
