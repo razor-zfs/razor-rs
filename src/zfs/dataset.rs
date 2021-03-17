@@ -19,6 +19,7 @@ pub enum Dataset {
 pub struct Filesystem {
     available: property::Available,
     atime: property::Atime,
+    logicalused: property::LogicalUsed,
     #[serde(flatten)]
     common: CommonProperties,
 }
@@ -28,6 +29,7 @@ pub struct Volume {
     available: property::Available,
     volsize: property::Volsize,
     volblocksize: property::VolBlockSize,
+    logicalused: property::LogicalUsed,
     #[serde(flatten)]
     common: CommonProperties,
 }
@@ -52,7 +54,6 @@ struct CommonProperties {
     compressratio: property::CompressRatio,
     used: property::Used,
     referenced: property::Referenced,
-    logicalused: property::LogicalUsed,
     logicalreferenced: property::LogicalReferenced,
     objsetid: property::ObjSetId,
     unprocessed: sys::Bunch,
@@ -84,10 +85,12 @@ impl Dataset {
     fn filesystem(mut bunch: sys::Bunch) -> Result<Filesystem, property::InvalidProperty> {
         let available = extract_from_bunch(&mut bunch, "available")?;
         let atime = extract_from_bunch(&mut bunch, "atime")?;
+        let logicalused = extract_from_bunch(&mut bunch, "logicalused")?;
         let common = CommonProperties::try_from(bunch)?;
         let filesystem = Filesystem {
             available,
             atime,
+            logicalused,
             common,
         };
         Ok(filesystem)
@@ -97,11 +100,13 @@ impl Dataset {
         let available = extract_from_bunch(&mut bunch, "available")?;
         let volsize = extract_from_bunch(&mut bunch, "volsize")?;
         let volblocksize = extract_from_bunch(&mut bunch, "volblocksize")?;
+        let logicalused = extract_from_bunch(&mut bunch, "logicalused")?;
         let common = CommonProperties::try_from(bunch)?;
         let volume = Volume {
             available,
             volsize,
             volblocksize,
+            logicalused,
             common,
         };
         Ok(volume)
@@ -138,7 +143,6 @@ impl TryFrom<sys::Bunch> for CommonProperties {
         let compressratio = extract_from_bunch(&mut bunch, "compressratio")?;
         let used = extract_from_bunch(&mut bunch, "used")?;
         let referenced = extract_from_bunch(&mut bunch, "referenced")?;
-        let logicalused = extract_from_bunch(&mut bunch, "logicalused")?;
         let logicalreferenced = extract_from_bunch(&mut bunch, "logicalreferenced")?;
         let objsetid = extract_from_bunch(&mut bunch, "objsetid")?;
 
@@ -149,7 +153,6 @@ impl TryFrom<sys::Bunch> for CommonProperties {
             compressratio,
             used,
             referenced,
-            logicalused,
             logicalreferenced,
             objsetid,
             unprocessed: bunch,
