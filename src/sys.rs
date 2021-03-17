@@ -121,7 +121,7 @@ mod tests {
     #[test]
     fn zfs_get() {
         let datasets = parse_zfs_get(ZFS_GET);
-        println!("{:#?}", datasets);
+        // println!("{:#?}", datasets);
         assert_eq!(datasets.len(), 12);
     }
 }
