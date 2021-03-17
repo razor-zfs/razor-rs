@@ -9,7 +9,7 @@ use thiserror::Error;
 
 use crate::sys;
 
-pub use source::{InvalidSource, Source};
+pub use source::Source;
 
 mod checksum;
 mod compression;
@@ -73,10 +73,7 @@ where
 
     fn try_from(raw: sys::RawProperty) -> Result<Self, Self::Error> {
         let name = raw.property;
-        let source = raw
-            .source
-            .parse()
-            .map_err(|_| InvalidProperty::InvalidSource)?;
+        let source = raw.source.parse().map_err(InvalidProperty::InvalidSource)?;
         let value = raw
             .value
             .parse()
@@ -94,8 +91,8 @@ where
 pub enum InvalidProperty {
     #[error("No such property ({0})")]
     NoSuchProperty(String),
-    #[error("Invalid source")]
-    InvalidSource,
+    #[error("Invalid source ({0})")]
+    InvalidSource(String),
     #[error("Invalid value")]
     InvalidValue,
 }
