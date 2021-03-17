@@ -56,10 +56,16 @@ where
 
 #[derive(Debug, Error)]
 pub enum InvalidProperty {
-    #[error("No such property")]
-    NoSuchProperty,
+    #[error("No such property ({0})")]
+    NoSuchProperty(String),
     #[error("Invalid source")]
     InvalidSource,
     #[error("Invalid value")]
     InvalidValue,
+}
+
+impl InvalidProperty {
+    pub(crate) fn no_such_property(prop: impl ToString) -> Self {
+        Self::NoSuchProperty(prop.to_string())
+    }
 }

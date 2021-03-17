@@ -68,7 +68,7 @@ where
 {
     let prop = bunch
         .remove(key)
-        .ok_or(property::InvalidProperty::NoSuchProperty)?
+        .ok_or_else(|| property::InvalidProperty::no_such_property(key))?
         .try_into()?;
     Ok(prop)
 }
