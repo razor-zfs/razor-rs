@@ -18,12 +18,16 @@ pub enum Dataset {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Filesystem {
     available: property::Available,
+    atime: property::Atime,
     #[serde(flatten)]
     common: CommonProperties,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Volume {
+    available: property::Available,
+    volsize: property::Volsize,
+    volblocksize: property::VolBlockSize,
     #[serde(flatten)]
     common: CommonProperties,
 }
@@ -44,9 +48,13 @@ pub struct Bookmark {
 struct CommonProperties {
     guid: property::Guid,
     creation: property::Creation,
+    createtxg: property::CreateTxg,
     compressratio: property::CompressRatio,
     used: property::Used,
     referenced: property::Referenced,
+    logicalused: property::LogicalUsed,
+    logicalreferenced: property::LogicalReferenced,
+    objsetid: property::ObjSetId,
     unprocessed: sys::Bunch,
 }
 
@@ -75,14 +83,27 @@ impl Dataset {
 
     fn filesystem(mut bunch: sys::Bunch) -> Result<Filesystem, property::InvalidProperty> {
         let available = extract_from_bunch(&mut bunch, "available")?;
+        let atime = extract_from_bunch(&mut bunch, "atime")?;
         let common = CommonProperties::try_from(bunch)?;
-        let filesystem = Filesystem { available, common };
+        let filesystem = Filesystem {
+            available,
+            atime,
+            common,
+        };
         Ok(filesystem)
     }
 
-    fn volume(bunch: sys::Bunch) -> Result<Volume, property::InvalidProperty> {
+    fn volume(mut bunch: sys::Bunch) -> Result<Volume, property::InvalidProperty> {
+        let available = extract_from_bunch(&mut bunch, "available")?;
+        let volsize = extract_from_bunch(&mut bunch, "volsize")?;
+        let volblocksize = extract_from_bunch(&mut bunch, "volblocksize")?;
         let common = CommonProperties::try_from(bunch)?;
-        let volume = Volume { common };
+        let volume = Volume {
+            available,
+            volsize,
+            volblocksize,
+            common,
+        };
         Ok(volume)
     }
 
@@ -113,16 +134,24 @@ impl TryFrom<sys::Bunch> for CommonProperties {
     fn try_from(mut bunch: sys::Bunch) -> Result<Self, Self::Error> {
         let guid = extract_from_bunch(&mut bunch, "guid")?;
         let creation = extract_from_bunch(&mut bunch, "creation")?;
+        let createtxg = extract_from_bunch(&mut bunch, "createtxg")?;
         let compressratio = extract_from_bunch(&mut bunch, "compressratio")?;
         let used = extract_from_bunch(&mut bunch, "used")?;
         let referenced = extract_from_bunch(&mut bunch, "referenced")?;
+        let logicalused = extract_from_bunch(&mut bunch, "logicalused")?;
+        let logicalreferenced = extract_from_bunch(&mut bunch, "logicalreferenced")?;
+        let objsetid = extract_from_bunch(&mut bunch, "objsetid")?;
 
         let properties = Self {
             guid,
             creation,
+            createtxg,
             compressratio,
             used,
             referenced,
+            logicalused,
+            logicalreferenced,
+            objsetid,
             unprocessed: bunch,
         };
         Ok(properties)

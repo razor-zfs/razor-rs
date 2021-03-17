@@ -12,21 +12,30 @@ use crate::sys;
 pub use source::{InvalidSource, Source};
 
 mod dataset;
+mod onoff;
 mod source;
 mod timestamp;
 
 pub use dataset::Type as DatasetType;
+pub use onoff::OnOff;
 pub use timestamp::TimeStamp;
 
 pub type Guid = Property<u64>;
 pub type Name = Property<String>;
-pub type Available = Property<u128>;
+pub type Available = Property<u64>;
 pub type CompressRatio = Property<f64>;
 pub type Type = Property<DatasetType>;
-pub type Used = Property<u128>;
-pub type Referenced = Property<u128>;
+pub type Used = Property<u64>;
+pub type LogicalUsed = Property<u64>;
+pub type Referenced = Property<u64>;
+pub type LogicalReferenced = Property<u64>;
 pub type CreateTxg = Property<u64>;
 pub type Creation = Property<TimeStamp>;
+pub type Volsize = Property<u64>;
+pub type VolBlockSize = Property<u64>;
+pub type Written = Property<u64>;
+pub type ObjSetId = Property<u64>;
+pub type Atime = Property<OnOff>;
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
