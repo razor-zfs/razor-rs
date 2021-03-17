@@ -20,6 +20,7 @@ pub struct Filesystem {
     available: property::Available,
     atime: property::Atime,
     logicalused: property::LogicalUsed,
+    canmount: property::CanMount,
     #[serde(flatten)]
     common: CommonProperties,
 }
@@ -86,11 +87,13 @@ impl Dataset {
         let available = extract_from_bunch(&mut bunch, "available")?;
         let atime = extract_from_bunch(&mut bunch, "atime")?;
         let logicalused = extract_from_bunch(&mut bunch, "logicalused")?;
+        let canmount = extract_from_bunch(&mut bunch, "canmount")?;
         let common = CommonProperties::try_from(bunch)?;
         let filesystem = Filesystem {
             available,
             atime,
             logicalused,
+            canmount,
             common,
         };
         Ok(filesystem)

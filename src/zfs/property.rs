@@ -13,11 +13,13 @@ pub use source::{InvalidSource, Source};
 
 mod dataset;
 mod onoff;
+mod onoffnoauto;
 mod source;
 mod timestamp;
 
 pub use dataset::Type as DatasetType;
 pub use onoff::OnOff;
+pub use onoffnoauto::OnOffNoAuto;
 pub use timestamp::TimeStamp;
 
 pub type Guid = Property<u64>;
@@ -36,6 +38,7 @@ pub type VolBlockSize = Property<u64>;
 pub type Written = Property<u64>;
 pub type ObjSetId = Property<u64>;
 pub type Atime = Property<OnOff>;
+pub type CanMount = Property<OnOffNoAuto>;
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
