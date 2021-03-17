@@ -1,6 +1,8 @@
+use std::fmt;
 use std::ops;
 
 use indexmap::IndexMap;
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -19,6 +21,14 @@ impl IntoIterator for Bunch {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
+    }
+}
+
+impl fmt::Display for Bunch {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let props = format!("{} properties", self.0.len());
+        let keys = self.0.keys().take(3).join(",");
+        f.debug_tuple("Bunch").field(&props).field(&keys).finish()
     }
 }
 

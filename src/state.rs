@@ -52,7 +52,7 @@ impl Zfs {
         let mut datasets = IndexMap::new();
 
         for (name, properties) in sys::parse_zfs_get(text) {
-            println!("Processing {} with {} properties", name, properties.len());
+            println!("Processing {} with {} properties", name, properties);
             let name = zfs::Name::from(name);
             // datasets.insert(name, properties);
 
