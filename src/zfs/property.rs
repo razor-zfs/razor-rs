@@ -1,5 +1,6 @@
 use std::convert::TryFrom;
 use std::fmt;
+use std::ops;
 use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
@@ -13,11 +14,13 @@ pub use source::{InvalidSource, Source};
 mod dataset;
 mod source;
 
+pub use dataset::Type as DatasetType;
+
 pub type Guid = Property<u64>;
 pub type Name = Property<String>;
 pub type Available = Property<u128>;
 pub type CompressRatio = Property<f64>;
-pub type Type = Property<dataset::Type>;
+pub type Type = Property<DatasetType>;
 pub type Used = Property<u128>;
 pub type Referenced = Property<u128>;
 pub type CreateTxg = Property<u64>;
@@ -30,6 +33,12 @@ pub struct Property<T> {
     #[serde(bound = "T: fmt::Display + FromStr, <T as FromStr>::Err: fmt::Display")]
     #[serde_as(as = "DisplayFromStr")]
     value: T,
+}
+
+impl<T> Property<T> {
+    pub fn value(&self) -> &T {
+        &self.value
+    }
 }
 
 impl<T> TryFrom<sys::RawProperty> for Property<T>
@@ -70,5 +79,13 @@ pub enum InvalidProperty {
 impl InvalidProperty {
     pub(crate) fn no_such_property(prop: impl ToString) -> Self {
         Self::NoSuchProperty(prop.to_string())
+    }
+}
+
+impl<T> ops::Deref for Property<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        self.value()
     }
 }
