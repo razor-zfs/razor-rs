@@ -9,10 +9,12 @@ pub enum Source {
     None,
     Default,
     Local,
-    Inherited,
+    Inherited(String),
     Temporary,
     Received,
 }
+
+const INHERITED_FROM: &str = "inherited from ";
 
 impl FromStr for Source {
     type Err = String;
@@ -22,9 +24,12 @@ impl FromStr for Source {
             "-" => Ok(Self::None),
             "default" => Ok(Self::Default),
             "local" => Ok(Self::Local),
-            "inherited" => Ok(Self::Inherited),
             "temporary" => Ok(Self::Temporary),
             "received" => Ok(Self::Received),
+            other if other.starts_with(INHERITED_FROM) => other
+                .strip_prefix(INHERITED_FROM)
+                .map(|source| Self::Inherited(source.to_string()))
+                .ok_or_else(|| other.to_string()),
             other => Err(other.to_string()),
         }
     }
