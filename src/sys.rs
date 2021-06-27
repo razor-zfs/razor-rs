@@ -36,15 +36,15 @@ impl ZfsImpl {
 pub struct RawProperty {
     pub property: String,
     pub value: String,
-    pub received: String,
+    pub received: Option<String>,
     pub source: String,
 }
 
 impl RawProperty {
-    fn new((property, value, received, source): (&str, &str, &str, &str)) -> Self {
+    fn new((property, value, received, source): (&str, &str, Option<&str>, &str)) -> Self {
         let property = property.to_string();
         let value = value.to_string();
-        let received = received.to_string();
+        let received = received.map(|received| received.to_string());
         let source = source.to_string();
         Self {
             property,
@@ -66,8 +66,8 @@ impl RawProperty {
         &self.value
     }
 
-    pub fn received(&self) -> &str {
-        &self.received
+    pub fn received(&self) -> Option<&str> {
+        self.received.as_deref()
     }
 
     pub fn source(&self) -> &str {
@@ -75,15 +75,35 @@ impl RawProperty {
     }
 }
 
+impl From<(&str, &str, &str)> for RawProperty {
+    fn from((property, value, source): (&str, &str, &str)) -> Self {
+        Self::new((property, value, None, source))
+    }
+}
+
+impl From<(&str, &str, &str, &str)> for RawProperty {
+    fn from((property, value, received, source): (&str, &str, &str, &str)) -> Self {
+        Self::new((property, value, Some(received), source))
+    }
+}
+
 impl FromStr for RawProperty {
     type Err = MalformedRawPropertyText;
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
-        text.trim()
+        let text = text.trim();
+
+        let four = text
             .splitn(4, ZFS_GET_DELIMITER)
-            .collect_tuple()
-            .map(Self::new)
-            .ok_or(MalformedRawPropertyText)
+            .collect_tuple::<(&str, &str, &str, &str)>()
+            .map(Self::from);
+
+        let three = text
+            .splitn(4, ZFS_GET_DELIMITER)
+            .collect_tuple::<(&str, &str, &str)>()
+            .map(Self::from);
+
+        four.or(three).ok_or(MalformedRawPropertyText)
     }
 }
 
