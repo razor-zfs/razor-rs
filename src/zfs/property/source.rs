@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum Source {
+pub(super) enum Source {
     #[serde(rename = "-")]
     None,
     Default,

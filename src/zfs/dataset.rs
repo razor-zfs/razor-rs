@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::sys;
 
-use super::property;
+use super::zfs_property;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Dataset {
@@ -17,25 +17,25 @@ pub enum Dataset {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Filesystem {
-    available: property::Available,
-    atime: property::Atime,
-    logicalused: property::LogicalUsed,
-    canmount: property::CanMount,
-    mounted: property::Mounted,
-    checksum: property::CheckSum,
-    compression: property::Compression,
+    available: zfs_property::Available,
+    atime: zfs_property::Atime,
+    logicalused: zfs_property::LogicalUsed,
+    canmount: zfs_property::CanMount,
+    mounted: zfs_property::Mounted,
+    checksum: zfs_property::CheckSum,
+    compression: zfs_property::Compression,
     #[serde(flatten)]
     common: CommonProperties,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Volume {
-    available: property::Available,
-    volsize: property::Volsize,
-    volblocksize: property::VolBlockSize,
-    logicalused: property::LogicalUsed,
-    checksum: property::CheckSum,
-    compression: property::Compression,
+    available: zfs_property::Available,
+    volsize: zfs_property::Volsize,
+    volblocksize: zfs_property::VolBlockSize,
+    logicalused: zfs_property::LogicalUsed,
+    checksum: zfs_property::CheckSum,
+    compression: zfs_property::Compression,
     #[serde(flatten)]
     common: CommonProperties,
 }
@@ -54,41 +54,41 @@ pub struct Bookmark {
 
 #[derive(Debug, Serialize, Deserialize)]
 struct CommonProperties {
-    guid: property::Guid,
-    creation: property::Creation,
-    createtxg: property::CreateTxg,
-    compressratio: property::CompressRatio,
-    used: property::Used,
-    referenced: property::Referenced,
-    logicalreferenced: property::LogicalReferenced,
-    objsetid: property::ObjSetId,
+    guid: zfs_property::Guid,
+    creation: zfs_property::Creation,
+    createtxg: zfs_property::CreateTxg,
+    compressratio: zfs_property::CompressRatio,
+    used: zfs_property::Used,
+    referenced: zfs_property::Referenced,
+    logicalreferenced: zfs_property::LogicalReferenced,
+    objsetid: zfs_property::ObjSetId,
     unprocessed: sys::Bunch,
 }
 
 impl Dataset {
-    fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, property::InvalidProperty> {
-        let r#type: property::Type = extract_from_bunch(&mut bunch, "type")?;
+    fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, zfs_property::InvalidProperty> {
+        let r#type: zfs_property::Type = extract_from_bunch(&mut bunch, "type")?;
         match r#type.value() {
-            property::DatasetType::Filesystem => {
+            zfs_property::DatasetType::Filesystem => {
                 let filesystem = Self::filesystem(bunch)?;
                 Ok(Self::Filesystem(filesystem))
             }
-            property::DatasetType::Volume => {
+            zfs_property::DatasetType::Volume => {
                 let volume = Self::volume(bunch)?;
                 Ok(Self::Volume(volume))
             }
-            property::DatasetType::Snapshot => {
+            zfs_property::DatasetType::Snapshot => {
                 let snapshot = Self::snapshot(bunch)?;
                 Ok(Self::Snapshot(snapshot))
             }
-            property::DatasetType::Bookmark => {
+            zfs_property::DatasetType::Bookmark => {
                 let bookmark = Self::bookmark(bunch)?;
                 Ok(Self::Bookmark(bookmark))
             }
         }
     }
 
-    fn filesystem(mut bunch: sys::Bunch) -> Result<Filesystem, property::InvalidProperty> {
+    fn filesystem(mut bunch: sys::Bunch) -> Result<Filesystem, zfs_property::InvalidProperty> {
         let available = extract_from_bunch(&mut bunch, "available")?;
         let atime = extract_from_bunch(&mut bunch, "atime")?;
         let logicalused = extract_from_bunch(&mut bunch, "logicalused")?;
@@ -110,7 +110,7 @@ impl Dataset {
         Ok(filesystem)
     }
 
-    fn volume(mut bunch: sys::Bunch) -> Result<Volume, property::InvalidProperty> {
+    fn volume(mut bunch: sys::Bunch) -> Result<Volume, zfs_property::InvalidProperty> {
         let available = extract_from_bunch(&mut bunch, "available")?;
         let volsize = extract_from_bunch(&mut bunch, "volsize")?;
         let volblocksize = extract_from_bunch(&mut bunch, "volblocksize")?;
@@ -130,13 +130,13 @@ impl Dataset {
         Ok(volume)
     }
 
-    fn snapshot(bunch: sys::Bunch) -> Result<Snapshot, property::InvalidProperty> {
+    fn snapshot(bunch: sys::Bunch) -> Result<Snapshot, zfs_property::InvalidProperty> {
         let common = CommonProperties::try_from(bunch)?;
         let snapshot = Snapshot { common };
         Ok(snapshot)
     }
 
-    fn bookmark(bunch: sys::Bunch) -> Result<Bookmark, property::InvalidProperty> {
+    fn bookmark(bunch: sys::Bunch) -> Result<Bookmark, zfs_property::InvalidProperty> {
         let common = CommonProperties::try_from(bunch)?;
         let bookmark = Bookmark { common };
         Ok(bookmark)
@@ -144,7 +144,7 @@ impl Dataset {
 }
 
 impl TryFrom<sys::Bunch> for Dataset {
-    type Error = property::InvalidProperty;
+    type Error = zfs_property::InvalidProperty;
 
     fn try_from(bunch: sys::Bunch) -> Result<Self, Self::Error> {
         Self::from_bunch(bunch)
@@ -152,7 +152,7 @@ impl TryFrom<sys::Bunch> for Dataset {
 }
 
 impl TryFrom<sys::Bunch> for CommonProperties {
-    type Error = property::InvalidProperty;
+    type Error = zfs_property::InvalidProperty;
 
     fn try_from(mut bunch: sys::Bunch) -> Result<Self, Self::Error> {
         let guid = extract_from_bunch(&mut bunch, "guid")?;
@@ -182,13 +182,13 @@ impl TryFrom<sys::Bunch> for CommonProperties {
 fn extract_from_bunch<T>(
     bunch: &mut sys::Bunch,
     key: &str,
-) -> Result<property::Property<T>, property::InvalidProperty>
+) -> Result<zfs_property::Property<T>, zfs_property::InvalidProperty>
 where
     T: FromStr,
 {
     let prop = bunch
         .remove(key)
-        .ok_or_else(|| property::InvalidProperty::no_such_property(key))?
+        .ok_or_else(|| zfs_property::InvalidProperty::no_such_property(key))?
         .try_into()?;
     Ok(prop)
 }

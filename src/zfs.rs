@@ -7,7 +7,9 @@ pub use name::Name;
 mod dataset;
 mod guid;
 mod name;
-pub mod property;
+mod property;
+pub mod zfs_property;
+pub mod zpool_property;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Zpool {

@@ -8,46 +8,9 @@ use serde_with::{serde_as, DisplayFromStr};
 use thiserror::Error;
 
 use crate::sys;
+use source::Source;
 
-pub use source::Source;
-
-mod checksum;
-mod compression;
-mod dataset;
-mod onoff;
-mod onoffnoauto;
 mod source;
-mod timestamp;
-mod yesno;
-
-pub use checksum::CheckSum as CheckSumAlgo;
-pub use compression::Compression as CompressionAlgo;
-pub use dataset::Type as DatasetType;
-pub use onoff::OnOff;
-pub use onoffnoauto::OnOffNoAuto;
-pub use timestamp::TimeStamp;
-pub use yesno::YesNo;
-
-pub type Guid = Property<u64>;
-pub type Name = Property<String>;
-pub type Available = Property<u64>;
-pub type CompressRatio = Property<f64>;
-pub type Type = Property<DatasetType>;
-pub type Used = Property<u64>;
-pub type LogicalUsed = Property<u64>;
-pub type Referenced = Property<u64>;
-pub type LogicalReferenced = Property<u64>;
-pub type CreateTxg = Property<u64>;
-pub type Creation = Property<TimeStamp>;
-pub type Volsize = Property<u64>;
-pub type VolBlockSize = Property<u64>;
-pub type Written = Property<u64>;
-pub type ObjSetId = Property<u64>;
-pub type Atime = Property<OnOff>;
-pub type CanMount = Property<OnOffNoAuto>;
-pub type Mounted = Property<YesNo>;
-pub type CheckSum = Property<CheckSumAlgo>;
-pub type Compression = Property<CompressionAlgo>;
 
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
