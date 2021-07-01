@@ -1,0 +1,30 @@
+mod asshift;
+mod health;
+mod yesno;
+
+use super::property::{InvalidProperty, Property};
+use asshift::Asshift as AshiftSectorSize;
+use health::Health as HealthStatus;
+use yesno::YesNo;
+
+pub type Allocated = Property<String>;
+pub type Altroot = Property<String>;
+pub type Asshift = Property<AshiftSectorSize>;
+pub type Autoexpand = Property<YesNo>;
+pub type Autoreplace = Property<YesNo>;
+pub type Bootfs = Property<u64>;
+pub type Cachefile = Property<u64>;
+pub type Capacity = Property<u64>;
+pub type Delegation = Property<u64>;
+pub type Expandsize = Property<u64>;
+pub type Failmode = Property<u64>;
+pub type Fragmentation = Property<u64>;
+pub type Free = Property<u64>;
+pub type Freeing = Property<u64>;
+pub type Guid = Property<u64>;
+pub type Health = Property<HealthStatus>;
+pub type Listsnapshots = Property<u64>;
+pub type Loadguid = Property<u64>;
+pub type Readonly = Property<YesNo>;
+pub type Size = Property<u64>;
+pub type Version = Property<u64>;
