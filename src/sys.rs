@@ -130,11 +130,23 @@ pub(crate) fn parse_zpool_get(text: impl AsRef<str>) -> IndexMap<String, Bunch> 
     text.as_ref()
         .trim()
         .lines()
-        .inspect(|line| println!("parse_zpool_get('{}')", line))
+        .inspect(|line| {
+            if cfg!(feature = "enable_debug") {
+                println!("parse_zpool_get('{}')", line)
+            }
+        })
         .filter_map(|line| line.split_once(ZFS_GET_DELIMITER))
-        .inspect(|(name, rest)| println!("{} -> '{}'", name, rest))
+        .inspect(|(name, rest)| {
+            if cfg!(feature = "enable_debug") {
+                println!("{} -> '{}'", name, rest)
+            }
+        })
         .filter_map(text2props)
-        .inspect(|(name, prop)| println!("{} -> {:?}", name, prop))
+        .inspect(|(name, prop)| {
+            if cfg!(feature = "enable_debug") {
+                println!("{} -> {:?}", name, prop)
+            }
+        })
         .fold(IndexMap::default(), |mut acc, (pool, property)| {
             acc.entry(pool).or_default().insert(property);
             acc
