@@ -152,6 +152,7 @@ mod tests {
     use super::*;
 
     const ZFS_GET: &str = include_str!("zfs-get.out");
+    const ZPOOL_GET: &str = include_str!("zpool-get.out");
 
     #[test]
     fn zfs_get() {
@@ -162,7 +163,7 @@ mod tests {
 
     #[test]
     fn zpool_get() {
-        let pools = parse_zpool_get(ZFS_GET);
+        let pools = parse_zpool_get(ZPOOL_GET);
         println!("{:#?}", pools);
         assert_eq!(pools.len(), 12);
     }
