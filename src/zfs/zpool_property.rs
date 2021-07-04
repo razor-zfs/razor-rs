@@ -4,7 +4,7 @@ mod health;
 mod onoff;
 mod yesno;
 
-use super::property::{InvalidProperty, Property};
+pub use super::property::{extract_from_bunch, InvalidProperty, Property};
 use ashift::Ashift as AshiftSectorSize;
 use failmode::Failmode as FailmodeStatus;
 use health::Health as HealthStatus;
@@ -13,7 +13,7 @@ use yesno::YesNo;
 
 pub type Allocated = Property<String>;
 pub type Altroot = Property<String>;
-pub type Asshift = Property<AshiftSectorSize>;
+pub type Ashift = Property<AshiftSectorSize>;
 pub type Autoexpand = Property<YesNo>;
 pub type Autoreplace = Property<YesNo>;
 pub type Autotrim = Property<YesNo>;

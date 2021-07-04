@@ -1,4 +1,5 @@
 use super::property;
+pub use property::extract_from_bunch;
 pub use property::InvalidProperty;
 pub use property::Property;
 

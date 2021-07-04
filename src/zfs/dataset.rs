@@ -1,5 +1,4 @@
-use std::convert::{TryFrom, TryInto};
-use std::str::FromStr;
+use std::convert::TryFrom;
 
 use serde::{Deserialize, Serialize};
 
@@ -67,7 +66,7 @@ struct CommonProperties {
 
 impl Dataset {
     fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, zfs_property::InvalidProperty> {
-        let r#type: zfs_property::Type = extract_from_bunch(&mut bunch, "type")?;
+        let r#type: zfs_property::Type = zfs_property::extract_from_bunch(&mut bunch, "type")?;
         match r#type.value() {
             zfs_property::DatasetType::Filesystem => {
                 let filesystem = Self::filesystem(bunch)?;
@@ -89,13 +88,13 @@ impl Dataset {
     }
 
     fn filesystem(mut bunch: sys::Bunch) -> Result<Filesystem, zfs_property::InvalidProperty> {
-        let available = extract_from_bunch(&mut bunch, "available")?;
-        let atime = extract_from_bunch(&mut bunch, "atime")?;
-        let logicalused = extract_from_bunch(&mut bunch, "logicalused")?;
-        let canmount = extract_from_bunch(&mut bunch, "canmount")?;
-        let mounted = extract_from_bunch(&mut bunch, "mounted")?;
-        let checksum = extract_from_bunch(&mut bunch, "checksum")?;
-        let compression = extract_from_bunch(&mut bunch, "compression")?;
+        let available = zfs_property::extract_from_bunch(&mut bunch, "available")?;
+        let atime = zfs_property::extract_from_bunch(&mut bunch, "atime")?;
+        let logicalused = zfs_property::extract_from_bunch(&mut bunch, "logicalused")?;
+        let canmount = zfs_property::extract_from_bunch(&mut bunch, "canmount")?;
+        let mounted = zfs_property::extract_from_bunch(&mut bunch, "mounted")?;
+        let checksum = zfs_property::extract_from_bunch(&mut bunch, "checksum")?;
+        let compression = zfs_property::extract_from_bunch(&mut bunch, "compression")?;
         let common = CommonProperties::try_from(bunch)?;
         let filesystem = Filesystem {
             available,
@@ -111,12 +110,12 @@ impl Dataset {
     }
 
     fn volume(mut bunch: sys::Bunch) -> Result<Volume, zfs_property::InvalidProperty> {
-        let available = extract_from_bunch(&mut bunch, "available")?;
-        let volsize = extract_from_bunch(&mut bunch, "volsize")?;
-        let volblocksize = extract_from_bunch(&mut bunch, "volblocksize")?;
-        let logicalused = extract_from_bunch(&mut bunch, "logicalused")?;
-        let checksum = extract_from_bunch(&mut bunch, "checksum")?;
-        let compression = extract_from_bunch(&mut bunch, "compression")?;
+        let available = zfs_property::extract_from_bunch(&mut bunch, "available")?;
+        let volsize = zfs_property::extract_from_bunch(&mut bunch, "volsize")?;
+        let volblocksize = zfs_property::extract_from_bunch(&mut bunch, "volblocksize")?;
+        let logicalused = zfs_property::extract_from_bunch(&mut bunch, "logicalused")?;
+        let checksum = zfs_property::extract_from_bunch(&mut bunch, "checksum")?;
+        let compression = zfs_property::extract_from_bunch(&mut bunch, "compression")?;
         let common = CommonProperties::try_from(bunch)?;
         let volume = Volume {
             available,
@@ -155,14 +154,14 @@ impl TryFrom<sys::Bunch> for CommonProperties {
     type Error = zfs_property::InvalidProperty;
 
     fn try_from(mut bunch: sys::Bunch) -> Result<Self, Self::Error> {
-        let guid = extract_from_bunch(&mut bunch, "guid")?;
-        let creation = extract_from_bunch(&mut bunch, "creation")?;
-        let createtxg = extract_from_bunch(&mut bunch, "createtxg")?;
-        let compressratio = extract_from_bunch(&mut bunch, "compressratio")?;
-        let used = extract_from_bunch(&mut bunch, "used")?;
-        let referenced = extract_from_bunch(&mut bunch, "referenced")?;
-        let logicalreferenced = extract_from_bunch(&mut bunch, "logicalreferenced")?;
-        let objsetid = extract_from_bunch(&mut bunch, "objsetid")?;
+        let guid = zfs_property::extract_from_bunch(&mut bunch, "guid")?;
+        let creation = zfs_property::extract_from_bunch(&mut bunch, "creation")?;
+        let createtxg = zfs_property::extract_from_bunch(&mut bunch, "createtxg")?;
+        let compressratio = zfs_property::extract_from_bunch(&mut bunch, "compressratio")?;
+        let used = zfs_property::extract_from_bunch(&mut bunch, "used")?;
+        let referenced = zfs_property::extract_from_bunch(&mut bunch, "referenced")?;
+        let logicalreferenced = zfs_property::extract_from_bunch(&mut bunch, "logicalreferenced")?;
+        let objsetid = zfs_property::extract_from_bunch(&mut bunch, "objsetid")?;
 
         let properties = Self {
             guid,
@@ -177,18 +176,4 @@ impl TryFrom<sys::Bunch> for CommonProperties {
         };
         Ok(properties)
     }
-}
-
-fn extract_from_bunch<T>(
-    bunch: &mut sys::Bunch,
-    key: &str,
-) -> Result<zfs_property::Property<T>, zfs_property::InvalidProperty>
-where
-    T: FromStr,
-{
-    let prop = bunch
-        .remove(key)
-        .ok_or_else(|| zfs_property::InvalidProperty::no_such_property(key))?
-        .try_into()?;
-    Ok(prop)
 }

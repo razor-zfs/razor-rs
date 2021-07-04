@@ -1,4 +1,4 @@
-use std::convert::TryFrom;
+use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::ops;
 use std::str::FromStr;
@@ -72,4 +72,18 @@ impl<T> ops::Deref for Property<T> {
     fn deref(&self) -> &Self::Target {
         self.value()
     }
+}
+
+pub fn extract_from_bunch<T>(
+    bunch: &mut sys::Bunch,
+    key: &str,
+) -> Result<Property<T>, InvalidProperty>
+where
+    T: FromStr,
+{
+    let prop = bunch
+        .remove(key)
+        .ok_or_else(|| InvalidProperty::no_such_property(key))?
+        .try_into()?;
+    Ok(prop)
 }

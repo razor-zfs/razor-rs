@@ -3,10 +3,12 @@ use serde::{Deserialize, Serialize};
 pub use dataset::Dataset;
 pub use guid::Guid;
 pub use name::Name;
+pub use pool::Pool;
 
 mod dataset;
 mod guid;
 mod name;
+mod pool;
 mod property;
 pub mod zfs_property;
 pub mod zpool_property;

@@ -70,10 +70,20 @@ impl Zfs {
     fn load_from_zpool_get(&mut self, text: impl AsRef<str>) {
         //println!("ZPOOL Got\n{}", text.as_ref());
         //println!("But load_from_zpool_get() is not implemented yet");
-        //let mut pools = IndexMap::new();
+        let mut pools = IndexMap::new();
 
         for (name, properties) in sys::parse_zpool_get(text) {
             println!("Processing {} with {} properties", name, properties);
+
+            let name = zfs::Name::from(name);
+            // datasets.insert(name, properties);
+
+            match zfs::Pool::try_from(properties) {
+                Ok(dataset) => {
+                    pools.insert(name, dataset);
+                }
+                Err(err) => println!("{}", err),
+            }
         }
     }
 }
