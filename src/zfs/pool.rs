@@ -47,11 +47,15 @@ struct LowLevel {
 
 impl Pool {
     fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, zpool_property::InvalidProperty> {
+        println!("STARTED TO CONVERT POOL");
         let size = zpool_property::extract_from_bunch(&mut bunch, "size")?;
         let health = zpool_property::extract_from_bunch(&mut bunch, "health")?;
         let free = zpool_property::extract_from_bunch(&mut bunch, "free")?;
+        println!("CONVERTED BASIC NOW CONVERTING OTHERS");
         let low_level = LowLevel::try_from(&mut bunch)?;
+        println!("CONVERTED LOW LEVEL NOW CONVERTING FEATURES");
         let feature = Feature::try_from(&mut bunch)?;
+        println!("DONE!!!!!!!!!!!!!!");
         let pool = Pool {
             size,
             health,

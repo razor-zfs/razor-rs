@@ -79,8 +79,8 @@ impl Zfs {
             // datasets.insert(name, properties);
 
             match zfs::Pool::try_from(properties) {
-                Ok(dataset) => {
-                    pools.insert(name, dataset);
+                Ok(pool) => {
+                    pools.insert(name, pool);
                 }
                 Err(err) => println!("{}", err),
             }
