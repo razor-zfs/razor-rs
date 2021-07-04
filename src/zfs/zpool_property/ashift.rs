@@ -5,7 +5,7 @@ use std::str::FromStr;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Asshift(u64);
+pub struct Ashift(u64);
 
 fn check_range(shift: u64) -> Result<u64, super::InvalidProperty> {
     if shift >= 9 && shift <= 16 {
@@ -15,24 +15,24 @@ fn check_range(shift: u64) -> Result<u64, super::InvalidProperty> {
     }
 }
 
-impl fmt::Display for Asshift {
+impl fmt::Display for Ashift {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.fmt(f)
     }
 }
 
-impl FromStr for Asshift {
+impl FromStr for Ashift {
     type Err = super::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         s.parse::<u64>()
             .map_err(|_| super::InvalidProperty::InvalidValue)
             .and_then(check_range)
-            .map(Asshift)
+            .map(Ashift)
     }
 }
 
-impl ops::Deref for Asshift {
+impl ops::Deref for Ashift {
     type Target = u64;
 
     fn deref(&self) -> &Self::Target {

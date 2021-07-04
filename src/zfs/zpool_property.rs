@@ -1,11 +1,11 @@
-mod asshift;
+mod ashift;
 mod failmode;
 mod health;
 mod onoff;
 mod yesno;
 
 use super::property::{InvalidProperty, Property};
-use asshift::Asshift as AshiftSectorSize;
+use ashift::Ashift as AshiftSectorSize;
 use failmode::Failmode as FailmodeStatus;
 use health::Health as HealthStatus;
 pub use onoff::OnOff;
