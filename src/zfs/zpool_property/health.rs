@@ -4,6 +4,7 @@ use std::str::FromStr;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum Health {
     Online,
     Degraded,
@@ -32,6 +33,7 @@ impl FromStr for Health {
     type Err = super::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        println!("I ENCOUNTERED WITH!!!!!: {}", s);
         match s {
             "online" => Ok(Self::Online),
             "degraded" => Ok(Self::Degraded),
