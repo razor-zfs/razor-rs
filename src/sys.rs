@@ -126,6 +126,21 @@ pub(crate) fn parse_zfs_get(text: impl AsRef<str>) -> IndexMap<String, Bunch> {
         })
 }
 
+pub(crate) fn parse_zpool_get(text: impl AsRef<str>) -> IndexMap<String, Bunch> {
+    text.as_ref()
+        .trim()
+        .lines()
+        .inspect(|line| println!("parse_zpool_get('{}')", line))
+        .filter_map(|line| line.split_once(ZFS_GET_DELIMITER))
+        .inspect(|(name, rest)| println!("{} -> '{}'", name, rest))
+        .filter_map(text2props)
+        .inspect(|(name, prop)| println!("{} -> {:?}", name, prop))
+        .fold(IndexMap::default(), |mut acc, (pool, property)| {
+            acc.entry(pool).or_default().insert(property);
+            acc
+        })
+}
+
 fn text2props((dataset, text): (&str, &str)) -> Option<(String, RawProperty)> {
     text.parse()
         .ok()
@@ -143,5 +158,12 @@ mod tests {
         let datasets = parse_zfs_get(ZFS_GET);
         // println!("{:#?}", datasets);
         assert_eq!(datasets.len(), 12);
+    }
+
+    #[test]
+    fn zpool_get() {
+        let pools = parse_zpool_get(ZFS_GET);
+        println!("{:#?}", pools);
+        assert_eq!(pools.len(), 12);
     }
 }

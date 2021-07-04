@@ -68,7 +68,12 @@ impl Zfs {
     }
 
     fn load_from_zpool_get(&mut self, text: impl AsRef<str>) {
-        println!("ZPOOL Got\n{}", text.as_ref());
-        println!("But load_from_zpool_get() is not implemented yet");
+        //println!("ZPOOL Got\n{}", text.as_ref());
+        //println!("But load_from_zpool_get() is not implemented yet");
+        //let mut pools = IndexMap::new();
+
+        for (name, properties) in sys::parse_zpool_get(text) {
+            println!("Processing {} with {} properties", name, properties);
+        }
     }
 }
