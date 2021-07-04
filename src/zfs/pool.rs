@@ -49,7 +49,9 @@ impl Pool {
     fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, zpool_property::InvalidProperty> {
         println!("STARTED TO CONVERT POOL");
         let size = zpool_property::extract_from_bunch(&mut bunch, "size")?;
+        println!("PASSED FIRST");
         let health = zpool_property::extract_from_bunch(&mut bunch, "health")?;
+        println!("PASSED SECOND");
         let free = zpool_property::extract_from_bunch(&mut bunch, "free")?;
         println!("CONVERTED BASIC NOW CONVERTING OTHERS");
         let low_level = LowLevel::try_from(&mut bunch)?;
