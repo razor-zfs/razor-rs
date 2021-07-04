@@ -47,11 +47,8 @@ struct LowLevel {
 
 impl Pool {
     fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, zpool_property::InvalidProperty> {
-        println!("STARTED TO CONVERT POOL");
         let size = zpool_property::extract_from_bunch(&mut bunch, "size")?;
-        println!("PASSED FIRST");
         let health = zpool_property::extract_from_bunch(&mut bunch, "health")?;
-        println!("PASSED SECOND");
         let free = zpool_property::extract_from_bunch(&mut bunch, "free")?;
         println!("CONVERTED BASIC NOW CONVERTING OTHERS");
         let low_level = LowLevel::try_from(&mut bunch)?;
@@ -90,11 +87,17 @@ impl TryFrom<&mut sys::Bunch> for LowLevel {
     type Error = zpool_property::InvalidProperty;
 
     fn try_from(bunch: &mut sys::Bunch) -> Result<Self, Self::Error> {
+        println!("BEFORE ALLOCATED");
         let allocated = zpool_property::extract_from_bunch(bunch, "allocated")?;
+        println!("BEFORE ALTROOT");
         let altroot = zpool_property::extract_from_bunch(bunch, "altroot")?;
+        println!("BEFORE ashift");
         let ashift = zpool_property::extract_from_bunch(bunch, "ashift")?;
+        println!("BEFORE autoexpand");
         let autoexpand = zpool_property::extract_from_bunch(bunch, "autoexpand")?;
+        println!("BEFORE autoreplace");
         let autoreplace = zpool_property::extract_from_bunch(bunch, "autoreplace")?;
+        println!("BEFORE autotrims");
         let autotrim = zpool_property::extract_from_bunch(bunch, "autotrim")?;
         let bootfs = zpool_property::extract_from_bunch(bunch, "bootfs")?;
         let cachefile = zpool_property::extract_from_bunch(bunch, "cachefile")?;

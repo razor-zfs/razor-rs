@@ -33,7 +33,6 @@ impl FromStr for Health {
     type Err = super::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        println!("I ENCOUNTERED WITH!!!!!: {}", s);
         match s {
             "ONLINE" => Ok(Self::Online),
             "DEGRADED" => Ok(Self::Degraded),
