@@ -35,12 +35,12 @@ impl FromStr for Health {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         println!("I ENCOUNTERED WITH!!!!!: {}", s);
         match s {
-            "online" => Ok(Self::Online),
-            "degraded" => Ok(Self::Degraded),
-            "faulted" => Ok(Self::Faulted),
-            "offline" => Ok(Self::Offline),
-            "removed" => Ok(Self::Removed),
-            "unavail" => Ok(Self::Unavail),
+            "ONLINE" => Ok(Self::Online),
+            "DEGRADED" => Ok(Self::Degraded),
+            "FAULTED" => Ok(Self::Faulted),
+            "OFFLINE" => Ok(Self::Offline),
+            "REMOVED" => Ok(Self::Removed),
+            "UNAVAIL" => Ok(Self::Unavail),
             _ => Err(super::InvalidProperty::InvalidValue),
         }
     }
