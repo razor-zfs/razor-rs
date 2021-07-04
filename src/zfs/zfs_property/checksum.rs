@@ -48,7 +48,7 @@ impl FromStr for CheckSum {
             "sha512" => Ok(Self::Sha512),
             "skein" => Ok(Self::Skein),
             "edonr" => Ok(Self::Edonr),
-            _ => Err(super::InvalidProperty::InvalidValue),
+            other => Err(super::InvalidProperty::invalid_value(other)),
         }
     }
 }

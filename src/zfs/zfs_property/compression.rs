@@ -71,7 +71,7 @@ impl FromStr for Compression {
             "lz4" => Ok(Self::Lz4),
             "zstd" => Ok(Self::Zstd),
             "zstd-fast" => Ok(Self::ZstdFast),
-            _ => Err(super::InvalidProperty::InvalidValue),
+            other => Err(super::InvalidProperty::invalid_value(other)),
         }
     }
 }

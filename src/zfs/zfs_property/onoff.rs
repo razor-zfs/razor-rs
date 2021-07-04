@@ -26,7 +26,7 @@ impl FromStr for OnOff {
         match s {
             "off" => Ok(Self::Off),
             "on" => Ok(Self::On),
-            _ => Err(super::InvalidProperty::InvalidValue),
+            other => Err(super::InvalidProperty::invalid_value(other)),
         }
     }
 }

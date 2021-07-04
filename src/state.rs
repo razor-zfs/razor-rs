@@ -13,7 +13,7 @@ static ZFS: Lazy<Arc<Mutex<Zfs>>> = Lazy::new(|| Arc::new(Mutex::new(Zfs::defaul
 
 #[derive(Debug, Default)]
 pub struct Zfs {
-    pools: IndexMap<zfs::Guid, zfs::Zpool>,
+    pools: IndexMap<zfs::Name, zfs::Pool>,
     datasets: IndexMap<zfs::Name, zfs::Dataset>,
 }
 
@@ -22,7 +22,7 @@ impl Zfs {
         Arc::clone(&*ZFS)
     }
 
-    pub fn pools(&self) -> &IndexMap<zfs::Guid, zfs::Zpool> {
+    pub fn pools(&self) -> &IndexMap<zfs::Name, zfs::Pool> {
         &self.pools
     }
 
@@ -76,7 +76,6 @@ impl Zfs {
             println!("Processing {} with {} properties", name, properties);
 
             let name = zfs::Name::from(name);
-            // datasets.insert(name, properties);
 
             match zfs::Pool::try_from(properties) {
                 Ok(pool) => {
@@ -85,5 +84,7 @@ impl Zfs {
                 Err(err) => println!("{}", err),
             }
         }
+
+        self.pools = pools;
     }
 }

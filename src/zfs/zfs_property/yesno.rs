@@ -26,7 +26,7 @@ impl FromStr for YesNo {
         match s {
             "yes" => Ok(Self::Yes),
             "no" => Ok(Self::No),
-            _ => Err(super::InvalidProperty::InvalidValue),
+            other => Err(super::InvalidProperty::invalid_value(other)),
         }
     }
 }

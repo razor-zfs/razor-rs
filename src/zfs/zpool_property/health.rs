@@ -40,7 +40,7 @@ impl FromStr for Health {
             "OFFLINE" => Ok(Self::Offline),
             "REMOVED" => Ok(Self::Removed),
             "UNAVAIL" => Ok(Self::Unavail),
-            _ => Err(super::InvalidProperty::InvalidValue),
+            other => Err(super::InvalidProperty::invalid_value(other)),
         }
     }
 }

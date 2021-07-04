@@ -11,7 +11,7 @@ fn check_range(shift: u64) -> Result<u64, super::InvalidProperty> {
     if shift >= 9 && shift <= 16 {
         Ok(shift)
     } else {
-        Err(super::InvalidProperty::InvalidValue)
+        Err(super::InvalidProperty::invalid_value(shift))
     }
 }
 
@@ -26,7 +26,7 @@ impl FromStr for Ashift {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         s.parse::<u64>()
-            .map_err(|_| super::InvalidProperty::InvalidValue)
+            .map_err(|_| super::InvalidProperty::invalid_value(s))
             .and_then(check_range)
             .map(Ashift)
     }

@@ -33,7 +33,7 @@ impl FromStr for Type {
             "volume" => Ok(Self::Volume),
             "snapshot" => Ok(Self::Snapshot),
             "bookmark" => Ok(Self::Bookmark),
-            _ => Err(super::InvalidProperty::InvalidValue),
+            other => Err(super::InvalidProperty::invalid_value(other)),
         }
     }
 }

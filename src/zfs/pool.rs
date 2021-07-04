@@ -50,11 +50,8 @@ impl Pool {
         let size = zpool_property::extract_from_bunch(&mut bunch, "size")?;
         let health = zpool_property::extract_from_bunch(&mut bunch, "health")?;
         let free = zpool_property::extract_from_bunch(&mut bunch, "free")?;
-        println!("CONVERTED BASIC NOW CONVERTING OTHERS");
         let low_level = LowLevel::try_from(&mut bunch)?;
-        println!("CONVERTED LOW LEVEL NOW CONVERTING FEATURES");
         let feature = Feature::try_from(&mut bunch)?;
-        println!("DONE!!!!!!!!!!!!!!");
         let pool = Pool {
             size,
             health,
@@ -87,21 +84,13 @@ impl TryFrom<&mut sys::Bunch> for LowLevel {
     type Error = zpool_property::InvalidProperty;
 
     fn try_from(bunch: &mut sys::Bunch) -> Result<Self, Self::Error> {
-        println!("BEFORE ALLOCATED");
         let allocated = zpool_property::extract_from_bunch(bunch, "allocated")?;
-        println!("BEFORE ALTROOT");
         let altroot = zpool_property::extract_from_bunch(bunch, "altroot")?;
-        println!("BEFORE ashift");
         let ashift = zpool_property::extract_from_bunch(bunch, "ashift")?;
-        println!("BEFORE autoexpand");
         let autoexpand = zpool_property::extract_from_bunch(bunch, "autoexpand")?;
-        println!("BEFORE autoreplace");
         let autoreplace = zpool_property::extract_from_bunch(bunch, "autoreplace")?;
-        println!("BEFORE autotrims");
         let autotrim = zpool_property::extract_from_bunch(bunch, "autotrim")?;
-        println!("BEFORE bootfs");
         let bootfs = zpool_property::extract_from_bunch(bunch, "bootfs")?;
-        println!("BEFORE cachefile");
         let cachefile = zpool_property::extract_from_bunch(bunch, "cachefile")?;
         let capacity = zpool_property::extract_from_bunch(bunch, "capacity")?;
         let comment = zpool_property::extract_from_bunch(bunch, "comment")?;
@@ -113,7 +102,7 @@ impl TryFrom<&mut sys::Bunch> for LowLevel {
         let freeing = zpool_property::extract_from_bunch(bunch, "freeing")?;
         let guid = zpool_property::extract_from_bunch(bunch, "guid")?;
         let listsnapshots = zpool_property::extract_from_bunch(bunch, "listsnapshots")?;
-        let loadguid = zpool_property::extract_from_bunch(bunch, "loadguid")?;
+        let loadguid = zpool_property::extract_from_bunch(bunch, "load_guid")?;
         let multihost = zpool_property::extract_from_bunch(bunch, "multihost")?;
         let version = zpool_property::extract_from_bunch(bunch, "version")?;
 

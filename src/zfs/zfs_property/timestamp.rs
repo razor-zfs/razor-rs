@@ -21,7 +21,7 @@ impl FromStr for TimeStamp {
         s.parse::<i64>()
             .map(|seconds| Utc.timestamp(seconds, 0))
             .map(TimeStamp)
-            .map_err(|_| super::InvalidProperty::InvalidValue)
+            .map_err(|_| super::InvalidProperty::invalid_value(s))
     }
 }
 

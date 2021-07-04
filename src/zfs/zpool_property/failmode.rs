@@ -30,7 +30,7 @@ impl FromStr for Failmode {
             "wait" => Ok(Self::Wait),
             "continue" => Ok(Self::Continue),
             "panic" => Ok(Self::Panic),
-            _ => Err(super::InvalidProperty::InvalidValue),
+            other => Err(super::InvalidProperty::invalid_value(other)),
         }
     }
 }

@@ -35,12 +35,12 @@ where
     type Error = InvalidProperty;
 
     fn try_from(raw: sys::RawProperty) -> Result<Self, Self::Error> {
-        let name = raw.property;
         let source = raw.source.parse().map_err(InvalidProperty::InvalidSource)?;
         let value = raw
             .value
             .parse()
-            .map_err(|_| InvalidProperty::InvalidValue)?;
+            .map_err(|_| InvalidProperty::invalid_value(&raw.value))?;
+        let name = raw.property;
         let property = Self {
             name,
             source,
@@ -56,13 +56,17 @@ pub enum InvalidProperty {
     NoSuchProperty(String),
     #[error("Invalid source ({0})")]
     InvalidSource(String),
-    #[error("Invalid value")]
-    InvalidValue,
+    #[error("Invalid value ({0})")]
+    InvalidValue(String),
 }
 
 impl InvalidProperty {
     pub(crate) fn no_such_property(prop: impl ToString) -> Self {
         Self::NoSuchProperty(prop.to_string())
+    }
+
+    pub(crate) fn invalid_value(value: impl ToString) -> Self {
+        Self::InvalidValue(value.to_string())
     }
 }
 

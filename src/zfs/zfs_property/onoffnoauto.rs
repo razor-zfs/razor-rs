@@ -29,7 +29,7 @@ impl FromStr for OnOffNoAuto {
             "on" => Ok(Self::On),
             "off" => Ok(Self::Off),
             "noauto" => Ok(Self::NoAuto),
-            _ => Err(super::InvalidProperty::InvalidValue),
+            other => Err(super::InvalidProperty::invalid_value(other)),
         }
     }
 }
