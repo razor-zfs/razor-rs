@@ -16,12 +16,12 @@ pub enum Health {
 impl fmt::Display for Health {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let text = match self {
-            Health::Online => "Online",
-            Health::Degraded => "Degraded",
-            Health::Faulted => "Faulted",
-            Health::Offline => "Offline",
-            Health::Removed => "Removed",
-            Health::Unavail => "Unavail",
+            Health::Online => "online",
+            Health::Degraded => "degraded",
+            Health::Faulted => "faulted",
+            Health::Offline => "offline",
+            Health::Removed => "removed",
+            Health::Unavail => "unavail",
         };
 
         text.fmt(f)
@@ -33,12 +33,12 @@ impl FromStr for Health {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "Online" => Ok(Self::Online),
-            "Degraded" => Ok(Self::Degraded),
-            "Faulted" => Ok(Self::Faulted),
-            "Offline" => Ok(Self::Offline),
-            "Removed" => Ok(Self::Removed),
-            "Unavail" => Ok(Self::Unavail),
+            "online" => Ok(Self::Online),
+            "degraded" => Ok(Self::Degraded),
+            "faulted" => Ok(Self::Faulted),
+            "offline" => Ok(Self::Offline),
+            "removed" => Ok(Self::Removed),
+            "unavail" => Ok(Self::Unavail),
             _ => Err(super::InvalidProperty::InvalidValue),
         }
     }
