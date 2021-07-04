@@ -81,6 +81,7 @@ pub fn extract_from_bunch<T>(
 where
     T: FromStr,
 {
+    println!("searching for {}", key);
     let prop = bunch
         .remove(key)
         .ok_or_else(|| InvalidProperty::no_such_property(key))?

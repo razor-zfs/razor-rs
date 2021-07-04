@@ -99,7 +99,9 @@ impl TryFrom<&mut sys::Bunch> for LowLevel {
         let autoreplace = zpool_property::extract_from_bunch(bunch, "autoreplace")?;
         println!("BEFORE autotrims");
         let autotrim = zpool_property::extract_from_bunch(bunch, "autotrim")?;
+        println!("BEFORE bootfs");
         let bootfs = zpool_property::extract_from_bunch(bunch, "bootfs")?;
+        println!("BEFORE cachefile");
         let cachefile = zpool_property::extract_from_bunch(bunch, "cachefile")?;
         let capacity = zpool_property::extract_from_bunch(bunch, "capacity")?;
         let comment = zpool_property::extract_from_bunch(bunch, "comment")?;
