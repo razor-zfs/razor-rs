@@ -35,3 +35,4 @@ pub type Multihost = Property<OnOff>;
 pub type Readonly = Property<OnOff>;
 pub type Size = Property<u64>;
 pub type Version = Property<String>;
+pub type Name = Property<String>;

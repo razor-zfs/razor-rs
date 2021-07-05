@@ -10,6 +10,7 @@ use super::zpool_property;
 pub struct Pool {
     guid: zpool_property::Guid,
     loadguid: zpool_property::Loadguid,
+    name: zpool_property::Name,
     size: zpool_property::Size,
     health: zpool_property::Health,
     free: zpool_property::Free,
@@ -52,6 +53,7 @@ impl Pool {
         let size = zpool_property::extract_from_bunch(&mut bunch, "size")?;
         let health = zpool_property::extract_from_bunch(&mut bunch, "health")?;
         let free = zpool_property::extract_from_bunch(&mut bunch, "free")?;
+        let name = zpool_property::extract_from_bunch(&mut bunch, "name")?;
         let low_level = LowLevel::try_from(&mut bunch)?;
         let feature = Feature::try_from(&mut bunch)?;
         let pool = Pool {
@@ -60,6 +62,7 @@ impl Pool {
             size,
             health,
             free,
+            name,
             low_level,
             feature,
         };

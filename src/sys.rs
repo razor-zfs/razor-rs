@@ -127,7 +127,8 @@ pub(crate) fn parse_zfs_get(text: impl AsRef<str>) -> IndexMap<String, Bunch> {
 }
 
 pub(crate) fn parse_zpool_get(text: impl AsRef<str>) -> IndexMap<String, Bunch> {
-    text.as_ref()
+    let new_pool: IndexMap<String, Bunch> = text
+        .as_ref()
         .trim()
         .lines()
         .inspect(|line| {
@@ -150,7 +151,23 @@ pub(crate) fn parse_zpool_get(text: impl AsRef<str>) -> IndexMap<String, Bunch> 
         .fold(IndexMap::default(), |mut acc, (pool, property)| {
             acc.entry(pool).or_default().insert(property);
             acc
+        });
+
+    let new_pool = new_pool
+        .into_iter()
+        .map(|(pool, mut prop)| {
+            prop.entry("name".to_string()).or_insert(RawProperty {
+                property: "name".to_string(),
+                value: pool.clone(),
+                received: None,
+                source: "-".to_string(),
+            });
+
+            (pool, prop)
         })
+        .collect();
+
+    new_pool
 }
 
 fn text2props((dataset, text): (&str, &str)) -> Option<(String, RawProperty)> {
