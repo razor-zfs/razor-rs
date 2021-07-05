@@ -1,5 +1,6 @@
 mod ashift;
 mod bootfs;
+mod cachefile;
 mod failmode;
 mod health;
 mod onoff;
@@ -8,6 +9,7 @@ mod yesno;
 pub use super::property::{extract_from_bunch, InvalidProperty, Property};
 use ashift::Ashift as AshiftSectorSize;
 use bootfs::Bootfs as BootfsDataset;
+use cachefile::Cachefile as CachefileLoc;
 use failmode::Failmode as FailmodeStatus;
 use health::Health as HealthStatus;
 use onoff::OnOff;
@@ -18,8 +20,8 @@ pub type Ashift = Property<AshiftSectorSize>;
 pub type Autoexpand = Property<OnOff>;
 pub type Autoreplace = Property<OnOff>;
 pub type Autotrim = Property<OnOff>;
-pub type Bootfs = Property<BootfsDataset>; // TODO: check if it really string
-pub type Cachefile = Property<String>; // TODO: check if it really string
+pub type Bootfs = Property<BootfsDataset>;
+pub type Cachefile = Property<CachefileLoc>;
 pub type Capacity = Property<u64>;
 pub type Comment = Property<String>;
 pub type Delegation = Property<OnOff>;
