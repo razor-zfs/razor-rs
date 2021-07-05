@@ -8,6 +8,8 @@ use super::zpool_property;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Pool {
+    guid: zpool_property::Guid,
+    loadguid: zpool_property::Loadguid,
     size: zpool_property::Size,
     health: zpool_property::Health,
     free: zpool_property::Free,
@@ -38,21 +40,23 @@ struct LowLevel {
     failmode: zpool_property::Failmode,
     fragmentation: zpool_property::Fragmentation,
     freeing: zpool_property::Freeing,
-    guid: zpool_property::Guid,
     listsnapshots: zpool_property::Listsnapshots,
-    loadguid: zpool_property::Loadguid,
     multihost: zpool_property::Readonly,
     version: zpool_property::Version,
 }
 
 impl Pool {
     fn from_bunch(mut bunch: sys::Bunch) -> Result<Self, zpool_property::InvalidProperty> {
+        let guid = zpool_property::extract_from_bunch(&mut bunch, "guid")?;
+        let loadguid = zpool_property::extract_from_bunch(&mut bunch, "load_guid")?;
         let size = zpool_property::extract_from_bunch(&mut bunch, "size")?;
         let health = zpool_property::extract_from_bunch(&mut bunch, "health")?;
         let free = zpool_property::extract_from_bunch(&mut bunch, "free")?;
         let low_level = LowLevel::try_from(&mut bunch)?;
         let feature = Feature::try_from(&mut bunch)?;
         let pool = Pool {
+            guid,
+            loadguid,
             size,
             health,
             free,
@@ -100,9 +104,7 @@ impl TryFrom<&mut sys::Bunch> for LowLevel {
         let failmode = zpool_property::extract_from_bunch(bunch, "failmode")?;
         let fragmentation = zpool_property::extract_from_bunch(bunch, "fragmentation")?;
         let freeing = zpool_property::extract_from_bunch(bunch, "freeing")?;
-        let guid = zpool_property::extract_from_bunch(bunch, "guid")?;
         let listsnapshots = zpool_property::extract_from_bunch(bunch, "listsnapshots")?;
-        let loadguid = zpool_property::extract_from_bunch(bunch, "load_guid")?;
         let multihost = zpool_property::extract_from_bunch(bunch, "multihost")?;
         let version = zpool_property::extract_from_bunch(bunch, "version")?;
 
@@ -123,9 +125,7 @@ impl TryFrom<&mut sys::Bunch> for LowLevel {
             failmode,
             fragmentation,
             freeing,
-            guid,
             listsnapshots,
-            loadguid,
             multihost,
             version,
         };
