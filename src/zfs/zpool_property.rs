@@ -4,6 +4,7 @@ mod cachefile;
 mod failmode;
 mod health;
 mod onoff;
+mod version;
 mod yesno;
 
 pub use super::property::{extract_from_bunch, InvalidProperty, Property};
@@ -13,6 +14,7 @@ use cachefile::Cachefile as CachefileLoc;
 use failmode::Failmode as FailmodeStatus;
 use health::Health as HealthStatus;
 use onoff::OnOff;
+use version::Version as PoolVersion;
 
 pub type Allocated = Property<String>;
 pub type Altroot = Property<String>;
@@ -38,5 +40,5 @@ pub type Loadguid = Property<u64>;
 pub type Multihost = Property<OnOff>;
 pub type Readonly = Property<OnOff>;
 pub type Size = Property<u64>;
-pub type Version = Property<String>;
+pub type Version = Property<PoolVersion>;
 pub type Name = Property<String>;
