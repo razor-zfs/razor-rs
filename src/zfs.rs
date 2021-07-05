@@ -4,6 +4,7 @@ pub use dataset::Dataset;
 pub use guid::Guid;
 pub use name::Name;
 pub use pool::Pool;
+pub use property::InvalidProperty;
 
 mod dataset;
 mod guid;

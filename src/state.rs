@@ -13,7 +13,7 @@ static ZFS: Lazy<Arc<Mutex<Zfs>>> = Lazy::new(|| Arc::new(Mutex::new(Zfs::defaul
 
 #[derive(Debug, Default)]
 pub struct Zfs {
-    pools: IndexMap<zfs::Name, zfs::Pool>,
+    pools: IndexMap<zfs::Guid, zfs::Pool>,
     datasets: IndexMap<zfs::Name, zfs::Dataset>,
 }
 
@@ -22,7 +22,7 @@ impl Zfs {
         Arc::clone(&*ZFS)
     }
 
-    pub fn pools(&self) -> &IndexMap<zfs::Name, zfs::Pool> {
+    pub fn pools(&self) -> &IndexMap<zfs::Guid, zfs::Pool> {
         &self.pools
     }
 
@@ -68,18 +68,17 @@ impl Zfs {
     }
 
     fn load_from_zpool_get(&mut self, text: impl AsRef<str>) {
-        //println!("ZPOOL Got\n{}", text.as_ref());
-        //println!("But load_from_zpool_get() is not implemented yet");
         let mut pools = IndexMap::new();
 
         for (name, properties) in sys::parse_zpool_get(text) {
             println!("Processing {} with {} properties", name, properties);
 
-            let name = zfs::Name::from(name);
+            let guid = properties.get("guid").unwrap().value();
+            let guid = guid.parse().unwrap();
 
             match zfs::Pool::try_from(properties) {
                 Ok(pool) => {
-                    pools.insert(name, pool);
+                    pools.insert(guid, pool);
                 }
                 Err(err) => println!("{}", err),
             }
