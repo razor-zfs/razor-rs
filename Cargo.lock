@@ -868,6 +868,7 @@ dependencies = [
  "itertools",
  "once_cell",
  "pretty_env_logger",
+ "regex",
  "rweb",
  "serde",
  "serde_json",
