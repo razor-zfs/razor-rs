@@ -1,4 +1,5 @@
 mod allocated;
+mod altroot;
 mod ashift;
 mod bootfs;
 mod cachefile;
@@ -11,6 +12,7 @@ mod yesno;
 
 pub use super::property::{extract_from_bunch, InvalidProperty, Property};
 use allocated::Allocated as AllocatedSize;
+use altroot::Altroot as AltrootDir;
 use ashift::Ashift as AshiftSectorSize;
 use bootfs::Bootfs as BootfsDataset;
 use cachefile::Cachefile as CachefileLoc;
@@ -21,7 +23,7 @@ use onoff::OnOff;
 use version::Version as PoolVersion;
 
 pub type Allocated = Property<AllocatedSize>;
-pub type Altroot = Property<String>;
+pub type Altroot = Property<AltrootDir>;
 pub type Ashift = Property<AshiftSectorSize>;
 pub type Autoexpand = Property<OnOff>;
 pub type Autoreplace = Property<OnOff>;
