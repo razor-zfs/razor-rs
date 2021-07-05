@@ -1,3 +1,4 @@
+mod allocated;
 mod ashift;
 mod bootfs;
 mod cachefile;
@@ -9,6 +10,7 @@ mod version;
 mod yesno;
 
 pub use super::property::{extract_from_bunch, InvalidProperty, Property};
+use allocated::Allocated as AllocatedSize;
 use ashift::Ashift as AshiftSectorSize;
 use bootfs::Bootfs as BootfsDataset;
 use cachefile::Cachefile as CachefileLoc;
@@ -18,7 +20,7 @@ use health::Health as HealthStatus;
 use onoff::OnOff;
 use version::Version as PoolVersion;
 
-pub type Allocated = Property<String>;
+pub type Allocated = Property<AllocatedSize>;
 pub type Altroot = Property<String>;
 pub type Ashift = Property<AshiftSectorSize>;
 pub type Autoexpand = Property<OnOff>;
