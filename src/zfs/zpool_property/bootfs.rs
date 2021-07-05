@@ -18,7 +18,7 @@ impl FromStr for Bootfs {
     type Err = super::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let re = Regex::new(r"(^[a-zA-Z]+[\/+])([a-zA-Z]*\/?)*|^-$").unwrap();
+        let re = Regex::new(r#"(^[a-zA-Z]+[\\/+])([a-zA-Z]*\\/?)*|^-$"#).unwrap();
 
         if re.is_match(s) {
             return Ok(Self(s.to_string()));
