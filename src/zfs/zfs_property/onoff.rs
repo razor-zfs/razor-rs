@@ -9,13 +9,18 @@ pub enum OnOff {
     On,
 }
 
-impl fmt::Display for OnOff {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let text = match self {
+impl OnOff {
+    pub fn as_str(&self) -> &str {
+        match self {
             Self::Off => "off",
             Self::On => "on",
-        };
-        text.fmt(f)
+        }
+    }
+}
+
+impl fmt::Display for OnOff {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.as_str().fmt(f)
     }
 }
 

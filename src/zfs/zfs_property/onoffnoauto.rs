@@ -10,14 +10,19 @@ pub enum OnOffNoAuto {
     NoAuto,
 }
 
-impl fmt::Display for OnOffNoAuto {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let text = match self {
+impl OnOffNoAuto {
+    pub fn as_str(&self) -> &str {
+        match self {
             Self::On => "on",
             Self::Off => "off",
             Self::NoAuto => "noauto",
-        };
-        text.fmt(f)
+        }
+    }
+}
+
+impl fmt::Display for OnOffNoAuto {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.as_str().fmt(f)
     }
 }
 

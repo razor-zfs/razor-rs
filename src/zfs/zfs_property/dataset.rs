@@ -12,15 +12,20 @@ pub enum Type {
     Bookmark,
 }
 
+impl Type {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Filesystem => "filesystem",
+            Self::Volume => "volume",
+            Self::Snapshot => "snapshot",
+            Self::Bookmark => "bookmark",
+        }
+    }
+}
+
 impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let text = match self {
-            Self::Filesystem => "filesystem",
-            Type::Volume => "volume",
-            Type::Snapshot => "snapshot",
-            Type::Bookmark => "bookmark",
-        };
-        text.fmt(f)
+        self.as_str().fmt(f)
     }
 }
 

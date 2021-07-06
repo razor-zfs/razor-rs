@@ -17,9 +17,9 @@ pub enum CheckSum {
     Edonr,
 }
 
-impl fmt::Display for CheckSum {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let text = match self {
+impl CheckSum {
+    pub fn as_str(&self) -> &str {
+        match self {
             Self::On => "on",
             Self::Off => "off",
             Self::Fletcher2 => "fletcher2",
@@ -29,8 +29,13 @@ impl fmt::Display for CheckSum {
             Self::Sha512 => "sha512",
             Self::Skein => "skein",
             Self::Edonr => "edonr",
-        };
-        text.fmt(f)
+        }
+    }
+}
+
+impl fmt::Display for CheckSum {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.as_str().fmt(f)
     }
 }
 

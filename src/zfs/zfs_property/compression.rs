@@ -24,9 +24,9 @@ pub enum Compression {
     ZstdFast,
 }
 
-impl fmt::Display for Compression {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let text = match self {
+impl Compression {
+    pub fn as_str(&self) -> &str {
+        match self {
             Self::On => "on",
             Self::Off => "off",
             Self::Lzjb => "lzjb",
@@ -44,8 +44,13 @@ impl fmt::Display for Compression {
             Self::Lz4 => "lz4",
             Self::Zstd => "zstd",
             Self::ZstdFast => "zstd-fast",
-        };
-        text.fmt(f)
+        }
+    }
+}
+
+impl fmt::Display for Compression {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.as_str().fmt(f)
     }
 }
 

@@ -10,15 +10,19 @@ pub enum Failmode {
     Panic,
 }
 
-impl fmt::Display for Failmode {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let text = match self {
+impl Failmode {
+    pub fn as_str(&self) -> &str {
+        match self {
             Failmode::Wait => "wait",
             Failmode::Continue => "continue",
             Failmode::Panic => "panic",
-        };
+        }
+    }
+}
 
-        text.fmt(f)
+impl fmt::Display for Failmode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.as_str().fmt(f)
     }
 }
 

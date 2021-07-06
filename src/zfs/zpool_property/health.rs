@@ -14,18 +14,22 @@ pub enum Health {
     Unavail,
 }
 
+impl Health {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Online => "online",
+            Self::Degraded => "degraded",
+            Self::Faulted => "faulted",
+            Self::Offline => "offline",
+            Self::Removed => "removed",
+            Self::Unavail => "unavail",
+        }
+    }
+}
+
 impl fmt::Display for Health {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let text = match self {
-            Health::Online => "online",
-            Health::Degraded => "degraded",
-            Health::Faulted => "faulted",
-            Health::Offline => "offline",
-            Health::Removed => "removed",
-            Health::Unavail => "unavail",
-        };
-
-        text.fmt(f)
+        self.as_str().fmt(f)
     }
 }
 
