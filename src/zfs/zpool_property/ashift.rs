@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 pub struct Ashift(u64);
 
 fn check_range(shift: u64) -> Result<u64, super::InvalidProperty> {
-    if shift >= 9 && shift <= 16 {
+    if (9..=16).contains(&shift) {
         Ok(shift)
     } else {
         Err(super::InvalidProperty::invalid_value(shift))

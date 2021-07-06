@@ -31,6 +31,6 @@ impl ops::Deref for Bootfs {
     type Target = String;
 
     fn deref(&self) -> &Self::Target {
-        &self.0.as_ref().unwrap()
+        self.0.as_ref().unwrap()
     }
 }

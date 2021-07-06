@@ -34,6 +34,6 @@ impl ops::Deref for Version {
     type Target = u64;
 
     fn deref(&self) -> &Self::Target {
-        &self.0.as_ref().unwrap()
+        self.0.as_ref().unwrap()
     }
 }

@@ -153,7 +153,7 @@ pub(crate) fn parse_zpool_get(text: impl AsRef<str>) -> IndexMap<String, Bunch> 
             acc
         });
 
-    let new_pool = new_pool
+    new_pool
         .into_iter()
         .map(|(pool, mut prop)| {
             prop.entry("name".to_string()).or_insert(RawProperty {
@@ -165,9 +165,7 @@ pub(crate) fn parse_zpool_get(text: impl AsRef<str>) -> IndexMap<String, Bunch> 
 
             (pool, prop)
         })
-        .collect();
-
-    new_pool
+        .collect()
 }
 
 fn text2props((dataset, text): (&str, &str)) -> Option<(String, RawProperty)> {
@@ -194,6 +192,6 @@ mod tests {
     fn zpool_get() {
         let pools = parse_zpool_get(ZPOOL_GET);
         println!("{:#?}", pools);
-        assert_eq!(pools.len(), 12);
+        assert_eq!(pools.len(), 1);
     }
 }

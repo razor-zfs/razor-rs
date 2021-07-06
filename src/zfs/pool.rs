@@ -56,13 +56,13 @@ impl Pool {
         let name = zpool_property::extract_from_bunch(&mut bunch, "name")?;
         let low_level = LowLevel::try_from(&mut bunch)?;
         let feature = Feature::try_from(&mut bunch)?;
-        let pool = Pool {
+        let pool = Self {
             guid,
             loadguid,
+            name,
             size,
             health,
             free,
-            name,
             low_level,
             feature,
         };
