@@ -1,0 +1,21 @@
+.test:cargo:
+  stage: test
+  script:
+    - cargo fmt -- --check
+    - cargo clippy --all-targets
+    - cargo test
+
+stages:
+  - test
+
+stable:test:
+  extends: .test:cargo
+  image: rustdocker/rust:stable
+
+beta:test:
+  extends: .test:cargo
+  image: rustdocker/rust:beta
+
+nightly:test:
+  extends: .test:cargo
+  image: rustdocker/rust:nightly
