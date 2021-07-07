@@ -20,8 +20,8 @@ pub enum MalformedZFS {
     MalformedZvol,
     #[error(transparent)]
     IOError(#[from] io::Error),
-    #[error("Bad value for property {0}")]
-    ParseError(String),
+    #[error(transparent)]
+    ParseError(#[from] std::num::ParseIntError),
 }
 
 #[derive(Debug, Default)]
@@ -103,9 +103,7 @@ impl Zfs {
                 .get("guid")
                 .ok_or_else(|| MalformedZFS::MalformedZpool("guid".to_string()))?
                 .value();
-            let guid = guid
-                .parse()
-                .map_err(|_| MalformedZFS::ParseError("guid".to_string()))?;
+            let guid = guid.parse()?;
 
             match zfs::Pool::try_from(properties) {
                 Ok(pool) => {
