@@ -14,12 +14,14 @@ static ZFS: Lazy<Arc<Mutex<Zfs>>> = Lazy::new(|| Arc::new(Mutex::new(Zfs::defaul
 
 #[derive(Debug, Error)]
 pub enum MalformedZFS {
-    #[error("Malformed Pool")]
-    MalformedZpool,
+    #[error("Malformed Pool: property {0} not found")]
+    MalformedZpool(String),
     #[error("Malformed Dataset")]
     MalformedZvol,
     #[error(transparent)]
     IOError(#[from] io::Error),
+    #[error("Bad value for property {0}")]
+    ParseError(String),
 }
 
 #[derive(Debug, Default)]
@@ -99,9 +101,11 @@ impl Zfs {
 
             let guid = properties
                 .get("guid")
-                .ok_or_else(|| MalformedZFS::MalformedZpool)?
+                .ok_or_else(|| MalformedZFS::MalformedZpool("guid".to_string()))?
                 .value();
-            let guid = guid.parse().map_err(|_| MalformedZFS::MalformedZpool)?;
+            let guid = guid
+                .parse()
+                .map_err(|_| MalformedZFS::ParseError("guid".to_string()))?;
 
             match zfs::Pool::try_from(properties) {
                 Ok(pool) => {
