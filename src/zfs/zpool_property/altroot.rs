@@ -1,17 +1,22 @@
 use std::fmt;
-use std::ops;
 use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
+//#[derive(Debug, Serialize, Deserialize)]
+//pub struct Altroot(Option<String>);
+
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Altroot(Option<String>);
+pub enum Altroot {
+    Directory(String),
+    Empty,
+}
 
 impl fmt::Display for Altroot {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self.0 {
-            Some(x) => x.fmt(f),
-            None => "-".fmt(f),
+        match self {
+            Self::Directory(path) => path.fmt(f),
+            Self::Empty => "-".fmt(f),
         }
     }
 }
@@ -21,16 +26,8 @@ impl FromStr for Altroot {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "-" => Ok(Self(None)),
-            path => Ok(Self(Some(path.to_string()))),
+            "-" => Ok(Self::Empty),
+            path => Ok(Self::Directory(path.to_string())),
         }
-    }
-}
-
-impl ops::Deref for Altroot {
-    type Target = String;
-
-    fn deref(&self) -> &Self::Target {
-        self.0.as_ref().unwrap()
     }
 }
