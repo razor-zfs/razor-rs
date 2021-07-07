@@ -3,9 +3,6 @@ use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
-//#[derive(Debug, Serialize, Deserialize)]
-//pub struct Altroot(Option<String>);
-
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Altroot {
     Directory(String),
