@@ -27,7 +27,7 @@ impl FromStr for Version {
             other => other
                 .parse::<u64>()
                 .map_err(|_| super::InvalidProperty::invalid_value(s))
-                .map(|version| Self::Version(version)),
+                .map(Self::Version),
         }
     }
 }

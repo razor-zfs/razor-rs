@@ -27,7 +27,7 @@ impl FromStr for Expandsize {
             other => other
                 .parse::<u64>()
                 .map_err(|_| super::InvalidProperty::invalid_value(s))
-                .map(|size| Self::Size(size)),
+                .map(Self::Size),
         }
     }
 }
