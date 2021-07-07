@@ -5,14 +5,11 @@ use std::str::FromStr;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Allocated(Option<u64>);
+pub struct Allocated(u64);
 
 impl fmt::Display for Allocated {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self.0 {
-            Some(x) => x.fmt(f),
-            None => "-".fmt(f),
-        }
+        self.0.fmt(f)
     }
 }
 
@@ -20,13 +17,9 @@ impl FromStr for Allocated {
     type Err = super::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "-" => Ok(Self(None)),
-            other => other
-                .parse::<u64>()
-                .map_err(|_| super::InvalidProperty::invalid_value(s))
-                .map(|size| Self(Some(size))),
-        }
+        s.parse::<u64>()
+            .map_err(|_| super::InvalidProperty::invalid_value(s))
+            .map(Allocated)
     }
 }
 
@@ -34,6 +27,6 @@ impl ops::Deref for Allocated {
     type Target = u64;
 
     fn deref(&self) -> &Self::Target {
-        self.0.as_ref().unwrap()
+        &self.0
     }
 }
