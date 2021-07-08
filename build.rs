@@ -17,7 +17,7 @@ fn main() {
         // unstable features.
         // The input header we would like to generate
         // bindings for.
-        .header("wrapper.h")
+        .header("nvpair-sys/wrapper.h")
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
