@@ -1,1 +1,1 @@
-#include <libzfs/libzfs.h>
+#include <libnvpair.h>

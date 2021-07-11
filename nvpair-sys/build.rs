@@ -1,5 +1,3 @@
-extern crate bindgen;
-
 use std::env;
 use std::path::PathBuf;
 
@@ -12,12 +10,17 @@ fn main() {
     // to bindgen, and lets you build up options for
     // the resulting bindings.
     let bindings = bindgen::Builder::default()
-        // Do not generate unstable Rust code that
-        // requires a nightly rustc and enabling
-        // unstable features.
         // The input header we would like to generate
         // bindings for.
-        .header("nvpair-sys/wrapper.h")
+        .header("wrapper.h")
+        .clang_args(vec!["-I/usr/include/libzfs", "-I/usr/include/libspl"])
+        .allowlist_type("*nvpair*")
+        .allowlist_type("*nvlist*")
+        .allowlist_function("*nvpair*")
+        .allowlist_function("*nvlist*")
+        .default_enum_style(bindgen::EnumVariation::Rust {
+            non_exhaustive: (true),
+        })
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
@@ -26,6 +29,6 @@ fn main() {
     // Write the bindings to the $OUT_DIR/bindings.rs file.
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     bindings
-        .write_to_file(out_path.join("bindings.rs"))
+        .write_to_file(out_path.join("nvpair.rs"))
         .expect("Couldn't write bindings!");
 }

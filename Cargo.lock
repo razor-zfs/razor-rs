@@ -760,6 +760,9 @@ dependencies = [
 [[package]]
 name = "nvpair-sys"
 version = "0.1.0"
+dependencies = [
+ "bindgen",
+]
 
 [[package]]
 name = "once_cell"
@@ -996,7 +999,6 @@ dependencies = [
 name = "razor"
 version = "0.1.0"
 dependencies = [
- "bindgen",
  "chrono",
  "indexmap",
  "itertools",
