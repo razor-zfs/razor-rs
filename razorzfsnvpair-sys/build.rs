@@ -15,9 +15,9 @@ fn main() {
         .header("wrapper.h")
         .clang_args(vec!["-I/usr/include/libzfs", "-I/usr/include/libspl"])
         .allowlist_type(r#"(\w*nvpair\w*)"#)
-        .allowlist_type(r#"(\w*nvpair\w*)"#)
+        .allowlist_type(r#"(\w*nvlist\w*)"#)
         .allowlist_function(r#"(\w*nvpair\w*)"#)
-        .allowlist_function(r#"(\w*nvpair\w*)"#)
+        .allowlist_function(r#"(\w*nvlist\w*)"#)
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: (true),
         })

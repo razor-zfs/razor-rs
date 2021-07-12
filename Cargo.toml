@@ -12,6 +12,7 @@ members = [
     "razorzfsnvpair-sys",
     "razorzfscore-sys",
     "razorzfsuutil-sys",
+    "razorzfsnvpair",
 ]
 
 [dependencies]

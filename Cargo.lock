@@ -1015,6 +1015,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "razorzfsnvpair"
+version = "0.1.0"
+dependencies = [
+ "razorzfsnvpair-sys",
+]
+
+[[package]]
 name = "razorzfsnvpair-sys"
 version = "0.1.0"
 dependencies = [
