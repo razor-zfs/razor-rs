@@ -1668,3 +1668,10 @@ version = "0.1.0"
 dependencies = [
  "bindgen",
 ]
+
+[[package]]
+name = "zfs_uutil-sys"
+version = "0.1.0"
+dependencies = [
+ "bindgen",
+]

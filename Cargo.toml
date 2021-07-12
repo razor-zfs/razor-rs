@@ -11,6 +11,7 @@ description = "ZFS Manager with simple API"
 members = [
     "nvpair-sys",
     "zfs_core-sys",
+    "zfs_uutil-sys",
 ]
 
 [dependencies]
