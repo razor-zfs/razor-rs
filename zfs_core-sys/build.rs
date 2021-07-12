@@ -13,9 +13,13 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("wrapper.h")
-        .blocklist_item(r#"(\w*nvpair\w*)"#)
-        .blocklist_type(r#"(\w*nvpair\w*)"#)
-        .blocklist_function(r#"(\w*nvpair\w*)"#)
+        .allowlist_var(r#"(\w*lzc\w*)"#)
+        .allowlist_type(r#"(\w*lzc\w*)"#)
+        .allowlist_function(r#"(\w*lzc\w*)"#)
+        .allowlist_function(r#"(\w*libzfs\w*)"#)
+        //.blocklist_item(r#"(\w*nvpair\w*)"#)
+        //.blocklist_type(r#"(\w*nvpair\w*)"#)
+        //.blocklist_function(r#"(\w*nvpair\w*)"#)
         .blocklist_item(r#"(\w*nvlist\w*)"#)
         .blocklist_type(r#"(\w*nvlist\w*)"#)
         .blocklist_function(r#"(\w*nvlist\w*)"#)
