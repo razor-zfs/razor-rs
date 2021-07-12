@@ -9,9 +9,9 @@ description = "ZFS Manager with simple API"
 
 [workspace]
 members = [
-    "nvpair-sys",
-    "zfs_core-sys",
-    "zfs_uutil-sys",
+    "razorzfsnvpair-sys",
+    "razorzfscore-sys",
+    "razorzfsuutil-sys",
 ]
 
 [dependencies]
