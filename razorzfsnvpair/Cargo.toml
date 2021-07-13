@@ -7,3 +7,4 @@ edition = "2018"
 
 [dependencies]
 razorzfsnvpair-sys = {version = "0.1", path="../razorzfsnvpair-sys"}
+thiserror = "1.0"
