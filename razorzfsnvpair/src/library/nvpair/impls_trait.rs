@@ -113,7 +113,7 @@ impl Pair for NvPair<i64> {
 }
 
 impl Pair for NvPair<bool> {
-    type Value = bool;
+    type Value = sys::boolean_t;
 
     const DATA_TYPE: sys::data_type_t = sys::data_type_t::DATA_TYPE_BOOLEAN;
 
@@ -122,7 +122,11 @@ impl Pair for NvPair<bool> {
     }
 
     fn value(&self) -> &Self::Value {
-        &self.value
+        if self.value {
+            &sys::boolean_t::B_TRUE
+        } else {
+            &sys::boolean_t::B_FALSE
+        }
     }
 }
 
