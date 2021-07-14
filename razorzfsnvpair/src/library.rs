@@ -1,5 +1,6 @@
 use razorzfsnvpair_sys as sys;
 
+use nvlist::NvList;
 use traits::Pair;
 
 mod nvlist;
