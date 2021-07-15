@@ -6,6 +6,12 @@ impl IntoNvPair for bool {
     }
 }
 
+impl IntoNvPair for f64 {
+    fn into_nvpair(name: impl AsRef<str>, this: Self) -> Result<NvPair, NvListError> {
+        NvPair::from_f64(name.as_ref(), this)
+    }
+}
+
 impl IntoNvPair for u8 {
     fn into_nvpair(name: impl AsRef<str>, this: Self) -> Result<NvPair, NvListError> {
         NvPair::from_u8(name.as_ref(), this)

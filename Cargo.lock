@@ -1020,6 +1020,8 @@ version = "0.1.0"
 dependencies = [
  "libc",
  "razorzfsnvpair-sys",
+ "serde",
+ "serde_json",
  "thiserror",
 ]
 

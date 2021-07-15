@@ -19,6 +19,11 @@ impl NvPair {
         Self::from_value(name, nval)
     }
 
+    pub(crate) fn from_f64(name: &str, value: f64) -> Result<Self, crate::NvListError> {
+        let value = Value::FLOAT(value);
+        Self::from_value(name, value)
+    }
+
     pub(crate) fn from_u8(name: &str, value: u8) -> Result<Self, crate::NvListError> {
         let value = Value::U8(value);
         Self::from_value(name, value)
@@ -62,5 +67,13 @@ impl NvPair {
     pub(crate) fn from_str(name: &str, value: &str) -> Result<Self, crate::NvListError> {
         let value = CString::new(value).map(Value::String)?;
         Self::from_value(name, value)
+    }
+
+    pub(crate) fn value(&self) -> &Value {
+        &self.value
+    }
+
+    pub(crate) fn name(&self) -> &CString {
+        &self.name
     }
 }

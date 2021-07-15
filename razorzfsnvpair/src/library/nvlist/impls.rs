@@ -19,6 +19,7 @@ impl NvList {
                 nvpair::Value::I64(_) => todo!(),
                 nvpair::Value::BOOL(_) => todo!(),
                 nvpair::Value::EMPTY => todo!(),
+                nvpair::Value::FLOAT(_) => todo!(),
             }
         };
         NvListError::from_nvlist_rc(rc)
