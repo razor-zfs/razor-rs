@@ -1,24 +1,14 @@
 use razorzfsnvpair_sys as sys;
 
 use super::NvListError;
+use name_serializer::NameSerializer;
+use nvpair::{ContextType, NvPair};
 
-pub use nvlist::NvList;
-use nvpair::NvPair;
-use traits::IntoNvPair;
+//pub use nvlist::NvList;
+//use nvpair::NvPair;
+//use traits::IntoNvPair;
 
+mod name_serializer;
 mod nvlist;
 mod nvpair;
 mod traits;
-
-#[cfg(test)]
-mod tests {
-    // use super::*;
-
-    #[test]
-    fn nvpair_u8() {
-        // let nvp = nvpair::NvPair::new("key", 6_u8);
-        // assert_eq!(nvp.r#type(), sys::data_type_t::DATA_TYPE_UINT8);
-        // assert_eq!(nvp.key(), "key");
-        // assert_eq!(nvp.value(), &6);
-    }
-}

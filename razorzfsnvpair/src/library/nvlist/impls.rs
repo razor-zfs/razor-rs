@@ -2,7 +2,7 @@ use crate::NvListError;
 
 use super::*;
 
-impl NvList {
+/*impl NvList {
     fn add(&mut self, nvp: NvPair) -> Result<(), NvListError> {
         let nvl = self.raw;
         let name = nvp.name.as_ptr();
@@ -24,4 +24,4 @@ impl NvList {
         };
         NvListError::from_nvlist_rc(rc)
     }
-}
+}*/

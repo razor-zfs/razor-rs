@@ -5,6 +5,7 @@ fn main() {
     // Tell cargo to tell rustc to link the system nvpair of zfs
     // shared library.
     println!("cargo:rustc-link-lib=nvpair");
+    println!("cargo:rustc-link-lib=zfs");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -14,6 +15,7 @@ fn main() {
         // bindings for.
         .header("wrapper.h")
         .clang_args(vec!["-I/usr/include/libzfs", "-I/usr/include/libspl"])
+        .allowlist_var(r#"(^NV_\w*)"#)
         .allowlist_type(r#"(\w*nvpair\w*)"#)
         .allowlist_type(r#"(\w*nvlist\w*)"#)
         .allowlist_function(r#"(\w*nvpair\w*)"#)
