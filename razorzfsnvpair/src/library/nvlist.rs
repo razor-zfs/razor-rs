@@ -396,8 +396,15 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         Ok(self)
     }
 
-    fn serialize_tuple(self, len: usize) -> Result<Self::SerializeTuple> {
-        self.serialize_seq(Some(len))
+    fn serialize_tuple(self, _len: usize) -> Result<Self::SerializeTuple> {
+        if self.pair.is_none() {
+            self.pair = Some(NvPair {
+                pair_name: self.try_render_name()?,
+                pair_value: ContextType::Empty,
+            });
+        }
+
+        Ok(self)
     }
 
     fn serialize_tuple_struct(
@@ -431,8 +438,11 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
     }
 
     fn serialize_struct(self, _name: &'static str, _len: usize) -> Result<Self::SerializeStruct> {
-        if self.pair.is_some() {
-            return Err(NvListError::RestrictedOperation);
+        if self.pair.is_none() {
+            self.pair = Some(NvPair {
+                pair_name: self.try_render_name()?,
+                pair_value: ContextType::Empty,
+            });
         }
 
         Ok(self)
