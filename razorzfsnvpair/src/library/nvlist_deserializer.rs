@@ -11,8 +11,6 @@ use serde::de::{
 use serde::Deserialize;
 
 pub struct NvListDeserializer<'de> {
-    // This string starts with the input data and characters are truncated off
-    // the beginning as data is parsed.
     input: &'de *mut sys::nvlist_t,
     nvpair: *mut sys::nvpair_t,
     first: bool,
@@ -279,11 +277,12 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         Ok(value)
     }
 
-    fn deserialize_tuple<V>(self, _len: usize, _visitor: V) -> Result<V::Value>
+    fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing typle");
+        self.deserialize_seq(visitor)
     }
 
     fn deserialize_tuple_struct<V>(
@@ -371,11 +370,16 @@ impl<'de, 'a> SeqAccess<'de> for CommaSeparated<'a, 'de> {
         dbg!("Deserializing seq in SeqAccess");
         if self.de.first {
             self.de.first = false;
+            dbg!("Deserializing seq in SeqAccess first");
             seed.deserialize(&mut *self.de).map(Some)
         } else {
+            dbg!("Deserializing seq in not first");
             if self.de.index < self.de.size {
                 seed.deserialize(&mut *self.de).map(Some)
             } else {
+                self.de.index = 0;
+                self.de.size = 0;
+                self.de.first = true;
                 Ok(None)
             }
         }
@@ -553,6 +557,59 @@ mod tests {
             sys::nvlist_add_uint16_array(
                 nvlist,
                 CString::new("d").unwrap().as_ptr(),
+                arr.as_mut_ptr(),
+                arr.len() as u32,
+            )
+        };
+
+        assert_eq!(expected, from_nvlist(&nvlist).unwrap());
+    }
+
+    #[test]
+    fn with_tuple_de() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test<'a> {
+            a: u16,
+            b: u32,
+            c: &'a str,
+            d: Vec<u16>,
+            e: (u16, u16, u16),
+        }
+
+        let expected = Test {
+            a: 3,
+            b: 5,
+            c: "test",
+            d: vec![1, 2, 3, 4, 5],
+            e: (1, 2, 3),
+        };
+        let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
+        let mut nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
+        let ret = unsafe { sys::nvlist_alloc(nvlist_ptr, sys::NV_UNIQUE_NAME, 0) };
+        let mut nvlist = unsafe { *nvlist_ptr };
+        unsafe { sys::nvlist_add_uint16(nvlist, CString::new("a").unwrap().as_ptr(), 3) };
+        unsafe { sys::nvlist_add_uint32(nvlist, CString::new("b").unwrap().as_ptr(), 5) };
+        unsafe {
+            sys::nvlist_add_string(
+                nvlist,
+                CString::new("c").unwrap().as_ptr(),
+                CString::new("test").unwrap().as_ptr().to_owned(),
+            )
+        };
+        let mut arr: [u16; 5] = [1, 2, 3, 4, 5];
+        unsafe {
+            sys::nvlist_add_uint16_array(
+                nvlist,
+                CString::new("d").unwrap().as_ptr(),
+                arr.as_mut_ptr(),
+                arr.len() as u32,
+            )
+        };
+        let mut arr: [u16; 3] = [1, 2, 3];
+        unsafe {
+            sys::nvlist_add_uint16_array(
+                nvlist,
+                CString::new("e").unwrap().as_ptr(),
                 arr.as_mut_ptr(),
                 arr.len() as u32,
             )
