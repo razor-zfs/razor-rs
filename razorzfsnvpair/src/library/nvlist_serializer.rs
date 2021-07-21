@@ -1,18 +1,12 @@
-/*use super::*;
-
-mod impls;
-
-pub struct NvList {
-    raw: *mut sys::nvlist_t,
-}
-*/
-
 use super::*;
-use serde::{ser, Serialize};
+use serde::{ser, Deserialize, Serialize};
 use std::ffi::CString;
 use uuid::Uuid;
 
-pub type Result<T> = std::result::Result<T, NvListError>;
+/*#[derive(Serialize, Deserialize)]
+pub struct NvList {
+    raw: *mut sys::nvlist_t,
+}*/
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct NvListSerializer {

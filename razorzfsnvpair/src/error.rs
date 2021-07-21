@@ -1,7 +1,7 @@
-use std::ffi;
-
 use serde::{de, ser};
+use std::ffi;
 use std::fmt::{self, Display};
+use std::str;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum NvListError {
@@ -11,6 +11,7 @@ pub enum NvListError {
     UnmatchingVariables,
     RestrictedOperation,
     NameTypeError,
+    ConversionError,
 }
 
 impl NvListError {
@@ -27,6 +28,12 @@ impl NvListError {
 impl From<ffi::NulError> for NvListError {
     fn from(_e: ffi::NulError) -> Self {
         Self::InvalidArgument
+    }
+}
+
+impl From<str::Utf8Error> for NvListError {
+    fn from(_e: str::Utf8Error) -> Self {
+        Self::ConversionError
     }
 }
 
@@ -51,6 +58,7 @@ impl Display for NvListError {
             NvListError::UnmatchingVariables => todo!(),
             NvListError::RestrictedOperation => todo!(),
             NvListError::NameTypeError => todo!(),
+            NvListError::ConversionError => todo!(),
             /* and so forth */
         }
     }

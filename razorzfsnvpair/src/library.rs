@@ -4,11 +4,10 @@ use super::NvListError;
 use name_serializer::NameSerializer;
 use nvpair::{ContextType, NvPair};
 
-//pub use nvlist::NvList;
-//use nvpair::NvPair;
-//use traits::IntoNvPair;
-
 mod name_serializer;
-mod nvlist;
+mod nvlist_deserializer;
+mod nvlist_serializer;
 mod nvpair;
 mod traits;
+
+pub type Result<T> = std::result::Result<T, NvListError>;
