@@ -1,8 +1,10 @@
-use razorzfsnvpair_sys as sys;
+/*use razorzfsnvpair_sys as sys;
 
 use super::NvListError;
 use name_serializer::NameSerializer;
-use nvpair::{ContextType, NvPair};
+pub use nvpair::{ContextType, NvPair};
+pub use sys::nvlist_t;
+pub use sys::NV_UNIQUE_NAME;
 
 mod name_serializer;
 mod nvlist_deserializer;
@@ -11,3 +13,4 @@ mod nvpair;
 mod traits;
 
 pub type Result<T> = std::result::Result<T, NvListError>;
+*/

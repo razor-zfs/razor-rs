@@ -1165,6 +1165,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde-nvpair"
+version = "0.1.0"
+dependencies = [
+ "razorzfsnvpair",
+ "serde",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
 name = "serde_derive"
 version = "1.0.126"
 source = "registry+https://github.com/rust-lang/crates.io-index"
