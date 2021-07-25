@@ -12,6 +12,7 @@ pub enum NvListError {
     RestrictedOperation,
     NameTypeError,
     ConversionError,
+    NvPairTypeError,
 }
 
 impl NvListError {
@@ -59,6 +60,7 @@ impl Display for NvListError {
             NvListError::RestrictedOperation => todo!(),
             NvListError::NameTypeError => todo!(),
             NvListError::ConversionError => todo!(),
+            NvListError::NvPairTypeError => todo!(),
             /* and so forth */
         }
     }

@@ -8,6 +8,7 @@ pub use error::NvListError;
 pub use library::ContextType;
 pub use library::NvFlag;
 pub use library::NvList;
+pub use library::NvListIterator;
 pub use library::NvPair;
 pub use library::NvPairType;
 
@@ -192,7 +193,7 @@ pub fn nvpair_value_uint16_array(nvpair: &mut NvPair) -> Result<()> {
     let u16arr_ptr: *mut *mut u16 = &mut u16arr;
     unsafe {
         NvListError::from_nvlist_rc(sys::nvpair_value_uint16_array(
-            nvpair.nvpair,
+            nvpair.raw_nvpair,
             u16arr_ptr,
             size_ptr,
         ))?;
@@ -201,7 +202,7 @@ pub fn nvpair_value_uint16_array(nvpair: &mut NvPair) -> Result<()> {
             Some(arr) => {
                 let u16vec = slice::from_raw_parts(*arr, size as usize).to_vec();
                 nvpair.pair_value = ContextType::U16Arr(u16vec);
-                nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.nvpair))
+                nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
                     .to_str()?
                     .to_string();
                 Ok(())
@@ -216,11 +217,11 @@ pub fn nvpair_value_uint16(nvpair: &mut NvPair) -> Result<()> {
     let val: *mut u16 = &mut x;
 
     unsafe {
-        NvListError::from_nvlist_rc(sys::nvpair_value_uint16(nvpair.nvpair, val))?;
+        NvListError::from_nvlist_rc(sys::nvpair_value_uint16(nvpair.raw_nvpair, val))?;
 
         match val.as_ref() {
             Some(u16val) => {
-                nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.nvpair))
+                nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
                     .to_str()?
                     .to_string();
                 nvpair.pair_value = ContextType::U16(*u16val);
@@ -236,12 +237,12 @@ pub fn nvpair_value_uint32(nvpair: &mut NvPair) -> Result<()> {
     let val: *mut u32 = &mut x;
 
     unsafe {
-        NvListError::from_nvlist_rc(sys::nvpair_value_uint32(nvpair.nvpair, val))?;
+        NvListError::from_nvlist_rc(sys::nvpair_value_uint32(nvpair.raw_nvpair, val))?;
         dbg!("after func");
 
         match val.as_ref() {
             Some(u32val) => {
-                nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.nvpair))
+                nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
                     .to_str()?
                     .to_string();
                 nvpair.pair_value = ContextType::U32(*u32val);
@@ -257,8 +258,8 @@ pub fn nvpair_value_string(nvpair: &mut NvPair) -> Result<()> {
     let str_ptr: *mut *mut u8 = &mut str;
 
     unsafe {
-        NvListError::from_nvlist_rc(sys::nvpair_value_string(nvpair.nvpair, str_ptr))?;
-        nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.nvpair))
+        NvListError::from_nvlist_rc(sys::nvpair_value_string(nvpair.raw_nvpair, str_ptr))?;
+        nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
             .to_str()?
             .to_string();
         nvpair.pair_value = ContextType::Str(CStr::from_ptr(*str_ptr).to_str()?.to_string());
@@ -267,12 +268,12 @@ pub fn nvpair_value_string(nvpair: &mut NvPair) -> Result<()> {
 }
 
 pub fn nvpair_type(nvpair: &mut NvPair) -> Result<NvPairType> {
-    Ok(unsafe { NvPairType::from(sys::nvpair_type(nvpair.nvpair)) })
+    Ok(unsafe { NvPairType::from(sys::nvpair_type(nvpair.raw_nvpair)) })
 }
 
 pub fn nvpair_name(nvpair: &mut NvPair) -> Result<String> {
     unsafe {
-        Ok(CStr::from_ptr(sys::nvpair_name(nvpair.nvpair))
+        Ok(CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
             .to_str()?
             .to_string())
     }

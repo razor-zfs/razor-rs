@@ -339,7 +339,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             self.pair = Some(libnvpair::NvPair {
                 pair_name: self.render_name(),
                 pair_value: libnvpair::ContextType::Empty,
-                nvpair: std::ptr::null_mut(),
+                raw_nvpair: std::ptr::null_mut(),
             });
         }
 
@@ -351,7 +351,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             self.pair = Some(libnvpair::NvPair {
                 pair_name: self.render_name(),
                 pair_value: libnvpair::ContextType::Empty,
-                nvpair: std::ptr::null_mut(),
+                raw_nvpair: std::ptr::null_mut(),
             });
         }
 
@@ -382,7 +382,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             self.pair = Some(libnvpair::NvPair {
                 pair_name: self.render_name(),
                 pair_value: libnvpair::ContextType::Empty,
-                nvpair: std::ptr::null_mut(),
+                raw_nvpair: std::ptr::null_mut(),
             });
         }
 
@@ -394,7 +394,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             self.pair = Some(libnvpair::NvPair {
                 pair_name: self.render_name(),
                 pair_value: libnvpair::ContextType::Empty,
-                nvpair: std::ptr::null_mut(),
+                raw_nvpair: std::ptr::null_mut(),
             });
         }
 
@@ -521,7 +521,7 @@ impl<'a> ser::SerializeStruct for &'a mut NvListSerializer {
         self.pair = Some(libnvpair::NvPair {
             pair_name: key.to_string(),
             pair_value: libnvpair::ContextType::Empty,
-            nvpair: std::ptr::null_mut(),
+            raw_nvpair: std::ptr::null_mut(),
         });
 
         value.serialize(&mut **self)

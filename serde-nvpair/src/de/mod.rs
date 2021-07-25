@@ -1,7 +1,7 @@
 use std::usize;
 
 use super::*;
-use libnvpair::NvPair;
+use libnvpair::{NvListIterator, NvPair};
 use serde::de::{self, DeserializeSeed, EnumAccess, MapAccess, SeqAccess, VariantAccess, Visitor};
 use serde::Deserialize;
 
@@ -96,7 +96,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         unsafe {
-            match match self.input.curr_nvpair.nvpair.as_ref() {
+            match match self.input.curr_nvpair.raw_nvpair.as_ref() {
                 Some(_) => libnvpair::nvpair_type(&mut self.input.curr_nvpair)?,
                 None => todo!(),
             } {
@@ -266,7 +266,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing seq");
-        let value = visitor.visit_seq(CommaSeparated::new(&mut self))?;
+        let value = visitor.visit_seq(CommaSeparated::new(&mut self, self.input.into_iter()))?;
 
         Ok(value)
     }
@@ -296,7 +296,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing map");
-        let value = visitor.visit_map(CommaSeparated::new(&mut self))?;
+        let value = visitor.visit_map(CommaSeparated::new(&mut self, self.input.into_iter()))?;
         Ok(value)
     }
 
@@ -344,11 +344,12 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
 
 struct CommaSeparated<'a, 'de: 'a> {
     de: &'a mut NvListDeserializer<'de>,
+    iter: NvListIterator,
 }
 
 impl<'a, 'de> CommaSeparated<'a, 'de> {
-    fn new(de: &'a mut NvListDeserializer<'de>) -> Self {
-        CommaSeparated { de }
+    fn new(de: &'a mut NvListDeserializer<'de>, iter: NvListIterator) -> Self {
+        CommaSeparated { de, iter }
     }
 }
 
@@ -385,7 +386,7 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
         K: DeserializeSeed<'de>,
     {
         dbg!("Deserializing map key");
-        match self.de.input.next() {
+        match self.iter.next() {
             Some(_) => seed.deserialize(&mut *self.de).map(Some),
             None => {
                 self.de.input.curr_nvpair = NvPair::default();
