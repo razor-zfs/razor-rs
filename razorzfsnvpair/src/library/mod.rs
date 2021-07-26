@@ -1,5 +1,5 @@
 pub use nvlist::{NvFlag, NvList, NvListIterator};
-pub use nvpair::{ContextType, Iter, NvPair, NvPairType, SafeNvPair};
+pub use nvpair::{ContextType, CtxIter, NvPair, NvPairType, SafeNvPair};
 
 use super::sys;
 use super::NvListError;

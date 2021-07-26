@@ -123,16 +123,16 @@ impl NvPair {
     }
 }
 
-pub struct Iter<T>
-where
-    T: SafeNvPair,
-{
-    vec: Vec<T>,
-    index: usize,
-    _marker: PhantomData<T>,
-}
+// pub struct Iter<T>
+// where
+//     T: SafeNvPair,
+// {
+//     vec: Vec<T>,
+//     index: usize,
+//     _marker: PhantomData<T>,
+// }
 
-impl TryFrom<NvPair> for Iter<u8> {
+/*impl TryFrom<NvPair> for Iter<u8> {
     type Error = NvListError;
     fn try_from(mut nvpair: NvPair) -> Result<Self> {
         match nvpair.r#type() {
@@ -198,9 +198,49 @@ impl TryFrom<NvPair> for Iter<u64> {
             _ => Err(NvListError::UnmatchingVariables),
         }
     }
+}*/
+
+pub struct CtxIter<ContextType> {
+    vec: ContextType,
+    index: usize,
 }
 
-macro_rules! generate_iterators {
+impl TryFrom<NvPair> for CtxIter<ContextType> {
+    type Error = NvListError;
+    fn try_from(mut nvpair: NvPair) -> Result<Self> {
+        match nvpair.r#type() {
+            NvPairType::Uint16Array => {
+                let vec = nvpair.value_uint16_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::U16Arr(vec),
+                    index: 0,
+                })
+            }
+            _ => Err(NvListError::UnmatchingVariables),
+        }
+    }
+}
+
+impl Iterator for CtxIter<ContextType> {
+    type Item = ContextType;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match &self.vec {
+            ContextType::U16Arr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::U16(vec[index]))
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        }
+    }
+}
+
+/*macro_rules! generate_iterators {
     ($($typ:ty),*) => {
         $(
             impl Iterator for Iter<$typ> {
@@ -221,6 +261,7 @@ macro_rules! generate_iterators {
 }
 
 generate_iterators!(u8, u16, u32, u64, i8, i16, i32, i64);
+*/
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum ContextType {
@@ -335,15 +376,15 @@ mod tests {
         nvlist_add_uint8_arr(&nvlist, "d", arr).unwrap();
         let mut nvpair = NvPair::default();
         nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
-        let mut iter: Iter<u8> = nvpair.try_into().unwrap();
-        assert_eq!(Some(1_u8), iter.next());
-        assert_eq!(Some(2_u8), iter.next());
-        assert_eq!(Some(3_u8), iter.next());
-        assert_eq!(Some(4_u8), iter.next());
-        assert_eq!(Some(5_u8), iter.next());
+        /*let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
+        assert_eq!(Some(ContextType::U16(1)), iter.next());
+        assert_eq!(Some(ContextType::U16(2)), iter.next());
+        assert_eq!(Some(ContextType::U16(3)), iter.next());
+        assert_eq!(Some(ContextType::U16(4)), iter.next());
+        assert_eq!(Some(ContextType::U16(5)), iter.next());
         assert_eq!(None, iter.next());
         assert_eq!(None, iter.next());
-        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());*/
     }
 
     #[test]
@@ -353,12 +394,12 @@ mod tests {
         nvlist_add_uint16_arr(&nvlist, "d", arr).unwrap();
         let mut nvpair = NvPair::default();
         nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
-        let mut iter: Iter<u16> = nvpair.try_into().unwrap();
-        assert_eq!(Some(1_u16), iter.next());
-        assert_eq!(Some(2_u16), iter.next());
-        assert_eq!(Some(3_u16), iter.next());
-        assert_eq!(Some(4_u16), iter.next());
-        assert_eq!(Some(5_u16), iter.next());
+        let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
+        assert_eq!(Some(ContextType::U16(1)), iter.next());
+        assert_eq!(Some(ContextType::U16(2)), iter.next());
+        assert_eq!(Some(ContextType::U16(3)), iter.next());
+        assert_eq!(Some(ContextType::U16(4)), iter.next());
+        assert_eq!(Some(ContextType::U16(5)), iter.next());
         assert_eq!(None, iter.next());
         assert_eq!(None, iter.next());
         assert_eq!(None, iter.next());
@@ -371,7 +412,7 @@ mod tests {
         nvlist_add_uint32_arr(&nvlist, "d", arr).unwrap();
         let mut nvpair = NvPair::default();
         nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
-        let mut iter: Iter<u32> = nvpair.try_into().unwrap();
+        /*let mut iter: Iter<u32> = nvpair.try_into().unwrap();
         assert_eq!(Some(1_u32), iter.next());
         assert_eq!(Some(2_u32), iter.next());
         assert_eq!(Some(3_u32), iter.next());
@@ -379,7 +420,7 @@ mod tests {
         assert_eq!(Some(5_u32), iter.next());
         assert_eq!(None, iter.next());
         assert_eq!(None, iter.next());
-        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());*/
     }
 
     #[test]
@@ -389,7 +430,7 @@ mod tests {
         nvlist_add_uint64_arr(&nvlist, "d", arr).unwrap();
         let mut nvpair = NvPair::default();
         nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
-        let mut iter: Iter<u64> = nvpair.try_into().unwrap();
+        /*let mut iter: Iter<u64> = nvpair.try_into().unwrap();
         assert_eq!(Some(1_u64), iter.next());
         assert_eq!(Some(2_u64), iter.next());
         assert_eq!(Some(3_u64), iter.next());
@@ -397,6 +438,6 @@ mod tests {
         assert_eq!(Some(5_u64), iter.next());
         assert_eq!(None, iter.next());
         assert_eq!(None, iter.next());
-        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());*/
     }
 }

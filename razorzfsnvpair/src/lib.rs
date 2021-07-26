@@ -6,7 +6,7 @@ pub use razorzfsnvpair_sys as sys;
 
 pub use error::NvListError;
 pub use library::ContextType;
-pub use library::Iter;
+pub use library::CtxIter;
 pub use library::NvFlag;
 pub use library::NvList;
 pub use library::NvListIterator;
