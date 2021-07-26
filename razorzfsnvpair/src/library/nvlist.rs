@@ -3,7 +3,7 @@ use std::ptr::NonNull;
 
 use super::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Copy)]
 pub struct NvList {
     pub raw: *mut sys::nvlist_t,
     pub curr_nvpair: NvPair,

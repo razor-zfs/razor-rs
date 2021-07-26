@@ -337,8 +337,8 @@ where
 
         let nvpair = NvPair {
             raw_nvpair: *nvpair_ptr,
-            pair_name: "".to_string(),
-            pair_value: ContextType::Empty,
+            //pair_name: "".to_string(),
+            //pair_value: ContextType::Empty,
         };
 
         Ok(nvpair)

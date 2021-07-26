@@ -4,19 +4,19 @@ use std::{ffi::CStr, slice};
 
 use super::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Copy)]
 pub struct NvPair {
     pub raw_nvpair: *mut sys::nvpair_t,
-    pub pair_name: String,
-    pub pair_value: ContextType,
+    //pub pair_name: String,
+    //pub pair_value: ContextType,
 }
 
 impl NvPair {
     pub fn default() -> NvPair {
         NvPair {
             raw_nvpair: std::ptr::null_mut(),
-            pair_name: "".to_string(),
-            pair_value: ContextType::Empty,
+            //pair_name: "".to_string(),
+            //pair_value: ContextType::Empty,
         }
     }
 
