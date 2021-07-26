@@ -11,15 +11,6 @@ impl<'de> CtxTypeDeserializer {
     }
 }
 
-// pub fn from_ctx_type<'a, T>(s: &'a ContextType) -> Result<T>
-// where
-//     T: Deserialize<'a>,
-// {
-//     let mut deserializer = CtxTypeDeserializer::from_ctx_type(s);
-//     let t = T::deserialize(deserializer)?;
-//     Ok(t)
-// }
-
 impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
     type Error = libnvpair::NvListError;
 

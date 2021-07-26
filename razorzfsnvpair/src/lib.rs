@@ -20,7 +20,7 @@ mod library;
 
 pub type Result<T> = std::result::Result<T, NvListError>;
 
-pub fn nvlist_alloc(flag: NvFlag) -> Result<NvList> {
+/*pub fn nvlist_alloc(flag: NvFlag) -> Result<NvList> {
     let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
     let nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
 
@@ -34,213 +34,210 @@ pub fn nvlist_alloc(flag: NvFlag) -> Result<NvList> {
             }
         }
 
-        Ok(NvList {
-            raw: *nvlist_ptr,
-            curr_nvpair: NvPair::default(),
-        })
+        Ok(NvList { raw: *nvlist_ptr })
     }
-}
+}*/
 
-pub fn nvlist_add_boolean<T>(nvlist: &NvList, name: T, v: bool) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    let v = if v {
-        sys::boolean_t::B_TRUE
-    } else {
-        sys::boolean_t::B_FALSE
-    };
+// pub fn nvlist_add_boolean<T>(nvlist: &NvList, name: T, v: bool) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     let v = if v {
+//         sys::boolean_t::B_TRUE
+//     } else {
+//         sys::boolean_t::B_FALSE
+//     };
 
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_boolean_value(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_boolean_value(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_uint8<T>(nvlist: &NvList, name: T, v: u8) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_uint8(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+// pub fn nvlist_add_uint8<T>(nvlist: &NvList, name: T, v: u8) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_uint8(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_uint16<T>(nvlist: &NvList, name: T, v: u16) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_uint16(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+// pub fn nvlist_add_uint16<T>(nvlist: &NvList, name: T, v: u16) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_uint16(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_uint8_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
-where
-    T: AsRef<str>,
-    W: AsRef<[u8]> + Sized,
-{
-    unsafe {
-        NvListError::from_nvlist_rc(sys::nvlist_add_uint8_array(
-            nvlist.raw,
-            CString::new(name.as_ref())?.as_ptr(),
-            v.as_ref().to_owned().as_mut_ptr(),
-            v.as_ref().len() as u32,
-        ))?;
-    };
+// pub fn nvlist_add_uint8_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
+// where
+//     T: AsRef<str>,
+//     W: AsRef<[u8]> + Sized,
+// {
+//     unsafe {
+//         NvListError::from_nvlist_rc(sys::nvlist_add_uint8_array(
+//             nvlist.raw,
+//             CString::new(name.as_ref())?.as_ptr(),
+//             v.as_ref().to_owned().as_mut_ptr(),
+//             v.as_ref().len() as u32,
+//         ))?;
+//     };
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_uint16_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
-where
-    T: AsRef<str>,
-    W: AsRef<[u16]> + Sized,
-{
-    unsafe {
-        NvListError::from_nvlist_rc(sys::nvlist_add_uint16_array(
-            nvlist.raw,
-            CString::new(name.as_ref())?.as_ptr(),
-            v.as_ref().to_owned().as_mut_ptr(),
-            v.as_ref().len() as u32,
-        ))?;
-    };
+// pub fn nvlist_add_uint16_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
+// where
+//     T: AsRef<str>,
+//     W: AsRef<[u16]> + Sized,
+// {
+//     unsafe {
+//         NvListError::from_nvlist_rc(sys::nvlist_add_uint16_array(
+//             nvlist.raw,
+//             CString::new(name.as_ref())?.as_ptr(),
+//             v.as_ref().to_owned().as_mut_ptr(),
+//             v.as_ref().len() as u32,
+//         ))?;
+//     };
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_uint32_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
-where
-    T: AsRef<str>,
-    W: AsRef<[u32]> + Sized,
-{
-    unsafe {
-        NvListError::from_nvlist_rc(sys::nvlist_add_uint32_array(
-            nvlist.raw,
-            CString::new(name.as_ref())?.as_ptr(),
-            v.as_ref().to_owned().as_mut_ptr(),
-            v.as_ref().len() as u32,
-        ))?;
-    };
+// pub fn nvlist_add_uint32_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
+// where
+//     T: AsRef<str>,
+//     W: AsRef<[u32]> + Sized,
+// {
+//     unsafe {
+//         NvListError::from_nvlist_rc(sys::nvlist_add_uint32_array(
+//             nvlist.raw,
+//             CString::new(name.as_ref())?.as_ptr(),
+//             v.as_ref().to_owned().as_mut_ptr(),
+//             v.as_ref().len() as u32,
+//         ))?;
+//     };
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_uint64_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
-where
-    T: AsRef<str>,
-    W: AsRef<[u64]> + Sized,
-{
-    unsafe {
-        NvListError::from_nvlist_rc(sys::nvlist_add_uint64_array(
-            nvlist.raw,
-            CString::new(name.as_ref())?.as_ptr(),
-            v.as_ref().to_owned().as_mut_ptr(),
-            v.as_ref().len() as u32,
-        ))?;
-    };
+// pub fn nvlist_add_uint64_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
+// where
+//     T: AsRef<str>,
+//     W: AsRef<[u64]> + Sized,
+// {
+//     unsafe {
+//         NvListError::from_nvlist_rc(sys::nvlist_add_uint64_array(
+//             nvlist.raw,
+//             CString::new(name.as_ref())?.as_ptr(),
+//             v.as_ref().to_owned().as_mut_ptr(),
+//             v.as_ref().len() as u32,
+//         ))?;
+//     };
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_uint32<T>(nvlist: &NvList, name: T, v: u32) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_uint32(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+// pub fn nvlist_add_uint32<T>(nvlist: &NvList, name: T, v: u32) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_uint32(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_uint64<T>(nvlist: &NvList, name: T, v: u64) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_uint64(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+// pub fn nvlist_add_uint64<T>(nvlist: &NvList, name: T, v: u64) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_uint64(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_int8<T>(nvlist: &NvList, name: T, v: i8) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_int8(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+// pub fn nvlist_add_int8<T>(nvlist: &NvList, name: T, v: i8) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_int8(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_int16<T>(nvlist: &NvList, name: T, v: i16) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_int16(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+// pub fn nvlist_add_int16<T>(nvlist: &NvList, name: T, v: i16) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_int16(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_int32<T>(nvlist: &NvList, name: T, v: i32) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_int32(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+// pub fn nvlist_add_int32<T>(nvlist: &NvList, name: T, v: i32) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_int32(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_int64<T>(nvlist: &NvList, name: T, v: i64) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_int64(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+// pub fn nvlist_add_int64<T>(nvlist: &NvList, name: T, v: i64) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_int64(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_float64<T>(nvlist: &NvList, name: T, v: f64) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_double(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
-    })?;
+// pub fn nvlist_add_float64<T>(nvlist: &NvList, name: T, v: f64) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_double(nvlist.raw, CString::new(name.as_ref())?.as_ptr(), v)
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvlist_add_string<T>(nvlist: &NvList, name: T, v: T) -> Result<()>
-where
-    T: AsRef<str>,
-{
-    NvListError::from_nvlist_rc(unsafe {
-        sys::nvlist_add_string(
-            nvlist.raw,
-            CString::new(name.as_ref())?.as_ptr(),
-            CString::new(v.as_ref())?.as_ptr(),
-        )
-    })?;
+// pub fn nvlist_add_string<T>(nvlist: &NvList, name: T, v: T) -> Result<()>
+// where
+//     T: AsRef<str>,
+// {
+//     NvListError::from_nvlist_rc(unsafe {
+//         sys::nvlist_add_string(
+//             nvlist.raw,
+//             CString::new(name.as_ref())?.as_ptr(),
+//             CString::new(v.as_ref())?.as_ptr(),
+//         )
+//     })?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
-pub fn nvpair_value_uint16_array(nvpair: &mut NvPair) -> Result<()> {
+/*pub fn nvpair_value_uint16_array(nvpair: &mut NvPair) -> Result<()> {
     let mut size = 0;
     let size_ptr: *mut sys::uint_t = &mut size;
     let mut u16arr: *mut u16 = std::ptr::null_mut();
@@ -319,32 +316,32 @@ pub fn nvpair_value_string(nvpair: &mut NvPair) -> Result<String> {
         let name = CStr::from_ptr(*str_ptr).to_str()?.to_string();
         Ok(name)
     }
-}
+}*/
 
-pub fn nvlist_lookup_nvpair<T>(nvlist: &NvList, name: T) -> Result<NvPair>
-where
-    T: AsRef<str>,
-{
-    let mut nvpair: *mut nvpair_t = std::ptr::null_mut();
-    let nvpair_ptr: *mut *mut nvpair_t = &mut nvpair;
+// pub fn nvlist_lookup_nvpair<T>(nvlist: &NvList, name: T) -> Result<NvPair>
+// where
+//     T: AsRef<str>,
+// {
+//     let mut nvpair: *mut nvpair_t = std::ptr::null_mut();
+//     let nvpair_ptr: *mut *mut nvpair_t = &mut nvpair;
 
-    unsafe {
-        NvListError::from_nvlist_rc(sys::nvlist_lookup_nvpair(
-            nvlist.raw,
-            CString::new(name.as_ref())?.as_ptr(),
-            nvpair_ptr,
-        ))?;
+//     unsafe {
+//         NvListError::from_nvlist_rc(sys::nvlist_lookup_nvpair(
+//             nvlist.raw,
+//             CString::new(name.as_ref())?.as_ptr(),
+//             nvpair_ptr,
+//         ))?;
 
-        let nvpair = NvPair {
-            raw_nvpair: *nvpair_ptr,
-            //pair_name: "".to_string(),
-            //pair_value: ContextType::Empty,
-        };
+//         let nvpair = NvPair {
+//             raw_nvpair: *nvpair_ptr,
+//             //pair_name: "".to_string(),
+//             //pair_value: ContextType::Empty,
+//         };
 
-        Ok(nvpair)
-    }
-}
-
+//         Ok(nvpair)
+//     }
+// }
+/*
 pub fn nvpair_type(nvpair: &mut NvPair) -> Result<NvPairType> {
     Ok(unsafe { NvPairType::from(sys::nvpair_type(nvpair.raw_nvpair)) })
 }
@@ -355,4 +352,4 @@ pub fn nvpair_name(nvpair: &mut NvPair) -> Result<String> {
             .to_str()?
             .to_string())
     }
-}
+}*/

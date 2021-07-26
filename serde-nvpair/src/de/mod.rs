@@ -1,10 +1,9 @@
-use std::borrow::Borrow;
 use std::convert::TryInto;
 use std::usize;
 
 use self::ctx_type_deserializer::CtxTypeDeserializer;
 use super::*;
-use libnvpair::{ContextType, CtxIter, NvListError, NvListIterator, NvPair, SafeNvPair};
+use libnvpair::{ContextType, CtxIter, NvList, NvListError, NvListIterator, NvPair};
 use serde::de::{self, DeserializeSeed, EnumAccess, MapAccess, SeqAccess, VariantAccess, Visitor};
 use serde::Deserialize;
 
@@ -103,7 +102,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
             } {
                 libnvpair::NvPairType::Uint16 => {
                     dbg!("Deserializing u16");
-                    let val = libnvpair::nvpair_value_uint16(&mut self.curr_pair)?;
+                    let val = self.curr_pair.value_uint16()?;
                     dbg!(val);
                     visitor.visit_u16(val)
                 }
@@ -117,7 +116,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing u32");
-        let val = libnvpair::nvpair_value_uint32(&mut self.curr_pair)?;
+        let val = self.curr_pair.value_uint32()?;
         dbg!(val);
         visitor.visit_u32(val)
     }
@@ -155,21 +154,8 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing str");
-        //let mut mystr: *mut u8 = std::ptr::null_mut();
-        //let mut mystr_ptr: *mut *mut u8 = &mut mystr;
-        //NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_string(self.nvpair, mystr_ptr) })?;
-        //dbg!(unsafe { CStr::from_ptr(*mystr_ptr).to_str()? });
-        let val = libnvpair::nvpair_value_string(&mut self.curr_pair)?;
-        /*match &mut self.input.curr_nvpair.pair_value {
-            libnvpair::ContextType::Str(strval) => visitor.visit_borrowed_str(strval.as_str()),
-            _ => Err(libnvpair::NvListError::UnmatchingVariables),
-        }*/
+        let val = self.curr_pair.value_string()?;
         dbg!(&mut self.curr_pair);
-        // if let libnvpair::ContextType::Str(strval) = &mut self.input.curr_nvpair.pair_value {
-        //     visitor.visit_str(strval)
-        // } else {
-        //     Err(libnvpair::NvListError::UnmatchingVariables)
-        // }
         visitor.visit_str(val.as_ref())
     }
 
@@ -318,13 +304,9 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("Deserializing object identifier");
         dbg!("Deserializing object identifier before print");
-        dbg!(&self.input.curr_nvpair);
-        dbg!(
-            "blabla",
-            libnvpair::nvpair_name(&mut self.curr_pair)?.as_str()
-        );
+        dbg!("blabla", self.curr_pair.name()?.as_str());
         dbg!("Deserializing object identifier after print");
-        visitor.visit_str(libnvpair::nvpair_name(&mut self.curr_pair)?.as_str())
+        visitor.visit_str(self.curr_pair.name()?.as_str())
     }
 
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value>
@@ -371,7 +353,6 @@ impl<'de, 'a> SeqAccess<'de> for NvSeqAnalyzer<'a, 'de> {
                 .map(Some),
             None => Ok(None),
         }
-        //seed.deserialize(&mut *self.de).map(Some)
     }
 }
 
@@ -393,7 +374,7 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
             }
             None => {
                 dbg!("getting none");
-                self.de.input.curr_nvpair = NvPair::default();
+                self.de.curr_pair = NvPair::default();
                 Ok(None)
             }
         }
@@ -473,9 +454,9 @@ mod tests {
             b: u16,
         }
         let expected = Test { a: 3, b: 5 };
-        let mut nvlist = libnvpair::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        libnvpair::nvlist_add_uint16(&nvlist, "a", 3).unwrap();
-        libnvpair::nvlist_add_uint16(&nvlist, "b", 5).unwrap();
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint16("a", 3).unwrap();
+        nvlist.add_uint16("b", 5).unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }
@@ -490,8 +471,8 @@ mod tests {
             a: vec![1, 2, 3, 4, 5],
         };
         let arr: [u16; 5] = [1, 2, 3, 4, 5];
-        let mut nvlist = libnvpair::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        libnvpair::nvlist_add_uint16_arr(&nvlist, "a", arr).unwrap();
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint16_arr("a", arr).unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }
@@ -510,10 +491,10 @@ mod tests {
             b: 5,
             c: "test".to_string(),
         };
-        let mut nvlist = libnvpair::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        libnvpair::nvlist_add_uint16(&nvlist, "a", 3).unwrap();
-        libnvpair::nvlist_add_uint32(&nvlist, "b", 5).unwrap();
-        libnvpair::nvlist_add_string(&nvlist, "c", "test").unwrap();
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint16("a", 3).unwrap();
+        nvlist.add_uint32("b", 5).unwrap();
+        nvlist.add_string("c", "test").unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }
@@ -535,11 +516,11 @@ mod tests {
             d: vec![1, 2, 3, 4, 5],
         };
         let arr: [u16; 5] = [1, 2, 3, 4, 5];
-        let mut nvlist = libnvpair::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        libnvpair::nvlist_add_uint16(&nvlist, "a", 3).unwrap();
-        libnvpair::nvlist_add_uint32(&nvlist, "b", 5).unwrap();
-        libnvpair::nvlist_add_string(&nvlist, "c", "test").unwrap();
-        libnvpair::nvlist_add_uint16_arr(&nvlist, "d", arr).unwrap();
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint16("a", 3).unwrap();
+        nvlist.add_uint32("b", 5).unwrap();
+        nvlist.add_string("c", "test").unwrap();
+        nvlist.add_uint16_arr("d", arr).unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }
@@ -564,12 +545,12 @@ mod tests {
         };
         let arr: [u16; 5] = [1, 2, 3, 4, 5];
         let tup: [u16; 3] = [1, 2, 3];
-        let mut nvlist = libnvpair::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        libnvpair::nvlist_add_uint16(&nvlist, "a", 3).unwrap();
-        libnvpair::nvlist_add_uint32(&nvlist, "b", 5).unwrap();
-        libnvpair::nvlist_add_string(&nvlist, "c", "test").unwrap();
-        libnvpair::nvlist_add_uint16_arr(&nvlist, "d", arr).unwrap();
-        libnvpair::nvlist_add_uint16_arr(&nvlist, "e", tup).unwrap();
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint16("a", 3).unwrap();
+        nvlist.add_uint32("b", 5).unwrap();
+        nvlist.add_string("c", "test").unwrap();
+        nvlist.add_uint16_arr("d", arr).unwrap();
+        nvlist.add_uint16_arr("e", tup).unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }

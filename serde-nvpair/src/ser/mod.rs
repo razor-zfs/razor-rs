@@ -1,5 +1,6 @@
 use self::name_serializer::NameSerializer;
 use super::*;
+use libnvpair::{ContextType, NvFlag, NvList};
 use serde::{ser, Serialize};
 use uuid::Uuid;
 
@@ -23,7 +24,7 @@ pub fn _to_nvlist<T>(value: &T) -> Result<libnvpair::NvList>
 where
     T: Serialize,
 {
-    let nvlist = libnvpair::nvlist_alloc(libnvpair::NvFlag::UniqueName)?;
+    let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
 
     let mut serializer = NvListSerializer {
         raw_nvlist: nvlist,
@@ -63,6 +64,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
     type SerializeStructVariant = Self;
 
     fn serialize_bool(self, v: bool) -> Result<()> {
+        dbg!("Serializing bool");
         match &mut self.pair {
             Some(nvpair) if nvpair.r#type() == libnvpair::NvPairType::Unknown => {
                 self.context_type = libnvpair::ContextType::BooleanArr(vec![v]);
@@ -76,11 +78,12 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_boolean(&self.raw_nvlist, self.render_name(), v),
+            None => self.raw_nvlist.add_boolean(self.render_name(), v),
         }
     }
 
     fn serialize_i8(self, v: i8) -> Result<()> {
+        dbg!("Serializing i8");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
                 self.context_type = libnvpair::ContextType::I8Arr(vec![v]);
@@ -94,11 +97,12 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_int8(&self.raw_nvlist, self.render_name(), v),
+            None => self.raw_nvlist.add_int8(self.render_name(), v),
         }
     }
 
     fn serialize_i16(self, v: i16) -> Result<()> {
+        dbg!("Serializing i16");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
                 self.context_type = libnvpair::ContextType::I16Arr(vec![v]);
@@ -112,11 +116,12 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_int16(&self.raw_nvlist, self.render_name(), v),
+            None => self.raw_nvlist.add_int16(self.render_name(), v),
         }
     }
 
     fn serialize_i32(self, v: i32) -> Result<()> {
+        dbg!("Serializing i32");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
                 self.context_type = libnvpair::ContextType::I32Arr(vec![v]);
@@ -130,11 +135,12 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_int32(&self.raw_nvlist, self.render_name(), v),
+            None => self.raw_nvlist.add_int32(self.render_name(), v),
         }
     }
 
     fn serialize_i64(self, v: i64) -> Result<()> {
+        dbg!("Serializing i64");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
                 self.context_type = libnvpair::ContextType::I64Arr(vec![v]);
@@ -148,11 +154,12 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_int64(&self.raw_nvlist, self.render_name(), v),
+            None => self.raw_nvlist.add_int64(self.render_name(), v),
         }
     }
 
     fn serialize_u8(self, v: u8) -> Result<()> {
+        dbg!("Serializing u8");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
                 self.context_type = libnvpair::ContextType::U8Arr(vec![v]);
@@ -166,17 +173,22 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_uint8(&self.raw_nvlist, self.render_name(), v),
+            None => self.raw_nvlist.add_uint8(self.render_name(), v),
         }
     }
 
     fn serialize_u16(self, v: u16) -> Result<()> {
+        dbg!("Serializing u16");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
+                dbg!("in empty context");
+                dbg!(&self.context_type);
                 self.context_type = libnvpair::ContextType::U16Arr(vec![v]);
                 Ok(())
             }
             Some(nvpair) => {
+                dbg!("in not empty context");
+                dbg!(&self.context_type);
                 if let libnvpair::ContextType::U16Arr(x) = &mut self.context_type {
                     x.push(v);
                     Ok(())
@@ -184,17 +196,25 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_uint16(&self.raw_nvlist, self.render_name(), v),
+            None => {
+                dbg!("in None");
+                self.raw_nvlist.add_uint16(self.render_name(), v)
+            }
         }
     }
 
     fn serialize_u32(self, v: u32) -> Result<()> {
+        dbg!("Serializing u32");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
+                dbg!("in empty context");
+                dbg!(&self.context_type);
                 self.context_type = libnvpair::ContextType::U32Arr(vec![v]);
                 Ok(())
             }
             Some(nvpair) => {
+                dbg!("in not empty context");
+                dbg!(&self.context_type);
                 if let libnvpair::ContextType::U32Arr(x) = &mut self.context_type {
                     x.push(v);
                     Ok(())
@@ -202,11 +222,15 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_uint32(&self.raw_nvlist, self.render_name(), v),
+            None => {
+                dbg!("in None");
+                self.raw_nvlist.add_uint32(self.render_name(), v)
+            }
         }
     }
 
     fn serialize_u64(self, v: u64) -> Result<()> {
+        dbg!("Serializing u64");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
                 self.context_type = libnvpair::ContextType::U64Arr(vec![v]);
@@ -220,15 +244,17 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_uint64(&self.raw_nvlist, self.render_name(), v),
+            None => self.raw_nvlist.add_uint64(self.render_name(), v),
         }
     }
 
     fn serialize_f32(self, v: f32) -> Result<()> {
+        dbg!("Serializing float32");
         self.serialize_f64(f64::from(v))
     }
 
     fn serialize_f64(self, v: f64) -> Result<()> {
+        dbg!("Serializing float64");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
                 self.context_type = libnvpair::ContextType::DoubleArr(vec![v]);
@@ -242,7 +268,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => libnvpair::nvlist_add_float64(&self.raw_nvlist, self.render_name(), v),
+            None => self.raw_nvlist.add_float64(self.render_name(), v),
         }
     }
 
@@ -251,6 +277,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
     }
 
     fn serialize_str(self, v: &str) -> Result<()> {
+        dbg!("Serializing str");
         match &mut self.pair {
             Some(nvpair) if self.context_type == libnvpair::ContextType::Empty => {
                 self.context_type = libnvpair::ContextType::StrArr(vec![v.to_string()]);
@@ -264,16 +291,14 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                     Err(libnvpair::NvListError::UnmatchingVariables)
                 }
             }
-            None => {
-                libnvpair::nvlist_add_string(&self.raw_nvlist, self.render_name(), v.to_string())
-            }
+            None => self
+                .raw_nvlist
+                .add_string(self.render_name(), v.to_string()),
         }
     }
 
-    // Serialize a byte array as an array of bytes. Could also use a base64
-    // string here. Binary formats will typically represent byte arrays more
-    // compactly.
     fn serialize_bytes(self, v: &[u8]) -> Result<()> {
+        dbg!("Serializing bytes");
         use serde::ser::SerializeSeq;
         let mut seq = self.serialize_seq(Some(v.len()))?;
         for byte in v {
@@ -282,16 +307,10 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         seq.end()
     }
 
-    // An absent optional is represented as the JSON `null`.
     fn serialize_none(self) -> Result<()> {
         unimplemented!()
     }
 
-    // A present optional is represented as just the contained value. Note that
-    // this is a lossy representation. For example the values `Some(())` and
-    // `None` both serialize as just `null`. Unfortunately this is typically
-    // what people expect when working with JSON. Other formats are encouraged
-    // to behave more intelligently if possible.
     fn serialize_some<T>(self, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
@@ -337,24 +356,23 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
     }
 
     fn serialize_seq(self, _len: Option<usize>) -> Result<Self::SerializeSeq> {
+        dbg!("Serializing seq");
         if self.pair.is_none() {
             self.pair = Some(libnvpair::NvPair {
-                //pair_name: self.render_name(),
-                //pair_value: libnvpair::ContextType::Empty,
                 raw_nvpair: std::ptr::null_mut(),
             });
+            self.context_type = ContextType::Empty;
         }
-
         Ok(self)
     }
 
     fn serialize_tuple(self, _len: usize) -> Result<Self::SerializeTuple> {
+        dbg!("Serializing tuple");
         if self.pair.is_none() {
             self.pair = Some(libnvpair::NvPair {
-                //pair_name: self.render_name(),
-                //pair_value: libnvpair::ContextType::Empty,
                 raw_nvpair: std::ptr::null_mut(),
             });
+            self.context_type = ContextType::Empty;
         }
 
         Ok(self)
@@ -365,6 +383,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         _name: &'static str,
         len: usize,
     ) -> Result<Self::SerializeTupleStruct> {
+        dbg!("Serializing tuple struct");
         self.serialize_seq(Some(len))
     }
 
@@ -375,11 +394,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         variant: &'static str,
         _len: usize,
     ) -> Result<Self::SerializeTupleVariant> {
+        dbg!("Serializing tuple variant");
         variant.serialize(&mut *self)?;
         Ok(self)
     }
 
     fn serialize_map(self, _len: Option<usize>) -> Result<Self::SerializeMap> {
+        dbg!("Serializing map");
         if self.pair.is_none() {
             self.pair = Some(libnvpair::NvPair {
                 //pair_name: self.render_name(),
@@ -392,12 +413,12 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
     }
 
     fn serialize_struct(self, _name: &'static str, _len: usize) -> Result<Self::SerializeStruct> {
+        dbg!("Serializing struct");
         if self.pair.is_none() {
             self.pair = Some(libnvpair::NvPair {
-                //pair_name: self.render_name(),
-                //pair_value: libnvpair::ContextType::Empty,
                 raw_nvpair: std::ptr::null_mut(),
             });
+            self.context_type = ContextType::Empty;
         }
 
         Ok(self)
@@ -410,6 +431,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         variant: &'static str,
         _len: usize,
     ) -> Result<Self::SerializeStructVariant> {
+        dbg!("Serializing struct variant");
         variant.serialize(&mut *self)?;
         Ok(self)
     }
@@ -426,6 +448,7 @@ impl<'a> ser::SerializeSeq for &'a mut NvListSerializer {
     where
         T: ?Sized + Serialize,
     {
+        dbg!("Serializing In serealize seq");
         value.serialize(&mut **self)
     }
 
@@ -444,6 +467,7 @@ impl<'a> ser::SerializeTuple for &'a mut NvListSerializer {
     where
         T: ?Sized + Serialize,
     {
+        dbg!("Serializing In serealize tuple");
         value.serialize(&mut **self)
     }
 
@@ -452,7 +476,6 @@ impl<'a> ser::SerializeTuple for &'a mut NvListSerializer {
     }
 }
 
-// Same thing but for tuple structs.
 impl<'a> ser::SerializeTupleStruct for &'a mut NvListSerializer {
     type Ok = ();
     type Error = libnvpair::NvListError;
@@ -461,6 +484,7 @@ impl<'a> ser::SerializeTupleStruct for &'a mut NvListSerializer {
     where
         T: ?Sized + Serialize,
     {
+        dbg!("Serializing In serealize tuple struct");
         value.serialize(&mut **self)
     }
 
@@ -477,6 +501,7 @@ impl<'a> ser::SerializeTupleVariant for &'a mut NvListSerializer {
     where
         T: ?Sized + Serialize,
     {
+        dbg!("Serializing In serealize tuple variant");
         value.serialize(&mut **self)
     }
 
@@ -493,6 +518,7 @@ impl<'a> ser::SerializeMap for &'a mut NvListSerializer {
     where
         T: ?Sized + Serialize,
     {
+        dbg!("Serializing In serealize map key");
         let _name_ser = NameSerializer {
             name: String::new(),
         };
@@ -504,6 +530,7 @@ impl<'a> ser::SerializeMap for &'a mut NvListSerializer {
     where
         T: ?Sized + Serialize,
     {
+        dbg!("Serializing In serealize map value");
         value.serialize(&mut **self)
     }
 
@@ -520,11 +547,11 @@ impl<'a> ser::SerializeStruct for &'a mut NvListSerializer {
     where
         T: ?Sized + Serialize,
     {
+        dbg!("Serializing In serealize struct");
         self.pair = Some(libnvpair::NvPair {
-            //pair_name: key.to_string(),
-            //pair_value: libnvpair::ContextType::Empty,
             raw_nvpair: std::ptr::null_mut(),
         });
+        self.context_type = ContextType::Empty;
 
         value.serialize(&mut **self)
     }
@@ -542,7 +569,7 @@ impl<'a> ser::SerializeStructVariant for &'a mut NvListSerializer {
     where
         T: ?Sized + Serialize,
     {
-        //key.serialize(&mut **self)?;
+        dbg!("Serializing In serealize struct variant");
         value.serialize(&mut **self)
     }
 
@@ -555,6 +582,32 @@ impl<'a> ser::SerializeStructVariant for &'a mut NvListSerializer {
 mod tests {
     use super::*;
     use serde::{Deserialize, Serialize};
+
+    #[test]
+    fn basic_struct() {
+        #[derive(Debug, Serialize, Deserialize)]
+        struct VecStruct {
+            a: u32,
+            b: u16,
+        }
+
+        let test_struct = VecStruct { a: 3, b: 5 };
+
+        _to_nvlist(&test_struct).unwrap();
+    }
+
+    #[test]
+    fn basic_struct_u32() {
+        #[derive(Debug, Serialize, Deserialize)]
+        struct VecStruct {
+            a: u32,
+            b: u32,
+        }
+
+        let test_struct = VecStruct { a: 3, b: 5 };
+
+        _to_nvlist(&test_struct).unwrap();
+    }
 
     #[test]
     fn vec_struct() {
@@ -582,7 +635,7 @@ mod tests {
             f: i16,
             g: i32,
             h: i64,
-            i: &'static str,
+            i: String,
         }
 
         let test_struct = PrimitiveStruct {
@@ -594,7 +647,7 @@ mod tests {
             f: 3,
             g: 3,
             h: 3,
-            i: "test",
+            i: "test".to_string(),
         };
 
         _to_nvlist(&test_struct).unwrap();
