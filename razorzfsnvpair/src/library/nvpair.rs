@@ -1,4 +1,5 @@
 use std::convert::TryFrom;
+use std::marker::PhantomData;
 use std::{ffi::CStr, slice};
 
 use super::*;
@@ -39,13 +40,7 @@ impl NvPair {
             NvListError::from_nvlist_rc(sys::nvpair_value_uint16(self.raw_nvpair, val))?;
 
             match val.as_ref() {
-                Some(u16val) => {
-                    self.pair_name = CStr::from_ptr(sys::nvpair_name(self.raw_nvpair))
-                        .to_str()?
-                        .to_string();
-                    self.pair_value = ContextType::U16(*u16val);
-                    Ok(*u16val)
-                }
+                Some(u16val) => Ok(*u16val),
                 None => Err(NvListError::ConversionError),
             }
         }
@@ -64,14 +59,7 @@ impl NvPair {
             ))?;
 
             match u8arr_ptr.as_ref() {
-                Some(arr) => {
-                    let u8vec = slice::from_raw_parts(*arr, size as usize).to_vec();
-                    //self.pair_value = ContextType::U16Arr(u16vec);
-                    self.pair_name = CStr::from_ptr(sys::nvpair_name(self.raw_nvpair))
-                        .to_str()?
-                        .to_string();
-                    Ok(u8vec)
-                }
+                Some(arr) => Ok(slice::from_raw_parts(*arr, size as usize).to_vec()),
                 None => Err(NvListError::ConversionError),
             }
         }
@@ -90,14 +78,7 @@ impl NvPair {
             ))?;
 
             match u16arr_ptr.as_ref() {
-                Some(arr) => {
-                    let u16vec = slice::from_raw_parts(*arr, size as usize).to_vec();
-                    //self.pair_value = ContextType::U16Arr(u16vec);
-                    self.pair_name = CStr::from_ptr(sys::nvpair_name(self.raw_nvpair))
-                        .to_str()?
-                        .to_string();
-                    Ok(u16vec)
-                }
+                Some(arr) => Ok(slice::from_raw_parts(*arr, size as usize).to_vec()),
                 None => Err(NvListError::ConversionError),
             }
         }
@@ -116,14 +97,7 @@ impl NvPair {
             ))?;
 
             match u32arr_ptr.as_ref() {
-                Some(arr) => {
-                    let u32vec = slice::from_raw_parts(*arr, size as usize).to_vec();
-                    //self.pair_value = ContextType::U16Arr(u16vec);
-                    self.pair_name = CStr::from_ptr(sys::nvpair_name(self.raw_nvpair))
-                        .to_str()?
-                        .to_string();
-                    Ok(u32vec)
-                }
+                Some(arr) => Ok(slice::from_raw_parts(*arr, size as usize).to_vec()),
                 None => Err(NvListError::ConversionError),
             }
         }
@@ -142,139 +116,111 @@ impl NvPair {
             ))?;
 
             match u64arr_ptr.as_ref() {
-                Some(arr) => {
-                    let u64vec = slice::from_raw_parts(*arr, size as usize).to_vec();
-                    //self.pair_value = ContextType::U16Arr(u16vec);
-                    self.pair_name = CStr::from_ptr(sys::nvpair_name(self.raw_nvpair))
-                        .to_str()?
-                        .to_string();
-                    Ok(u64vec)
-                }
+                Some(arr) => Ok(slice::from_raw_parts(*arr, size as usize).to_vec()),
                 None => Err(NvListError::ConversionError),
             }
         }
     }
 }
 
-impl TryFrom<NvPair> for U8Iter {
-    type Error = NvListError;
-
-    fn try_from(nvpair: NvPair) -> Result<Self> {
-        match nvpair.r#type() {
-            NvPairType::Uint8Array => Ok(U8Iter {
-                nvpair: nvpair,
-                index: 0,
-            }),
-            _ => Err(NvListError::NvPairTypeError),
-        }
-    }
-}
-
-struct U8Iter {
-    nvpair: NvPair,
+pub struct Iter<T>
+where
+    T: SafeNvPair,
+{
+    vec: Vec<T>,
     index: usize,
+    _marker: PhantomData<T>,
 }
 
-impl Iterator for U8Iter {
-    type Item = u8;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.nvpair.value_uint8_array() {
-            Ok(val) => Some(val[self.index]),
-            Err(_) => None,
-        }
-    }
-}
-
-impl TryFrom<NvPair> for U16Iter {
+impl TryFrom<NvPair> for Iter<u8> {
     type Error = NvListError;
-
-    fn try_from(nvpair: NvPair) -> Result<Self> {
+    fn try_from(mut nvpair: NvPair) -> Result<Self> {
         match nvpair.r#type() {
-            NvPairType::Uint16Array => Ok(U16Iter {
-                nvpair: nvpair,
-                index: 0,
-            }),
-            _ => Err(NvListError::NvPairTypeError),
+            NvPairType::Uint8Array => {
+                let vec = nvpair.value_uint8_array()?;
+                Ok(Iter::<u8> {
+                    vec,
+                    index: 0,
+                    _marker: PhantomData,
+                })
+            }
+            _ => Err(NvListError::UnmatchingVariables),
         }
     }
 }
 
-struct U16Iter {
-    nvpair: NvPair,
-    index: usize,
-}
-
-impl Iterator for U16Iter {
-    type Item = u16;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.nvpair.value_uint16_array() {
-            Ok(val) => Some(val[self.index]),
-            Err(_) => None,
-        }
-    }
-}
-
-impl TryFrom<NvPair> for U32Iter {
+impl TryFrom<NvPair> for Iter<u16> {
     type Error = NvListError;
-
-    fn try_from(nvpair: NvPair) -> Result<Self> {
+    fn try_from(mut nvpair: NvPair) -> Result<Self> {
         match nvpair.r#type() {
-            NvPairType::Uint32Array => Ok(U32Iter {
-                nvpair: nvpair,
-                index: 0,
-            }),
-            _ => Err(NvListError::NvPairTypeError),
+            NvPairType::Uint16Array => {
+                let vec = nvpair.value_uint16_array()?;
+                Ok(Iter::<u16> {
+                    vec,
+                    index: 0,
+                    _marker: PhantomData,
+                })
+            }
+            _ => Err(NvListError::UnmatchingVariables),
         }
     }
 }
 
-struct U32Iter {
-    nvpair: NvPair,
-    index: usize,
-}
-
-impl Iterator for U32Iter {
-    type Item = u32;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.nvpair.value_uint32_array() {
-            Ok(val) => Some(val[self.index]),
-            Err(_) => None,
-        }
-    }
-}
-
-impl TryFrom<NvPair> for U64Iter {
+impl TryFrom<NvPair> for Iter<u32> {
     type Error = NvListError;
-
-    fn try_from(nvpair: NvPair) -> Result<Self> {
+    fn try_from(mut nvpair: NvPair) -> Result<Self> {
         match nvpair.r#type() {
-            NvPairType::Uint64Array => Ok(U64Iter {
-                nvpair: nvpair,
-                index: 0,
-            }),
-            _ => Err(NvListError::NvPairTypeError),
+            NvPairType::Uint32Array => {
+                let vec = nvpair.value_uint32_array()?;
+                Ok(Iter::<u32> {
+                    vec,
+                    index: 0,
+                    _marker: PhantomData,
+                })
+            }
+            _ => Err(NvListError::UnmatchingVariables),
         }
     }
 }
 
-struct U64Iter {
-    nvpair: NvPair,
-    index: usize,
-}
-
-impl Iterator for U64Iter {
-    type Item = u64;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self.nvpair.value_uint64_array() {
-            Ok(val) => Some(val[self.index]),
-            Err(_) => None,
+impl TryFrom<NvPair> for Iter<u64> {
+    type Error = NvListError;
+    fn try_from(mut nvpair: NvPair) -> Result<Self> {
+        match nvpair.r#type() {
+            NvPairType::Uint64Array => {
+                let vec = nvpair.value_uint64_array()?;
+                Ok(Iter::<u64> {
+                    vec,
+                    index: 0,
+                    _marker: PhantomData,
+                })
+            }
+            _ => Err(NvListError::UnmatchingVariables),
         }
     }
 }
+
+macro_rules! generate_iterators {
+    ($($typ:ty),*) => {
+        $(
+            impl Iterator for Iter<$typ> {
+                type Item = $typ;
+
+                fn next(&mut self) -> Option<Self::Item> {
+                    if self.index < self.vec.len() {
+                        let index = self.index;
+                        self.index += 1;
+                        Some(self.vec[index])
+                    } else {
+                        None
+                    }
+                }
+            }
+        )*
+    };
+}
+
+generate_iterators!(u8, u16, u32, u64, i8, i16, i32, i64);
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum ContextType {
@@ -365,7 +311,7 @@ impl From<sys::data_type_t> for NvPairType {
     }
 }
 
-trait SafeNvPair {}
+pub trait SafeNvPair {}
 
 impl SafeNvPair for u8 {}
 impl SafeNvPair for u16 {}
@@ -375,3 +321,82 @@ impl SafeNvPair for i8 {}
 impl SafeNvPair for i16 {}
 impl SafeNvPair for i32 {}
 impl SafeNvPair for i64 {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::convert::TryInto;
+    //generate_iterators!(u8, u16, u32, u64, i8, i16, i32, i64);
+
+    #[test]
+    fn basic_iter_u8() {
+        let mut nvlist = nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let arr: [u8; 5] = [1, 2, 3, 4, 5];
+        nvlist_add_uint8_arr(&nvlist, "d", arr).unwrap();
+        let mut nvpair = NvPair::default();
+        nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
+        let mut iter: Iter<u8> = nvpair.try_into().unwrap();
+        assert_eq!(Some(1_u8), iter.next());
+        assert_eq!(Some(2_u8), iter.next());
+        assert_eq!(Some(3_u8), iter.next());
+        assert_eq!(Some(4_u8), iter.next());
+        assert_eq!(Some(5_u8), iter.next());
+        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());
+    }
+
+    #[test]
+    fn basic_iter_u16() {
+        let mut nvlist = nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let arr: [u16; 5] = [1, 2, 3, 4, 5];
+        nvlist_add_uint16_arr(&nvlist, "d", arr).unwrap();
+        let mut nvpair = NvPair::default();
+        nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
+        let mut iter: Iter<u16> = nvpair.try_into().unwrap();
+        assert_eq!(Some(1_u16), iter.next());
+        assert_eq!(Some(2_u16), iter.next());
+        assert_eq!(Some(3_u16), iter.next());
+        assert_eq!(Some(4_u16), iter.next());
+        assert_eq!(Some(5_u16), iter.next());
+        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());
+    }
+
+    #[test]
+    fn basic_iter_u32() {
+        let mut nvlist = nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let arr: [u32; 5] = [1, 2, 3, 4, 5];
+        nvlist_add_uint32_arr(&nvlist, "d", arr).unwrap();
+        let mut nvpair = NvPair::default();
+        nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
+        let mut iter: Iter<u32> = nvpair.try_into().unwrap();
+        assert_eq!(Some(1_u32), iter.next());
+        assert_eq!(Some(2_u32), iter.next());
+        assert_eq!(Some(3_u32), iter.next());
+        assert_eq!(Some(4_u32), iter.next());
+        assert_eq!(Some(5_u32), iter.next());
+        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());
+    }
+
+    #[test]
+    fn basic_iter_u64() {
+        let mut nvlist = nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let arr: [u64; 5] = [1, 2, 3, 4, 5];
+        nvlist_add_uint64_arr(&nvlist, "d", arr).unwrap();
+        let mut nvpair = NvPair::default();
+        nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
+        let mut iter: Iter<u64> = nvpair.try_into().unwrap();
+        assert_eq!(Some(1_u64), iter.next());
+        assert_eq!(Some(2_u64), iter.next());
+        assert_eq!(Some(3_u64), iter.next());
+        assert_eq!(Some(4_u64), iter.next());
+        assert_eq!(Some(5_u64), iter.next());
+        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());
+        assert_eq!(None, iter.next());
+    }
+}

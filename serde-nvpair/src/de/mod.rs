@@ -1,24 +1,21 @@
+use std::convert::TryInto;
 use std::usize;
 
 use super::*;
-use libnvpair::{NvListIterator, NvPair};
+use libnvpair::{Iter, NvListError, NvListIterator, NvPair, SafeNvPair};
 use serde::de::{self, DeserializeSeed, EnumAccess, MapAccess, SeqAccess, VariantAccess, Visitor};
 use serde::Deserialize;
 
 pub struct NvListDeserializer<'de> {
     input: &'de mut libnvpair::NvList,
-    first: bool,
-    size: usize,
-    index: usize,
+    curr_pair: NvPair,
 }
 
 impl<'de> NvListDeserializer<'de> {
     pub fn from_nvlist(input: &'de mut libnvpair::NvList) -> Self {
         NvListDeserializer {
             input,
-            first: true,
-            size: usize::MAX,
-            index: 0,
+            curr_pair: NvPair::default(),
         }
     }
 }
@@ -95,17 +92,25 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     where
         V: Visitor<'de>,
     {
+        dbg!("deserializing u16 start function");
         unsafe {
-            match match self.input.curr_nvpair.raw_nvpair.as_ref() {
-                Some(_) => libnvpair::nvpair_type(&mut self.input.curr_nvpair)?,
+            match match self.curr_pair.raw_nvpair.as_ref() {
+                Some(_) => {
+                    dbg!("pointer exists");
+                    dbg!(self.curr_pair.r#type());
+                    self.curr_pair.r#type()
+                }
                 None => todo!(),
             } {
                 libnvpair::NvPairType::Uint16Array => {
                     dbg!("Deserializing u16 arr");
-                    libnvpair::nvpair_value_uint16_array(&mut self.input.curr_nvpair)?;
-                    let curr = self.index;
-                    self.index += 1;
-                    if let libnvpair::ContextType::U16Arr(u16vec) =
+                    //self.curr_pair.try_into();
+                    //visitor.visit_u16(u16vec[curr])
+                    todo!();
+                    //libnvpair::nvpair_value_uint16_array(&mut self.input.curr_nvpair)?;
+                    //let curr = self.index;
+                    //self.index += 1;
+                    /*if let libnvpair::ContextType::U16Arr(u16vec) =
                         &mut self.input.curr_nvpair.pair_value
                     {
                         if self.first {
@@ -115,7 +120,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                         visitor.visit_u16(u16vec[curr])
                     } else {
                         Err(libnvpair::NvListError::UnmatchingVariables)
-                    }
+                    }*/
                 }
                 libnvpair::NvPairType::Uint16 => {
                     dbg!("Deserializing u16");
@@ -127,13 +132,15 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                         sys::nvpair_value_uint16(self.nvpair, val)
                     })?;*/
 
-                    libnvpair::nvpair_value_uint16(&mut self.input.curr_nvpair)?;
-                    if let libnvpair::ContextType::U16(u16val) = self.input.curr_nvpair.pair_value {
-                        dbg!(u16val);
-                        visitor.visit_u16(u16val)
-                    } else {
-                        Err(libnvpair::NvListError::UnmatchingVariables)
-                    }
+                    let val = libnvpair::nvpair_value_uint16(&mut self.curr_pair)?;
+                    // if let libnvpair::ContextType::U16(u16val) = self.input.curr_nvpair.pair_value {
+                    //     dbg!(u16val);
+                    //     visitor.visit_u16(u16val)
+                    // } else {
+                    //     Err(libnvpair::NvListError::UnmatchingVariables)
+                    // }
+                    dbg!(val);
+                    visitor.visit_u16(val)
                 }
                 _ => Err(libnvpair::NvListError::InvalidArgument),
             }
@@ -152,14 +159,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint32(self.nvpair, val) })?;
         */
 
-        libnvpair::nvpair_value_uint32(&mut self.input.curr_nvpair)?;
+        let val = libnvpair::nvpair_value_uint32(&mut self.input.curr_nvpair)?;
 
-        if let libnvpair::ContextType::U32(u32val) = self.input.curr_nvpair.pair_value {
-            dbg!(u32val);
-            visitor.visit_u32(u32val)
-        } else {
-            Err(libnvpair::NvListError::UnmatchingVariables)
-        }
+        // if let libnvpair::ContextType::U32(u32val) = self.input.curr_nvpair.pair_value {
+        //     dbg!(u32val);
+        //     visitor.visit_u32(u32val)
+        // } else {
+        //     Err(libnvpair::NvListError::UnmatchingVariables)
+        // }
+        dbg!(val);
+        visitor.visit_u32(val)
     }
 
     fn deserialize_u64<V>(self, _visitor: V) -> Result<V::Value>
@@ -199,17 +208,18 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         //let mut mystr_ptr: *mut *mut u8 = &mut mystr;
         //NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_string(self.nvpair, mystr_ptr) })?;
         //dbg!(unsafe { CStr::from_ptr(*mystr_ptr).to_str()? });
-        libnvpair::nvpair_value_string(&mut self.input.curr_nvpair)?;
+        let val = libnvpair::nvpair_value_string(&mut self.input.curr_nvpair)?;
         /*match &mut self.input.curr_nvpair.pair_value {
             libnvpair::ContextType::Str(strval) => visitor.visit_borrowed_str(strval.as_str()),
             _ => Err(libnvpair::NvListError::UnmatchingVariables),
         }*/
-        dbg!(&mut self.input.curr_nvpair.pair_value);
-        if let libnvpair::ContextType::Str(strval) = &mut self.input.curr_nvpair.pair_value {
-            visitor.visit_str(strval)
-        } else {
-            Err(libnvpair::NvListError::UnmatchingVariables)
-        }
+        dbg!(&mut self.input.curr_nvpair);
+        // if let libnvpair::ContextType::Str(strval) = &mut self.input.curr_nvpair.pair_value {
+        //     visitor.visit_str(strval)
+        // } else {
+        //     Err(libnvpair::NvListError::UnmatchingVariables)
+        // }
+        visitor.visit_str(val.as_ref())
     }
 
     fn deserialize_string<V>(self, visitor: V) -> Result<V::Value>
@@ -266,9 +276,29 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing seq");
-        let value = visitor.visit_seq(CommaSeparated::new(&mut self, self.input.into_iter()))?;
+        match self.input.curr_nvpair.r#type() {
+            //libnvpair::NvPairType::ByteArray => todo!(),
+            libnvpair::NvPairType::Int16Array => {
+                // TODO: check it it is ok?
+                let mut iter: Iter<u16> = self.input.curr_nvpair.clone().try_into()?;
+                let value = visitor.visit_seq(NvSeqAnalyzer::new(&mut self, iter))?;
+                Ok(value)
+            }
+            //libnvpair::NvPairType::Uint16Array => todo!(),
+            //libnvpair::NvPairType::Int32Array => todo!(),
+            //libnvpair::NvPairType::Uint32Array => todo!(),
+            //libnvpair::NvPairType::Int64Array => todo!(),
+            //libnvpair::NvPairType::Uint64Array => todo!(),
+            //libnvpair::NvPairType::StringArray => todo!(),
+            //libnvpair::NvPairType::NvlistArray => todo!(),
+            //libnvpair::NvPairType::BooleanArray => todo!(),
+            //libnvpair::NvPairType::Int8Array => todo!(),
+            //libnvpair::NvPairType::Uint8Array => todo!(),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
+        //let iter: Iter<u16> = self.input.curr_nvpair.try_into()?;
 
-        Ok(value)
+        //Ok(value)
     }
 
     fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value>
@@ -296,14 +326,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing map");
-        let value = visitor.visit_map(CommaSeparated::new(&mut self, self.input.into_iter()))?;
+        // TODO: check if this is ok
+        let nvlist_clone = self.input.clone();
+        let value = visitor.visit_map(CommaSeparated::new(&mut self, nvlist_clone.into_iter()))?;
         Ok(value)
     }
 
     fn deserialize_struct<V>(
         self,
         _name: &'static str,
-        _fields: &'static [&'static str],
+        fields: &'static [&'static str],
         visitor: V,
     ) -> Result<V::Value>
     where
@@ -330,8 +362,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing object identifier");
-        dbg!(libnvpair::nvpair_name(&mut self.input.curr_nvpair)?.as_str());
-        visitor.visit_str(libnvpair::nvpair_name(&mut self.input.curr_nvpair)?.as_str())
+        dbg!("Deserializing object identifier before print");
+        dbg!(&self.input.curr_nvpair);
+        dbg!(
+            "blabla",
+            libnvpair::nvpair_name(&mut self.curr_pair)?.as_str()
+        );
+        dbg!("Deserializing object identifier after print");
+        visitor.visit_str(libnvpair::nvpair_name(&mut self.curr_pair)?.as_str())
     }
 
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value>
@@ -353,7 +391,18 @@ impl<'a, 'de> CommaSeparated<'a, 'de> {
     }
 }
 
-impl<'de, 'a> SeqAccess<'de> for CommaSeparated<'a, 'de> {
+struct NvSeqAnalyzer<'a, 'de: 'a> {
+    de: &'a mut NvListDeserializer<'de>,
+    nvpair_iter: Iter<u16>,
+}
+
+impl<'a, 'de> NvSeqAnalyzer<'a, 'de> {
+    fn new(de: &'a mut NvListDeserializer<'de>, nvpair_iter: Iter<u16>) -> Self {
+        NvSeqAnalyzer { de, nvpair_iter }
+    }
+}
+
+impl<'de, 'a> SeqAccess<'de> for NvSeqAnalyzer<'a, 'de> {
     type Error = libnvpair::NvListError;
 
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
@@ -361,20 +410,13 @@ impl<'de, 'a> SeqAccess<'de> for CommaSeparated<'a, 'de> {
         T: DeserializeSeed<'de>,
     {
         dbg!("Deserializing seq in SeqAccess");
-        if self.de.first {
-            dbg!("Deserializing seq in SeqAccess first");
-            seed.deserialize(&mut *self.de).map(Some)
-        } else {
-            dbg!("Deserializing seq in not first");
-            if self.de.index < self.de.size {
-                seed.deserialize(&mut *self.de).map(Some)
-            } else {
-                self.de.index = 0;
-                self.de.size = 0;
-                self.de.first = true;
-                Ok(None)
-            }
-        }
+        todo!();
+        // if let Some(x) = self.nvpair_iter.next() {
+        //     Ok(Some(x))
+        // } else {
+        //     Ok(None)
+        // }
+        //seed.deserialize(&mut *self.de).map(Some)
     }
 }
 
@@ -387,8 +429,15 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
     {
         dbg!("Deserializing map key");
         match self.iter.next() {
-            Some(_) => seed.deserialize(&mut *self.de).map(Some),
+            Some(nvpair) => {
+                dbg!("getting some");
+                dbg!(&nvpair);
+                self.de.curr_pair = nvpair;
+                dbg!(&self.de.curr_pair);
+                seed.deserialize(&mut *self.de).map(Some)
+            }
             None => {
+                dbg!("getting none");
                 self.de.input.curr_nvpair = NvPair::default();
                 Ok(None)
             }
@@ -466,12 +515,12 @@ mod tests {
         #[derive(Debug, PartialEq, Deserialize)]
         struct Test {
             a: u16,
-            b: u32,
+            b: u16,
         }
         let expected = Test { a: 3, b: 5 };
         let mut nvlist = libnvpair::nvlist_alloc(NvFlag::UniqueName).unwrap();
         libnvpair::nvlist_add_uint16(&nvlist, "a", 3).unwrap();
-        libnvpair::nvlist_add_uint32(&nvlist, "b", 5).unwrap();
+        libnvpair::nvlist_add_uint16(&nvlist, "b", 5).unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }

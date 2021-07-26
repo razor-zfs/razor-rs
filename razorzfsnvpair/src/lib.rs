@@ -6,11 +6,14 @@ pub use razorzfsnvpair_sys as sys;
 
 pub use error::NvListError;
 pub use library::ContextType;
+pub use library::Iter;
 pub use library::NvFlag;
 pub use library::NvList;
 pub use library::NvListIterator;
 pub use library::NvPair;
 pub use library::NvPairType;
+pub use library::SafeNvPair;
+use sys::nvpair_t;
 
 mod error;
 mod library;
@@ -77,6 +80,23 @@ where
     Ok(())
 }
 
+pub fn nvlist_add_uint8_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
+where
+    T: AsRef<str>,
+    W: AsRef<[u8]> + Sized,
+{
+    unsafe {
+        NvListError::from_nvlist_rc(sys::nvlist_add_uint8_array(
+            nvlist.raw,
+            CString::new(name.as_ref())?.as_ptr(),
+            v.as_ref().to_owned().as_mut_ptr(),
+            v.as_ref().len() as u32,
+        ))?;
+    };
+
+    Ok(())
+}
+
 pub fn nvlist_add_uint16_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
 where
     T: AsRef<str>,
@@ -84,6 +104,40 @@ where
 {
     unsafe {
         NvListError::from_nvlist_rc(sys::nvlist_add_uint16_array(
+            nvlist.raw,
+            CString::new(name.as_ref())?.as_ptr(),
+            v.as_ref().to_owned().as_mut_ptr(),
+            v.as_ref().len() as u32,
+        ))?;
+    };
+
+    Ok(())
+}
+
+pub fn nvlist_add_uint32_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
+where
+    T: AsRef<str>,
+    W: AsRef<[u32]> + Sized,
+{
+    unsafe {
+        NvListError::from_nvlist_rc(sys::nvlist_add_uint32_array(
+            nvlist.raw,
+            CString::new(name.as_ref())?.as_ptr(),
+            v.as_ref().to_owned().as_mut_ptr(),
+            v.as_ref().len() as u32,
+        ))?;
+    };
+
+    Ok(())
+}
+
+pub fn nvlist_add_uint64_arr<T, W>(nvlist: &NvList, name: T, v: W) -> Result<()>
+where
+    T: AsRef<str>,
+    W: AsRef<[u64]> + Sized,
+{
+    unsafe {
+        NvListError::from_nvlist_rc(sys::nvlist_add_uint64_array(
             nvlist.raw,
             CString::new(name.as_ref())?.as_ptr(),
             v.as_ref().to_owned().as_mut_ptr(),
@@ -201,10 +255,10 @@ pub fn nvpair_value_uint16_array(nvpair: &mut NvPair) -> Result<()> {
         match u16arr_ptr.as_ref() {
             Some(arr) => {
                 let u16vec = slice::from_raw_parts(*arr, size as usize).to_vec();
-                nvpair.pair_value = ContextType::U16Arr(u16vec);
-                nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
-                    .to_str()?
-                    .to_string();
+                //nvpair.pair_value = ContextType::U16Arr(u16vec);
+                //nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
+                //    .to_str()?
+                //    .to_string();
                 Ok(())
             }
             None => Err(NvListError::ConversionError),
@@ -212,7 +266,7 @@ pub fn nvpair_value_uint16_array(nvpair: &mut NvPair) -> Result<()> {
     }
 }
 
-pub fn nvpair_value_uint16(nvpair: &mut NvPair) -> Result<()> {
+pub fn nvpair_value_uint16(nvpair: &mut NvPair) -> Result<u16> {
     let mut x = 0;
     let val: *mut u16 = &mut x;
 
@@ -221,18 +275,18 @@ pub fn nvpair_value_uint16(nvpair: &mut NvPair) -> Result<()> {
 
         match val.as_ref() {
             Some(u16val) => {
-                nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
-                    .to_str()?
-                    .to_string();
-                nvpair.pair_value = ContextType::U16(*u16val);
-                Ok(())
+                // nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
+                //     .to_str()?
+                //     .to_string();
+                // nvpair.pair_value = ContextType::U16(*u16val);
+                Ok(*u16val)
             }
             None => Err(NvListError::ConversionError),
         }
     }
 }
 
-pub fn nvpair_value_uint32(nvpair: &mut NvPair) -> Result<()> {
+pub fn nvpair_value_uint32(nvpair: &mut NvPair) -> Result<u32> {
     let mut x = 0;
     let val: *mut u32 = &mut x;
 
@@ -242,28 +296,52 @@ pub fn nvpair_value_uint32(nvpair: &mut NvPair) -> Result<()> {
 
         match val.as_ref() {
             Some(u32val) => {
-                nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
-                    .to_str()?
-                    .to_string();
-                nvpair.pair_value = ContextType::U32(*u32val);
-                Ok(())
+                // nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
+                //     .to_str()?
+                //     .to_string();
+                // nvpair.pair_value = ContextType::U32(*u32val);
+                Ok(*u32val)
             }
             None => Err(NvListError::ConversionError),
         }
     }
 }
 
-pub fn nvpair_value_string(nvpair: &mut NvPair) -> Result<()> {
+pub fn nvpair_value_string(nvpair: &mut NvPair) -> Result<String> {
     let mut str: *mut u8 = std::ptr::null_mut();
     let str_ptr: *mut *mut u8 = &mut str;
 
     unsafe {
         NvListError::from_nvlist_rc(sys::nvpair_value_string(nvpair.raw_nvpair, str_ptr))?;
-        nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
-            .to_str()?
-            .to_string();
-        nvpair.pair_value = ContextType::Str(CStr::from_ptr(*str_ptr).to_str()?.to_string());
-        Ok(())
+        // nvpair.pair_name = CStr::from_ptr(sys::nvpair_name(nvpair.raw_nvpair))
+        //     .to_str()?
+        //     .to_string();
+        let name = CStr::from_ptr(*str_ptr).to_str()?.to_string();
+        Ok(name)
+    }
+}
+
+pub fn nvlist_lookup_nvpair<T>(nvlist: &NvList, name: T) -> Result<NvPair>
+where
+    T: AsRef<str>,
+{
+    let mut nvpair: *mut nvpair_t = std::ptr::null_mut();
+    let nvpair_ptr: *mut *mut nvpair_t = &mut nvpair;
+
+    unsafe {
+        NvListError::from_nvlist_rc(sys::nvlist_lookup_nvpair(
+            nvlist.raw,
+            CString::new(name.as_ref())?.as_ptr(),
+            nvpair_ptr,
+        ))?;
+
+        let nvpair = NvPair {
+            raw_nvpair: *nvpair_ptr,
+            pair_name: "".to_string(),
+            pair_value: ContextType::Empty,
+        };
+
+        Ok(nvpair)
     }
 }
 
