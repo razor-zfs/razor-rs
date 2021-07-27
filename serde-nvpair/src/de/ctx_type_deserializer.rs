@@ -21,39 +21,64 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
         todo!();
     }
 
-    fn deserialize_bool<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing bool in ctx_type");
+        dbg!(&self.input);
+        match self.input {
+            ContextType::Boolean(x) => visitor.visit_bool(x),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
     }
 
-    fn deserialize_i8<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing i8 in ctx_type");
+        dbg!(&self.input);
+        match self.input {
+            ContextType::I8(x) => visitor.visit_i8(x),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
     }
 
-    fn deserialize_i16<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_i16<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing i16 in ctx_type");
+        dbg!(&self.input);
+        match self.input {
+            ContextType::I16(x) => visitor.visit_i16(x),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
     }
 
-    fn deserialize_i32<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_i32<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing i32 in ctx_type");
+        dbg!(&self.input);
+        match self.input {
+            ContextType::I32(x) => visitor.visit_i32(x),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
     }
 
-    fn deserialize_i64<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_i64<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing i64 in ctx_type");
+        dbg!(&self.input);
+        match self.input {
+            ContextType::I64(x) => visitor.visit_i64(x),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
     }
 
     fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value>
@@ -84,21 +109,32 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing u32 in ctx_type");
+        dbg!(&self.input);
+        match self.input {
+            ContextType::U32(x) => visitor.visit_u32(x),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
     }
 
-    fn deserialize_u64<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_u64<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing u64 in ctx_type");
+        dbg!(&self.input);
+        match self.input {
+            ContextType::U64(x) => visitor.visit_u64(x),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
     }
 
-    fn deserialize_f32<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing f32 in ctx_type");
+        self.deserialize_f64(visitor)
     }
 
     fn deserialize_f64<V>(self, _visitor: V) -> Result<V::Value>
@@ -126,7 +162,12 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing string in ctx_type");
+        dbg!(&self.input);
+        match self.input {
+            ContextType::Str(x) => visitor.visit_string(x),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
     }
 
     fn deserialize_bytes<V>(self, _visitor: V) -> Result<V::Value>

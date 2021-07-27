@@ -1,4 +1,7 @@
-use std::ffi::CString;
+use std::{borrow::BorrowMut, ffi::CString, slice};
+
+use libc::c_char;
+use sys::boolean_t;
 
 use super::*;
 
@@ -49,6 +52,33 @@ impl NvList {
         NvListError::from_nvlist_rc(unsafe {
             sys::nvlist_add_boolean_value(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
         })?;
+
+        Ok(())
+    }
+
+    pub fn add_boolean_arr<T, W>(&mut self, name: T, v: W) -> Result<()>
+    where
+        T: AsRef<str>,
+        W: AsRef<[bool]> + Sized,
+    {
+        let mut conversion = Vec::with_capacity(v.as_ref().len());
+
+        for item in v.as_ref() {
+            if *item {
+                conversion.push(sys::boolean_t::B_TRUE)
+            } else {
+                conversion.push(sys::boolean_t::B_FALSE)
+            }
+        }
+
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvlist_add_boolean_array(
+                self.raw,
+                CString::new(name.as_ref())?.as_ptr(),
+                conversion.as_mut_ptr(),
+                conversion.len() as u32,
+            ))?;
+        };
 
         Ok(())
     }
@@ -299,6 +329,38 @@ impl NvList {
                 CString::new(v.as_ref())?.as_ptr(),
             )
         })?;
+
+        Ok(())
+    }
+
+    // TODO: check if its ok
+    pub fn add_string_arr<T, W>(&mut self, name: T, v: W) -> Result<()>
+    where
+        T: AsRef<str>,
+        W: AsRef<[String]> + Sized,
+    {
+        let mut vec = Vec::with_capacity(v.as_ref().len());
+
+        for str in v.as_ref() {
+            vec.push(str.clone())
+        }
+
+        let mut converted: Vec<*mut c_char> = vec
+            .into_iter()
+            .map(|s| CString::new(s).unwrap().into_raw())
+            .collect();
+
+        let x = converted.as_ptr();
+        let len = converted.len();
+
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvlist_add_string_array(
+                self.raw,
+                CString::new(name.as_ref())?.as_ptr(),
+                x,
+                len as u32,
+            ))?;
+        };
 
         Ok(())
     }

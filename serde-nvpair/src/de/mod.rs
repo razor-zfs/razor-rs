@@ -46,11 +46,29 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         todo!();
     }
 
-    fn deserialize_bool<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("deserializing boolean start function");
+        unsafe {
+            match match self.curr_pair.raw_nvpair.as_ref() {
+                Some(_) => {
+                    dbg!("pointer exists");
+                    dbg!(self.curr_pair.r#type());
+                    self.curr_pair.r#type()
+                }
+                None => todo!(),
+            } {
+                libnvpair::NvPairType::BooleanValue => {
+                    dbg!("Deserializing boolean");
+                    let val = self.curr_pair.value_boolean()?;
+                    dbg!(val);
+                    visitor.visit_bool(val)
+                }
+                _ => Err(libnvpair::NvListError::InvalidArgument),
+            }
+        }
     }
 
     fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value>
@@ -349,7 +367,8 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
             | libnvpair::NvPairType::StringArray
             | libnvpair::NvPairType::NvlistArray
             | libnvpair::NvPairType::Int8Array
-            | libnvpair::NvPairType::Uint8Array => {
+            | libnvpair::NvPairType::Uint8Array
+            | libnvpair::NvPairType::BooleanArray => {
                 // TODO: check it it is ok?
                 dbg!("in arr");
                 let mut iter: CtxIter<ContextType> = self.curr_pair.try_into()?;
@@ -480,10 +499,15 @@ impl<'de, 'a> SeqAccess<'de> for NvSeqAnalyzer<'a, 'de> {
     {
         dbg!("Deserializing seq in SeqAccess");
         match self.nvpair_iter.next() {
-            Some(x) => seed
-                .deserialize(CtxTypeDeserializer::from_ctx_type(x))
-                .map(Some),
-            None => Ok(None),
+            Some(x) => {
+                dbg!("in some");
+                seed.deserialize(CtxTypeDeserializer::from_ctx_type(x))
+                    .map(Some)
+            }
+            None => {
+                dbg!("in none");
+                Ok(None)
+            }
         }
     }
 }
@@ -739,7 +763,28 @@ mod tests {
     }
 
     #[test]
-    fn struct_mix() {
+    fn struct_bools() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: bool,
+            b: bool,
+            c: bool,
+        }
+        let expected = Test {
+            a: true,
+            b: false,
+            c: true,
+        };
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_boolean("a", true).unwrap();
+        nvlist.add_boolean("b", false).unwrap();
+        nvlist.add_boolean("c", true).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_mix_basic() {
         #[derive(Debug, PartialEq, Deserialize)]
         struct Test {
             a: u8,
@@ -751,6 +796,7 @@ mod tests {
             g: i32,
             h: i64,
             i: String,
+            j: bool,
         }
 
         let expected = Test {
@@ -763,6 +809,7 @@ mod tests {
             g: 19,
             h: 23,
             i: "test".to_string(),
+            j: false,
         };
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         nvlist.add_uint8("a", 3).unwrap();
@@ -775,12 +822,13 @@ mod tests {
         nvlist.add_int64("h", 23).unwrap();
         nvlist.add_int64("h", 23).unwrap();
         nvlist.add_string("i", "test").unwrap();
+        nvlist.add_boolean("j", false).unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
-    fn basic_vec_u8() {
+    fn struct_vec_u8() {
         #[derive(Debug, PartialEq, Deserialize)]
         struct Test {
             a: Vec<u8>,
@@ -804,7 +852,7 @@ mod tests {
     }
 
     #[test]
-    fn basic_vec_u16() {
+    fn struct_vec_u16() {
         #[derive(Debug, PartialEq, Deserialize)]
         struct Test {
             a: Vec<u16>,
@@ -828,7 +876,395 @@ mod tests {
     }
 
     #[test]
-    fn struct_nested() {
+    fn struct_vec_u32() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<u32>,
+            b: Vec<u32>,
+            c: Vec<u32>,
+        }
+        let expected = Test {
+            a: vec![1, 2, 3, 4, 5],
+            b: vec![6, 7, 8, 9, 10],
+            c: vec![11, 12, 13, 14, 15],
+        };
+        let arr1: [u32; 5] = [1, 2, 3, 4, 5];
+        let arr2: [u32; 5] = [6, 7, 8, 9, 10];
+        let arr3: [u32; 5] = [11, 12, 13, 14, 15];
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint32_arr("a", arr1).unwrap();
+        nvlist.add_uint32_arr("b", arr2).unwrap();
+        nvlist.add_uint32_arr("c", arr3).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_vec_u64() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<u64>,
+            b: Vec<u64>,
+            c: Vec<u64>,
+        }
+        let expected = Test {
+            a: vec![1, 2, 3, 4, 5],
+            b: vec![6, 7, 8, 9, 10],
+            c: vec![11, 12, 13, 14, 15],
+        };
+        let arr1: [u64; 5] = [1, 2, 3, 4, 5];
+        let arr2: [u64; 5] = [6, 7, 8, 9, 10];
+        let arr3: [u64; 5] = [11, 12, 13, 14, 15];
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint64_arr("a", arr1).unwrap();
+        nvlist.add_uint64_arr("b", arr2).unwrap();
+        nvlist.add_uint64_arr("c", arr3).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_vec_i8() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<i8>,
+            b: Vec<i8>,
+            c: Vec<i8>,
+        }
+        let expected = Test {
+            a: vec![1, 2, 3, 4, 5],
+            b: vec![6, 7, 8, 9, 10],
+            c: vec![11, 12, 13, 14, 15],
+        };
+        let arr1: [i8; 5] = [1, 2, 3, 4, 5];
+        let arr2: [i8; 5] = [6, 7, 8, 9, 10];
+        let arr3: [i8; 5] = [11, 12, 13, 14, 15];
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_int8_arr("a", arr1).unwrap();
+        nvlist.add_int8_arr("b", arr2).unwrap();
+        nvlist.add_int8_arr("c", arr3).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_vec_i16() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<i16>,
+            b: Vec<i16>,
+            c: Vec<i16>,
+        }
+        let expected = Test {
+            a: vec![1, 2, 3, 4, 5],
+            b: vec![6, 7, 8, 9, 10],
+            c: vec![11, 12, 13, 14, 15],
+        };
+        let arr1: [i16; 5] = [1, 2, 3, 4, 5];
+        let arr2: [i16; 5] = [6, 7, 8, 9, 10];
+        let arr3: [i16; 5] = [11, 12, 13, 14, 15];
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_int16_arr("a", arr1).unwrap();
+        nvlist.add_int16_arr("b", arr2).unwrap();
+        nvlist.add_int16_arr("c", arr3).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_vec_i32() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<i32>,
+            b: Vec<i32>,
+            c: Vec<i32>,
+        }
+        let expected = Test {
+            a: vec![1, 2, 3, 4, 5],
+            b: vec![6, 7, 8, 9, 10],
+            c: vec![11, 12, 13, 14, 15],
+        };
+        let arr1: [i32; 5] = [1, 2, 3, 4, 5];
+        let arr2: [i32; 5] = [6, 7, 8, 9, 10];
+        let arr3: [i32; 5] = [11, 12, 13, 14, 15];
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_int32_arr("a", arr1).unwrap();
+        nvlist.add_int32_arr("b", arr2).unwrap();
+        nvlist.add_int32_arr("c", arr3).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_vec_i64() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<i64>,
+            b: Vec<i64>,
+            c: Vec<i64>,
+        }
+        let expected = Test {
+            a: vec![1, 2, 3, 4, 5],
+            b: vec![6, 7, 8, 9, 10],
+            c: vec![11, 12, 13, 14, 15],
+        };
+        let arr1: [i64; 5] = [1, 2, 3, 4, 5];
+        let arr2: [i64; 5] = [6, 7, 8, 9, 10];
+        let arr3: [i64; 5] = [11, 12, 13, 14, 15];
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_int64_arr("a", arr1).unwrap();
+        nvlist.add_int64_arr("b", arr2).unwrap();
+        nvlist.add_int64_arr("c", arr3).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_vec_string() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<String>,
+            b: Vec<String>,
+            c: Vec<String>,
+        }
+        let expected = Test {
+            a: vec![
+                "a".to_string(),
+                "b".to_string(),
+                "c".to_string(),
+                "d".to_string(),
+                "e".to_string(),
+            ],
+            b: vec![
+                "f".to_string(),
+                "g".to_string(),
+                "h".to_string(),
+                "i".to_string(),
+                "j".to_string(),
+            ],
+            c: vec![
+                "k".to_string(),
+                "l".to_string(),
+                "m".to_string(),
+                "n".to_string(),
+                "o".to_string(),
+            ],
+        };
+        let arr1: [String; 5] = [
+            "a".to_string(),
+            "b".to_string(),
+            "c".to_string(),
+            "d".to_string(),
+            "e".to_string(),
+        ];
+        let arr2: [String; 5] = [
+            "f".to_string(),
+            "g".to_string(),
+            "h".to_string(),
+            "i".to_string(),
+            "j".to_string(),
+        ];
+        let arr3: [String; 5] = [
+            "k".to_string(),
+            "l".to_string(),
+            "m".to_string(),
+            "n".to_string(),
+            "o".to_string(),
+        ];
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_string_arr("a", arr1).unwrap();
+        nvlist.add_string_arr("b", arr2).unwrap();
+        nvlist.add_string_arr("c", arr3).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_vec_bool() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<bool>,
+            b: Vec<bool>,
+            c: Vec<bool>,
+        }
+        let expected = Test {
+            a: vec![true, true, true, true, true],
+            b: vec![false, false, false, false, false],
+            c: vec![true, true, false, true, true],
+        };
+        let arr1: [bool; 5] = [true, true, true, true, true];
+        let arr2: [bool; 5] = [false, false, false, false, false];
+        let arr3: [bool; 5] = [true, true, false, true, true];
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_boolean_arr("a", arr1).unwrap();
+        nvlist.add_boolean_arr("b", arr2).unwrap();
+        nvlist.add_boolean_arr("c", arr3).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_mix_vec() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<u8>,
+            b: Vec<u16>,
+            c: Vec<u32>,
+            d: Vec<u64>,
+            e: Vec<i8>,
+            f: Vec<i16>,
+            g: Vec<i32>,
+            h: Vec<i64>,
+            i: Vec<String>,
+            j: Vec<bool>,
+        }
+        let expected = Test {
+            a: vec![1, 2, 3, 4, 5],
+            b: vec![6, 7, 8, 9, 10],
+            c: vec![11, 12, 13, 14, 15],
+            d: vec![16, 17, 18, 19, 20],
+            e: vec![21, 22, 23, 24, 25],
+            f: vec![26, 27, 28, 29, 30],
+            g: vec![31, 32, 33, 34, 35],
+            h: vec![36, 37, 38, 39, 40],
+            i: vec![
+                "a".to_string(),
+                "b".to_string(),
+                "c".to_string(),
+                "d".to_string(),
+                "e".to_string(),
+            ],
+            j: vec![true, true, false, true, true],
+        };
+        let arr1: [u8; 5] = [1, 2, 3, 4, 5];
+        let arr2: [u16; 5] = [6, 7, 8, 9, 10];
+        let arr3: [u32; 5] = [11, 12, 13, 14, 15];
+        let arr4: [u64; 5] = [16, 17, 18, 19, 20];
+        let arr5: [i8; 5] = [21, 22, 23, 24, 25];
+        let arr6: [i16; 5] = [26, 27, 28, 29, 30];
+        let arr7: [i32; 5] = [31, 32, 33, 34, 35];
+        let arr8: [i64; 5] = [36, 37, 38, 39, 40];
+        let arr9: [String; 5] = [
+            "a".to_string(),
+            "b".to_string(),
+            "c".to_string(),
+            "d".to_string(),
+            "e".to_string(),
+        ];
+        let arr10: [bool; 5] = [true, true, false, true, true];
+
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint8_arr("a", arr1).unwrap();
+        nvlist.add_uint16_arr("b", arr2).unwrap();
+        nvlist.add_uint32_arr("c", arr3).unwrap();
+        nvlist.add_uint64_arr("d", arr4).unwrap();
+        nvlist.add_int8_arr("e", arr5).unwrap();
+        nvlist.add_int16_arr("f", arr6).unwrap();
+        nvlist.add_int32_arr("g", arr7).unwrap();
+        nvlist.add_int64_arr("h", arr8).unwrap();
+        nvlist.add_string_arr("i", arr9).unwrap();
+        nvlist.add_boolean_arr("j", arr10).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_mix() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<u8>,
+            b: Vec<u16>,
+            c: Vec<u32>,
+            d: Vec<u64>,
+            e: Vec<i8>,
+            f: Vec<i16>,
+            g: Vec<i32>,
+            h: Vec<i64>,
+            i: Vec<String>,
+            j: Vec<bool>,
+            k: u8,
+            l: u16,
+            m: u32,
+            n: u64,
+            o: i8,
+            p: i16,
+            q: i32,
+            r: i64,
+            s: String,
+            t: bool,
+        }
+        let expected = Test {
+            a: vec![1, 2, 3, 4, 5],
+            b: vec![6, 7, 8, 9, 10],
+            c: vec![11, 12, 13, 14, 15],
+            d: vec![16, 17, 18, 19, 20],
+            e: vec![21, 22, 23, 24, 25],
+            f: vec![26, 27, 28, 29, 30],
+            g: vec![31, 32, 33, 34, 35],
+            h: vec![36, 37, 38, 39, 40],
+            i: vec![
+                "a".to_string(),
+                "b".to_string(),
+                "c".to_string(),
+                "d".to_string(),
+                "e".to_string(),
+            ],
+            j: vec![true, true, false, true, true],
+            k: 3,
+            l: 5,
+            m: 7,
+            n: 11,
+            o: 13,
+            p: 17,
+            q: 19,
+            r: 23,
+            s: "test".to_string(),
+            t: false,
+        };
+        let arr1: [u8; 5] = [1, 2, 3, 4, 5];
+        let arr2: [u16; 5] = [6, 7, 8, 9, 10];
+        let arr3: [u32; 5] = [11, 12, 13, 14, 15];
+        let arr4: [u64; 5] = [16, 17, 18, 19, 20];
+        let arr5: [i8; 5] = [21, 22, 23, 24, 25];
+        let arr6: [i16; 5] = [26, 27, 28, 29, 30];
+        let arr7: [i32; 5] = [31, 32, 33, 34, 35];
+        let arr8: [i64; 5] = [36, 37, 38, 39, 40];
+        let arr9: [String; 5] = [
+            "a".to_string(),
+            "b".to_string(),
+            "c".to_string(),
+            "d".to_string(),
+            "e".to_string(),
+        ];
+        let arr10: [bool; 5] = [true, true, false, true, true];
+
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint8_arr("a", arr1).unwrap();
+        nvlist.add_uint16_arr("b", arr2).unwrap();
+        nvlist.add_uint32_arr("c", arr3).unwrap();
+        nvlist.add_uint64_arr("d", arr4).unwrap();
+        nvlist.add_int8_arr("e", arr5).unwrap();
+        nvlist.add_int16_arr("f", arr6).unwrap();
+        nvlist.add_int32_arr("g", arr7).unwrap();
+        nvlist.add_int64_arr("h", arr8).unwrap();
+        nvlist.add_string_arr("i", arr9).unwrap();
+        nvlist.add_boolean_arr("j", arr10).unwrap();
+        nvlist.add_uint8("k", 3).unwrap();
+        nvlist.add_uint16("l", 5).unwrap();
+        nvlist.add_uint32("m", 7).unwrap();
+        nvlist.add_uint64("n", 11).unwrap();
+        nvlist.add_int8("o", 13).unwrap();
+        nvlist.add_int16("p", 17).unwrap();
+        nvlist.add_int32("q", 19).unwrap();
+        nvlist.add_int64("r", 23).unwrap();
+        nvlist.add_string("s", "test").unwrap();
+        nvlist.add_boolean("t", false).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_nested_depth_two() {
         #[derive(Debug, PartialEq, Deserialize)]
         struct Nested {
             a: u16,
@@ -836,67 +1272,82 @@ mod tests {
         }
         #[derive(Debug, PartialEq, Deserialize)]
         struct Test {
-            a: Nested,
+            a: u8,
+            b: Nested,
+            c: u16,
+            d: Nested,
+            e: u32,
+            f: Nested,
+        }
+        let expected = Test {
+            a: 3,
+            b: Nested { a: 3, b: 5 },
+            c: 6,
+            d: Nested { a: 7, b: 9 },
+            e: 9,
+            f: Nested { a: 11, b: 13 },
+        };
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist_nested_first = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist_nested_second = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist_nested_third = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist_nested_first.add_uint16("a", 3).unwrap();
+        nvlist_nested_first.add_uint16("b", 5).unwrap();
+        nvlist_nested_second.add_uint16("a", 7).unwrap();
+        nvlist_nested_second.add_uint16("b", 9).unwrap();
+        nvlist_nested_third.add_uint16("a", 11).unwrap();
+        nvlist_nested_third.add_uint16("b", 13).unwrap();
+        nvlist.add_uint8("a", 3).unwrap();
+        nvlist.add_nvlist("b", &nvlist_nested_first).unwrap();
+        nvlist.add_uint16("c", 6).unwrap();
+        nvlist.add_nvlist("d", &nvlist_nested_second).unwrap();
+        nvlist.add_uint32("e", 9).unwrap();
+        nvlist.add_nvlist("f", &nvlist_nested_third).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_nested_depth_three() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct NestedDepthTwo {
+            a: u16,
             b: u16,
         }
-        let expected = Test {
-            a: Nested { a: 3, b: 5 },
-            b: 6,
-        };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        let mut nvlist_nested = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        nvlist_nested.add_uint16("a", 3).unwrap();
-        nvlist_nested.add_uint16("b", 5).unwrap();
-        nvlist.add_nvlist("a", &nvlist_nested).unwrap();
-        nvlist.add_uint16("b", 6).unwrap();
-
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
-    }
-
-    #[test]
-    fn with_string_de() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct NestedDepthOne {
+            a: u16,
+            b: NestedDepthTwo,
+            c: u16,
+        }
         #[derive(Debug, PartialEq, Deserialize)]
         struct Test {
-            a: u16,
-            b: u32,
-            c: String,
+            a: u8,
+            b: NestedDepthOne,
+            c: u16,
         }
-
         let expected = Test {
-            a: 3,
-            b: 5,
-            c: "test".to_string(),
+            a: 1,
+            b: NestedDepthOne {
+                a: 2,
+                b: NestedDepthTwo { a: 3, b: 4 },
+                c: 5,
+            },
+            c: 6,
         };
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        nvlist.add_uint16("a", 3).unwrap();
-        nvlist.add_uint32("b", 5).unwrap();
-        nvlist.add_string("c", "test").unwrap();
-
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
-    }
-
-    #[test]
-    fn with_vec_de() {
-        #[derive(Debug, PartialEq, Deserialize)]
-        struct Test {
-            a: u16,
-            b: u32,
-            c: String,
-            d: Vec<u16>,
-        }
-
-        let expected = Test {
-            a: 3,
-            b: 5,
-            c: "test".to_string(),
-            d: vec![1, 2, 3, 4, 5],
-        };
-        let arr: [u16; 5] = [1, 2, 3, 4, 5];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        nvlist.add_uint16("a", 3).unwrap();
-        nvlist.add_uint32("b", 5).unwrap();
-        nvlist.add_string("c", "test").unwrap();
-        nvlist.add_uint16_arr("d", arr).unwrap();
+        let mut nvlist_nested_depth_one = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist_nested_depth_two = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist_nested_depth_two.add_uint16("a", 3).unwrap();
+        nvlist_nested_depth_two.add_uint16("b", 4).unwrap();
+        nvlist_nested_depth_one.add_uint16("a", 2).unwrap();
+        nvlist_nested_depth_one
+            .add_nvlist("b", &nvlist_nested_depth_two)
+            .unwrap();
+        nvlist_nested_depth_one.add_uint16("c", 5).unwrap();
+        nvlist.add_uint8("a", 1).unwrap();
+        nvlist.add_nvlist("b", &nvlist_nested_depth_one).unwrap();
+        nvlist.add_uint16("c", 6).unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }

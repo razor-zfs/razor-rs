@@ -54,6 +54,7 @@ impl NvPair {
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut boolean_arr: *mut boolean_t = std::ptr::null_mut();
         let boolean_arr_ptr: *mut *mut boolean_t = &mut boolean_arr;
+
         unsafe {
             NvListError::from_nvlist_rc(sys::nvpair_value_boolean_array(
                 self.raw_nvpair,
@@ -355,6 +356,32 @@ impl NvPair {
         }
     }
 
+    // TODO: check if it is ok
+    pub fn value_string_array(&self) -> Result<Vec<String>> {
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut str: *mut u8 = std::ptr::null_mut();
+        let mut str_ptr: *mut *mut u8 = &mut str;
+        let str_arr_ptr: *mut *mut *mut u8 = &mut str_ptr;
+
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvpair_value_string_array(
+                self.raw_nvpair,
+                str_arr_ptr,
+                size_ptr,
+            ))?;
+
+            let mut str_vec = Vec::with_capacity(*size_ptr as usize);
+            let cstr_vec = slice::from_raw_parts(*str_arr_ptr, size as usize).to_vec();
+
+            for cstr in cstr_vec {
+                str_vec.push(CStr::from_ptr(cstr).to_str()?.to_string());
+            }
+
+            Ok(str_vec)
+        }
+    }
+
     pub fn value_nvlist(&self) -> Result<NvList> {
         let mut raw_nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
         let raw_nvlist_ptr: *mut *mut sys::nvlist_t = &mut raw_nvlist;
@@ -407,6 +434,7 @@ pub struct CtxIter<ContextType> {
 impl TryFrom<NvPair> for CtxIter<ContextType> {
     type Error = NvListError;
     fn try_from(mut nvpair: NvPair) -> Result<Self> {
+        dbg!(" sadasdasdasdasd", nvpair.r#type());
         match nvpair.r#type() {
             NvPairType::Uint8Array => {
                 let vec = nvpair.value_uint8_array()?;
@@ -475,6 +503,13 @@ impl TryFrom<NvPair> for CtxIter<ContextType> {
                 let vec = nvpair.value_nvlist_array()?;
                 Ok(CtxIter {
                     vec: ContextType::NvListArr(vec),
+                    index: 0,
+                })
+            }
+            NvPairType::StringArray => {
+                let vec = nvpair.value_string_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::StrArr(vec),
                     index: 0,
                 })
             }
