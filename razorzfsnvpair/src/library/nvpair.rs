@@ -343,11 +343,112 @@ impl Iterator for CtxIter<ContextType> {
 
     fn next(&mut self) -> Option<Self::Item> {
         match &self.vec {
+            ContextType::U8Arr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::U8(vec[index]))
+                } else {
+                    None
+                }
+            }
+            ContextType::I8Arr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::I8(vec[index]))
+                } else {
+                    None
+                }
+            }
             ContextType::U16Arr(vec) => {
                 if self.index < vec.len() {
                     let index = self.index;
                     self.index += 1;
                     Some(ContextType::U16(vec[index]))
+                } else {
+                    None
+                }
+            }
+            ContextType::I16Arr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::I16(vec[index]))
+                } else {
+                    None
+                }
+            }
+            ContextType::U32Arr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::U32(vec[index]))
+                } else {
+                    None
+                }
+            }
+            ContextType::I32Arr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::I32(vec[index]))
+                } else {
+                    None
+                }
+            }
+            ContextType::U64Arr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::U64(vec[index]))
+                } else {
+                    None
+                }
+            }
+            ContextType::I64Arr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::I64(vec[index]))
+                } else {
+                    None
+                }
+            }
+            ContextType::BooleanArr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::Boolean(vec[index]))
+                } else {
+                    None
+                }
+            }
+            ContextType::StrArr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    // TODO: check if it is ok to clone here
+                    Some(ContextType::Str(vec[index].clone()))
+                } else {
+                    None
+                }
+            }
+            ContextType::DoubleArr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    Some(ContextType::Double(vec[index]))
+                } else {
+                    None
+                }
+            }
+            ContextType::NvListArr(vec) => {
+                if self.index < vec.len() {
+                    let index = self.index;
+                    self.index += 1;
+                    // TODO: check if it is ok to copy here
+                    Some(ContextType::NvList(vec[index]))
                 } else {
                     None
                 }
@@ -359,9 +460,18 @@ impl Iterator for CtxIter<ContextType> {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum ContextType {
+    U8(u8),
+    I8(i8),
     U16(u16),
+    I16(i16),
     U32(u32),
+    I32(i32),
+    U64(u64),
+    I64(i64),
+    Boolean(bool),
     Str(String),
+    Double(f64),
+    NvList(NvList),
     U8Arr(Vec<u8>),
     U16Arr(Vec<u16>),
     U32Arr(Vec<u32>),
@@ -373,6 +483,7 @@ pub enum ContextType {
     BooleanArr(Vec<bool>),
     StrArr(Vec<String>),
     DoubleArr(Vec<f64>),
+    NvListArr(Vec<NvList>),
     Empty,
 }
 
