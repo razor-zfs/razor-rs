@@ -56,11 +56,16 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
         todo!();
     }
 
-    fn deserialize_u8<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("Deserializing u16 in ctx_type");
+        dbg!(&self.input);
+        match self.input {
+            ContextType::U8(x) => visitor.visit_u8(x),
+            _ => Err(NvListError::UnmatchingVariables),
+        }
     }
 
     fn deserialize_u16<V>(self, visitor: V) -> Result<V::Value>

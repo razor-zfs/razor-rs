@@ -780,6 +780,30 @@ mod tests {
     }
 
     #[test]
+    fn basic_vec_u8() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: Vec<u8>,
+            b: Vec<u8>,
+            c: Vec<u8>,
+        }
+        let expected = Test {
+            a: vec![1, 2, 3, 4, 5],
+            b: vec![6, 7, 8, 9, 10],
+            c: vec![11, 12, 13, 14, 15],
+        };
+        let arr1: [u8; 5] = [1, 2, 3, 4, 5];
+        let arr2: [u8; 5] = [6, 7, 8, 9, 10];
+        let arr3: [u8; 5] = [11, 12, 13, 14, 15];
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_uint8_arr("a", arr1).unwrap();
+        nvlist.add_uint8_arr("b", arr2).unwrap();
+        nvlist.add_uint8_arr("c", arr3).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
     fn basic_vec_u16() {
         #[derive(Debug, PartialEq, Deserialize)]
         struct Test {
@@ -799,7 +823,6 @@ mod tests {
         nvlist.add_uint16_arr("a", arr1).unwrap();
         nvlist.add_uint16_arr("b", arr2).unwrap();
         nvlist.add_uint16_arr("c", arr3).unwrap();
-        //nvlist.add_uint16_arr("a", arr).unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }
@@ -808,24 +831,24 @@ mod tests {
     fn struct_nested() {
         #[derive(Debug, PartialEq, Deserialize)]
         struct Nested {
+            a: u16,
             b: u16,
-            c: u16,
         }
         #[derive(Debug, PartialEq, Deserialize)]
         struct Test {
             a: Nested,
-            d: u16,
+            b: u16,
         }
         let expected = Test {
-            a: Nested { b: 3, c: 5 },
-            d: 6,
+            a: Nested { a: 3, b: 5 },
+            b: 6,
         };
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         let mut nvlist_nested = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        nvlist_nested.add_uint16("b", 3).unwrap();
-        nvlist_nested.add_uint16("c", 5).unwrap();
+        nvlist_nested.add_uint16("a", 3).unwrap();
+        nvlist_nested.add_uint16("b", 5).unwrap();
         nvlist.add_nvlist("a", &nvlist_nested).unwrap();
-        nvlist.add_uint16("d", 6).unwrap();
+        nvlist.add_uint16("b", 6).unwrap();
 
         assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
     }

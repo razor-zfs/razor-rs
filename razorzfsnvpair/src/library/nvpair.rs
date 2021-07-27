@@ -1,6 +1,8 @@
 use std::convert::TryFrom;
 use std::{ffi::CStr, slice};
 
+use sys::boolean_t;
+
 use super::*;
 
 #[derive(Clone, Debug, PartialEq, Copy)]
@@ -25,6 +27,57 @@ impl NvPair {
 
     pub fn r#type(&self) -> NvPairType {
         unsafe { sys::nvpair_type(self.raw_nvpair).into() }
+    }
+
+    pub fn value_boolean(&self) -> Result<bool> {
+        let mut x = sys::boolean_t::B_FALSE;
+        let val: *mut sys::boolean_t = &mut x;
+
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvpair_value_boolean_value(self.raw_nvpair, val))?;
+
+            match val.as_ref() {
+                Some(boolval) => {
+                    if let sys::boolean_t::B_FALSE = *boolval {
+                        Ok(false)
+                    } else {
+                        Ok(true)
+                    }
+                }
+                None => Err(NvListError::ConversionError),
+            }
+        }
+    }
+
+    pub fn value_boolean_array(&self) -> Result<Vec<bool>> {
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut boolean_arr: *mut boolean_t = std::ptr::null_mut();
+        let boolean_arr_ptr: *mut *mut boolean_t = &mut boolean_arr;
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvpair_value_boolean_array(
+                self.raw_nvpair,
+                boolean_arr_ptr,
+                size_ptr,
+            ))?;
+
+            match boolean_arr_ptr.as_ref() {
+                Some(arr) => {
+                    let vec = slice::from_raw_parts(*arr, size as usize).to_vec();
+                    let mut bool_vec = Vec::with_capacity(vec.len());
+                    for c_bool in vec {
+                        if c_bool == sys::boolean_t::B_TRUE {
+                            bool_vec.push(true);
+                        } else {
+                            bool_vec.push(false);
+                        }
+                    }
+
+                    Ok(bool_vec)
+                }
+                None => Err(NvListError::ConversionError),
+            }
+        }
     }
 
     pub fn value_uint8(&self) -> Result<u8> {
@@ -315,6 +368,35 @@ impl NvPair {
             Ok(nvlist)
         }
     }
+
+    pub fn value_nvlist_array(&mut self) -> Result<Vec<NvList>> {
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
+        let mut nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
+        let nvlist_arr_ptr: *mut *mut *mut sys::nvlist_t = &mut nvlist_ptr;
+
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvpair_value_nvlist_array(
+                self.raw_nvpair,
+                nvlist_arr_ptr,
+                size_ptr,
+            ))?;
+
+            match nvlist_arr_ptr.as_ref() {
+                Some(arr) => {
+                    let vec_ptr = slice::from_raw_parts(*arr, size as usize).to_vec();
+                    let mut nvlist_vec = Vec::with_capacity(vec_ptr.len());
+                    for nvlist in vec_ptr {
+                        nvlist_vec.push(NvList { raw: nvlist })
+                    }
+
+                    Ok(nvlist_vec)
+                }
+                None => Err(NvListError::ConversionError),
+            }
+        }
+    }
 }
 
 pub struct CtxIter<ContextType> {
@@ -326,10 +408,73 @@ impl TryFrom<NvPair> for CtxIter<ContextType> {
     type Error = NvListError;
     fn try_from(mut nvpair: NvPair) -> Result<Self> {
         match nvpair.r#type() {
+            NvPairType::Uint8Array => {
+                let vec = nvpair.value_uint8_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::U8Arr(vec),
+                    index: 0,
+                })
+            }
             NvPairType::Uint16Array => {
                 let vec = nvpair.value_uint16_array()?;
                 Ok(CtxIter {
                     vec: ContextType::U16Arr(vec),
+                    index: 0,
+                })
+            }
+            NvPairType::Uint32Array => {
+                let vec = nvpair.value_uint32_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::U32Arr(vec),
+                    index: 0,
+                })
+            }
+            NvPairType::Uint64Array => {
+                let vec = nvpair.value_uint64_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::U64Arr(vec),
+                    index: 0,
+                })
+            }
+            NvPairType::Int8Array => {
+                let vec = nvpair.value_int8_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::I8Arr(vec),
+                    index: 0,
+                })
+            }
+            NvPairType::Int16Array => {
+                let vec = nvpair.value_int16_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::I16Arr(vec),
+                    index: 0,
+                })
+            }
+            NvPairType::Int32Array => {
+                let vec = nvpair.value_int32_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::I32Arr(vec),
+                    index: 0,
+                })
+            }
+            NvPairType::Int64Array => {
+                let vec = nvpair.value_int64_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::I64Arr(vec),
+                    index: 0,
+                })
+            }
+            NvPairType::BooleanArray => {
+                let vec = nvpair.value_boolean_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::BooleanArr(vec),
+                    index: 0,
+                })
+            }
+            NvPairType::NvlistArray => {
+                let vec = nvpair.value_nvlist_array()?;
+                Ok(CtxIter {
+                    vec: ContextType::NvListArr(vec),
                     index: 0,
                 })
             }
