@@ -1,3 +1,5 @@
+use std::ffi::CString;
+
 use super::*;
 
 #[derive(Clone, Debug, PartialEq, Copy)]
@@ -73,6 +75,72 @@ impl NvList {
         Ok(())
     }
 
+    pub fn add_uint32<T>(&mut self, name: T, v: u32) -> Result<()>
+    where
+        T: AsRef<str>,
+    {
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvlist_add_uint32(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
+        })?;
+
+        Ok(())
+    }
+
+    pub fn add_uint64<T>(&mut self, name: T, v: u64) -> Result<()>
+    where
+        T: AsRef<str>,
+    {
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvlist_add_uint64(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
+        })?;
+
+        Ok(())
+    }
+
+    pub fn add_int8<T>(&mut self, name: T, v: i8) -> Result<()>
+    where
+        T: AsRef<str>,
+    {
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvlist_add_int8(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
+        })?;
+
+        Ok(())
+    }
+
+    pub fn add_int16<T>(&mut self, name: T, v: i16) -> Result<()>
+    where
+        T: AsRef<str>,
+    {
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvlist_add_int16(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
+        })?;
+
+        Ok(())
+    }
+
+    pub fn add_int32<T>(&mut self, name: T, v: i32) -> Result<()>
+    where
+        T: AsRef<str>,
+    {
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvlist_add_int32(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
+        })?;
+
+        Ok(())
+    }
+
+    pub fn add_int64<T>(&mut self, name: T, v: i64) -> Result<()>
+    where
+        T: AsRef<str>,
+    {
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvlist_add_int64(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
+        })?;
+
+        Ok(())
+    }
+
     pub fn add_uint8_arr<T, W>(&mut self, name: T, v: W) -> Result<()>
     where
         T: AsRef<str>,
@@ -141,68 +209,70 @@ impl NvList {
         Ok(())
     }
 
-    pub fn add_uint32<T>(&mut self, name: T, v: u32) -> Result<()>
+    pub fn add_int8_arr<T, W>(&mut self, name: T, v: W) -> Result<()>
     where
         T: AsRef<str>,
+        W: AsRef<[i8]> + Sized,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_uint32(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvlist_add_int8_array(
+                self.raw,
+                CString::new(name.as_ref())?.as_ptr(),
+                v.as_ref().to_owned().as_mut_ptr(),
+                v.as_ref().len() as u32,
+            ))?;
+        };
 
         Ok(())
     }
 
-    pub fn add_uint64<T>(&mut self, name: T, v: u64) -> Result<()>
+    pub fn add_int16_arr<T, W>(&mut self, name: T, v: W) -> Result<()>
     where
         T: AsRef<str>,
+        W: AsRef<[i16]> + Sized,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_uint64(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvlist_add_int16_array(
+                self.raw,
+                CString::new(name.as_ref())?.as_ptr(),
+                v.as_ref().to_owned().as_mut_ptr(),
+                v.as_ref().len() as u32,
+            ))?;
+        };
 
         Ok(())
     }
 
-    pub fn add_int8<T>(&mut self, name: T, v: i8) -> Result<()>
+    pub fn add_int32_arr<T, W>(&mut self, name: T, v: W) -> Result<()>
     where
         T: AsRef<str>,
+        W: AsRef<[i32]> + Sized,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_int8(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvlist_add_int32_array(
+                self.raw,
+                CString::new(name.as_ref())?.as_ptr(),
+                v.as_ref().to_owned().as_mut_ptr(),
+                v.as_ref().len() as u32,
+            ))?;
+        };
 
         Ok(())
     }
 
-    pub fn add_int16<T>(&mut self, name: T, v: i16) -> Result<()>
+    pub fn add_int64_arr<T, W>(&mut self, name: T, v: W) -> Result<()>
     where
         T: AsRef<str>,
+        W: AsRef<[i64]> + Sized,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_int16(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
-
-        Ok(())
-    }
-
-    pub fn add_int32<T>(&mut self, name: T, v: i32) -> Result<()>
-    where
-        T: AsRef<str>,
-    {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_int32(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
-
-        Ok(())
-    }
-
-    pub fn add_int64<T>(&mut self, name: T, v: i64) -> Result<()>
-    where
-        T: AsRef<str>,
-    {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_int64(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvlist_add_int64_array(
+                self.raw,
+                CString::new(name.as_ref())?.as_ptr(),
+                v.as_ref().to_owned().as_mut_ptr(),
+                v.as_ref().len() as u32,
+            ))?;
+        };
 
         Ok(())
     }
@@ -228,6 +298,17 @@ impl NvList {
                 CString::new(name.as_ref())?.as_ptr(),
                 CString::new(v.as_ref())?.as_ptr(),
             )
+        })?;
+
+        Ok(())
+    }
+
+    pub fn add_nvlist<T>(&mut self, name: T, v: &NvList) -> Result<()>
+    where
+        T: AsRef<str>,
+    {
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvlist_add_nvlist(self.raw, CString::new(name.as_ref())?.as_ptr(), v.raw)
         })?;
 
         Ok(())

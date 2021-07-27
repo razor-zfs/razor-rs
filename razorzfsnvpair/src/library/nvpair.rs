@@ -301,6 +301,20 @@ impl NvPair {
             Ok(name)
         }
     }
+
+    pub fn value_nvlist(&self) -> Result<NvList> {
+        let mut raw_nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
+        let raw_nvlist_ptr: *mut *mut sys::nvlist_t = &mut raw_nvlist;
+
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvpair_value_nvlist(self.raw_nvpair, raw_nvlist_ptr))?;
+            let nvlist = NvList {
+                raw: *raw_nvlist_ptr,
+            };
+
+            Ok(nvlist)
+        }
+    }
 }
 
 pub struct CtxIter<ContextType> {
