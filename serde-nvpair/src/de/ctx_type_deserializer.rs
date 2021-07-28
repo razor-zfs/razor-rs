@@ -6,8 +6,15 @@ pub struct CtxTypeDeserializer {
 }
 
 impl<'de> CtxTypeDeserializer {
+    #[inline]
     pub fn from_ctx_type(input: ContextType) -> Self {
         CtxTypeDeserializer { input }
+    }
+}
+
+impl From<ContextType> for CtxTypeDeserializer {
+    fn from(input: ContextType) -> Self {
+        Self::from_ctx_type(input)
     }
 }
 

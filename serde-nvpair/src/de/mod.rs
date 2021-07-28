@@ -501,8 +501,7 @@ impl<'de, 'a> SeqAccess<'de> for NvSeqAnalyzer<'a, 'de> {
         match self.nvpair_iter.next() {
             Some(x) => {
                 dbg!("in some");
-                seed.deserialize(CtxTypeDeserializer::from_ctx_type(x))
-                    .map(Some)
+                seed.deserialize(CtxTypeDeserializer::from(x)).map(Some)
             }
             None => {
                 dbg!("in none");
