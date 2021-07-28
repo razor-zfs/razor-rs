@@ -24,7 +24,7 @@ pub fn _to_nvlist<T>(value: &T) -> Result<libnvpair::NvList>
 where
     T: Serialize,
 {
-    let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+    let nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
 
     let mut serializer = NvListSerializer {
         raw_nvlist: nvlist,
@@ -543,7 +543,7 @@ impl<'a> ser::SerializeStruct for &'a mut NvListSerializer {
     type Ok = ();
     type Error = libnvpair::NvListError;
 
-    fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
+    fn serialize_field<T>(&mut self, _key: &'static str, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {

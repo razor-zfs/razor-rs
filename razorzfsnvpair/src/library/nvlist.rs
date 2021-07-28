@@ -1,7 +1,6 @@
-use std::{borrow::BorrowMut, ffi::CString, slice};
+use std::ffi::CString;
 
 use libc::c_char;
-use sys::boolean_t;
 
 use super::*;
 
@@ -345,7 +344,7 @@ impl NvList {
             vec.push(str.clone())
         }
 
-        let mut converted: Vec<*mut c_char> = vec
+        let converted: Vec<*mut c_char> = vec
             .into_iter()
             .map(|s| CString::new(s).unwrap().into_raw())
             .collect();
@@ -458,7 +457,6 @@ mod tests {
         nvlist.add_uint16("a", 3).unwrap();
         nvlist.add_uint32("b", 5).unwrap();
         nvlist.add_uint8_arr("d", arr).unwrap();
-        let mut nvpair = NvPair::default();
         let mut iter = nvlist.into_iter();
         let pair1 = iter.next().unwrap();
         let pair2 = iter.next().unwrap();

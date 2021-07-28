@@ -151,7 +151,7 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
         todo!();
     }
 
-    fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
+    fn deserialize_str<V>(self, _visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
@@ -212,14 +212,14 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
         todo!();
     }
 
-    fn deserialize_seq<V>(mut self, visitor: V) -> Result<V::Value>
+    fn deserialize_seq<V>(mut self, _visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
         todo!();
     }
 
-    fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value>
+    fn deserialize_tuple<V>(self, _len: usize, _visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
@@ -238,7 +238,7 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
         todo!();
     }
 
-    fn deserialize_map<V>(mut self, visitor: V) -> Result<V::Value>
+    fn deserialize_map<V>(mut self, _visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
@@ -248,8 +248,8 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
     fn deserialize_struct<V>(
         self,
         _name: &'static str,
-        fields: &'static [&'static str],
-        visitor: V,
+        _fields: &'static [&'static str],
+        _visitor: V,
     ) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -269,7 +269,7 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
         todo!();
     }
 
-    fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value>
+    fn deserialize_identifier<V>(self, _visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
@@ -285,31 +285,31 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
 }
 
 struct CommaSeparated<'a> {
-    de: &'a mut CtxTypeDeserializer,
-    iter: NvListIterator,
+    _de: &'a mut CtxTypeDeserializer,
+    _iter: NvListIterator,
 }
 
 impl<'a, 'de> CommaSeparated<'a> {
-    fn new(de: &'a mut CtxTypeDeserializer, iter: NvListIterator) -> Self {
-        CommaSeparated { de, iter }
+    fn _new(_de: &'a mut CtxTypeDeserializer, _iter: NvListIterator) -> Self {
+        CommaSeparated { _de, _iter }
     }
 }
 
 struct NvSeqAnalyzer<'a> {
-    de: &'a mut CtxTypeDeserializer,
-    nvpair_iter: CtxIter<ContextType>,
+    _de: &'a mut CtxTypeDeserializer,
+    _nvpair_iter: CtxIter<ContextType>,
 }
 
 impl<'a, 'de> NvSeqAnalyzer<'a> {
-    fn new(de: &'a mut CtxTypeDeserializer, nvpair_iter: CtxIter<ContextType>) -> Self {
-        NvSeqAnalyzer { de, nvpair_iter }
+    fn _new(_de: &'a mut CtxTypeDeserializer, _nvpair_iter: CtxIter<ContextType>) -> Self {
+        NvSeqAnalyzer { _de, _nvpair_iter }
     }
 }
 
 impl<'de, 'a> SeqAccess<'de> for NvSeqAnalyzer<'a> {
     type Error = libnvpair::NvListError;
 
-    fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
+    fn next_element_seed<T>(&mut self, _seed: T) -> Result<Option<T::Value>>
     where
         T: DeserializeSeed<'de>,
     {
@@ -320,14 +320,14 @@ impl<'de, 'a> SeqAccess<'de> for NvSeqAnalyzer<'a> {
 impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a> {
     type Error = libnvpair::NvListError;
 
-    fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>>
+    fn next_key_seed<K>(&mut self, _seed: K) -> Result<Option<K::Value>>
     where
         K: DeserializeSeed<'de>,
     {
         todo!();
     }
 
-    fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value>
+    fn next_value_seed<V>(&mut self, _seed: V) -> Result<V::Value>
     where
         V: DeserializeSeed<'de>,
     {

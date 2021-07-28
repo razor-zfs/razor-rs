@@ -371,7 +371,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
             | libnvpair::NvPairType::BooleanArray => {
                 // TODO: check it it is ok?
                 dbg!("in arr");
-                let mut iter: CtxIter<ContextType> = self.curr_pair.try_into()?;
+                let iter: CtxIter<ContextType> = self.curr_pair.try_into()?;
                 let value = visitor.visit_seq(NvSeqAnalyzer::new(&mut self, iter))?;
                 Ok(value)
             }
@@ -480,13 +480,13 @@ impl<'a, 'de> CommaSeparated<'a, 'de> {
 }
 
 struct NvSeqAnalyzer<'a, 'de: 'a> {
-    de: &'a mut NvListDeserializer<'de>,
+    _de: &'a mut NvListDeserializer<'de>,
     nvpair_iter: CtxIter<ContextType>,
 }
 
 impl<'a, 'de> NvSeqAnalyzer<'a, 'de> {
-    fn new(de: &'a mut NvListDeserializer<'de>, nvpair_iter: CtxIter<ContextType>) -> Self {
-        NvSeqAnalyzer { de, nvpair_iter }
+    fn new(_de: &'a mut NvListDeserializer<'de>, nvpair_iter: CtxIter<ContextType>) -> Self {
+        NvSeqAnalyzer { _de, nvpair_iter }
     }
 }
 
