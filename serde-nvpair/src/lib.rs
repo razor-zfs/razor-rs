@@ -508,4 +508,37 @@ mod tests {
 
         assert_eq!(test_struct, _from_nvlist(&mut nvlist).unwrap());
     }
+
+    #[test]
+    fn struct_nested_depth_two() {
+        #[derive(Debug, PartialEq, Serialize, Deserialize)]
+        struct Nested {
+            a: u16,
+            b: u16,
+            c: u16,
+            d: Vec<u16>,
+        }
+        #[derive(Debug, PartialEq, Serialize, Deserialize)]
+        struct Test {
+            a: Nested,
+            b: u16,
+            c: u16,
+            d: Vec<u16>,
+        }
+
+        let expected = Test {
+            a: Nested {
+                a: 3,
+                b: 5,
+                c: 7,
+                d: vec![1, 2, 3],
+            },
+            b: 3,
+            c: 5,
+            d: vec![1, 2, 3],
+        };
+
+        let mut nvlist = _to_nvlist(&expected).unwrap();
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
 }
