@@ -33,7 +33,7 @@ pub struct NvListSerializer {
     curr: SerializerHelper,
 }
 
-pub fn _to_nvlist<T>(value: &T) -> Result<libnvpair::NvList>
+pub fn to_nvlist<T>(value: &T) -> Result<libnvpair::NvList>
 where
     T: Serialize,
 {
@@ -700,7 +700,7 @@ mod tests {
 
         let test_struct = Test { a: 3, b: 5, c: 7 };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -714,7 +714,7 @@ mod tests {
 
         let test_struct = Test { a: 3, b: 5, c: 7 };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -728,7 +728,7 @@ mod tests {
 
         let test_struct = Test { a: 3, b: 5, c: 7 };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -742,7 +742,7 @@ mod tests {
 
         let test_struct = Test { a: 3, b: 5, c: 7 };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -756,7 +756,7 @@ mod tests {
 
         let test_struct = Test { a: 3, b: 5, c: 7 };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -770,7 +770,7 @@ mod tests {
 
         let test_struct = Test { a: 3, b: 5, c: 7 };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -784,7 +784,7 @@ mod tests {
 
         let test_struct = Test { a: 3, b: 5, c: 7 };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -798,7 +798,7 @@ mod tests {
 
         let test_struct = Test { a: 3, b: 5, c: 7 };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -816,7 +816,7 @@ mod tests {
             c: "c".to_string(),
         };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -834,7 +834,7 @@ mod tests {
             c: true,
         };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -866,7 +866,7 @@ mod tests {
             j: false,
         };
 
-        _to_nvlist(&test_struct).unwrap();
+        to_nvlist(&test_struct).unwrap();
     }
 
     #[test]
@@ -883,7 +883,7 @@ mod tests {
             c: vec![11, 12, 13, 14, 15],
         };
 
-        _to_nvlist(&expected).unwrap();
+        to_nvlist(&expected).unwrap();
     }
 
     #[test]
@@ -900,7 +900,7 @@ mod tests {
             c: vec![11, 12, 13, 14, 15],
         };
 
-        _to_nvlist(&expected).unwrap();
+        to_nvlist(&expected).unwrap();
     }
 
     #[test]
@@ -917,7 +917,7 @@ mod tests {
             c: vec![11, 12, 13, 14, 15],
         };
 
-        _to_nvlist(&expected).unwrap();
+        to_nvlist(&expected).unwrap();
     }
 
     #[test]
@@ -934,7 +934,7 @@ mod tests {
             c: vec![11, 12, 13, 14, 15],
         };
 
-        _to_nvlist(&expected).unwrap();
+        to_nvlist(&expected).unwrap();
     }
 
     #[test]
@@ -951,7 +951,7 @@ mod tests {
             c: vec![11, 12, 13, 14, 15],
         };
 
-        _to_nvlist(&expected).unwrap();
+        to_nvlist(&expected).unwrap();
     }
 
     #[test]
@@ -968,7 +968,7 @@ mod tests {
             c: vec![11, 12, 13, 14, 15],
         };
 
-        _to_nvlist(&expected).unwrap();
+        to_nvlist(&expected).unwrap();
     }
 
     #[test]
@@ -985,7 +985,7 @@ mod tests {
             c: vec![11, 12, 13, 14, 15],
         };
 
-        _to_nvlist(&expected).unwrap();
+        to_nvlist(&expected).unwrap();
     }
 
     #[test]
@@ -1002,7 +1002,7 @@ mod tests {
             c: vec![11, 12, 13, 14, 15],
         };
 
-        _to_nvlist(&expected).unwrap();
+        to_nvlist(&expected).unwrap();
     }
 
     #[test]
@@ -1028,6 +1028,6 @@ mod tests {
             },
         };
 
-        _to_nvlist(&expected).unwrap();
+        to_nvlist(&expected).unwrap();
     }
 }

@@ -25,7 +25,7 @@ impl<'de> NvListDeserializer<'de> {
     }
 }
 
-pub fn _from_nvlist<'a, T>(s: &'a mut libnvpair::NvList) -> Result<T>
+pub fn from_nvlist<'a, T>(s: &'a mut libnvpair::NvList) -> Result<T>
 where
     T: Deserialize<'a>,
 {
@@ -474,6 +474,8 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing object identifier");
+        dbg!(self.curr_pair);
+        dbg!(self.curr_pair.r#type());
         dbg!(self.curr_pair.name()?.as_str());
         visitor.visit_str(self.curr_pair.name()?.as_str())
     }
@@ -640,7 +642,7 @@ mod tests {
         nvlist.add_float64("b", 5.9).unwrap();
         nvlist.add_float64("c", 4.8).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -661,7 +663,7 @@ mod tests {
         nvlist.add_float64("b", 5.9).unwrap();
         nvlist.add_float64("c", 4.8).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -678,7 +680,7 @@ mod tests {
         nvlist.add_uint8("b", 5).unwrap();
         nvlist.add_uint8("c", 7).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -695,7 +697,7 @@ mod tests {
         nvlist.add_uint16("b", 5).unwrap();
         nvlist.add_uint16("c", 7).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -712,7 +714,7 @@ mod tests {
         nvlist.add_uint32("b", 5).unwrap();
         nvlist.add_uint32("c", 7).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -729,7 +731,7 @@ mod tests {
         nvlist.add_uint64("b", 5).unwrap();
         nvlist.add_uint64("c", 7).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -746,7 +748,7 @@ mod tests {
         nvlist.add_int8("b", 5).unwrap();
         nvlist.add_int8("c", 7).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -763,7 +765,7 @@ mod tests {
         nvlist.add_int16("b", 5).unwrap();
         nvlist.add_int16("c", 7).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -780,7 +782,7 @@ mod tests {
         nvlist.add_int32("b", 5).unwrap();
         nvlist.add_int32("c", 7).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -797,7 +799,7 @@ mod tests {
         nvlist.add_int64("b", 5).unwrap();
         nvlist.add_int64("c", 7).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -818,7 +820,7 @@ mod tests {
         nvlist.add_string("b", "test2").unwrap();
         nvlist.add_string("c", "test3").unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -839,7 +841,7 @@ mod tests {
         nvlist.add_boolean("b", false).unwrap();
         nvlist.add_boolean("c", true).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -883,7 +885,7 @@ mod tests {
         nvlist.add_string("i", "test").unwrap();
         nvlist.add_boolean("j", false).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -907,7 +909,7 @@ mod tests {
         nvlist.add_uint8_arr("b", arr2).unwrap();
         nvlist.add_uint8_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -931,7 +933,7 @@ mod tests {
         nvlist.add_uint16_arr("b", arr2).unwrap();
         nvlist.add_uint16_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -955,7 +957,7 @@ mod tests {
         nvlist.add_uint32_arr("b", arr2).unwrap();
         nvlist.add_uint32_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -979,7 +981,7 @@ mod tests {
         nvlist.add_uint64_arr("b", arr2).unwrap();
         nvlist.add_uint64_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1003,7 +1005,7 @@ mod tests {
         nvlist.add_int8_arr("b", arr2).unwrap();
         nvlist.add_int8_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1027,7 +1029,7 @@ mod tests {
         nvlist.add_int16_arr("b", arr2).unwrap();
         nvlist.add_int16_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1051,7 +1053,7 @@ mod tests {
         nvlist.add_int32_arr("b", arr2).unwrap();
         nvlist.add_int32_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1075,7 +1077,7 @@ mod tests {
         nvlist.add_int64_arr("b", arr2).unwrap();
         nvlist.add_int64_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1135,7 +1137,7 @@ mod tests {
         nvlist.add_string_arr("b", arr2).unwrap();
         nvlist.add_string_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1159,7 +1161,7 @@ mod tests {
         nvlist.add_boolean_arr("b", arr2).unwrap();
         nvlist.add_boolean_arr("c", arr3).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1224,7 +1226,7 @@ mod tests {
         nvlist.add_string_arr("i", arr9).unwrap();
         nvlist.add_boolean_arr("j", arr10).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1319,7 +1321,7 @@ mod tests {
         nvlist.add_string("s", "test").unwrap();
         nvlist.add_boolean("t", false).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1363,7 +1365,7 @@ mod tests {
         nvlist.add_uint32("e", 9).unwrap();
         nvlist.add_nvlist("f", &nvlist_nested_third).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1408,7 +1410,7 @@ mod tests {
         nvlist.add_nvlist("b", &nvlist_nested_depth_one).unwrap();
         nvlist.add_uint16("c", 6).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 
     #[test]
@@ -1438,6 +1440,6 @@ mod tests {
         nvlist.add_uint16_arr("d", arr).unwrap();
         nvlist.add_uint16_arr("e", tup).unwrap();
 
-        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+        assert_eq!(expected, from_nvlist(&mut nvlist).unwrap());
     }
 }
