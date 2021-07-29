@@ -2,7 +2,6 @@ use self::name_serializer::NameSerializer;
 use super::*;
 use libnvpair::{ContextType, NvFlag, NvList, NvListError};
 use serde::{ser, Serialize};
-use uuid::Uuid;
 
 mod name_serializer;
 
@@ -32,31 +31,6 @@ pub struct NvListSerializer {
     is_first: bool,
     helpers: Vec<SerializerHelper>,
     curr: SerializerHelper,
-}
-
-impl NvListSerializer {
-    fn render_name(&self) -> String {
-        Uuid::new_v4().to_string()
-    }
-
-    fn _to_nvlist<T>(value: &T) -> Result<libnvpair::NvList>
-    where
-        T: Serialize,
-    {
-        let nvlist = NvList::nvlist_alloc(NvFlag::UniqueName)?;
-
-        let mut serializer = NvListSerializer {
-            raw_nvlist: nvlist,
-            name_serializer: NameSerializer {
-                name: String::new(),
-            },
-            is_first: true,
-            helpers: Vec::new(),
-            curr: SerializerHelper::default(),
-        };
-        value.serialize(&mut serializer)?;
-        Ok(serializer.raw_nvlist)
-    }
 }
 
 pub fn _to_nvlist<T>(value: &T) -> Result<libnvpair::NvList>
@@ -568,7 +542,7 @@ impl<'a> ser::SerializeSeq for &'a mut NvListSerializer {
                 ContextType::I64Arr(arr) => Ok(self.curr.nvlist.add_int64_arr(name, arr)?),
                 ContextType::BooleanArr(arr) => Ok(self.curr.nvlist.add_boolean_arr(name, arr)?),
                 ContextType::StrArr(arr) => Ok(self.curr.nvlist.add_string_arr(name, arr)?),
-                ContextType::DoubleArr(_) => todo!(),
+                ContextType::DoubleArr(_) => Err(NvListError::RestrictedOperation),
                 ContextType::NvListArr(_) => todo!(),
                 _ => Err(NvListError::RestrictedOperation),
             },

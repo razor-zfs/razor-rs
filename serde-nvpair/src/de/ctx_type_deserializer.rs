@@ -219,7 +219,7 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
         todo!();
     }
 
-    fn deserialize_seq<V>(mut self, _visitor: V) -> Result<V::Value>
+    fn deserialize_seq<V>(self, _visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
@@ -245,7 +245,7 @@ impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
         todo!();
     }
 
-    fn deserialize_map<V>(mut self, _visitor: V) -> Result<V::Value>
+    fn deserialize_map<V>(self, _visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {

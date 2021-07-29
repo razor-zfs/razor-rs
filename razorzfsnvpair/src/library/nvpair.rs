@@ -137,6 +137,20 @@ impl NvPair {
         }
     }
 
+    pub fn value_float64(&self) -> Result<f64> {
+        let mut x: f64 = 0.0;
+        let val: *mut f64 = &mut x;
+
+        unsafe {
+            NvListError::from_nvlist_rc(sys::nvpair_value_double(self.raw_nvpair, val))?;
+
+            match val.as_ref() {
+                Some(f64val) => Ok(*f64val),
+                None => Err(NvListError::ConversionError),
+            }
+        }
+    }
+
     pub fn value_int8(&self) -> Result<i8> {
         let mut x = 0;
         let val: *mut i8 = &mut x;

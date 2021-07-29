@@ -271,18 +271,36 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         }
     }
 
-    fn deserialize_f32<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        self.deserialize_f64(visitor)
     }
 
-    fn deserialize_f64<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_f64<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("deserializing f64 start function");
+        unsafe {
+            match match self.curr_pair.raw_nvpair.as_ref() {
+                Some(_) => {
+                    dbg!("pointer exists");
+                    dbg!(self.curr_pair.r#type());
+                    self.curr_pair.r#type()
+                }
+                None => todo!(),
+            } {
+                libnvpair::NvPairType::Double => {
+                    dbg!("Deserializing u64");
+                    let val = self.curr_pair.value_float64()?;
+                    dbg!(val);
+                    visitor.visit_f64(val)
+                }
+                _ => Err(libnvpair::NvListError::InvalidArgument),
+            }
+        }
     }
 
     fn deserialize_char<V>(self, _visitor: V) -> Result<V::Value>
@@ -603,6 +621,48 @@ mod tests {
     use super::*;
     use libnvpair::NvFlag;
     use serde::Deserialize;
+
+    #[test]
+    fn struct_f32() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: f32,
+            b: f32,
+            c: f32,
+        }
+        let expected = Test {
+            a: 3.5,
+            b: 5.9,
+            c: 4.8,
+        };
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_float64("a", 3.5).unwrap();
+        nvlist.add_float64("b", 5.9).unwrap();
+        nvlist.add_float64("c", 4.8).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
+
+    #[test]
+    fn struct_f64() {
+        #[derive(Debug, PartialEq, Deserialize)]
+        struct Test {
+            a: f64,
+            b: f64,
+            c: f64,
+        }
+        let expected = Test {
+            a: 3.5,
+            b: 5.9,
+            c: 4.8,
+        };
+        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        nvlist.add_float64("a", 3.5).unwrap();
+        nvlist.add_float64("b", 5.9).unwrap();
+        nvlist.add_float64("c", 4.8).unwrap();
+
+        assert_eq!(expected, _from_nvlist(&mut nvlist).unwrap());
+    }
 
     #[test]
     fn struct_u8() {
