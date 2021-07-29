@@ -1043,9 +1043,9 @@ mod tests {
             b: vec![6, 7, 8, 9, 10],
             c: vec![11, 12, 13, 14, 15],
         };
-        let arr1: [i32; 5] = [1, 2, 3, 4, 5];
-        let arr2: [i32; 5] = [6, 7, 8, 9, 10];
-        let arr3: [i32; 5] = [11, 12, 13, 14, 15];
+        let arr1 = &[1, 2, 3, 4, 5];
+        let arr2 = &[6, 7, 8, 9, 10];
+        let arr3 = &[11, 12, 13, 14, 15];
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         nvlist.add_int32_arr("a", arr1).unwrap();
         nvlist.add_int32_arr("b", arr2).unwrap();
@@ -1195,15 +1195,15 @@ mod tests {
             ],
             j: vec![true, true, false, true, true],
         };
-        let arr1: [u8; 5] = [1, 2, 3, 4, 5];
-        let arr2: [u16; 5] = [6, 7, 8, 9, 10];
-        let arr3: [u32; 5] = [11, 12, 13, 14, 15];
-        let arr4: [u64; 5] = [16, 17, 18, 19, 20];
-        let arr5: [i8; 5] = [21, 22, 23, 24, 25];
-        let arr6: [i16; 5] = [26, 27, 28, 29, 30];
-        let arr7: [i32; 5] = [31, 32, 33, 34, 35];
-        let arr8: [i64; 5] = [36, 37, 38, 39, 40];
-        let arr9: [String; 5] = [
+        let arr1 = &[1, 2, 3, 4, 5];
+        let arr2 = &[6, 7, 8, 9, 10];
+        let arr3 = &[11, 12, 13, 14, 15];
+        let arr4 = &[16, 17, 18, 19, 20];
+        let arr5 = &[21, 22, 23, 24, 25];
+        let arr6 = &[26, 27, 28, 29, 30];
+        let arr7 = &[31, 32, 33, 34, 35];
+        let arr8 = &[36, 37, 38, 39, 40];
+        let arr9 = &[
             "a".to_string(),
             "b".to_string(),
             "c".to_string(),
@@ -1280,15 +1280,15 @@ mod tests {
             s: "test".to_string(),
             t: false,
         };
-        let arr1: [u8; 5] = [1, 2, 3, 4, 5];
-        let arr2: [u16; 5] = [6, 7, 8, 9, 10];
-        let arr3: [u32; 5] = [11, 12, 13, 14, 15];
-        let arr4: [u64; 5] = [16, 17, 18, 19, 20];
-        let arr5: [i8; 5] = [21, 22, 23, 24, 25];
-        let arr6: [i16; 5] = [26, 27, 28, 29, 30];
-        let arr7: [i32; 5] = [31, 32, 33, 34, 35];
-        let arr8: [i64; 5] = [36, 37, 38, 39, 40];
-        let arr9: [String; 5] = [
+        let arr1 = &[1, 2, 3, 4, 5];
+        let arr2 = &[6, 7, 8, 9, 10];
+        let arr3 = &[11, 12, 13, 14, 15];
+        let arr4 = &[16, 17, 18, 19, 20];
+        let arr5 = &[21, 22, 23, 24, 25];
+        let arr6 = &[26, 27, 28, 29, 30];
+        let arr7 = &[31, 32, 33, 34, 35];
+        let arr8 = &[36, 37, 38, 39, 40];
+        let arr9 = &[
             "a".to_string(),
             "b".to_string(),
             "c".to_string(),

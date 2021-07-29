@@ -1,4 +1,5 @@
-use std::ffi::CString;
+use std::ffi::{CString, NulError};
+use std::result::Result as StdResult;
 
 use libc::c_char;
 
@@ -49,7 +50,7 @@ impl NvList {
         };
 
         NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_boolean_value(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
+            sys::nvlist_add_boolean_value(self.raw, cstr(name)?, v)
         })?;
 
         Ok(())
@@ -71,11 +72,12 @@ impl NvList {
         }
 
         unsafe {
+            let length = conversion.len() as u32;
             NvListError::from_nvlist_rc(sys::nvlist_add_boolean_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                conversion.as_mut_ptr(),
-                conversion.len() as u32,
+                cstr(name)?,
+                carray(conversion),
+                length,
             ))?;
         };
 
@@ -86,9 +88,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_uint8(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvlist_add_uint8(self.raw, cstr(name)?, v) })?;
 
         Ok(())
     }
@@ -97,9 +97,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_uint16(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvlist_add_uint16(self.raw, cstr(name)?, v) })?;
 
         Ok(())
     }
@@ -108,9 +106,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_uint32(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvlist_add_uint32(self.raw, cstr(name)?, v) })?;
 
         Ok(())
     }
@@ -119,9 +115,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_uint64(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvlist_add_uint64(self.raw, cstr(name)?, v) })?;
 
         Ok(())
     }
@@ -130,9 +124,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_int8(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvlist_add_int8(self.raw, cstr(name)?, v) })?;
 
         Ok(())
     }
@@ -141,9 +133,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_int16(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvlist_add_int16(self.raw, cstr(name)?, v) })?;
 
         Ok(())
     }
@@ -152,9 +142,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_int32(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvlist_add_int32(self.raw, cstr(name)?, v) })?;
 
         Ok(())
     }
@@ -163,9 +151,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_int64(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvlist_add_int64(self.raw, cstr(name)?, v) })?;
 
         Ok(())
     }
@@ -176,11 +162,12 @@ impl NvList {
         W: AsRef<[u8]> + Sized,
     {
         unsafe {
+            let length = v.as_ref().len() as u32;
             NvListError::from_nvlist_rc(sys::nvlist_add_uint8_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                v.as_ref().to_owned().as_mut_ptr(),
-                v.as_ref().len() as u32,
+                cstr(name)?,
+                carray(v),
+                length,
             ))?;
         };
 
@@ -193,11 +180,12 @@ impl NvList {
         W: AsRef<[u16]> + Sized,
     {
         unsafe {
+            let length = v.as_ref().len() as u32;
             NvListError::from_nvlist_rc(sys::nvlist_add_uint16_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                v.as_ref().to_owned().as_mut_ptr(),
-                v.as_ref().len() as u32,
+                cstr(name)?,
+                carray(v),
+                length,
             ))?;
         };
 
@@ -210,11 +198,12 @@ impl NvList {
         W: AsRef<[u32]> + Sized,
     {
         unsafe {
+            let length = v.as_ref().len() as u32;
             NvListError::from_nvlist_rc(sys::nvlist_add_uint32_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                v.as_ref().to_owned().as_mut_ptr(),
-                v.as_ref().len() as u32,
+                cstr(name)?,
+                carray(v),
+                length,
             ))?;
         };
 
@@ -227,11 +216,12 @@ impl NvList {
         W: AsRef<[u64]> + Sized,
     {
         unsafe {
+            let length = v.as_ref().len() as u32;
             NvListError::from_nvlist_rc(sys::nvlist_add_uint64_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                v.as_ref().to_owned().as_mut_ptr(),
-                v.as_ref().len() as u32,
+                cstr(name)?,
+                carray(v),
+                length,
             ))?;
         };
 
@@ -244,11 +234,12 @@ impl NvList {
         W: AsRef<[i8]> + Sized,
     {
         unsafe {
+            let length = v.as_ref().len() as u32;
             NvListError::from_nvlist_rc(sys::nvlist_add_int8_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                v.as_ref().to_owned().as_mut_ptr(),
-                v.as_ref().len() as u32,
+                cstr(name)?,
+                carray(v),
+                length,
             ))?;
         };
 
@@ -261,28 +252,30 @@ impl NvList {
         W: AsRef<[i16]> + Sized,
     {
         unsafe {
+            let length = v.as_ref().len() as u32;
             NvListError::from_nvlist_rc(sys::nvlist_add_int16_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                v.as_ref().to_owned().as_mut_ptr(),
-                v.as_ref().len() as u32,
+                cstr(name)?,
+                carray(v),
+                length,
             ))?;
         };
 
         Ok(())
     }
 
-    pub fn add_int32_arr<T, W>(&mut self, name: T, v: W) -> Result<()>
+    pub fn add_int32_arr<T, W>(&mut self, name: T, v: &W) -> Result<()>
     where
         T: AsRef<str>,
         W: AsRef<[i32]> + Sized,
     {
         unsafe {
+            let length = v.as_ref().len() as u32;
             NvListError::from_nvlist_rc(sys::nvlist_add_int32_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                v.as_ref().to_owned().as_mut_ptr(),
-                v.as_ref().len() as u32,
+                cstr(name)?,
+                carray(v),
+                length,
             ))?;
         };
 
@@ -295,11 +288,12 @@ impl NvList {
         W: AsRef<[i64]> + Sized,
     {
         unsafe {
+            let length = v.as_ref().len() as u32;
             NvListError::from_nvlist_rc(sys::nvlist_add_int64_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                v.as_ref().to_owned().as_mut_ptr(),
-                v.as_ref().len() as u32,
+                cstr(name)?,
+                carray(v),
+                length,
             ))?;
         };
 
@@ -310,9 +304,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_double(self.raw, CString::new(name.as_ref())?.as_ptr(), v)
-        })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvlist_add_double(self.raw, cstr(name)?, v) })?;
 
         Ok(())
     }
@@ -322,42 +314,40 @@ impl NvList {
         T: AsRef<str>,
     {
         NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_string(
-                self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
-                CString::new(v.as_ref())?.as_ptr(),
-            )
+            sys::nvlist_add_string(self.raw, cstr(name)?, cstr(v)?)
         })?;
 
         Ok(())
     }
 
     // TODO: check if its ok
-    pub fn add_string_arr<T, W>(&mut self, name: T, v: W) -> Result<()>
+    pub fn add_string_arr<T, W, S>(&mut self, name: T, v: W) -> Result<()>
     where
         T: AsRef<str>,
-        W: AsRef<[String]> + Sized,
+        W: AsRef<[S]> + Sized,
+        S: AsRef<str>,
     {
-        let mut vec = Vec::with_capacity(v.as_ref().len());
+        let cstrings = v
+            .as_ref()
+            .iter()
+            .map(|x| x.as_ref())
+            .map(CString::new)
+            .collect::<StdResult<Vec<_>, NulError>>()?;
 
-        for str in v.as_ref() {
-            vec.push(str.clone())
-        }
-
-        let converted: Vec<*mut c_char> = vec
-            .into_iter()
-            .map(|s| CString::new(s).unwrap().into_raw())
-            .collect();
+        let converted = cstrings
+            .iter()
+            .map(|item| item.as_ptr() as *mut c_char)
+            .collect::<Vec<_>>();
 
         let x = converted.as_ptr();
-        let len = converted.len();
+        let len = converted.len() as u32;
 
         unsafe {
             NvListError::from_nvlist_rc(sys::nvlist_add_string_array(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
+                cstr(name)?,
                 x,
-                len as u32,
+                len,
             ))?;
         };
 
@@ -369,7 +359,7 @@ impl NvList {
         T: AsRef<str>,
     {
         NvListError::from_nvlist_rc(unsafe {
-            sys::nvlist_add_nvlist(self.raw, CString::new(name.as_ref())?.as_ptr(), v.raw)
+            sys::nvlist_add_nvlist(self.raw, cstr(name)?, v.raw)
         })?;
 
         Ok(())
@@ -379,13 +369,13 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        let mut nvpair: *mut nvpair_t = std::ptr::null_mut();
-        let nvpair_ptr: *mut *mut nvpair_t = &mut nvpair;
+        let mut nvpair: *mut sys::nvpair_t = std::ptr::null_mut();
+        let nvpair_ptr: *mut *mut sys::nvpair_t = &mut nvpair;
 
         unsafe {
             NvListError::from_nvlist_rc(sys::nvlist_lookup_nvpair(
                 self.raw,
-                CString::new(name.as_ref())?.as_ptr(),
+                cstr(name)?,
                 nvpair_ptr,
             ))?;
 
@@ -396,6 +386,19 @@ impl NvList {
             Ok(nvpair)
         }
     }
+}
+
+#[inline]
+fn cstr(name: impl AsRef<str>) -> Result<*const u8> {
+    Ok(CString::new(name.as_ref())?.as_ptr())
+}
+
+#[inline]
+fn carray<T, V>(v: T) -> *mut V
+where
+    T: AsRef<[V]> + Sized,
+{
+    v.as_ref().as_ptr() as *mut V
 }
 
 impl IntoIterator for NvList {

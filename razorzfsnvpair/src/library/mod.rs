@@ -5,7 +5,5 @@ use super::sys;
 use super::NvListError;
 use super::Result;
 
-use super::*;
-
 mod nvlist;
 mod nvpair;

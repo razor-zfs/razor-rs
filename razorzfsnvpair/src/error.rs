@@ -1,7 +1,17 @@
 use serde::{de, ser};
+use std::convert::TryFrom;
 use std::ffi;
 use std::fmt::{self, Display};
 use std::str;
+
+use thiserror::Error;
+
+#[derive(Clone, Debug, PartialEq)]
+enum NvListErrorInternal {
+    Ok,
+    InvalidArgument,
+    InsufficientMemory,
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum NvListError {
@@ -67,3 +77,27 @@ impl Display for NvListError {
 }
 
 impl std::error::Error for NvListError {}
+
+/*impl TryFrom<i32> for () {
+    type Error = NvListError;
+
+    fn try_from(rc: i32) -> Result<Self, Self::Error> {
+        match rc {
+            0 => Ok(()),
+            libc::EINVAL => Err(Self::InvalidArgument),
+            libc::ENOMEM => Err(Self::InsufficientMemory),
+            _ => unreachable!("invalid return code"),
+        }
+    }
+}*/
+
+impl From<i32> for NvListErrorInternal {
+    fn from(rc: i32) -> Self {
+        match rc {
+            0 => Self::Ok,
+            libc::EINVAL => Self::InvalidArgument,
+            libc::ENOMEM => Self::InsufficientMemory,
+            _ => unreachable!("invalid return code"),
+        }
+    }
+}

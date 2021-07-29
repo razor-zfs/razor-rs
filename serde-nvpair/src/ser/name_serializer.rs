@@ -1,8 +1,6 @@
 use super::*;
 use serde::{ser, Serialize};
 
-pub type Result<T> = std::result::Result<T, libnvpair::NvListError>;
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct NameSerializer {
     pub name: String,
