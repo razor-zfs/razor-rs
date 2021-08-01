@@ -20,7 +20,9 @@ impl<'de> NvListDeserializer<'de> {
         NvListDeserializer {
             input,
             nested_nvlist: None,
-            curr_pair: NvPair::default(),
+            curr_pair: NvPair {
+                raw_nvpair: std::ptr::null_mut(),
+            },
         }
     }
 }
@@ -475,7 +477,9 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
             }
             None => {
                 dbg!("getting none");
-                self.de.curr_pair = NvPair::default();
+                self.de.curr_pair = NvPair {
+                    raw_nvpair: std::ptr::null_mut(),
+                };
                 self.de.nested_nvlist = None;
                 Ok(None)
             }

@@ -11,12 +11,6 @@ pub struct NvList {
 }
 
 impl NvList {
-    pub fn default() -> Self {
-        NvList {
-            raw: std::ptr::null_mut(),
-        }
-    }
-
     pub fn nvlist_alloc(flag: NvFlag) -> Result<NvList> {
         let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
         let nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
@@ -425,7 +419,9 @@ impl IntoIterator for NvList {
     fn into_iter(self) -> Self::IntoIter {
         NvListIterator {
             nvlist: self,
-            curr_nvpair: NvPair::default(),
+            curr_nvpair: NvPair {
+                raw_nvpair: std::ptr::null_mut(),
+            },
             completed: false,
         }
     }

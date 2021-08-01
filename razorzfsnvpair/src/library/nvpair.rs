@@ -11,12 +11,6 @@ pub struct NvPair {
 }
 
 impl NvPair {
-    pub fn default() -> NvPair {
-        NvPair {
-            raw_nvpair: std::ptr::null_mut(),
-        }
-    }
-
     pub fn name(&self) -> Result<String> {
         unsafe {
             Ok(CStr::from_ptr(sys::nvpair_name(self.raw_nvpair))
@@ -780,7 +774,9 @@ mod tests {
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         let arr: [u8; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint8_arr("d", arr).unwrap();
-        let mut nvpair = NvPair::default();
+        let mut nvpair = NvPair {
+            raw_nvpair: std::ptr::null_mut(),
+        };
         nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
         /*let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U16(1)), iter.next());
@@ -798,7 +794,9 @@ mod tests {
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         let arr: [u16; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint16_arr("d", arr).unwrap();
-        let mut nvpair = NvPair::default();
+        let mut nvpair = NvPair {
+            raw_nvpair: std::ptr::null_mut(),
+        };
         nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
         let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U16(1)), iter.next());
@@ -816,7 +814,9 @@ mod tests {
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         let arr: [u32; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint32_arr("d", arr).unwrap();
-        let mut nvpair = NvPair::default();
+        let mut nvpair = NvPair {
+            raw_nvpair: std::ptr::null_mut(),
+        };
         nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
         /*let mut iter: Iter<u32> = nvpair.try_into().unwrap();
         assert_eq!(Some(1_u32), iter.next());
@@ -834,7 +834,9 @@ mod tests {
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         let arr: [u64; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint64_arr("d", arr).unwrap();
-        let mut nvpair = NvPair::default();
+        let mut nvpair = NvPair {
+            raw_nvpair: std::ptr::null_mut(),
+        };
         nvpair.raw_nvpair = unsafe { sys::nvlist_next_nvpair(nvlist.raw, nvpair.raw_nvpair) };
         /*let mut iter: Iter<u64> = nvpair.try_into().unwrap();
         assert_eq!(Some(1_u64), iter.next());
