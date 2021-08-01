@@ -825,7 +825,6 @@ impl SafeNvPair for i64 {}
 mod tests {
     use super::*;
     use std::convert::TryInto;
-    //generate_iterators!(u8, u16, u32, u64, i8, i16, i32, i64);
 
     #[test]
     fn basic_iter_u8() {
@@ -835,15 +834,15 @@ mod tests {
         let mut nvpair = NvPair::new();
         nvpair.raw =
             Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
-        /*let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
-        assert_eq!(Some(ContextType::U16(1)), iter.next());
-        assert_eq!(Some(ContextType::U16(2)), iter.next());
-        assert_eq!(Some(ContextType::U16(3)), iter.next());
-        assert_eq!(Some(ContextType::U16(4)), iter.next());
-        assert_eq!(Some(ContextType::U16(5)), iter.next());
+        let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
+        assert_eq!(Some(ContextType::U8(1)), iter.next());
+        assert_eq!(Some(ContextType::U8(2)), iter.next());
+        assert_eq!(Some(ContextType::U8(3)), iter.next());
+        assert_eq!(Some(ContextType::U8(4)), iter.next());
+        assert_eq!(Some(ContextType::U8(5)), iter.next());
         assert_eq!(None, iter.next());
         assert_eq!(None, iter.next());
-        assert_eq!(None, iter.next());*/
+        assert_eq!(None, iter.next());
     }
 
     #[test]
@@ -873,15 +872,15 @@ mod tests {
         let mut nvpair = NvPair::new();
         nvpair.raw =
             Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
-        /*let mut iter: Iter<u32> = nvpair.try_into().unwrap();
-        assert_eq!(Some(1_u32), iter.next());
-        assert_eq!(Some(2_u32), iter.next());
-        assert_eq!(Some(3_u32), iter.next());
-        assert_eq!(Some(4_u32), iter.next());
-        assert_eq!(Some(5_u32), iter.next());
+        let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
+        assert_eq!(Some(ContextType::U32(1)), iter.next());
+        assert_eq!(Some(ContextType::U32(2)), iter.next());
+        assert_eq!(Some(ContextType::U32(3)), iter.next());
+        assert_eq!(Some(ContextType::U32(4)), iter.next());
+        assert_eq!(Some(ContextType::U32(5)), iter.next());
         assert_eq!(None, iter.next());
         assert_eq!(None, iter.next());
-        assert_eq!(None, iter.next());*/
+        assert_eq!(None, iter.next());
     }
 
     #[test]
