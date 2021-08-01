@@ -20,9 +20,7 @@ impl<'de> NvListDeserializer<'de> {
         NvListDeserializer {
             input,
             nested_nvlist: None,
-            curr_pair: NvPair {
-                raw_nvpair: std::ptr::null_mut(),
-            },
+            curr_pair: NvPair::new(),
         }
     }
 }
@@ -53,18 +51,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing boolean start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::BooleanValue => {
-                    dbg!("Deserializing boolean");
-                    let val = self.curr_pair.value_boolean()?;
-                    dbg!(val);
-                    visitor.visit_bool(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::BooleanValue => {
+                dbg!("Deserializing boolean");
+                let val = self.curr_pair.value_boolean()?;
+                dbg!(val);
+                visitor.visit_bool(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -73,18 +67,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing i8 start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::Int8 => {
-                    dbg!("Deserializing i8");
-                    let val = self.curr_pair.value_int8()?;
-                    dbg!(val);
-                    visitor.visit_i8(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::Int8 => {
+                dbg!("Deserializing i8");
+                let val = self.curr_pair.value_int8()?;
+                dbg!(val);
+                visitor.visit_i8(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -93,18 +83,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing i16 start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::Int16 => {
-                    dbg!("Deserializing i8");
-                    let val = self.curr_pair.value_int16()?;
-                    dbg!(val);
-                    visitor.visit_i16(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::Int16 => {
+                dbg!("Deserializing i8");
+                let val = self.curr_pair.value_int16()?;
+                dbg!(val);
+                visitor.visit_i16(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -113,18 +99,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing i32 start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::Int32 => {
-                    dbg!("Deserializing i32");
-                    let val = self.curr_pair.value_int32()?;
-                    dbg!(val);
-                    visitor.visit_i32(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::Int32 => {
+                dbg!("Deserializing i32");
+                let val = self.curr_pair.value_int32()?;
+                dbg!(val);
+                visitor.visit_i32(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -133,18 +115,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing i64 start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::Int64 => {
-                    dbg!("Deserializing i64");
-                    let val = self.curr_pair.value_int64()?;
-                    dbg!(val);
-                    visitor.visit_i64(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::Int64 => {
+                dbg!("Deserializing i64");
+                let val = self.curr_pair.value_int64()?;
+                dbg!(val);
+                visitor.visit_i64(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -153,18 +131,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing u8 start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::Uint8 => {
-                    dbg!("Deserializing u8");
-                    let val = self.curr_pair.value_uint8()?;
-                    dbg!(val);
-                    visitor.visit_u8(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::Uint8 => {
+                dbg!("Deserializing u8");
+                let val = self.curr_pair.value_uint8()?;
+                dbg!(val);
+                visitor.visit_u8(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -173,18 +147,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing u16 start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::Uint16 => {
-                    dbg!("Deserializing u16");
-                    let val = self.curr_pair.value_uint16()?;
-                    dbg!(val);
-                    visitor.visit_u16(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::Uint16 => {
+                dbg!("Deserializing u16");
+                let val = self.curr_pair.value_uint16()?;
+                dbg!(val);
+                visitor.visit_u16(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -193,18 +163,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing u32 start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::Uint32 => {
-                    dbg!("Deserializing u32");
-                    let val = self.curr_pair.value_uint32()?;
-                    dbg!(val);
-                    visitor.visit_u32(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::Uint32 => {
+                dbg!("Deserializing u32");
+                let val = self.curr_pair.value_uint32()?;
+                dbg!(val);
+                visitor.visit_u32(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -213,18 +179,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing u64 start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::Uint64 => {
-                    dbg!("Deserializing u64");
-                    let val = self.curr_pair.value_uint64()?;
-                    dbg!(val);
-                    visitor.visit_u64(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::Uint64 => {
+                dbg!("Deserializing u64");
+                let val = self.curr_pair.value_uint64()?;
+                dbg!(val);
+                visitor.visit_u64(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -240,18 +202,14 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing f64 start function");
-        if self.curr_pair.validate_not_null() {
-            match self.curr_pair.r#type() {
-                libnvpair::NvPairType::Double => {
-                    dbg!("Deserializing u64");
-                    let val = self.curr_pair.value_float64()?;
-                    dbg!(val);
-                    visitor.visit_f64(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        match self.curr_pair.r#type()? {
+            libnvpair::NvPairType::Double => {
+                dbg!("Deserializing u64");
+                let val = self.curr_pair.value_float64()?;
+                dbg!(val);
+                visitor.visit_f64(val)
             }
-        } else {
-            Err(NvListError::NullPointer)
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -326,7 +284,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing seq");
-        match self.curr_pair.r#type() {
+        match self.curr_pair.r#type()? {
             //libnvpair::NvPairType::ByteArray => todo!(),
             libnvpair::NvPairType::Uint16Array
             | libnvpair::NvPairType::Int16Array
@@ -427,7 +385,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("Deserializing object identifier");
         dbg!(self.curr_pair);
-        dbg!(self.curr_pair.r#type());
+        dbg!(self.curr_pair.r#type()?);
         dbg!(self.curr_pair.name()?.as_str());
         visitor.visit_str(self.curr_pair.name()?.as_str())
     }
@@ -499,9 +457,7 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
             }
             None => {
                 dbg!("getting none");
-                self.de.curr_pair = NvPair {
-                    raw_nvpair: std::ptr::null_mut(),
-                };
+                self.de.curr_pair = NvPair::new();
                 self.de.nested_nvlist = None;
                 Ok(None)
             }
@@ -513,7 +469,7 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
         V: DeserializeSeed<'de>,
     {
         dbg!("Deserializing map value");
-        if self.de.curr_pair.r#type() == libnvpair::NvPairType::Nvlist {
+        if self.de.curr_pair.r#type()? == libnvpair::NvPairType::Nvlist {
             self.de.nested_nvlist = Some(self.de.curr_pair.value_nvlist()?)
         }
 
