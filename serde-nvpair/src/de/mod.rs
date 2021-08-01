@@ -51,23 +51,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing boolean start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::BooleanValue => {
-                    dbg!("Deserializing boolean");
-                    let val = self.curr_pair.value_boolean()?;
-                    dbg!(val);
-                    visitor.visit_bool(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::BooleanValue => {
+                dbg!("Deserializing boolean");
+                let val = self.curr_pair.value_boolean()?;
+                dbg!(val);
+                visitor.visit_bool(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -76,23 +69,15 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing i8 start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::Int8 => {
-                    dbg!("Deserializing i8");
-                    let val = self.curr_pair.value_int8()?;
-                    dbg!(val);
-                    visitor.visit_i8(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::Int8 => {
+                dbg!("Deserializing i8");
+                let val = self.curr_pair.value_int8()?;
+                dbg!(val);
+                visitor.visit_i8(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -101,23 +86,15 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing i16 start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::Int16 => {
-                    dbg!("Deserializing i8");
-                    let val = self.curr_pair.value_int16()?;
-                    dbg!(val);
-                    visitor.visit_i16(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::Int16 => {
+                dbg!("Deserializing i8");
+                let val = self.curr_pair.value_int16()?;
+                dbg!(val);
+                visitor.visit_i16(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -126,23 +103,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing i32 start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::Int32 => {
-                    dbg!("Deserializing i32");
-                    let val = self.curr_pair.value_int32()?;
-                    dbg!(val);
-                    visitor.visit_i32(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::Int32 => {
+                dbg!("Deserializing i32");
+                let val = self.curr_pair.value_int32()?;
+                dbg!(val);
+                visitor.visit_i32(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -151,23 +121,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing i64 start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::Int64 => {
-                    dbg!("Deserializing i64");
-                    let val = self.curr_pair.value_int64()?;
-                    dbg!(val);
-                    visitor.visit_i64(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::Int64 => {
+                dbg!("Deserializing i64");
+                let val = self.curr_pair.value_int64()?;
+                dbg!(val);
+                visitor.visit_i64(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -176,23 +139,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing u8 start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::Uint8 => {
-                    dbg!("Deserializing u8");
-                    let val = self.curr_pair.value_uint8()?;
-                    dbg!(val);
-                    visitor.visit_u8(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::Uint8 => {
+                dbg!("Deserializing u8");
+                let val = self.curr_pair.value_uint8()?;
+                dbg!(val);
+                visitor.visit_u8(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -201,23 +157,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing u16 start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::Uint16 => {
-                    dbg!("Deserializing u16");
-                    let val = self.curr_pair.value_uint16()?;
-                    dbg!(val);
-                    visitor.visit_u16(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::Uint16 => {
+                dbg!("Deserializing u16");
+                let val = self.curr_pair.value_uint16()?;
+                dbg!(val);
+                visitor.visit_u16(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -226,23 +175,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing u32 start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::Uint32 => {
-                    dbg!("Deserializing u32");
-                    let val = self.curr_pair.value_uint32()?;
-                    dbg!(val);
-                    visitor.visit_u32(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::Uint32 => {
+                dbg!("Deserializing u32");
+                let val = self.curr_pair.value_uint32()?;
+                dbg!(val);
+                visitor.visit_u32(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -251,23 +193,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing u64 start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::Uint64 => {
-                    dbg!("Deserializing u64");
-                    let val = self.curr_pair.value_uint64()?;
-                    dbg!(val);
-                    visitor.visit_u64(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::Uint64 => {
+                dbg!("Deserializing u64");
+                let val = self.curr_pair.value_uint64()?;
+                dbg!(val);
+                visitor.visit_u64(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 
@@ -283,23 +218,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("deserializing f64 start function");
-        unsafe {
-            match match self.curr_pair.raw_nvpair.as_ref() {
-                Some(_) => {
-                    dbg!("pointer exists");
-                    dbg!(self.curr_pair.r#type());
-                    self.curr_pair.r#type()
-                }
-                None => todo!(),
-            } {
-                libnvpair::NvPairType::Double => {
-                    dbg!("Deserializing u64");
-                    let val = self.curr_pair.value_float64()?;
-                    dbg!(val);
-                    visitor.visit_f64(val)
-                }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+        self.curr_pair.validate_not_null()?;
+
+        match self.curr_pair.r#type() {
+            libnvpair::NvPairType::Double => {
+                dbg!("Deserializing u64");
+                let val = self.curr_pair.value_float64()?;
+                dbg!(val);
+                visitor.visit_f64(val)
             }
+            _ => Err(libnvpair::NvListError::InvalidArgument),
         }
     }
 

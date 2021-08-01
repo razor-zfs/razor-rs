@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 pub use de::from_nvlist;
 pub use razorzfsnvpair as libnvpair;
 pub use ser::to_nvlist;

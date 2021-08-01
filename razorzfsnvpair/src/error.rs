@@ -20,6 +20,7 @@ pub enum NvListError {
     NameTypeError,
     ConversionError,
     NvPairTypeError,
+    NullPointer,
 }
 
 impl NvListError {
@@ -68,6 +69,7 @@ impl Display for NvListError {
             NvListError::NameTypeError => todo!(),
             NvListError::ConversionError => todo!(),
             NvListError::NvPairTypeError => todo!(),
+            NvListError::NullPointer => todo!(),
             /* and so forth */
         }
     }
