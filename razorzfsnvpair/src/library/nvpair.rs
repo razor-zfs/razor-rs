@@ -454,9 +454,7 @@ impl NvPair {
                 NvListError::from_nvlist_rc(unsafe {
                     sys::nvpair_value_nvlist(raw, raw_nvlist_ptr)
                 })?;
-                let nvlist = NvList {
-                    raw: unsafe { *raw_nvlist_ptr },
-                };
+                let nvlist = NvList::from(unsafe { *raw_nvlist_ptr });
 
                 Ok(nvlist)
             }
@@ -483,7 +481,7 @@ impl NvPair {
                             unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() };
                         let mut nvlist_vec = Vec::with_capacity(vec_ptr.len());
                         for nvlist in vec_ptr {
-                            nvlist_vec.push(NvList { raw: nvlist })
+                            nvlist_vec.push(NvList::from(nvlist))
                         }
 
                         Ok(nvlist_vec)
@@ -835,7 +833,8 @@ mod tests {
         let arr: [u8; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint8_arr("d", arr).unwrap();
         let mut nvpair = NvPair::new();
-        nvpair.raw = Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) });
+        nvpair.raw =
+            Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
         /*let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U16(1)), iter.next());
         assert_eq!(Some(ContextType::U16(2)), iter.next());
@@ -853,7 +852,8 @@ mod tests {
         let arr: [u16; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint16_arr("d", arr).unwrap();
         let mut nvpair = NvPair::new();
-        nvpair.raw = Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) });
+        nvpair.raw =
+            Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
         let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U16(1)), iter.next());
         assert_eq!(Some(ContextType::U16(2)), iter.next());
@@ -871,7 +871,8 @@ mod tests {
         let arr: [u32; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint32_arr("d", arr).unwrap();
         let mut nvpair = NvPair::new();
-        nvpair.raw = Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) });
+        nvpair.raw =
+            Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
         /*let mut iter: Iter<u32> = nvpair.try_into().unwrap();
         assert_eq!(Some(1_u32), iter.next());
         assert_eq!(Some(2_u32), iter.next());
@@ -889,7 +890,8 @@ mod tests {
         let arr: [u64; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint64_arr("d", arr).unwrap();
         let mut nvpair = NvPair::new();
-        nvpair.raw = Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) });
+        nvpair.raw =
+            Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
         /*let mut iter: Iter<u64> = nvpair.try_into().unwrap();
         assert_eq!(Some(1_u64), iter.next());
         assert_eq!(Some(2_u64), iter.next());

@@ -16,9 +16,7 @@ struct SerializerHelper {
 impl SerializerHelper {
     fn default() -> SerializerHelper {
         SerializerHelper {
-            nvlist: libnvpair::NvList {
-                raw: std::ptr::null_mut(),
-            },
+            nvlist: libnvpair::NvList::new(),
             is_vec: false,
             name: None,
             context_type: libnvpair::ContextType::Empty,
