@@ -1,6 +1,10 @@
+use jemallocator;
 use serde_nvpair::*;
 
 use serde::{Deserialize, Serialize};
+
+#[global_allocator]
+static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 #[test]
 fn struct_u8() {
