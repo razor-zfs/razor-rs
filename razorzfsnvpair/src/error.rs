@@ -1,10 +1,7 @@
 use serde::{de, ser};
-use std::convert::TryFrom;
 use std::ffi;
 use std::fmt::{self, Display};
 use std::str;
-
-use thiserror::Error;
 
 #[derive(Clone, Debug, PartialEq)]
 enum NvListErrorInternal {

@@ -448,7 +448,7 @@ impl Iterator for NvListIterator {
                     sys::nvlist_next_nvpair(self.nvlist.raw, self.curr_nvpair.raw_nvpair);
 
                 match self.curr_nvpair.raw_nvpair.as_ref() {
-                    Some(_) => Some(self.curr_nvpair.clone()),
+                    Some(_) => Some(self.curr_nvpair),
                     None => {
                         self.completed = true;
                         None
