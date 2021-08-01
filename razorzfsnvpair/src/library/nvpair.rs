@@ -5,7 +5,7 @@ use sys::boolean_t;
 
 use super::*;
 
-#[derive(Clone, Debug, PartialEq, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct NvPair {
     pub raw_nvpair: *mut sys::nvpair_t,
 }
@@ -441,6 +441,12 @@ impl NvPair {
     }
 }
 
+impl From<*mut sys::nvpair_t> for NvPair {
+    fn from(nvp: *mut sys::nvpair_t) -> Self {
+        Self { raw_nvpair: nvp }
+    }
+}
+
 pub struct CtxIter<ContextType> {
     vec: ContextType,
     index: usize,
@@ -449,7 +455,6 @@ pub struct CtxIter<ContextType> {
 impl TryFrom<NvPair> for CtxIter<ContextType> {
     type Error = NvListError;
     fn try_from(mut nvpair: NvPair) -> Result<Self> {
-        dbg!(" sadasdasdasdasd", nvpair.r#type());
         match nvpair.r#type() {
             NvPairType::Uint8Array => {
                 let vec = nvpair.value_uint8_array()?;
@@ -653,7 +658,7 @@ impl Iterator for CtxIter<ContextType> {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum ContextType {
     U8(u8),
     I8(i8),

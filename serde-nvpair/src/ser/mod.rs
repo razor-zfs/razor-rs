@@ -26,7 +26,7 @@ impl SerializerHelper {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct NvListSerializer {
     raw_nvlist: libnvpair::NvList,
     name_serializer: NameSerializer,
@@ -658,7 +658,7 @@ impl<'a> ser::SerializeStruct for &'a mut NvListSerializer {
                     nvlist: prev_nvlist.nvlist.clone(),
                     is_vec: prev_nvlist.is_vec.clone(),
                     name: Some(name.clone()),
-                    context_type: prev_nvlist.context_type.clone(),
+                    context_type: prev_nvlist.context_type,
                 }
             } else {
                 return Err(NvListError::RestrictedOperation);

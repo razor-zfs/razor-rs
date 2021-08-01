@@ -1,11 +1,12 @@
 use std::ffi::{CString, NulError};
+use std::panic;
 use std::result::Result as StdResult;
 
 use libc::c_char;
 
 use super::*;
 
-#[derive(Clone, Debug, PartialEq, Copy)]
+#[derive(Debug, PartialEq, Copy)]
 pub struct NvList {
     pub raw: *mut sys::nvlist_t,
 }
@@ -344,7 +345,6 @@ impl NvList {
         Ok(())
     }
 
-    // TODO: check if its ok
     pub fn add_string_arr<T, W, S>(&mut self, name: T, v: W) -> Result<()>
     where
         T: AsRef<str>,
@@ -412,6 +412,26 @@ impl NvList {
     }
 }
 
+impl Clone for NvList {
+    fn clone(&self) -> NvList {
+        let mut cloned_nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
+        let cloned_nvlist_ptr: *mut *mut sys::nvlist_t = &mut cloned_nvlist;
+        let rc = unsafe { sys::nvlist_dup(self.raw, cloned_nvlist_ptr, 0) };
+
+        if rc == libc::EINVAL {
+            panic!("Nvlist clone invalid argument");
+        } else if rc == libc::ENOMEM {
+            panic!("Nvlist clone insufficient memory");
+        }
+
+        unsafe {
+            NvList {
+                raw: *cloned_nvlist_ptr,
+            }
+        }
+    }
+}
+
 impl IntoIterator for NvList {
     type Item = NvPair;
     type IntoIter = NvListIterator;
@@ -422,15 +442,17 @@ impl IntoIterator for NvList {
             curr_nvpair: NvPair {
                 raw_nvpair: std::ptr::null_mut(),
             },
+            nvp: None,
             completed: false,
         }
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct NvListIterator {
     pub nvlist: NvList,
     pub curr_nvpair: NvPair,
+    nvp: Option<*mut sys::nvpair_t>,
     pub completed: bool,
 }
 
@@ -438,20 +460,19 @@ impl Iterator for NvListIterator {
     type Item = NvPair;
 
     fn next(&mut self) -> Option<Self::Item> {
-        unsafe {
-            if !self.completed {
-                self.curr_nvpair.raw_nvpair =
-                    sys::nvlist_next_nvpair(self.nvlist.raw, self.curr_nvpair.raw_nvpair);
-
-                if self.curr_nvpair.validate_not_null() {
-                    Some(self.curr_nvpair)
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
+        let current = if let Some(nvp) = self.nvp {
+            nvp
+        } else {
+            std::ptr::null_mut()
+        };
+        let nvp = unsafe { sys::nvlist_next_nvpair(self.nvlist.raw, current) };
+        if nvp.is_null() {
+            self.nvp = None;
+        } else {
+            self.nvp = Some(nvp);
         }
+
+        self.nvp.map(NvPair::from)
     }
 }
 
