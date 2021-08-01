@@ -443,12 +443,10 @@ impl Iterator for NvListIterator {
                 self.curr_nvpair.raw_nvpair =
                     sys::nvlist_next_nvpair(self.nvlist.raw, self.curr_nvpair.raw_nvpair);
 
-                match self.curr_nvpair.raw_nvpair.as_ref() {
-                    Some(_) => Some(self.curr_nvpair),
-                    None => {
-                        self.completed = true;
-                        None
-                    }
+                if self.curr_nvpair.validate_not_null() {
+                    Some(self.curr_nvpair)
+                } else {
+                    None
                 }
             } else {
                 None

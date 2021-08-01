@@ -433,10 +433,10 @@ impl NvPair {
         }
     }
 
-    pub fn validate_not_null(&self) -> Result<()> {
+    pub fn validate_not_null(&self) -> bool {
         match unsafe { self.raw_nvpair.as_ref() } {
-            Some(_) => Ok(()),
-            None => Err(NvListError::NullPointer),
+            Some(_) => true,
+            None => false,
         }
     }
 }
