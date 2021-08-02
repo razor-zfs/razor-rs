@@ -12,12 +12,6 @@ pub struct NvPair {
 }
 
 impl NvPair {
-    pub fn new() -> Self {
-        Self {
-            raw: std::ptr::null_mut(),
-        }
-    }
-
     pub fn name(&self) -> Cow<str> {
         let cstr = unsafe { CStr::from_ptr(sys::nvpair_name(self.raw)) };
         String::from_utf8_lossy(cstr.to_bytes())
@@ -85,7 +79,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_uint16(&mut self) -> Result<u16> {
+    pub fn value_uint16(&self) -> Result<u16> {
         let mut x = 0;
         let val: *mut u16 = &mut x;
 
@@ -145,7 +139,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_int16(&mut self) -> Result<i16> {
+    pub fn value_int16(&self) -> Result<i16> {
         let mut x = 0;
         let val: *mut i16 = &mut x;
 
@@ -180,7 +174,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_uint8_array(&mut self) -> Result<Vec<u8>> {
+    pub fn value_uint8_array(&self) -> Result<Vec<u8>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut u8arr: *mut u8 = std::ptr::null_mut();
@@ -195,7 +189,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_uint16_array(&mut self) -> Result<Vec<u16>> {
+    pub fn value_uint16_array(&self) -> Result<Vec<u16>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut u16arr: *mut u16 = std::ptr::null_mut();
@@ -211,7 +205,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_uint32_array(&mut self) -> Result<Vec<u32>> {
+    pub fn value_uint32_array(&self) -> Result<Vec<u32>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut u32arr: *mut u32 = std::ptr::null_mut();
@@ -227,7 +221,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_uint64_array(&mut self) -> Result<Vec<u64>> {
+    pub fn value_uint64_array(&self) -> Result<Vec<u64>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut u64arr: *mut u64 = std::ptr::null_mut();
@@ -243,7 +237,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_int8_array(&mut self) -> Result<Vec<i8>> {
+    pub fn value_int8_array(&self) -> Result<Vec<i8>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut i8arr: *mut i8 = std::ptr::null_mut();
@@ -259,7 +253,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_int16_array(&mut self) -> Result<Vec<i16>> {
+    pub fn value_int16_array(&self) -> Result<Vec<i16>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut i16arr: *mut i16 = std::ptr::null_mut();
@@ -275,7 +269,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_int32_array(&mut self) -> Result<Vec<i32>> {
+    pub fn value_int32_array(&self) -> Result<Vec<i32>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut i32arr: *mut i32 = std::ptr::null_mut();
@@ -291,7 +285,7 @@ impl NvPair {
         }
     }
 
-    pub fn value_int64_array(&mut self) -> Result<Vec<i64>> {
+    pub fn value_int64_array(&self) -> Result<Vec<i64>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut i64arr: *mut i64 = std::ptr::null_mut();
@@ -347,7 +341,7 @@ impl NvPair {
         Ok(nvlist)
     }
 
-    pub fn value_nvlist_array(&mut self) -> Result<Vec<NvList>> {
+    pub fn value_nvlist_array(&self) -> Result<Vec<NvList>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
         let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
@@ -386,7 +380,7 @@ pub struct CtxIter<ContextType> {
 
 impl TryFrom<NvPair> for CtxIter<ContextType> {
     type Error = NvListError;
-    fn try_from(mut nvpair: NvPair) -> Result<Self> {
+    fn try_from(nvpair: NvPair) -> Result<Self> {
         match nvpair.r#type()? {
             NvPairType::Uint8Array => {
                 let vec = nvpair.value_uint8_array()?;
@@ -701,8 +695,8 @@ mod tests {
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         let arr: [u8; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint8_arr("d", arr).unwrap();
-        let mut nvpair = NvPair::new();
-        nvpair.raw = unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) };
+        let nvpair =
+            NvPair::from(unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) });
         let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U8(1)), iter.next());
         assert_eq!(Some(ContextType::U8(2)), iter.next());
@@ -719,8 +713,8 @@ mod tests {
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         let arr: [u16; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint16_arr("d", arr).unwrap();
-        let mut nvpair = NvPair::new();
-        nvpair.raw = unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) };
+        let nvpair =
+            NvPair::from(unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) });
         let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U16(1)), iter.next());
         assert_eq!(Some(ContextType::U16(2)), iter.next());
@@ -737,8 +731,8 @@ mod tests {
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         let arr: [u32; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint32_arr("d", arr).unwrap();
-        let mut nvpair = NvPair::new();
-        nvpair.raw = unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) };
+        let nvpair =
+            NvPair::from(unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) });
         let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U32(1)), iter.next());
         assert_eq!(Some(ContextType::U32(2)), iter.next());
@@ -755,8 +749,8 @@ mod tests {
         let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
         let arr: [u64; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint64_arr("d", arr).unwrap();
-        let mut nvpair = NvPair::new();
-        nvpair.raw = unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) };
+        let nvpair =
+            NvPair::from(unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) });
         let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U64(1)), iter.next());
         assert_eq!(Some(ContextType::U64(2)), iter.next());
