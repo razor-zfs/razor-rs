@@ -8,500 +8,374 @@ use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct NvPair {
-    raw: Option<*mut sys::nvpair_t>,
+    raw: *mut sys::nvpair_t,
 }
 
 impl NvPair {
     pub fn new() -> Self {
-        Self { raw: None }
+        Self {
+            raw: std::ptr::null_mut(),
+        }
     }
 
     pub fn name(&self) -> Cow<str> {
-        match self.raw {
-            Some(raw) => {
-                let cstr = unsafe { CStr::from_ptr(sys::nvpair_name(raw)) };
-                String::from_utf8_lossy(cstr.to_bytes())
-            }
-            // unsafe { CStr::from_ptr(sys::nvpair_name(raw)).to_str()?.to_string() },
-            None => todo!(), //Err(NvListError::NullPointer),
-        }
+        let cstr = unsafe { CStr::from_ptr(sys::nvpair_name(self.raw)) };
+        String::from_utf8_lossy(cstr.to_bytes())
     }
 
     pub fn r#type(&self) -> Result<NvPairType> {
-        match self.raw {
-            Some(raw) => Ok(unsafe { sys::nvpair_type(raw).into() }),
-            None => Err(NvListError::NullPointer),
-        }
+        Ok(unsafe { sys::nvpair_type(self.raw).into() })
     }
 
     pub fn value_boolean(&self) -> Result<bool> {
-        match self.raw {
-            Some(raw) => {
-                let mut x = sys::boolean_t::B_FALSE;
-                let val: *mut sys::boolean_t = &mut x;
+        let mut x = sys::boolean_t::B_FALSE;
+        let val: *mut sys::boolean_t = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_boolean_value(raw, val) })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_boolean_value(self.raw, val) })?;
 
-                match unsafe { val.as_ref() } {
-                    Some(boolval) => {
-                        if let sys::boolean_t::B_FALSE = *boolval {
-                            Ok(false)
-                        } else {
-                            Ok(true)
-                        }
-                    }
-                    None => Err(NvListError::ConversionError),
+        match unsafe { val.as_ref() } {
+            Some(boolval) => {
+                if let sys::boolean_t::B_FALSE = *boolval {
+                    Ok(false)
+                } else {
+                    Ok(true)
                 }
             }
-            None => Err(NvListError::NullPointer),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_boolean_array(&self) -> Result<Vec<bool>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut boolean_arr: *mut boolean_t = std::ptr::null_mut();
-                let boolean_arr_ptr: *mut *mut boolean_t = &mut boolean_arr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut boolean_arr: *mut boolean_t = std::ptr::null_mut();
+        let boolean_arr_ptr: *mut *mut boolean_t = &mut boolean_arr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_boolean_array(raw, boolean_arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_boolean_array(self.raw, boolean_arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { boolean_arr_ptr.as_ref() } {
-                    Some(arr) => {
-                        let vec = unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() };
-                        let mut bool_vec = Vec::with_capacity(vec.len());
-                        for c_bool in vec {
-                            if c_bool == sys::boolean_t::B_TRUE {
-                                bool_vec.push(true);
-                            } else {
-                                bool_vec.push(false);
-                            }
-                        }
-
-                        Ok(bool_vec)
+        match unsafe { boolean_arr_ptr.as_ref() } {
+            Some(arr) => {
+                let vec = unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() };
+                let mut bool_vec = Vec::with_capacity(vec.len());
+                for c_bool in vec {
+                    if c_bool == sys::boolean_t::B_TRUE {
+                        bool_vec.push(true);
+                    } else {
+                        bool_vec.push(false);
                     }
-                    None => Err(NvListError::ConversionError),
                 }
+
+                Ok(bool_vec)
             }
-            None => Err(NvListError::NullPointer),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_uint8(&self) -> Result<u8> {
-        match self.raw {
-            Some(raw) => {
-                let mut x = 0;
-                let val: *mut u8 = &mut x;
+        let mut x = 0;
+        let val: *mut u8 = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint8(raw, val) })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint8(self.raw, val) })?;
 
-                match unsafe { val.as_ref() } {
-                    Some(u8val) => Ok(*u8val),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { val.as_ref() } {
+            Some(u8val) => Ok(*u8val),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_uint16(&mut self) -> Result<u16> {
-        match self.raw {
-            Some(raw) => {
-                let mut x = 0;
-                let val: *mut u16 = &mut x;
+        let mut x = 0;
+        let val: *mut u16 = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint16(raw, val) })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint16(self.raw, val) })?;
 
-                match unsafe { val.as_ref() } {
-                    Some(u16val) => Ok(*u16val),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { val.as_ref() } {
+            Some(u16val) => Ok(*u16val),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_uint32(&self) -> Result<u32> {
-        match self.raw {
-            Some(raw) => {
-                let mut x = 0;
-                let val: *mut u32 = &mut x;
+        let mut x = 0;
+        let val: *mut u32 = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint32(raw, val) })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint32(self.raw, val) })?;
 
-                match unsafe { val.as_ref() } {
-                    Some(u32val) => Ok(*u32val),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { val.as_ref() } {
+            Some(u32val) => Ok(*u32val),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_uint64(&self) -> Result<u64> {
-        match self.raw {
-            Some(raw) => {
-                let mut x = 0;
-                let val: *mut u64 = &mut x;
+        let mut x = 0;
+        let val: *mut u64 = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint64(raw, val) })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint64(self.raw, val) })?;
 
-                match unsafe { val.as_ref() } {
-                    Some(u64val) => Ok(*u64val),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { val.as_ref() } {
+            Some(u64val) => Ok(*u64val),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_float64(&self) -> Result<f64> {
-        match self.raw {
-            Some(raw) => {
-                let mut x: f64 = 0.0;
-                let val: *mut f64 = &mut x;
+        let mut x: f64 = 0.0;
+        let val: *mut f64 = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_double(raw, val) })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_double(self.raw, val) })?;
 
-                match unsafe { val.as_ref() } {
-                    Some(f64val) => Ok(*f64val),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { val.as_ref() } {
+            Some(f64val) => Ok(*f64val),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_int8(&self) -> Result<i8> {
-        match self.raw {
-            Some(raw) => {
-                let mut x = 0;
-                let val: *mut i8 = &mut x;
+        let mut x = 0;
+        let val: *mut i8 = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_int8(raw, val) })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_int8(self.raw, val) })?;
 
-                match unsafe { val.as_ref() } {
-                    Some(i8val) => Ok(*i8val),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { val.as_ref() } {
+            Some(i8val) => Ok(*i8val),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_int16(&mut self) -> Result<i16> {
-        match self.raw {
-            Some(raw) => {
-                let mut x = 0;
-                let val: *mut i16 = &mut x;
+        let mut x = 0;
+        let val: *mut i16 = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_int16(raw, val) })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_int16(self.raw, val) })?;
 
-                match unsafe { val.as_ref() } {
-                    Some(i16val) => Ok(*i16val),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { val.as_ref() } {
+            Some(i16val) => Ok(*i16val),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_int32(&self) -> Result<i32> {
-        match self.raw {
-            Some(raw) => {
-                let mut x = 0;
-                let val: *mut i32 = &mut x;
+        let mut x = 0;
+        let val: *mut i32 = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_int32(raw, val) })?;
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_int32(self.raw, val) })?;
 
-                match unsafe { val.as_ref() } {
-                    Some(i32val) => Ok(*i32val),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { val.as_ref() } {
+            Some(i32val) => Ok(*i32val),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_int64(&self) -> Result<i64> {
-        match self.raw {
-            Some(raw) => {
-                let mut x = 0;
-                let val: *mut i64 = &mut x;
+        let mut x = 0;
+        let val: *mut i64 = &mut x;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_int64(raw, val) })?;
-                match unsafe { val.as_ref() } {
-                    Some(i64val) => Ok(*i64val),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_int64(self.raw, val) })?;
+        match unsafe { val.as_ref() } {
+            Some(i64val) => Ok(*i64val),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_uint8_array(&mut self) -> Result<Vec<u8>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut u8arr: *mut u8 = std::ptr::null_mut();
-                let u8arr_ptr: *mut *mut u8 = &mut u8arr;
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_uint8_array(raw, u8arr_ptr, size_ptr)
-                })?;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut u8arr: *mut u8 = std::ptr::null_mut();
+        let u8arr_ptr: *mut *mut u8 = &mut u8arr;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_uint8_array(self.raw, u8arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { u8arr_ptr.as_ref() } {
-                    Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { u8arr_ptr.as_ref() } {
+            Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_uint16_array(&mut self) -> Result<Vec<u16>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut u16arr: *mut u16 = std::ptr::null_mut();
-                let u16arr_ptr: *mut *mut u16 = &mut u16arr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut u16arr: *mut u16 = std::ptr::null_mut();
+        let u16arr_ptr: *mut *mut u16 = &mut u16arr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_uint16_array(raw, u16arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_uint16_array(self.raw, u16arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { u16arr_ptr.as_ref() } {
-                    Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { u16arr_ptr.as_ref() } {
+            Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_uint32_array(&mut self) -> Result<Vec<u32>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut u32arr: *mut u32 = std::ptr::null_mut();
-                let u32arr_ptr: *mut *mut u32 = &mut u32arr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut u32arr: *mut u32 = std::ptr::null_mut();
+        let u32arr_ptr: *mut *mut u32 = &mut u32arr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_uint32_array(raw, u32arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_uint32_array(self.raw, u32arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { u32arr_ptr.as_ref() } {
-                    Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { u32arr_ptr.as_ref() } {
+            Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_uint64_array(&mut self) -> Result<Vec<u64>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut u64arr: *mut u64 = std::ptr::null_mut();
-                let u64arr_ptr: *mut *mut u64 = &mut u64arr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut u64arr: *mut u64 = std::ptr::null_mut();
+        let u64arr_ptr: *mut *mut u64 = &mut u64arr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_uint64_array(raw, u64arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_uint64_array(self.raw, u64arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { u64arr_ptr.as_ref() } {
-                    Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { u64arr_ptr.as_ref() } {
+            Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_int8_array(&mut self) -> Result<Vec<i8>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut i8arr: *mut i8 = std::ptr::null_mut();
-                let i8arr_ptr: *mut *mut i8 = &mut i8arr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut i8arr: *mut i8 = std::ptr::null_mut();
+        let i8arr_ptr: *mut *mut i8 = &mut i8arr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_int8_array(raw, i8arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_int8_array(self.raw, i8arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { i8arr_ptr.as_ref() } {
-                    Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { i8arr_ptr.as_ref() } {
+            Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_int16_array(&mut self) -> Result<Vec<i16>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut i16arr: *mut i16 = std::ptr::null_mut();
-                let i16arr_ptr: *mut *mut i16 = &mut i16arr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut i16arr: *mut i16 = std::ptr::null_mut();
+        let i16arr_ptr: *mut *mut i16 = &mut i16arr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_int16_array(raw, i16arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_int16_array(self.raw, i16arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { i16arr_ptr.as_ref() } {
-                    Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { i16arr_ptr.as_ref() } {
+            Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_int32_array(&mut self) -> Result<Vec<i32>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut i32arr: *mut i32 = std::ptr::null_mut();
-                let i32arr_ptr: *mut *mut i32 = &mut i32arr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut i32arr: *mut i32 = std::ptr::null_mut();
+        let i32arr_ptr: *mut *mut i32 = &mut i32arr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_int32_array(raw, i32arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_int32_array(self.raw, i32arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { i32arr_ptr.as_ref() } {
-                    Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { i32arr_ptr.as_ref() } {
+            Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_int64_array(&mut self) -> Result<Vec<i64>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut i64arr: *mut i64 = std::ptr::null_mut();
-                let i64arr_ptr: *mut *mut i64 = &mut i64arr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut i64arr: *mut i64 = std::ptr::null_mut();
+        let i64arr_ptr: *mut *mut i64 = &mut i64arr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_int64_array(raw, i64arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_int64_array(self.raw, i64arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { i64arr_ptr.as_ref() } {
-                    Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
-                    None => Err(NvListError::ConversionError),
-                }
-            }
-            None => Err(NvListError::NullPointer),
+        match unsafe { i64arr_ptr.as_ref() } {
+            Some(arr) => Ok(unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() }),
+            None => Err(NvListError::ConversionError),
         }
     }
 
     pub fn value_string(&self) -> Result<String> {
-        match self.raw {
-            Some(raw) => {
-                let mut str: *mut u8 = std::ptr::null_mut();
-                let str_ptr: *mut *mut u8 = &mut str;
+        let mut str: *mut u8 = std::ptr::null_mut();
+        let str_ptr: *mut *mut u8 = &mut str;
 
-                NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_string(raw, str_ptr) })?;
-                let name = unsafe { CStr::from_ptr(*str_ptr).to_str()?.to_string() };
-                Ok(name)
-            }
-            None => Err(NvListError::NullPointer),
-        }
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_string(self.raw, str_ptr) })?;
+        let name = unsafe { CStr::from_ptr(*str_ptr).to_str()?.to_string() };
+        Ok(name)
     }
 
     pub fn value_string_array(&self) -> Result<Vec<String>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut str: *mut u8 = std::ptr::null_mut();
-                let mut str_ptr: *mut *mut u8 = &mut str;
-                let str_arr_ptr: *mut *mut *mut u8 = &mut str_ptr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut str: *mut u8 = std::ptr::null_mut();
+        let mut str_ptr: *mut *mut u8 = &mut str;
+        let str_arr_ptr: *mut *mut *mut u8 = &mut str_ptr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_string_array(raw, str_arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_string_array(self.raw, str_arr_ptr, size_ptr)
+        })?;
 
-                let mut str_vec = unsafe { Vec::with_capacity(*size_ptr as usize) };
-                let cstr_vec =
-                    unsafe { slice::from_raw_parts(*str_arr_ptr, size as usize).to_vec() };
+        let mut str_vec = unsafe { Vec::with_capacity(*size_ptr as usize) };
+        let cstr_vec = unsafe { slice::from_raw_parts(*str_arr_ptr, size as usize).to_vec() };
 
-                for cstr in cstr_vec {
-                    str_vec.push(unsafe { CStr::from_ptr(cstr).to_str()?.to_string() });
-                }
-
-                Ok(str_vec)
-            }
-            None => Err(NvListError::NullPointer),
+        for cstr in cstr_vec {
+            str_vec.push(unsafe { CStr::from_ptr(cstr).to_str()?.to_string() });
         }
+
+        Ok(str_vec)
     }
 
     pub fn value_nvlist(&self) -> Result<NvList> {
-        match self.raw {
-            Some(raw) => {
-                let mut raw_nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
-                let raw_nvlist_ptr: *mut *mut sys::nvlist_t = &mut raw_nvlist;
+        let mut raw_nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
+        let raw_nvlist_ptr: *mut *mut sys::nvlist_t = &mut raw_nvlist;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_nvlist(raw, raw_nvlist_ptr)
-                })?;
-                let nvlist = NvList::from(unsafe { *raw_nvlist_ptr });
+        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_nvlist(self.raw, raw_nvlist_ptr) })?;
+        let nvlist = NvList::from(unsafe { *raw_nvlist_ptr });
 
-                Ok(nvlist)
-            }
-            None => Err(NvListError::NullPointer),
-        }
+        Ok(nvlist)
     }
 
     pub fn value_nvlist_array(&mut self) -> Result<Vec<NvList>> {
-        match self.raw {
-            Some(raw) => {
-                let mut size = 0;
-                let size_ptr: *mut sys::uint_t = &mut size;
-                let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
-                let mut nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
-                let nvlist_arr_ptr: *mut *mut *mut sys::nvlist_t = &mut nvlist_ptr;
+        let mut size = 0;
+        let size_ptr: *mut sys::uint_t = &mut size;
+        let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
+        let mut nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
+        let nvlist_arr_ptr: *mut *mut *mut sys::nvlist_t = &mut nvlist_ptr;
 
-                NvListError::from_nvlist_rc(unsafe {
-                    sys::nvpair_value_nvlist_array(raw, nvlist_arr_ptr, size_ptr)
-                })?;
+        NvListError::from_nvlist_rc(unsafe {
+            sys::nvpair_value_nvlist_array(self.raw, nvlist_arr_ptr, size_ptr)
+        })?;
 
-                match unsafe { nvlist_arr_ptr.as_ref() } {
-                    Some(arr) => {
-                        let vec_ptr =
-                            unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() };
-                        let mut nvlist_vec = Vec::with_capacity(vec_ptr.len());
-                        for nvlist in vec_ptr {
-                            nvlist_vec.push(NvList::from(nvlist))
-                        }
-
-                        Ok(nvlist_vec)
-                    }
-                    None => Err(NvListError::ConversionError),
+        match unsafe { nvlist_arr_ptr.as_ref() } {
+            Some(arr) => {
+                let vec_ptr = unsafe { slice::from_raw_parts(*arr, size as usize).to_vec() };
+                let mut nvlist_vec = Vec::with_capacity(vec_ptr.len());
+                for nvlist in vec_ptr {
+                    nvlist_vec.push(NvList::from(nvlist))
                 }
+
+                Ok(nvlist_vec)
             }
-            None => Err(NvListError::NullPointer),
+            None => Err(NvListError::ConversionError),
         }
     }
 }
 
 impl From<*mut sys::nvpair_t> for NvPair {
     fn from(nvp: *mut sys::nvpair_t) -> Self {
-        Self { raw: Some(nvp) }
+        Self { raw: nvp }
     }
 }
 
@@ -828,8 +702,7 @@ mod tests {
         let arr: [u8; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint8_arr("d", arr).unwrap();
         let mut nvpair = NvPair::new();
-        nvpair.raw =
-            Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
+        nvpair.raw = unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) };
         let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U8(1)), iter.next());
         assert_eq!(Some(ContextType::U8(2)), iter.next());
@@ -847,8 +720,7 @@ mod tests {
         let arr: [u16; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint16_arr("d", arr).unwrap();
         let mut nvpair = NvPair::new();
-        nvpair.raw =
-            Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
+        nvpair.raw = unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) };
         let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U16(1)), iter.next());
         assert_eq!(Some(ContextType::U16(2)), iter.next());
@@ -866,8 +738,7 @@ mod tests {
         let arr: [u32; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint32_arr("d", arr).unwrap();
         let mut nvpair = NvPair::new();
-        nvpair.raw =
-            Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
+        nvpair.raw = unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) };
         let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
         assert_eq!(Some(ContextType::U32(1)), iter.next());
         assert_eq!(Some(ContextType::U32(2)), iter.next());
@@ -885,16 +756,15 @@ mod tests {
         let arr: [u64; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint64_arr("d", arr).unwrap();
         let mut nvpair = NvPair::new();
-        nvpair.raw =
-            Some(unsafe { sys::nvlist_next_nvpair(nvlist.raw.unwrap(), std::ptr::null_mut()) });
-        /*let mut iter: Iter<u64> = nvpair.try_into().unwrap();
-        assert_eq!(Some(1_u64), iter.next());
-        assert_eq!(Some(2_u64), iter.next());
-        assert_eq!(Some(3_u64), iter.next());
-        assert_eq!(Some(4_u64), iter.next());
-        assert_eq!(Some(5_u64), iter.next());
+        nvpair.raw = unsafe { sys::nvlist_next_nvpair(nvlist.raw, std::ptr::null_mut()) };
+        let mut iter: CtxIter<ContextType> = nvpair.try_into().unwrap();
+        assert_eq!(Some(ContextType::U64(1)), iter.next());
+        assert_eq!(Some(ContextType::U64(2)), iter.next());
+        assert_eq!(Some(ContextType::U64(3)), iter.next());
+        assert_eq!(Some(ContextType::U64(4)), iter.next());
+        assert_eq!(Some(ContextType::U64(5)), iter.next());
         assert_eq!(None, iter.next());
         assert_eq!(None, iter.next());
-        assert_eq!(None, iter.next());*/
+        assert_eq!(None, iter.next());
     }
 }
