@@ -374,12 +374,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
 
     fn serialize_bytes(self, v: &[u8]) -> Result<()> {
         dbg!("Serializing bytes");
-        use serde::ser::SerializeSeq;
-        let mut seq = self.serialize_seq(Some(v.len()))?;
-        for byte in v {
-            seq.serialize_element(byte)?;
+        match &self.curr.name {
+            Some(name) => {
+                self.curr.nvlist.add_uint8_arr(name, v)?;
+                Ok(())
+            }
+            None => Err(NvListError::RestrictedOperation),
         }
-        seq.end()
     }
 
     fn serialize_none(self) -> Result<()> {
