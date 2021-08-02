@@ -13,6 +13,7 @@ pub struct NvListDeserializer<'de> {
     input: &'de mut libnvpair::NvList,
     nested_nvlist: Option<NvList>,
     curr_pair: NvPair,
+    fields: Vec<String>,
 }
 
 impl<'de> NvListDeserializer<'de> {
@@ -21,6 +22,7 @@ impl<'de> NvListDeserializer<'de> {
             input,
             nested_nvlist: None,
             curr_pair: NvPair::new(),
+            fields: Vec::new(),
         }
     }
 }
@@ -357,13 +359,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     fn deserialize_struct<V>(
         self,
         _name: &'static str,
-        _fields: &'static [&'static str],
+        fields: &'static [&'static str],
         visitor: V,
     ) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
         dbg!("Deserializing struct");
+        for field in fields {
+            self.fields.push(field.to_string());
+        }
         self.deserialize_map(visitor)
     }
 
@@ -401,11 +406,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
 struct CommaSeparated<'a, 'de: 'a> {
     de: &'a mut NvListDeserializer<'de>,
     iter: NvListIterator,
+    finished: bool,
 }
 
 impl<'a, 'de> CommaSeparated<'a, 'de> {
     fn new(de: &'a mut NvListDeserializer<'de>, iter: NvListIterator) -> Self {
-        CommaSeparated { de, iter }
+        CommaSeparated {
+            de,
+            iter,
+            finished: false,
+        }
     }
 }
 
@@ -449,18 +459,34 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
         K: DeserializeSeed<'de>,
     {
         dbg!("Deserializing map key");
-        match self.iter.next() {
-            Some(nvpair) => {
-                dbg!("getting some");
-                self.de.curr_pair = nvpair;
-                seed.deserialize(&mut *self.de).map(Some)
-            }
-            None => {
-                dbg!("getting none");
-                self.de.curr_pair = NvPair::new();
-                self.de.nested_nvlist = None;
-                Ok(None)
-            }
+
+        loop {
+            match self.iter.next() {
+                Some(nvpair) => {
+                    dbg!("getting some");
+                    if self
+                        .de
+                        .fields
+                        .iter()
+                        .any(|name| name.as_str() == nvpair.name().unwrap())
+                    {
+                        self.de.curr_pair = nvpair;
+                        break;
+                    }
+                }
+                None => {
+                    dbg!("getting none");
+                    self.de.curr_pair = NvPair::new();
+                    self.de.nested_nvlist = None;
+                    self.finished = true;
+                    break;
+                }
+            };
+        }
+        if !self.finished {
+            seed.deserialize(&mut *self.de).map(Some)
+        } else {
+            Ok(None)
         }
     }
 
