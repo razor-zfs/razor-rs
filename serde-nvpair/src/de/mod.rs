@@ -426,7 +426,6 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         V: Visitor<'de>,
     {
         dbg!("Deserializing object identifier");
-        dbg!(self.curr_pair);
         dbg!(self.curr_pair.r#type()?);
         dbg!(self.curr_pair.name());
         visitor.visit_str(self.curr_pair.name().as_ref())
@@ -508,6 +507,8 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
                     if self.de.curr.fields.contains(&name) {
                         self.de.curr_pair = nvpair;
                         break;
+                    } else {
+                        dbg!("name not found: ", name)
                     }
                 }
                 None => {

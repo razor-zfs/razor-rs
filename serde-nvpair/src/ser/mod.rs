@@ -50,7 +50,7 @@ where
     };
 
     value.serialize(&mut serializer)?;
-    Ok(serializer.raw_nvlist)
+    Ok(serializer.curr.nvlist)
 }
 
 impl<'a> ser::Serializer for &'a mut NvListSerializer {
@@ -95,7 +95,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_boolean(name, v)?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_boolean(name, v)?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -121,7 +122,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_int8(name, v)?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_int8(name, v)?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -147,7 +149,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_int16(name, v)?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_int16(name, v)?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -173,7 +176,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_int32(name, v)?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_int32(name, v)?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -199,7 +203,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_int64(name, v)?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_int64(name, v)?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -225,7 +230,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_uint8(name, v)?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_uint8(name, v)?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -251,6 +257,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
+                dbg!("serializing name: ", &name);
                 self.curr.nvlist.add_uint16(name, v)?;
                 Ok(())
             } else {
@@ -277,7 +284,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_uint32(name, v)?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_uint32(name, v)?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -303,7 +311,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_uint64(name, v)?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_uint64(name, v)?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -334,7 +343,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_float64(name, v)?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_float64(name, v)?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -364,7 +374,8 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             }
         } else {
             if let Some(name) = &self.curr.name {
-                self.raw_nvlist.add_string(name, &v.to_string())?;
+                dbg!("serializing name: ", &name);
+                self.curr.nvlist.add_string(name, &v.to_string())?;
                 Ok(())
             } else {
                 Err(NvListError::RestrictedOperation)
@@ -376,6 +387,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing bytes");
         match &self.curr.name {
             Some(name) => {
+                dbg!("serializing name: ", &name);
                 self.curr.nvlist.add_uint8_arr(name, v)?;
                 Ok(())
             }
