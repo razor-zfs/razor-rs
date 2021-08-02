@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::convert::TryFrom;
 use std::{ffi::CStr, slice};
 
@@ -7,7 +8,7 @@ use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct NvPair {
-    pub raw: Option<*mut sys::nvpair_t>,
+    raw: Option<*mut sys::nvpair_t>,
 }
 
 impl NvPair {
@@ -15,10 +16,14 @@ impl NvPair {
         Self { raw: None }
     }
 
-    pub fn name(&self) -> Result<String> {
+    pub fn name(&self) -> Cow<str> {
         match self.raw {
-            Some(raw) => unsafe { Ok(CStr::from_ptr(sys::nvpair_name(raw)).to_str()?.to_string()) },
-            None => Err(NvListError::NullPointer),
+            Some(raw) => {
+                let cstr = unsafe { CStr::from_ptr(sys::nvpair_name(raw)) };
+                String::from_utf8_lossy(cstr.to_bytes())
+            }
+            // unsafe { CStr::from_ptr(sys::nvpair_name(raw)).to_str()?.to_string() },
+            None => todo!(), //Err(NvListError::NullPointer),
         }
     }
 
@@ -696,16 +701,7 @@ impl Iterator for CtxIter<ContextType> {
                     None
                 }
             }
-            ContextType::NvListArr(vec) => {
-                if self.index < vec.len() {
-                    let index = self.index;
-                    self.index += 1;
-                    // TODO: check if it is ok to copy here
-                    Some(ContextType::NvList(vec[index]))
-                } else {
-                    None
-                }
-            }
+            ContextType::NvListArr(_vec) => todo!(),
             _ => None,
         }
     }

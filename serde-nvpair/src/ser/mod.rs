@@ -477,7 +477,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         if self.is_first {
             self.is_first = false;
             self.helpers.push(SerializerHelper {
-                nvlist: self.raw_nvlist,
+                nvlist: self.raw_nvlist.to_owned(),
                 is_vec: false,
                 name: None,
                 context_type: libnvpair::ContextType::Empty,

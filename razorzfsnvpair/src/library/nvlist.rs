@@ -6,7 +6,7 @@ use libc::c_char;
 
 use super::*;
 
-#[derive(Debug, PartialEq, Copy)]
+#[derive(Debug, PartialEq)]
 pub struct NvList {
     pub raw: Option<*mut sys::nvlist_t>,
 }
@@ -632,11 +632,11 @@ mod tests {
         let pair1 = iter.next().unwrap();
         let pair2 = iter.next().unwrap();
         let pair3 = iter.next().unwrap();
-        assert_eq!("a".to_string(), pair1.name().unwrap());
+        assert_eq!("a".to_string(), pair1.name().as_ref());
         assert_eq!(NvPairType::Uint16, pair1.r#type().unwrap());
-        assert_eq!("b".to_string(), pair2.name().unwrap());
+        assert_eq!("b".to_string(), pair2.name().as_ref());
         assert_eq!(NvPairType::Uint32, pair2.r#type().unwrap());
-        assert_eq!("d".to_string(), pair3.name().unwrap());
+        assert_eq!("d".to_string(), pair3.name().as_ref());
         assert_eq!(NvPairType::Uint8Array, pair3.r#type().unwrap());
         assert_eq!(None, iter.next());
         assert_eq!(None, iter.next());
