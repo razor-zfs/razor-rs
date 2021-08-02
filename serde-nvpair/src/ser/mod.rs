@@ -655,7 +655,6 @@ impl<'a> ser::SerializeStruct for &'a mut NvListSerializer {
     {
         dbg!("Serializing In serealize struct field");
         self.curr.context_type = ContextType::Empty;
-        //self.name = Some(key.to_string());
         self.curr.name = Some(key.to_string());
         value.serialize(&mut **self)
     }

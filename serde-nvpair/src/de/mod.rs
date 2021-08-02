@@ -537,8 +537,6 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
     {
         dbg!("Deserializing map value");
         if self.de.curr_pair.r#type()? == libnvpair::NvPairType::Nvlist {
-            // self.de.nested_nvlist = Some(self.de.curr_pair.value_nvlist()?)
-            //let nested_nvlist = self.de.curr_pair.value_nvlist()?;
             self.de.helpers.push(self.de.curr.to_owned());
             self.de.helpers.push(HelperDeserializer {
                 nvlist: self.de.curr_pair.value_nvlist()?,
