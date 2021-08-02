@@ -23,6 +23,7 @@ pub enum NvListError {
     NullPointer,
     NvListNullPointer,
     NvPairDontExist,
+    NvListDontExist,
 }
 
 impl NvListError {
@@ -74,6 +75,7 @@ impl Display for NvListError {
             NvListError::NullPointer => todo!(),
             NvListError::NvListNullPointer => todo!(),
             NvListError::NvPairDontExist => todo!(),
+            NvListError::NvListDontExist => todo!(),
             /* and so forth */
         }
     }

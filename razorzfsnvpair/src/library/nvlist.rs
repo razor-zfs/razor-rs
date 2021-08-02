@@ -12,12 +12,6 @@ pub struct NvList {
 }
 
 impl NvList {
-    pub fn new() -> Self {
-        Self {
-            raw: std::ptr::null_mut(),
-        }
-    }
-
     pub fn nvlist_alloc(flag: NvFlag) -> Result<NvList> {
         let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
         let nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
