@@ -414,6 +414,12 @@ impl Clone for NvList {
     }
 }
 
+impl Drop for NvList {
+    fn drop(&mut self) {
+        unsafe { sys::nvlist_free(self.raw) };
+    }
+}
+
 impl IntoIterator for NvList {
     type Item = NvPair;
     type IntoIter = NvListIterator;
