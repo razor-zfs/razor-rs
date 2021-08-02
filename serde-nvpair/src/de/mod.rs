@@ -11,14 +11,14 @@ mod ctx_type_deserializer;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct HelperDeserializer {
-    nvlist: NvList,
+    nvlist: Option<NvList>,
     fields: &'static [&'static str],
 }
 
 impl HelperDeserializer {
     pub fn default() -> Self {
         HelperDeserializer {
-            nvlist: NvList::new(),
+            nvlist: None,
             fields: &[],
         }
     }
@@ -401,27 +401,16 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     where
         V: Visitor<'de>,
     {
+        let nvl;
         dbg!("Deserializing map");
-        let nvlist_clone = self.curr.nvlist.clone();
-        let value = visitor.visit_map(CommaSeparated::new(&mut self, nvlist_clone.into_iter()))?;
+        if let Some(nvlist) = &mut self.curr.nvlist {
+            nvl = nvlist.clone();
+        } else {
+            return Err(NvListError::NvListDontExist);
+        }
+
+        let value = visitor.visit_map(CommaSeparated::new(&mut self, nvl.into_iter()))?;
         Ok(value)
-        // TODO: check if this is ok
-        /*match self.nested_nvlist {
-            Some(nvlist) => {
-                dbg!("deserializing nested");
-                let nvlist_clone = nvlist.clone();
-                let value =
-                    visitor.visit_map(CommaSeparated::new(&mut self, nvlist_clone.into_iter()))?;
-                Ok(value)
-            }
-            None => {
-                dbg!("deserializing input");
-                let nvlist_clone = self.input.clone();
-                let value =
-                    visitor.visit_map(CommaSeparated::new(&mut self, nvlist_clone.into_iter()))?;
-                Ok(value)
-            }
-        }*/
     }
 
     fn deserialize_struct<V>(
@@ -438,7 +427,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         if self.first {
             self.first = false;
             self.helpers.push(HelperDeserializer {
-                nvlist: self.input.to_owned(),
+                nvlist: Some(self.input.to_owned()),
                 fields,
             })
         }
@@ -587,7 +576,7 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
             if nvpair.r#type()? == libnvpair::NvPairType::Nvlist {
                 self.de.helpers.push(self.de.curr.to_owned());
                 self.de.helpers.push(HelperDeserializer {
-                    nvlist: nvpair.value_nvlist()?,
+                    nvlist: Some(nvpair.value_nvlist()?),
                     fields: &[],
                 })
             }
