@@ -488,7 +488,5 @@ mod tests {
         assert_eq!("d".to_string(), pair3.name().as_ref());
         assert_eq!(NvPairType::Uint8Array, pair3.r#type().unwrap());
         assert_eq!(None, iter.next());
-        assert_eq!(None, iter.next());
-        assert_eq!(None, iter.next());
     }
 }
