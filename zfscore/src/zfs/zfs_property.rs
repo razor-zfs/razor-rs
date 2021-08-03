@@ -1,0 +1,40 @@
+use super::property;
+pub use property::InvalidProperty;
+pub use property::Property;
+
+mod checksum;
+mod compression;
+mod dataset;
+mod onoff;
+mod onoffnoauto;
+mod timestamp;
+mod yesno;
+
+pub use checksum::CheckSum as CheckSumAlgo;
+pub use compression::Compression as CompressionAlgo;
+pub use dataset::Type as DatasetType;
+pub use onoff::OnOff;
+pub use onoffnoauto::OnOffNoAuto;
+pub use timestamp::TimeStamp;
+pub use yesno::YesNo;
+
+pub type Guid = property::Property<u64>;
+pub type Name = property::Property<String>;
+pub type Available = property::Property<u64>;
+pub type CompressRatio = property::Property<f64>;
+pub type Type = property::Property<DatasetType>;
+pub type Used = property::Property<u64>;
+pub type LogicalUsed = property::Property<u64>;
+pub type Referenced = property::Property<u64>;
+pub type LogicalReferenced = property::Property<u64>;
+pub type CreateTxg = property::Property<u64>;
+pub type Creation = property::Property<TimeStamp>;
+pub type Volsize = property::Property<u64>;
+pub type VolBlockSize = property::Property<u64>;
+pub type Written = property::Property<u64>;
+pub type ObjSetId = property::Property<u64>;
+pub type Atime = property::Property<OnOff>;
+pub type CanMount = property::Property<OnOffNoAuto>;
+pub type Mounted = property::Property<YesNo>;
+pub type CheckSum = property::Property<CheckSumAlgo>;
+pub type Compression = property::Property<CompressionAlgo>;
