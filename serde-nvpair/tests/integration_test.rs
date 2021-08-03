@@ -1,4 +1,3 @@
-use jemallocator;
 use serde_nvpair::*;
 
 use serde::{Deserialize, Serialize};

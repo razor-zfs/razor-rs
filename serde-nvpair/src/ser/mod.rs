@@ -97,18 +97,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_boolean(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_boolean(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -128,18 +126,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_int8(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_int8(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -159,18 +155,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_int16(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_int16(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -190,18 +184,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_int32(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_int32(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -221,18 +213,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_int64(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_int64(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -252,18 +242,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_uint8(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_uint8(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -283,18 +271,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_uint16(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_uint16(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -314,18 +300,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_uint32(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_uint32(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -345,18 +329,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_uint64(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_uint64(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -381,18 +363,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_float64(name, v)?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_float64(name, v)?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -416,18 +396,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 }
                 _ => Err(NvListError::UnmatchingVariables),
             }
-        } else {
-            if let Some(name) = &self.curr.name {
-                dbg!("serializing name: ", &name);
-                if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_string(name, &v.to_string())?;
-                    Ok(())
-                } else {
-                    Err(NvListError::NvListDontExist)
-                }
+        } else if let Some(name) = &self.curr.name {
+            dbg!("serializing name: ", &name);
+            if let Some(nvlist) = &mut self.curr.nvlist {
+                nvlist.add_string(name, &v.to_string())?;
+                Ok(())
             } else {
-                Err(NvListError::RestrictedOperation)
+                Err(NvListError::NvListDontExist)
             }
+        } else {
+            Err(NvListError::RestrictedOperation)
         }
     }
 
@@ -724,7 +702,7 @@ impl<'a> ser::SerializeStruct for &'a mut NvListSerializer {
                         // TODO: check if this is ok
                         self.curr = SerializerHelper {
                             nvlist: Some(prev_nvlist.clone()),
-                            is_vec: prev_helper.is_vec.clone(),
+                            is_vec: prev_helper.is_vec,
                             name: Some(name.clone()),
                             context_type: prev_helper.context_type,
                         }
