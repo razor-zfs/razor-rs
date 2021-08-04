@@ -7,9 +7,7 @@ fn create_filesystem_dataset() {
         .unwrap()
         .atime(zfs_property::OnOff::On)
         .unwrap()
-        .canmount(zfs_property::OnOffNoAuto::NoAuto)
-        .unwrap()
-        .copies(3)
+        .canmount(true)
         .unwrap()
         .create_filesystem()
         .unwrap();
@@ -19,11 +17,9 @@ fn create_filesystem_dataset() {
 fn create_volume_dataset() {
     let volume = Dataset::new("volume")
         .unwrap()
-        .atime(zfs_property::OnOff::On)
+        .atime(true)
         .unwrap()
-        .canmount(zfs_property::OnOffNoAuto::NoAuto)
-        .unwrap()
-        .copies(3)
+        .canmount(false)
         .unwrap()
         .create_volume(256)
         .unwrap();
@@ -37,8 +33,6 @@ fn create_snapshot_dataset() {
         .unwrap()
         .canmount(zfs_property::OnOffNoAuto::NoAuto)
         .unwrap()
-        .copies(3)
-        .unwrap()
         .create_snapshot()
         .unwrap();
 }
@@ -50,8 +44,6 @@ fn create_bookmark_dataset() {
         .atime(zfs_property::OnOff::On)
         .unwrap()
         .canmount(zfs_property::OnOffNoAuto::NoAuto)
-        .unwrap()
-        .copies(3)
         .unwrap()
         .create_bookmark()
         .unwrap();

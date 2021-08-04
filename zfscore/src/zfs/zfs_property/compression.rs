@@ -80,3 +80,13 @@ impl FromStr for Compression {
         }
     }
 }
+
+impl From<bool> for Compression {
+    fn from(v: bool) -> Self {
+        if v {
+            Compression::On
+        } else {
+            Compression::Off
+        }
+    }
+}

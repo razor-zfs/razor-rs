@@ -57,3 +57,13 @@ impl FromStr for CheckSum {
         }
     }
 }
+
+impl From<bool> for CheckSum {
+    fn from(v: bool) -> Self {
+        if v {
+            CheckSum::On
+        } else {
+            CheckSum::Off
+        }
+    }
+}

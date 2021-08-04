@@ -38,3 +38,13 @@ impl FromStr for OnOffNoAuto {
         }
     }
 }
+
+impl From<bool> for OnOffNoAuto {
+    fn from(v: bool) -> Self {
+        if v {
+            OnOffNoAuto::On
+        } else {
+            OnOffNoAuto::Off
+        }
+    }
+}

@@ -36,6 +36,16 @@ impl FromStr for OnOff {
     }
 }
 
+impl From<bool> for OnOff {
+    fn from(v: bool) -> Self {
+        if v {
+            OnOff::On
+        } else {
+            OnOff::Off
+        }
+    }
+}
+
 impl From<OnOff> for bool {
     fn from(onoff: OnOff) -> Self {
         match onoff {
