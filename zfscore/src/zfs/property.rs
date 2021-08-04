@@ -38,7 +38,7 @@ pub enum InvalidProperty {
 }
 
 impl InvalidProperty {
-    pub(crate) fn no_such_property(prop: impl ToString) -> Self {
+    pub(crate) fn _no_such_property(prop: impl ToString) -> Self {
         Self::NoSuchProperty(prop.to_string())
     }
 

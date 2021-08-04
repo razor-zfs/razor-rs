@@ -1,5 +1,9 @@
+use std::ffi::CString;
+
 use super::libnvpair;
+use super::sys;
 use super::zfs_property;
+use super::DatasetError;
 use super::Result;
 use serde_nvpair::from_nvlist;
 
@@ -22,6 +26,7 @@ impl Dataset {
     where
         T: AsRef<str>,
     {
+        unsafe { sys::libzfs_core_init() };
         Ok(Dataset {
             nvlist: libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName)?,
             name: name.as_ref().to_string(),
@@ -104,7 +109,24 @@ impl Dataset {
         Ok(self)
     }
 
+    // TODO: add zfs_mount_and_share functionality
     pub fn create_filesystem(mut self) -> Result<filesystem::Filesystem> {
+        let ret = unsafe {
+            sys::lzc_create(
+                CString::new(self.name)?.as_ptr(),
+                sys::lzc_dataset_type::LZC_DATSET_TYPE_ZFS,
+                self.nvlist.raw,
+                std::ptr::null_mut(),
+                0,
+            )
+        };
+
+        dbg!(ret);
+
+        if ret != 0 {
+            return Err(DatasetError::DatasetCreationFailure);
+        }
+
         Ok(from_nvlist(&mut self.nvlist)?)
     }
 
@@ -116,11 +138,40 @@ impl Dataset {
         Ok(from_nvlist(&mut self.nvlist)?)
     }
 
+    // TODO: 1. default block size should be calculated
+    //       2. volsize should be multiple of volblocksize and rounded to nearest 128k bytes
+    //       3. add noreserve functionality
+    //       4. add parents creation if needed
+    //       5. add zfs_mount_and_share functionality
     pub fn create_volume(mut self, size: u64) -> Result<volume::Volume> {
+        #[inline]
+        fn is_power_of_two(num: u64) -> bool {
+            (num != 0) && ((num & (num - 1)) == 0)
+        }
+
         self.nvlist.add_uint64("volsize", size)?;
 
         if let Some(block_size) = self.volblocksize {
-            self.nvlist.add_uint64("volblocksize", block_size)?;
+            if (block_size > 512 || block_size < 128000) && is_power_of_two(block_size) {
+                self.nvlist.add_uint64("volblocksize", block_size)?;
+            } else {
+                return Err(DatasetError::BadVolumeBlockSize);
+            }
+        } else {
+            self.nvlist.add_uint64("volblocksize", 8192)?;
+        }
+
+        if unsafe {
+            sys::lzc_create(
+                CString::new(self.name)?.as_ptr(),
+                sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL,
+                self.nvlist.raw,
+                std::ptr::null_mut(),
+                0,
+            )
+        } != 0
+        {
+            return Err(DatasetError::DatasetCreationFailure);
         }
 
         Ok(from_nvlist(&mut self.nvlist)?)
