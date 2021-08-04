@@ -3,7 +3,7 @@ use zfscore::zfs_property;
 
 #[test]
 fn create_filesystem_dataset() {
-    let filesystem = Dataset::builder()
+    let filesystem = Dataset::new("filesystem")
         .unwrap()
         .atime(zfs_property::OnOff::On)
         .unwrap()
@@ -17,7 +17,7 @@ fn create_filesystem_dataset() {
 
 #[test]
 fn create_volume_dataset() {
-    let volume = Dataset::builder()
+    let volume = Dataset::new("volume")
         .unwrap()
         .atime(zfs_property::OnOff::On)
         .unwrap()
@@ -31,7 +31,7 @@ fn create_volume_dataset() {
 
 #[test]
 fn create_snapshot_dataset() {
-    let snapshot = Dataset::builder()
+    let snapshot = Dataset::new("snapshot")
         .unwrap()
         .atime(zfs_property::OnOff::On)
         .unwrap()
@@ -45,7 +45,7 @@ fn create_snapshot_dataset() {
 
 #[test]
 fn create_bookmark_dataset() {
-    let bookmark = Dataset::builder()
+    let bookmark = Dataset::new("bookmark")
         .unwrap()
         .atime(zfs_property::OnOff::On)
         .unwrap()
