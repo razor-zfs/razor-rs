@@ -1,5 +1,6 @@
 use std::ffi::CString;
 
+use super::init_zfs;
 use super::libnvpair;
 use super::sys;
 use super::zfs_property;
@@ -26,7 +27,7 @@ impl Dataset {
     where
         T: AsRef<str>,
     {
-        unsafe { sys::libzfs_core_init() };
+        init_zfs();
         Ok(Dataset {
             nvlist: libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName)?,
             name: name.as_ref().to_string(),
