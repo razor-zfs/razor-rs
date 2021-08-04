@@ -4,8 +4,7 @@ use std::path::PathBuf;
 fn main() {
     // Tell cargo to tell rustc to link the system nvpair of zfs
     // shared library.
-    println!("cargo:rustc-link-lib=zfs");
-    println!("cargo:rustc-link-lib=zpool");
+    println!("cargo:rustc-link-lib=zfs_core");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -14,13 +13,10 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("wrapper.h")
-        .allowlist_var(r#"(\w*zfs\w*)"#)
-        .allowlist_type(r#"(\w*zfs\w*)"#)
-        .allowlist_function(r#"(\w*zfs\w*)"#)
-        .allowlist_var(r#"(\w*zpool\w*)"#)
-        .allowlist_type(r#"(\w*zpool\w*)"#)
-        .allowlist_function(r#"(\w*zpool\w*)"#)
-        //.allowlist_function(r#"(\w*libzfs\w*)"#)
+        .allowlist_var(r#"(\w*lzc\w*)"#)
+        .allowlist_type(r#"(\w*lzc\w*)"#)
+        .allowlist_function(r#"(\w*lzc\w*)"#)
+        .allowlist_function(r#"(\w*libzfs\w*)"#)
         .blocklist_item(r#"(\w*nvlist\w*)"#)
         .blocklist_type(r#"(\w*nvlist\w*)"#)
         .blocklist_function(r#"(\w*nvlist\w*)"#)

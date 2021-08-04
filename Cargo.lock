@@ -1779,6 +1779,7 @@ name = "zfscore"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "razorzfscore-sys",
  "razorzfsnvpair",
  "serde",
  "serde-nvpair",
