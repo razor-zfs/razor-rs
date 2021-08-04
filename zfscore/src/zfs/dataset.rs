@@ -14,6 +14,7 @@ mod volume;
 pub struct Dataset {
     nvlist: libnvpair::NvList,
     name: String,
+    volblocksize: Option<u64>,
 }
 
 impl Dataset {
@@ -24,6 +25,7 @@ impl Dataset {
         Ok(Dataset {
             nvlist: libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName)?,
             name: name.as_ref().to_string(),
+            volblocksize: None,
         })
     }
 
@@ -97,6 +99,11 @@ impl Dataset {
         Ok(self)
     }
 
+    pub fn blocksize(mut self, v: u64) -> Result<Self> {
+        self.volblocksize = Some(v);
+        Ok(self)
+    }
+
     pub fn create_filesystem(mut self) -> Result<filesystem::Filesystem> {
         Ok(from_nvlist(&mut self.nvlist)?)
     }
@@ -110,8 +117,12 @@ impl Dataset {
     }
 
     pub fn create_volume(mut self, size: u64) -> Result<volume::Volume> {
-        self.nvlist
-            .add_string("volblocksize", size.to_string().as_str())?;
+        self.nvlist.add_uint64("volsize", size)?;
+
+        if let Some(block_size) = self.volblocksize {
+            self.nvlist.add_uint64("volblocksize", block_size)?;
+        }
+
         Ok(from_nvlist(&mut self.nvlist)?)
     }
 }
