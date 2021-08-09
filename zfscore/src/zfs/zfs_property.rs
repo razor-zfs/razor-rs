@@ -60,14 +60,15 @@ impl Atime {
 
         match zfs.raw_zfs_handle {
             Some(zfs_handle) => {
-                if unsafe {
+                let rc = unsafe {
                     sys::libzfs_mnttab_find(
                         zfs.raw_libzfs_handle,
                         (*zfs_handle).zfs_name.as_ptr(),
                         mnttab_ptr,
                     )
-                } == 0
-                {
+                };
+
+                if rc == 0 {
                     unsafe {
                         (*zfs_handle).zfs_mntopts =
                             sys::zfs_strdup(zfs.raw_libzfs_handle, (*mnttab_ptr).mnt_mntopts)
@@ -77,7 +78,7 @@ impl Atime {
                         return Err(DatasetError::Unknown);
                     }
 
-                    // TODO: booleant_t already exist in libnvpair
+                    // TODO: boolean_t already exist in libnvpair
                     unsafe { (*zfs_handle).zfs_mntcheck = sys::boolean_t::B_TRUE }
                 }
 
