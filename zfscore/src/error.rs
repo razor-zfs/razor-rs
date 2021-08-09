@@ -87,6 +87,8 @@ pub enum DatasetError {
     InvalidProperty(#[from] InvalidProperty),
     #[error("failed to add parameter")]
     BuildError(#[from] NvListError),
+    #[error("failed to get dataset")]
+    DatasetGetError,
     #[error("unknown builder error")]
     Unknown,
 }

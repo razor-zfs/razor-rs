@@ -1,25 +1,20 @@
-use std::fmt;
 use std::ops;
-use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr};
+use serde_with::serde_as;
 use thiserror::Error;
 
 mod source;
 
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Property<T> {
-    name: String,
-    #[serde(bound = "T: fmt::Display + FromStr, <T as FromStr>::Err: fmt::Display")]
-    #[serde_as(as = "DisplayFromStr")]
-    value: T,
+    pub(crate) value: T,
 }
 
 impl<T> Property<T> {
-    pub fn new(name: String, value: T) -> Self {
-        Property { name, value }
+    pub fn new(value: T) -> Self {
+        Property { value }
     }
 
     pub fn value(&self) -> &T {

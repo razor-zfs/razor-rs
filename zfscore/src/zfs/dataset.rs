@@ -1,12 +1,17 @@
 use std::ffi::CString;
 
-use super::init_zfs;
+use crate::dataset::filesystem::FilesystemIntermediate;
+
 use super::libnvpair;
-use super::sys;
+pub(crate) use super::sys;
 use super::zfs_property;
 use super::DatasetError;
 use super::Result;
+use super::Zfs;
 use serde_nvpair::from_nvlist;
+
+pub use filesystem::Filesystem;
+pub use volume::Volume;
 
 use serde::Deserialize;
 
@@ -17,6 +22,7 @@ mod volume;
 
 #[derive(Debug)]
 pub struct Dataset {
+    zfs_handle: Zfs,
     nvlist: libnvpair::NvList,
     name: String,
     volblocksize: Option<u64>,
@@ -27,11 +33,11 @@ impl Dataset {
     where
         T: AsRef<str>,
     {
-        init_zfs();
         Ok(Dataset {
             nvlist: libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName)?,
             name: name.as_ref().to_string(),
             volblocksize: None,
+            zfs_handle: Zfs::init(),
         })
     }
 
@@ -114,7 +120,7 @@ impl Dataset {
     pub fn create_filesystem(mut self) -> Result<filesystem::Filesystem> {
         let ret = unsafe {
             sys::lzc_create(
-                CString::new(self.name)?.as_ptr(),
+                CString::new(self.name.clone())?.as_ptr(),
                 sys::lzc_dataset_type::LZC_DATSET_TYPE_ZFS,
                 self.nvlist.raw,
                 std::ptr::null_mut(),
@@ -128,7 +134,13 @@ impl Dataset {
             return Err(DatasetError::DatasetCreationFailure);
         }
 
-        Ok(from_nvlist(&mut self.nvlist)?)
+        self.zfs_handle.create_dataset_handle(self.name)?;
+
+        let interfs: FilesystemIntermediate =
+            from_nvlist(&mut self.zfs_handle.get_dataset_nvlist()?)?;
+
+        Ok(interfs.convert_to_valid(&self.zfs_handle)?)
+        //Ok(from_nvlist(&mut self.zfs_handle.get_dataset_nvlist()?)?)
     }
 
     pub fn create_snapshot(mut self) -> Result<snapshot::Snapshot> {

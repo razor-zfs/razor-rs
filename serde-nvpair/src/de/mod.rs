@@ -78,7 +78,13 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_bool(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!(
+                        "deserializing error type. got nvlist type: ",
+                        nvpair.r#type()?
+                    );
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -98,7 +104,13 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_i8(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!(
+                        "deserializing error type. got nvlist type: ",
+                        nvpair.r#type()?
+                    );
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -118,7 +130,13 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_i16(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!(
+                        "deserializing error type. got nvlist type: ",
+                        nvpair.r#type()?
+                    );
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -138,7 +156,13 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_i32(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!(
+                        "deserializing error type. got nvlist type: ",
+                        nvpair.r#type()?
+                    );
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -158,7 +182,13 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_i64(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!(
+                        "deserializing error type. got nvlist type: ",
+                        nvpair.r#type()?
+                    );
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -178,7 +208,13 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_u8(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!(
+                        "deserializing error type. got nvlist type: ",
+                        nvpair.r#type()?
+                    );
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -198,7 +234,13 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_u16(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!(
+                        "deserializing error type. got nvlist type: ",
+                        nvpair.r#type()?
+                    );
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -218,7 +260,11 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_u32(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!("deserializing error type. got type: ", nvpair.r#type()?);
+                    dbg!("property name: ", nvpair.name());
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -238,7 +284,11 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_u64(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!("deserializing error type. got type: ", nvpair.r#type()?);
+                    dbg!("property name: ", nvpair.name());
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -265,7 +315,11 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     dbg!(val);
                     visitor.visit_f64(val)
                 }
-                _ => Err(libnvpair::NvListError::InvalidArgument),
+                _ => {
+                    dbg!("deserializing error type. got type: ", nvpair.r#type()?);
+                    dbg!("property name: ", nvpair.name());
+                    Err(libnvpair::NvListError::InvalidArgument)
+                }
             }
         } else {
             Err(NvListError::NvPairDontExist)
@@ -285,6 +339,9 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("Deserializing str");
         if let Some(nvpair) = &self.curr_pair {
+            dbg!("deserializing type. got type: ", nvpair.r#type()?);
+            dbg!("property name: ", nvpair.name());
+
             let val = nvpair.value_string()?;
             dbg!(&mut self.curr_pair);
             visitor.visit_str(val.as_ref())
@@ -563,6 +620,9 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
         if !self.finished {
             seed.deserialize(&mut *self.de).map(Some)
         } else {
+            while let Some(x) = self.iter.next() {
+                dbg!("key name: ", x.name());
+            }
             Ok(None)
         }
     }
@@ -574,6 +634,7 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
         dbg!("Deserializing map value");
         if let Some(nvpair) = &self.de.curr_pair {
             if nvpair.r#type()? == libnvpair::NvPairType::Nvlist {
+                dbg!("got nvlist");
                 self.de.helpers.push(self.de.curr.to_owned());
                 self.de.helpers.push(HelperDeserializer {
                     nvlist: Some(nvpair.value_nvlist()?),

@@ -1,13 +1,28 @@
 use zfscore::dataset::Dataset;
 use zfscore::zfs_property;
+use zfscore::Filesystem;
 
 #[test]
 fn create_basic_filesystem() {
+    dbg!("BEFORE THE TEST");
+    println!("asdasdas");
     let filesystem = Dataset::new("dpool/filesystem")
         .unwrap()
         .create_filesystem()
         .unwrap();
-    dbg!(filesystem);
+    dbg!("AFTER THE TEST");
+    dbg!(&filesystem);
+    let expected = Filesystem {
+        available: filesystem.available.clone(),
+        atime: zfs_property::Atime::new(zfs_property::OnOff::On),
+        logicalused: zfs_property::LogicalUsed::new(43008),
+        canmount: zfs_property::CanMount::new(zfs_property::OnOffNoAuto::On),
+        mounted: zfs_property::Mounted::new(zfs_property::YesNo::No),
+        checksum: zfs_property::CheckSum::new(zfs_property::CheckSumAlgo::On),
+        compression: zfs_property::Compression::new(zfs_property::CompressionAlgo::Off),
+    };
+
+    assert_eq!(expected, filesystem);
 }
 
 #[test]

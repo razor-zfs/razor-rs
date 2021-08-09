@@ -1,9 +1,11 @@
-use std::fmt;
 use std::str::FromStr;
+use std::{convert::TryFrom, fmt};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+use crate::zfs::DatasetError;
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub enum Compression {
     On,
     Off,
@@ -87,6 +89,32 @@ impl From<bool> for Compression {
             Compression::On
         } else {
             Compression::Off
+        }
+    }
+}
+
+// TODO: create macto for all u and i
+impl TryFrom<u64> for Compression {
+    type Error = DatasetError;
+
+    fn try_from(value: u64) -> Result<Self, Self::Error> {
+        match value {
+            1 => Ok(Compression::On),
+            2 => Ok(Compression::Off),
+            3 => Ok(Compression::Lzjb),
+            10 => Ok(Compression::Gzip6),
+            5 => Ok(Compression::Gzip1),
+            6 => Ok(Compression::Gzip2),
+            7 => Ok(Compression::Gzip3),
+            8 => Ok(Compression::Gzip4),
+            9 => Ok(Compression::Gzip5),
+            11 => Ok(Compression::Gzip7),
+            12 => Ok(Compression::Gzip8),
+            13 => Ok(Compression::Gzip9),
+            14 => Ok(Compression::Zle),
+            15 => Ok(Compression::Lz4),
+            16 => Ok(Compression::Zstd),
+            _ => Err(DatasetError::InvalidArgument),
         }
     }
 }

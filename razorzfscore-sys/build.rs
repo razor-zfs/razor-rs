@@ -5,6 +5,7 @@ fn main() {
     // Tell cargo to tell rustc to link the system nvpair of zfs
     // shared library.
     println!("cargo:rustc-link-lib=zfs_core");
+    println!("cargo:rustc-link-lib=zfs");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -13,6 +14,20 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("wrapper.h")
+        .allowlist_type(r#"(\w*zfs_type_dataset\w*)"#)
+        .allowlist_type(r#"(\w*zfs_handle_t\w*)"#)
+        .allowlist_type(r#"(\w*libzfs_handle_t\w*)"#)
+        .allowlist_type(r#"(\w*hasmntopt\w*)"#)
+        .allowlist_var(r#"(\w*hasmntopt\w*)"#)
+        .allowlist_function(r#"(\w*hasmntopt\w*)"#)
+        .allowlist_type(r#"(\w*zfs_prop_t\w*)"#)
+        .allowlist_function(r#"(\w*zfs_strdup\w*)"#)
+        .allowlist_function(r#"(\w*zfs_prop_default_numeric\w*)"#)
+        .allowlist_function(r#"(\w*libzfs_mnttab_find\w*)"#)
+        .allowlist_function(r#"(\w*zfs_close\w*)"#)
+        .allowlist_function(r#"(\w*libzfs_init\w*)"#)
+        .allowlist_function(r#"(\w*zfs_open\w*)"#)
+        .allowlist_function(r#"(\w*make_dataset_handle\w*)"#)
         .allowlist_var(r#"(\w*lzc\w*)"#)
         .allowlist_type(r#"(\w*lzc\w*)"#)
         .allowlist_function(r#"(\w*lzc\w*)"#)
