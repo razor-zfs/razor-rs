@@ -1,0 +1,48 @@
+{
+  "name": "dpool/filesystem",
+  "available": {
+    "value": 65638407536
+  },
+  "atime": {
+    "value": "On"
+  },
+  "logicalused": {
+    "value": 43008
+  },
+  "canmount": {
+    "value": "On"
+  },
+  "mounted": {
+    "value": "No"
+  },
+  "checksum": {
+    "value": "On"
+  },
+  "compression": {
+    "value": "Off"
+  },
+  "guid": {
+    "value": 1753314014739607640
+  },
+  "creation": {
+    "value": 1628535777
+  },
+  "createtxg": {
+    "value": 375325
+  },
+  "compressratio": {
+    "value": 100
+  },
+  "used": {
+    "value": 157056
+  },
+  "referenced": {
+    "value": 157056
+  },
+  "logicalreferenced": {
+    "value": 43008
+  },
+  "objsetid": {
+    "value": 738
+  }
+}

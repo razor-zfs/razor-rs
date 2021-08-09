@@ -5,7 +5,7 @@ use std::str::FromStr;
 use chrono::{DateTime, TimeZone, Utc};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct TimeStamp(DateTime<Utc>);
 
 impl fmt::Display for TimeStamp {

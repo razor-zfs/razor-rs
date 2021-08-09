@@ -392,11 +392,12 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         todo!();
     }
 
-    fn deserialize_newtype_struct<V>(self, _name: &'static str, _visitor: V) -> Result<V::Value>
+    fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("deserializing newtype struct");
+        visitor.visit_newtype_struct(self)
     }
 
     fn deserialize_seq<V>(mut self, visitor: V) -> Result<V::Value>

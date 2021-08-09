@@ -13,7 +13,7 @@ use serde_nvpair::from_nvlist;
 pub use filesystem::Filesystem;
 pub use volume::Volume;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 mod bookmark;
 mod filesystem;
@@ -134,13 +134,12 @@ impl Dataset {
             return Err(DatasetError::DatasetCreationFailure);
         }
 
-        self.zfs_handle.create_dataset_handle(self.name)?;
+        self.zfs_handle.create_dataset_handle(&self.name)?;
 
         let interfs: FilesystemIntermediate =
             from_nvlist(&mut self.zfs_handle.get_dataset_nvlist()?)?;
 
-        Ok(interfs.convert_to_valid(&self.zfs_handle)?)
-        //Ok(from_nvlist(&mut self.zfs_handle.get_dataset_nvlist()?)?)
+        Ok(interfs.convert_to_valid(&self.zfs_handle, &self.name)?)
     }
 
     pub fn create_snapshot(mut self) -> Result<snapshot::Snapshot> {

@@ -15,3 +15,4 @@ serde-nvpair = {version = "0.1", path="../serde-nvpair"}
 razorzfscore-sys = {version = "0.1", path="../razorzfscore-sys"}
 thiserror = "1"
 libc = "0.2"
+log = "0.4"

@@ -89,6 +89,8 @@ pub enum DatasetError {
     BuildError(#[from] NvListError),
     #[error("failed to get dataset")]
     DatasetGetError,
+    #[error("failed to delete dataset")]
+    DatasetDeleteError,
     #[error("unknown builder error")]
     Unknown,
 }
