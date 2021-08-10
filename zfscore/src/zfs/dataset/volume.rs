@@ -9,4 +9,12 @@ pub struct Volume {
     checksum: zfs_property::CheckSum,
     compression: zfs_property::Compression,
     common: CommonProperties,
+    guid: zfs_property::Guid,
+    creation: zfs_property::Creation,
+    createtxg: zfs_property::CreateTxg,
+    compressratio: zfs_property::CompressRatio,
+    used: zfs_property::Used,
+    referenced: zfs_property::Referenced,
+    logicalreferenced: zfs_property::LogicalReferenced,
+    objsetid: zfs_property::ObjSetId,
 }

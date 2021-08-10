@@ -42,6 +42,7 @@ fn create_volume_dataset() {
         .unwrap()
         .create_volume(128 * 1024)
         .unwrap();
+    dbg!("AFTER THE TEST");
     dbg!(volume);
 }
 

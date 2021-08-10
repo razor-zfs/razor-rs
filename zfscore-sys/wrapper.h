@@ -1,7 +1,7 @@
 #include <libzfs_core.h>
 #include <libzfs.h>
 #include <libuutil.h>
-#include <sys/dmu.h>
+//#include <sys/dmu.h>
 
 extern zfs_handle_t *make_dataset_handle(libzfs_handle_t *, const char *);
 extern char *zfs_strdup(libzfs_handle_t *, const char *);
