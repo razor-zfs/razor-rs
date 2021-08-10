@@ -1,37 +1,9 @@
-[package]
-name = "razor"
-version = "0.1.0"
-authors = ["The RepliXio developers <info@replixio.com>"]
-edition = "2018"
-description = "ZFS Manager with simple API"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [workspace]
 members = [
-    "razorzfsnvpair-sys",
-    "razorzfscore-sys",
-    "razorzfsuutil-sys",
-    "razorzfsnvpair",
+    "nvpair-sys",
+    "zfscore-sys",
+    "uutil-sys",
+    "nvpair",
     "serde-nvpair",
     "zfscore",
 ]
-
-[dependencies]
-chrono = { version = "0.4", features = ["serde"] }
-indexmap = { version = "1.6", features = ["serde-1"] }
-itertools = "0.10"
-once_cell = "1.7"
-pretty_env_logger = "0.4"
-regex = "1"
-rweb = "0.6"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-serde_with = { version = "1.6", features = ["chrono"] }
-thiserror = "1.0"
-tokio = { version = "1.3", features = ["full"] }
-
-
-[features]
-pedantic = []
-enbale_debug = []

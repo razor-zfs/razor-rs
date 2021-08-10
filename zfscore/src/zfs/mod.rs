@@ -1,10 +1,10 @@
 use std::ffi::CString;
 
 pub use super::error::DatasetError;
+use super::libnvpair;
+use super::sys;
 pub use super::Result;
 pub use property::InvalidProperty;
-pub(crate) use razorzfscore_sys as sys;
-use razorzfsnvpair as libnvpair;
 
 pub mod dataset;
 mod property;

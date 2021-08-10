@@ -3,7 +3,7 @@ use std::ffi::CString;
 use crate::dataset::filesystem::FilesystemIntermediate;
 
 use super::libnvpair;
-pub(crate) use super::sys;
+use super::sys;
 use super::zfs_property;
 use super::DatasetError;
 use super::Result;

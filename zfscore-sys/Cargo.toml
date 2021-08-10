@@ -1,5 +1,5 @@
 [package]
-name = "razorzfscore-sys"
+name = "razor-zfscore-sys"
 version = "0.1.0"
 edition = "2018"
 build = "build.rs"
@@ -7,7 +7,7 @@ build = "build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-razorzfsnvpair-sys = {version = "0.1", path="../razorzfsnvpair-sys"}
+razor-nvpair-sys = {version = "0.1", path="../nvpair-sys"}
 
 [build-dependencies]
 bindgen = "0.58"

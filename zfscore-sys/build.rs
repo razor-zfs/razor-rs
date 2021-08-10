@@ -18,6 +18,8 @@ fn main() {
         .allowlist_type(r#"(\w*zfs_handle_t\w*)"#)
         .allowlist_type(r#"(\w*libzfs_handle_t\w*)"#)
         .allowlist_type(r#"(\w*hasmntopt\w*)"#)
+        //.allowlist_type(r#"(\w*dmu_objset_stats_t\w*)"#)
+        //.allowlist_var(r#"(\w*dmu_objset_stats_t\w*)"#)
         .allowlist_var(r#"(\w*hasmntopt\w*)"#)
         .allowlist_function(r#"(\w*hasmntopt\w*)"#)
         .allowlist_type(r#"(\w*zfs_prop_t\w*)"#)

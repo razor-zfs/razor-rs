@@ -1,4 +1,4 @@
-use razorzfsnvpair_sys as sys;
+use razor_nvpair_sys as sys;
 
 pub use error::NvListError;
 pub use library::ContextType;
