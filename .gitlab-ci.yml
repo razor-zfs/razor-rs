@@ -3,7 +3,8 @@
   script:
     - apt update
     - apt install -y libzfslinux-dev
-    - apt install -y llvm-dev libclang-dev clang
+    #- apt install -y llvm-dev libclang-dev clang
+    - bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
     - cargo fmt -- --check
     - cargo clippy --all-targets
     - cargo test
