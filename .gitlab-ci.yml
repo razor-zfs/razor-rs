@@ -1,7 +1,7 @@
 .test:cargo:
   stage: test
-  tags:
-    - arm64_focal
+  #tags:
+  #  - arm64_focal
   before_script:
     - apt update
     - apt install -y build-essential curl
@@ -29,13 +29,25 @@ stages:
   - test
 
 stable:test:
+  tags:
+    - arm64_focal
   extends: .test:cargo
+  only:
+    - tags
   #image: rustdocker/rust:stable
 
 beta:test:
+  tags:
+    - arm64_focal
   extends: .test:cargo
+  only:
+    - tags
   #image: rustdocker/rust:beta
 
 nightly:test:
+  tags:
+    - arm64_focal
   extends: .test:cargo
+  only:
+    - tags
   #image: rustdocker/rust:nightly
