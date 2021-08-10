@@ -1,7 +1,8 @@
 .test:cargo:
   stage: test
   script:
-    - apt install llvm-dev libclang-dev clang
+    - apt update
+    - apt install -y llvm-dev libclang-dev clang
     - cargo fmt -- --check
     - cargo clippy --all-targets
     - cargo test
