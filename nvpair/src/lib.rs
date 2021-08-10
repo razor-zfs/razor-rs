@@ -26,6 +26,7 @@ pub use library::NvPairType;
 pub use library::SafeNvPair;
 
 mod error;
+mod impls;
 mod library;
 
 pub type Result<T> = std::result::Result<T, NvListError>;

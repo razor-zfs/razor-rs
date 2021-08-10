@@ -6,7 +6,7 @@ use libc::c_char;
 
 use super::*;
 
-#[derive(Debug, PartialEq)]
+#[derive(PartialEq)]
 pub struct NvList {
     pub raw: *mut sys::nvlist_t,
 }
@@ -461,6 +461,7 @@ impl Iterator for NvListIterator {
     }
 }
 
+#[derive(Debug)]
 pub enum NvFlag {
     UniqueName,
     UniqueNameType,

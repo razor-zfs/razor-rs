@@ -4,7 +4,9 @@ use std::{ffi::CStr, slice};
 
 use super::*;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+mod value;
+
+#[derive(Clone, Copy, PartialEq)]
 pub struct NvPair {
     raw: *mut sys::nvpair_t,
 }
@@ -372,6 +374,7 @@ impl From<*mut sys::nvpair_t> for NvPair {
     }
 }
 
+#[derive(Debug)]
 pub struct CtxIter<ContextType> {
     vec: ContextType,
     index: usize,
@@ -574,7 +577,7 @@ impl Iterator for CtxIter<ContextType> {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum ContextType {
     U8(u8),
     I8(i8),
@@ -603,7 +606,7 @@ pub enum ContextType {
     Empty,
 }
 
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub enum NvPairType {
     Dontcare,
     Unknown,
