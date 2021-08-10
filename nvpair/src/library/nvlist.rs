@@ -1,4 +1,5 @@
 use std::ffi::{CString, NulError};
+use std::marker::PhantomData;
 use std::ops::Not;
 use std::panic;
 use std::ptr;
@@ -392,6 +393,22 @@ impl NvList {
 
         Ok(nvpair)
     }
+
+    pub fn iter(&self) -> Iter<'_> {
+        Iter {
+            nvl: self.raw,
+            nvp: None,
+            anchor: PhantomData,
+        }
+    }
+
+    pub fn items(&self) -> Items<'_> {
+        Items {
+            nvl: self.raw,
+            nvp: None,
+            anchor: PhantomData,
+        }
+    }
 }
 
 impl From<*mut sys::nvlist_t> for NvList {
@@ -452,6 +469,44 @@ impl Iterator for NvListIterator {
 }
 
 #[derive(Debug)]
+pub struct Iter<'a> {
+    nvl: *mut sys::nvlist_t,
+    nvp: Option<*mut sys::nvpair_t>,
+    anchor: PhantomData<&'a NvList>,
+}
+
+impl<'a> Iterator for Iter<'a> {
+    type Item = NvPair;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let nvp = self.nvp.unwrap_or_else(ptr::null_mut);
+        let nvp = unsafe { sys::nvlist_next_nvpair(self.nvl, nvp) };
+        self.nvp = nvp.is_null().not().then(|| nvp);
+        self.nvp.map(NvPair::from)
+    }
+}
+
+#[derive(Debug)]
+pub struct Items<'a> {
+    nvl: *mut sys::nvlist_t,
+    nvp: Option<*mut sys::nvpair_t>,
+    anchor: PhantomData<&'a NvList>,
+}
+
+impl<'a> Iterator for Items<'a> {
+    type Item = (String, Value);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let nvp = self.nvp.unwrap_or_else(ptr::null_mut);
+        let nvp = unsafe { sys::nvlist_next_nvpair(self.nvl, nvp) };
+        self.nvp = nvp.is_null().not().then(|| nvp);
+        self.nvp
+            .map(NvPair::from)
+            .map(|nvpair| (nvpair.name().to_string(), nvpair.value()))
+    }
+}
+
+#[derive(Debug)]
 pub enum NvFlag {
     UniqueName,
     UniqueNameType,
@@ -468,7 +523,8 @@ mod tests {
         nvlist.add_uint16("a", 3).unwrap();
         nvlist.add_uint32("b", 5).unwrap();
         nvlist.add_uint8_arr("d", arr).unwrap();
-        let mut iter = nvlist.into_iter();
+
+        let mut iter = dbg!(nvlist).into_iter();
         let pair1 = dbg!(iter.next().unwrap());
         let pair2 = dbg!(iter.next().unwrap());
         let pair3 = dbg!(iter.next().unwrap());
