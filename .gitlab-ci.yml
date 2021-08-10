@@ -3,12 +3,16 @@
   script:
     - apt update
     - apt install -y libzfslinux-dev
-    #- apt install -y llvm-dev libclang-dev clang
     - apt install -y apt-transport-https ca-certificates
     - apt install -y lsb-release wget software-properties-common
-    - wget https://apt.llvm.org/llvm.sh
-    - chmod +x llvm.sh
-    - sudo ./llvm.sh 10
+    #- wget https://apt.llvm.org/llvm.sh
+    #- chmod +x llvm.sh
+    #- sudo ./llvm.sh 10
+    - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+    - apt-add-repository "deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main"
+    - apt-get update
+    - apt -o Acquire::AllowInsecureRepositories=true update
+    - apt-get install -y clang-3.9 lldb-3.9
     - cargo fmt -- --check
     - cargo clippy --all-targets
     - cargo test
