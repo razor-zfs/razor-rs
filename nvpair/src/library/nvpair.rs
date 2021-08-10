@@ -10,7 +10,7 @@ pub struct NvPair {
 }
 
 impl NvPair {
-    pub fn name(&self) -> Cow<str> {
+    pub fn name(&self) -> Cow<'_, str> {
         let cstr = unsafe { CStr::from_ptr(sys::nvpair_name(self.raw)) };
         String::from_utf8_lossy(cstr.to_bytes())
     }

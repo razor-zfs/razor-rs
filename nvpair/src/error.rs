@@ -61,8 +61,8 @@ impl de::Error for NvListError {
     }
 }
 
-impl Display for NvListError {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+impl fmt::Display for NvListError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             NvListError::Message(msg) => formatter.write_str(msg),
             NvListError::InvalidArgument => todo!(),
