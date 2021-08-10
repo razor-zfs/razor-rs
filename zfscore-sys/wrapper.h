@@ -13,7 +13,7 @@ typedef struct dmu_objset_stats {
 	dmu_objset_type_t dds_type;
 	uint8_t dds_is_snapshot;
 	uint8_t dds_inconsistent;
-	char dds_origin[ZFS_MAX_DATASET_NAME_LEN];
+	char dds_origin[256];
 } dmu_objset_stats_t;
 
 struct libzfs_handle {
@@ -49,7 +49,7 @@ struct libzfs_handle {
 struct zfs_handle {
 	libzfs_handle_t *zfs_hdl;
 	zpool_handle_t *zpool_hdl;
-	char zfs_name[ZFS_MAX_DATASET_NAME_LEN];
+	char zfs_name[256];
 	zfs_type_t zfs_type; /* type including snapshot */
 	zfs_type_t zfs_head_type; /* type excluding snapshot */
 	dmu_objset_stats_t zfs_dmustats;
