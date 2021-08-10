@@ -4,6 +4,8 @@ use std::{ffi::CStr, slice};
 
 use super::*;
 
+pub use self::value::Value;
+
 mod value;
 
 #[derive(Clone, Copy, PartialEq)]

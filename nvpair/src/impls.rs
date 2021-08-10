@@ -11,8 +11,6 @@ impl fmt::Debug for crate::NvPair {
 
 impl fmt::Debug for crate::NvList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_map()
-            // .entries(entries)
-            .finish()
+        f.debug_map().entries(self.items()).finish()
     }
 }

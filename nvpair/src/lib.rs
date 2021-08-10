@@ -24,6 +24,7 @@ pub use library::NvListIterator;
 pub use library::NvPair;
 pub use library::NvPairType;
 pub use library::SafeNvPair;
+pub use library::Value;
 
 mod error;
 mod impls;
