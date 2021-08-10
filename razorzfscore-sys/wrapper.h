@@ -1,7 +1,7 @@
 #include <libzfs_core.h>
 #include <libzfs.h>
-//#include <sys/mnttab.h>
 #include <libuutil.h>
+//#include <sys/dmu.h>
 
 extern zfs_handle_t *make_dataset_handle(libzfs_handle_t *, const char *);
 extern char *zfs_strdup(libzfs_handle_t *, const char *);
@@ -13,13 +13,14 @@ typedef struct dmu_objset_stats {
 	dmu_objset_type_t dds_type;
 	uint8_t dds_is_snapshot;
 	uint8_t dds_inconsistent;
-	uint8_t dds_redacted;
 	char dds_origin[ZFS_MAX_DATASET_NAME_LEN];
 } dmu_objset_stats_t;
 
 struct libzfs_handle {
 	int libzfs_error;
 	int libzfs_fd;
+	FILE *libzfs_mnttab;
+	FILE *libzfs_sharetab;
 	zpool_handle_t *libzfs_pool_handles;
 	uu_avl_pool_t *libzfs_ns_avlpool;
 	uu_avl_t *libzfs_ns_avl;
@@ -28,6 +29,9 @@ struct libzfs_handle {
 	char libzfs_action[1024];
 	char libzfs_desc[1024];
 	int libzfs_printerr;
+	int libzfs_storeerr; /* stuff error messages into buffer */
+	void *libzfs_sharehdl; /* libshare handle */
+	uint_t libzfs_shareflags;
 	boolean_t libzfs_mnttab_enable;
 	/*
 	 * We need a lock to handle the case where parallel mount
@@ -38,11 +42,8 @@ struct libzfs_handle {
 	pthread_mutex_t libzfs_mnttab_cache_lock;
 	avl_tree_t libzfs_mnttab_cache;
 	int libzfs_pool_iter;
+	char libzfs_chassis_id[256];
 	boolean_t libzfs_prop_debug;
-	regex_t libzfs_urire;
-	uint64_t libzfs_max_nvlist;
-	void *libfetch;
-	char *libfetch_load_error;
 };
 
 struct zfs_handle {
