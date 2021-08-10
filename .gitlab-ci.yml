@@ -2,6 +2,7 @@
   stage: test
   script:
     - apt update
+    - apt install -y libzfslinux-dev
     - apt install -y llvm-dev libclang-dev clang
     - cargo fmt -- --check
     - cargo clippy --all-targets
