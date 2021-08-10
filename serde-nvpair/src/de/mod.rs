@@ -71,7 +71,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing boolean start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::BooleanValue => {
                     dbg!("Deserializing boolean");
                     let val = nvpair.value_boolean()?;
@@ -81,7 +81,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                 _ => {
                     dbg!(
                         "deserializing error type. got nvlist type: ",
-                        nvpair.r#type()?
+                        nvpair.r#type()
                     );
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -97,7 +97,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing i8 start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::Int8 => {
                     dbg!("Deserializing i8");
                     let val = nvpair.value_int8()?;
@@ -107,7 +107,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                 _ => {
                     dbg!(
                         "deserializing error type. got nvlist type: ",
-                        nvpair.r#type()?
+                        nvpair.r#type()
                     );
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -123,7 +123,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing i16 start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::Int16 => {
                     dbg!("Deserializing i8");
                     let val = nvpair.value_int16()?;
@@ -133,7 +133,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                 _ => {
                     dbg!(
                         "deserializing error type. got nvlist type: ",
-                        nvpair.r#type()?
+                        nvpair.r#type()
                     );
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -149,7 +149,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing i32 start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::Int32 => {
                     dbg!("Deserializing i32");
                     let val = nvpair.value_int32()?;
@@ -159,7 +159,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                 _ => {
                     dbg!(
                         "deserializing error type. got nvlist type: ",
-                        nvpair.r#type()?
+                        nvpair.r#type()
                     );
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -175,7 +175,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing i64 start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::Int64 => {
                     dbg!("Deserializing i64");
                     let val = nvpair.value_int64()?;
@@ -185,7 +185,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                 _ => {
                     dbg!(
                         "deserializing error type. got nvlist type: ",
-                        nvpair.r#type()?
+                        nvpair.r#type()
                     );
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -201,7 +201,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing u8 start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::Uint8 => {
                     dbg!("Deserializing u8");
                     let val = nvpair.value_uint8()?;
@@ -211,7 +211,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                 _ => {
                     dbg!(
                         "deserializing error type. got nvlist type: ",
-                        nvpair.r#type()?
+                        nvpair.r#type()
                     );
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -227,7 +227,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing u16 start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::Uint16 => {
                     dbg!("Deserializing u16");
                     let val = nvpair.value_uint16()?;
@@ -237,7 +237,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                 _ => {
                     dbg!(
                         "deserializing error type. got nvlist type: ",
-                        nvpair.r#type()?
+                        nvpair.r#type()
                     );
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -253,7 +253,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing u32 start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::Uint32 => {
                     dbg!("Deserializing u32");
                     let val = nvpair.value_uint32()?;
@@ -261,7 +261,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     visitor.visit_u32(val)
                 }
                 _ => {
-                    dbg!("deserializing error type. got type: ", nvpair.r#type()?);
+                    dbg!("deserializing error type. got type: ", nvpair.r#type());
                     dbg!("property name: ", nvpair.name());
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -277,7 +277,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing u64 start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::Uint64 => {
                     dbg!("Deserializing u64");
                     let val = nvpair.value_uint64()?;
@@ -285,7 +285,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     visitor.visit_u64(val)
                 }
                 _ => {
-                    dbg!("deserializing error type. got type: ", nvpair.r#type()?);
+                    dbg!("deserializing error type. got type: ", nvpair.r#type());
                     dbg!("property name: ", nvpair.name());
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -308,7 +308,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("deserializing f64 start function");
         if let Some(nvpair) = &self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 libnvpair::NvPairType::Double => {
                     dbg!("Deserializing u64");
                     let val = nvpair.value_float64()?;
@@ -316,7 +316,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
                     visitor.visit_f64(val)
                 }
                 _ => {
-                    dbg!("deserializing error type. got type: ", nvpair.r#type()?);
+                    dbg!("deserializing error type. got type: ", nvpair.r#type());
                     dbg!("property name: ", nvpair.name());
                     Err(libnvpair::NvListError::InvalidArgument)
                 }
@@ -339,7 +339,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("Deserializing str");
         if let Some(nvpair) = &self.curr_pair {
-            dbg!("deserializing type. got type: ", nvpair.r#type()?);
+            dbg!("deserializing type. got type: ", nvpair.r#type());
             dbg!("property name: ", nvpair.name());
 
             let val = nvpair.value_string()?;
@@ -407,7 +407,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("Deserializing seq");
         if let Some(nvpair) = self.curr_pair {
-            match nvpair.r#type()? {
+            match nvpair.r#type() {
                 //libnvpair::NvPairType::ByteArray => todo!(),
                 libnvpair::NvPairType::Uint16Array
                 | libnvpair::NvPairType::Int16Array
@@ -519,7 +519,7 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
     {
         dbg!("Deserializing object identifier");
         if let Some(nvpair) = &self.curr_pair {
-            dbg!(nvpair.r#type()?);
+            dbg!(nvpair.r#type());
             dbg!(nvpair.name());
             visitor.visit_str(nvpair.name().as_ref())
         } else {
@@ -636,7 +636,7 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
     {
         dbg!("Deserializing map value");
         if let Some(nvpair) = &self.de.curr_pair {
-            if nvpair.r#type()? == libnvpair::NvPairType::Nvlist {
+            if nvpair.r#type() == libnvpair::NvPairType::Nvlist {
                 dbg!("got nvlist");
                 self.de.helpers.push(self.de.curr.to_owned());
                 self.de.helpers.push(HelperDeserializer {

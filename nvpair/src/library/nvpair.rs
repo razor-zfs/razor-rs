@@ -15,8 +15,9 @@ impl NvPair {
         String::from_utf8_lossy(cstr.to_bytes())
     }
 
-    pub fn r#type(&self) -> Result<NvPairType> {
-        Ok(unsafe { sys::nvpair_type(self.raw).into() })
+    pub fn r#type(&self) -> NvPairType {
+        let nvp_type = unsafe { sys::nvpair_type(self.raw) };
+        nvp_type.into()
     }
 
     pub fn value_boolean(&self) -> Result<bool> {
@@ -379,7 +380,7 @@ pub struct CtxIter<ContextType> {
 impl TryFrom<NvPair> for CtxIter<ContextType> {
     type Error = NvListError;
     fn try_from(nvpair: NvPair) -> Result<Self> {
-        match nvpair.r#type()? {
+        match nvpair.r#type() {
             NvPairType::Uint8Array => {
                 let vec = nvpair.value_uint8_array()?;
                 Ok(CtxIter {
