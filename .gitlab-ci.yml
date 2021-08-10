@@ -30,18 +30,18 @@ stages:
 
 stable:test:
   tags:
-    - arm64_focal
+    - zfs_runner
   extends: .test:cargo
   #image: rustdocker/rust:stable
 
 beta:test:
   tags:
-    - arm64_focal
+    - zfs_runner
   extends: .test:cargo
   #image: rustdocker/rust:beta
 
 nightly:test:
   tags:
-    - arm64_focal
+    - zfs_runner
   extends: .test:cargo
   #image: rustdocker/rust:nightly
