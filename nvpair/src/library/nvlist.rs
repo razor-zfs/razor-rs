@@ -428,7 +428,6 @@ impl IntoIterator for NvList {
         NvListIterator {
             nvlist: self,
             nvp: None,
-            completed: false,
         }
     }
 }
@@ -437,7 +436,6 @@ impl IntoIterator for NvList {
 pub struct NvListIterator {
     nvlist: NvList,
     nvp: Option<*mut sys::nvpair_t>,
-    completed: bool,
 }
 
 impl Iterator for NvListIterator {
