@@ -1,5 +1,3 @@
-use std::fs::File;
-use std::io::prelude::*;
 use zfscore::dataset::Dataset;
 
 #[test]
@@ -12,15 +10,15 @@ fn create_basic_filesystem() {
         .unwrap();
     dbg!("AFTER THE TEST");
     dbg!(&filesystem);
-    let mut file = File::create("create_basic_filesystem.txt").unwrap();
-    file.write_all(
-        serde_json::to_string_pretty(&filesystem)
-            .unwrap()
-            .as_bytes(),
-    )
-    .unwrap();
-    file.sync_all().unwrap();
-    filesystem.destroy().unwrap();
+    // let mut file = File::create("create_basic_filesystem.txt").unwrap();
+    // file.write_all(
+    //     serde_json::to_string_pretty(&filesystem)
+    //         .unwrap()
+    //         .as_bytes(),
+    // )
+    // .unwrap();
+    // file.sync_all().unwrap();
+    // filesystem.destroy().unwrap();
     /*let expected = Filesystem {
         available: filesystem.available.clone(),
         atime: zfs_property::Atime::new(zfs_property::OnOff::On),
