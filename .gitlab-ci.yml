@@ -29,19 +29,19 @@ stages:
   - test
 
 stable:test:
-  tags:
-    - zfs_runner
+  #tags:
+  #  - zfs_runner
   extends: .test:cargo
   #image: rustdocker/rust:stable
 
 beta:test:
-  tags:
-    - zfs_runner
+  #tags:
+  #  - zfs_runner
   extends: .test:cargo
   #image: rustdocker/rust:beta
 
 nightly:test:
-  tags:
-    - zfs_runner
+  #tags:
+  #  - zfs_runner
   extends: .test:cargo
   #image: rustdocker/rust:nightly
