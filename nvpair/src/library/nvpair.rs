@@ -301,8 +301,8 @@ impl NvPair {
     }
 
     pub fn value_string(&self) -> Result<String> {
-        let mut str: *mut u8 = std::ptr::null_mut();
-        let str_ptr: *mut *mut u8 = &mut str;
+        let mut str: *mut libc::c_char = std::ptr::null_mut();
+        let str_ptr: *mut *mut libc::c_char = &mut str;
 
         NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_string(self.raw, str_ptr) })?;
         let name = unsafe { CStr::from_ptr(*str_ptr).to_str()?.to_string() };
@@ -312,9 +312,9 @@ impl NvPair {
     pub fn value_string_array(&self) -> Result<Vec<String>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
-        let mut str: *mut u8 = std::ptr::null_mut();
-        let mut str_ptr: *mut *mut u8 = &mut str;
-        let str_arr_ptr: *mut *mut *mut u8 = &mut str_ptr;
+        let mut str: *mut libc::c_char = std::ptr::null_mut();
+        let mut str_ptr: *mut *mut libc::c_char = &mut str;
+        let str_arr_ptr: *mut *mut *mut libc::c_char = &mut str_ptr;
 
         NvListError::from_nvlist_rc(unsafe {
             sys::nvpair_value_string_array(self.raw, str_arr_ptr, size_ptr)
