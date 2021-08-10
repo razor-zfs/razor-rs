@@ -4,7 +4,9 @@
     - apt update
     - apt install -y libzfslinux-dev
     #- apt install -y llvm-dev libclang-dev clang
-    - bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+    - wget https://apt.llvm.org/llvm.sh
+    - chmod +x llvm.sh
+    - sudo ./llvm.sh 3.9
     - cargo fmt -- --check
     - cargo clippy --all-targets
     - cargo test
