@@ -113,7 +113,7 @@ impl Atime {
                     }
                 }
 
-                return Ok(Atime::new(x.try_into()?));
+                Ok(Atime::new(x.try_into()?))
             }
             None => Err(DatasetError::DatasetGetError),
         }
@@ -141,9 +141,9 @@ impl Mounted {
         match zfs.raw_zfs_handle {
             Some(zfs_handle) => {
                 if unsafe { (*zfs_handle).zfs_mntopts.is_null() } {
-                    return Ok(Mounted::new(YesNo::No));
+                    Ok(Mounted::new(YesNo::No))
                 } else {
-                    return Ok(Mounted::new(YesNo::Yes));
+                    Ok(Mounted::new(YesNo::Yes))
                 }
             }
             None => Err(DatasetError::DatasetGetError),

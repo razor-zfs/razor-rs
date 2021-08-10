@@ -139,7 +139,7 @@ impl Dataset {
         let interfs: FilesystemIntermediate =
             from_nvlist(&mut self.zfs_handle.get_dataset_nvlist()?)?;
 
-        Ok(interfs.convert_to_valid(&self.zfs_handle, &self.name)?)
+        interfs.convert_to_valid(&self.zfs_handle, &self.name)
     }
 
     pub fn create_snapshot(mut self) -> Result<snapshot::Snapshot> {

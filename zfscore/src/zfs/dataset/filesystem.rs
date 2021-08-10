@@ -36,7 +36,7 @@ impl FilesystemIntermediate {
             logicalused: self.logicalused,
             canmount: self
                 .canmount
-                .unwrap_or_else(|| zfs_property::CanMount::default()),
+                .unwrap_or_else(zfs_property::CanMount::default),
             mounted: self
                 .mounted
                 .unwrap_or_else(|| zfs_property::Mounted::default(zfs).unwrap()),

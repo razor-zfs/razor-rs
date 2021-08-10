@@ -701,9 +701,9 @@ impl<'a> ser::SerializeStruct for &'a mut NvListSerializer {
                         prev_nvlist.add_nvlist(&name, curr_nvlist)?;
                         // TODO: check if this is ok
                         self.curr = SerializerHelper {
-                            nvlist: Some(prev_nvlist.clone()),
+                            nvlist: Some(prev_nvlist),
                             is_vec: prev_helper.is_vec,
-                            name: Some(name.clone()),
+                            name: Some(name),
                             context_type: prev_helper.context_type,
                         }
                     } else {

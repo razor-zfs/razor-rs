@@ -1,4 +1,3 @@
-use libc;
 use std::ffi::NulError;
 use thiserror::Error;
 
@@ -66,7 +65,7 @@ pub enum DatasetError {
     #[error("Illegal seek")]
     IllegalSeek,
     #[error("Read-only file system")]
-    ROFS,
+    ReadOnlyFileSystem,
     #[error("Too many links")]
     TooManyLinks,
     #[error("Broken pipe")]
@@ -127,7 +126,7 @@ impl From<i32> for DatasetError {
             libc::EFBIG => DatasetError::FileTooLarge,
             libc::ENOSPC => DatasetError::NoSpaceLeft,
             libc::ESPIPE => DatasetError::IllegalSeek,
-            libc::EROFS => DatasetError::ROFS,
+            libc::EROFS => DatasetError::ReadOnlyFileSystem,
             libc::EMLINK => DatasetError::TooManyLinks,
             libc::EPIPE => DatasetError::BrokenPipe,
             libc::EDOM => DatasetError::MathArgOutOfFunc,

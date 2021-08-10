@@ -2,7 +2,6 @@ use std::fs::File;
 use std::io::prelude::*;
 use zfscore::dataset::Dataset;
 use zfscore::zfs_property;
-use zfscore::Filesystem;
 
 #[test]
 fn create_basic_filesystem() {

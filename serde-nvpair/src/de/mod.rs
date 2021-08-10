@@ -621,7 +621,7 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
         if !self.finished {
             seed.deserialize(&mut *self.de).map(Some)
         } else {
-            while let Some(x) = self.iter.next() {
+            for x in &mut self.iter {
                 dbg!("key name: ", x.name());
             }
             Ok(None)
