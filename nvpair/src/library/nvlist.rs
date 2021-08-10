@@ -12,7 +12,7 @@ pub struct NvList {
 }
 
 impl NvList {
-    pub fn nvlist_alloc(flag: NvFlag) -> Result<NvList> {
+    pub fn nvlist_alloc(flag: NvFlag) -> Result<Self> {
         let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
         let nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
 
@@ -25,7 +25,7 @@ impl NvList {
             })?,
         }
 
-        Ok(NvList {
+        Ok(Self {
             raw: unsafe { *nvlist_ptr },
         })
     }
@@ -364,7 +364,7 @@ impl NvList {
         Ok(())
     }
 
-    pub fn add_nvlist<T>(&mut self, name: T, v: &NvList) -> Result<()>
+    pub fn add_nvlist<T>(&mut self, name: T, v: &Self) -> Result<()>
     where
         T: AsRef<str>,
     {
@@ -399,7 +399,7 @@ impl From<*mut sys::nvlist_t> for NvList {
 }
 
 impl Clone for NvList {
-    fn clone(&self) -> NvList {
+    fn clone(&self) -> Self {
         let mut cloned_nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
         let cloned_nvlist_ptr: *mut *mut sys::nvlist_t = &mut cloned_nvlist;
         let rc = unsafe { sys::nvlist_dup(self.raw, cloned_nvlist_ptr, 0) };
@@ -410,7 +410,7 @@ impl Clone for NvList {
             panic!("Nvlist clone insufficient memory");
         }
 
-        unsafe { NvList::from(*cloned_nvlist_ptr) }
+        unsafe { Self::from(*cloned_nvlist_ptr) }
     }
 }
 

@@ -64,18 +64,18 @@ impl de::Error for NvListError {
 impl fmt::Display for NvListError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            NvListError::Message(msg) => formatter.write_str(msg),
-            NvListError::InvalidArgument => todo!(),
-            NvListError::InsufficientMemory => todo!(),
-            NvListError::UnmatchingVariables => todo!(),
-            NvListError::RestrictedOperation => todo!(),
-            NvListError::NameTypeError => todo!(),
-            NvListError::ConversionError => todo!(),
-            NvListError::NvPairTypeError => todo!(),
-            NvListError::NullPointer => todo!(),
-            NvListError::NvListNullPointer => todo!(),
-            NvListError::NvPairDontExist => todo!(),
-            NvListError::NvListDontExist => todo!(),
+            Self::Message(msg) => formatter.write_str(msg),
+            Self::InvalidArgument => todo!(),
+            Self::InsufficientMemory => todo!(),
+            Self::UnmatchingVariables => todo!(),
+            Self::RestrictedOperation => todo!(),
+            Self::NameTypeError => todo!(),
+            Self::ConversionError => todo!(),
+            Self::NvPairTypeError => todo!(),
+            Self::NullPointer => todo!(),
+            Self::NvListNullPointer => todo!(),
+            Self::NvPairDontExist => todo!(),
+            Self::NvListDontExist => todo!(),
             /* and so forth */
         }
     }

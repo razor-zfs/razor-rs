@@ -383,77 +383,77 @@ impl TryFrom<NvPair> for CtxIter<ContextType> {
         match nvpair.r#type() {
             NvPairType::Uint8Array => {
                 let vec = nvpair.value_uint8_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::U8Arr(vec),
                     index: 0,
                 })
             }
             NvPairType::Uint16Array => {
                 let vec = nvpair.value_uint16_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::U16Arr(vec),
                     index: 0,
                 })
             }
             NvPairType::Uint32Array => {
                 let vec = nvpair.value_uint32_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::U32Arr(vec),
                     index: 0,
                 })
             }
             NvPairType::Uint64Array => {
                 let vec = nvpair.value_uint64_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::U64Arr(vec),
                     index: 0,
                 })
             }
             NvPairType::Int8Array => {
                 let vec = nvpair.value_int8_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::I8Arr(vec),
                     index: 0,
                 })
             }
             NvPairType::Int16Array => {
                 let vec = nvpair.value_int16_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::I16Arr(vec),
                     index: 0,
                 })
             }
             NvPairType::Int32Array => {
                 let vec = nvpair.value_int32_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::I32Arr(vec),
                     index: 0,
                 })
             }
             NvPairType::Int64Array => {
                 let vec = nvpair.value_int64_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::I64Arr(vec),
                     index: 0,
                 })
             }
             NvPairType::BooleanArray => {
                 let vec = nvpair.value_boolean_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::BooleanArr(vec),
                     index: 0,
                 })
             }
             NvPairType::NvlistArray => {
                 let vec = nvpair.value_nvlist_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::NvListArr(vec),
                     index: 0,
                 })
             }
             NvPairType::StringArray => {
                 let vec = nvpair.value_string_array()?;
-                Ok(CtxIter {
+                Ok(Self {
                     vec: ContextType::StrArr(vec),
                     index: 0,
                 })
