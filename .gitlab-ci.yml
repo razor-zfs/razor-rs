@@ -9,7 +9,7 @@
     - curl https://sh.rustup.rs -sSf | bash -s -- -y
     - export PATH="/root/.cargo/bin:${PATH}"
     - apt install -y libzfslinux-dev
-    - apt install llvm-dev libclang-dev clang
+    - apt install -y llvm-dev libclang-dev clang
   script:
     #- apt install -y apt-transport-https ca-certificates
     #- apt install -y lsb-release wget software-properties-common
