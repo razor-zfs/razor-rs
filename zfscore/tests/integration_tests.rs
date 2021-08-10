@@ -10,26 +10,7 @@ fn create_basic_filesystem() {
         .unwrap();
     dbg!("AFTER THE TEST");
     dbg!(&filesystem);
-    // let mut file = File::create("create_basic_filesystem.txt").unwrap();
-    // file.write_all(
-    //     serde_json::to_string_pretty(&filesystem)
-    //         .unwrap()
-    //         .as_bytes(),
-    // )
-    // .unwrap();
-    // file.sync_all().unwrap();
-    // filesystem.destroy().unwrap();
-    /*let expected = Filesystem {
-        available: filesystem.available.clone(),
-        atime: zfs_property::Atime::new(zfs_property::OnOff::On),
-        logicalused: zfs_property::LogicalUsed::new(43008),
-        canmount: zfs_property::CanMount::new(zfs_property::OnOffNoAuto::On),
-        mounted: zfs_property::Mounted::new(zfs_property::YesNo::No),
-        checksum: zfs_property::CheckSum::new(zfs_property::CheckSumAlgo::On),
-        compression: zfs_property::Compression::new(zfs_property::CompressionAlgo::Off),
-    };
-
-    assert_eq!(expected, filesystem);*/
+    filesystem.destroy().unwrap();
 }
 
 /*#[test]
