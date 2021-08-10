@@ -2,8 +2,6 @@ use std::borrow::Cow;
 use std::convert::TryFrom;
 use std::{ffi::CStr, slice};
 
-use sys::boolean_t;
-
 use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -42,8 +40,8 @@ impl NvPair {
     pub fn value_boolean_array(&self) -> Result<Vec<bool>> {
         let mut size = 0;
         let size_ptr: *mut sys::uint_t = &mut size;
-        let mut boolean_arr: *mut boolean_t = std::ptr::null_mut();
-        let boolean_arr_ptr: *mut *mut boolean_t = &mut boolean_arr;
+        let mut boolean_arr: *mut sys::boolean_t = std::ptr::null_mut();
+        let boolean_arr_ptr: *mut *mut sys::boolean_t = &mut boolean_arr;
 
         NvListError::from_nvlist_rc(unsafe {
             sys::nvpair_value_boolean_array(self.raw, boolean_arr_ptr, size_ptr)
