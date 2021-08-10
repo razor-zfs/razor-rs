@@ -179,7 +179,7 @@ impl Atime {
                     if unsafe {
                         !sys::hasmntopt(
                             mntent_ptr,
-                            CString::from_vec_unchecked(b"atime".to_vec()).as_ptr() as *mut u8,
+                            CString::from_vec_unchecked(b"atime".to_vec()).as_ptr(),
                         )
                         .is_null()
                     } && x == 0
@@ -188,7 +188,7 @@ impl Atime {
                     } else if unsafe {
                         !sys::hasmntopt(
                             mntent_ptr,
-                            CString::from_vec_unchecked(b"noatime".to_vec()).as_ptr() as *mut u8,
+                            CString::from_vec_unchecked(b"noatime".to_vec()).as_ptr(),
                         )
                         .is_null()
                     } && x != 0
