@@ -1,6 +1,6 @@
 use serde::{de, ser};
 use std::ffi;
-use std::fmt::{self, Display};
+use std::fmt;
 use std::str;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -50,14 +50,14 @@ impl From<str::Utf8Error> for NvListError {
 }
 
 impl ser::Error for NvListError {
-    fn custom<T: Display>(msg: T) -> Self {
-        NvListError::Message(msg.to_string())
+    fn custom<T: fmt::Display>(msg: T) -> Self {
+        Self::Message(msg.to_string())
     }
 }
 
 impl de::Error for NvListError {
-    fn custom<T: Display>(msg: T) -> Self {
-        NvListError::Message(msg.to_string())
+    fn custom<T: fmt::Display>(msg: T) -> Self {
+        Self::Message(msg.to_string())
     }
 }
 
