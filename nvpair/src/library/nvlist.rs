@@ -481,11 +481,11 @@ mod tests {
         let pair1 = iter.next().unwrap();
         let pair2 = iter.next().unwrap();
         let pair3 = iter.next().unwrap();
-        assert_eq!("a".to_string(), pair1.name().as_ref());
+        assert_eq!(pair1.name(), "a");
         assert_eq!(NvPairType::Uint16, pair1.r#type());
-        assert_eq!("b".to_string(), pair2.name().as_ref());
+        assert_eq!(pair2.name(), "b");
         assert_eq!(NvPairType::Uint32, pair2.r#type());
-        assert_eq!("d".to_string(), pair3.name().as_ref());
+        assert_eq!(pair3.name(), "d");
         assert_eq!(NvPairType::Uint8Array, pair3.r#type());
         assert_eq!(None, iter.next());
     }
