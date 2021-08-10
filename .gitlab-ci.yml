@@ -1,18 +1,24 @@
 .test:cargo:
   stage: test
-  script:
+  before_script:
     - apt update
+    - apt install -y build-essential curl
+    - apt update
+    - curl https://sh.rustup.rs -sSf | bash -s -- -y
+    - export PATH="/root/.cargo/bin:${PATH}"
     - apt install -y libzfslinux-dev
-    - apt install -y apt-transport-https ca-certificates
-    - apt install -y lsb-release wget software-properties-common
+    - apt install llvm-dev libclang-dev clang
+  script:
+    #- apt install -y apt-transport-https ca-certificates
+    #- apt install -y lsb-release wget software-properties-common
     #- wget https://apt.llvm.org/llvm.sh
     #- chmod +x llvm.sh
     #- sudo ./llvm.sh 10
-    - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-    - apt-add-repository "deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main"
-    - apt-get update
-    - apt -o Acquire::AllowInsecureRepositories=true update
-    - apt-get install -y clang-3.9 lldb-3.9
+    #- wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+    #- apt-add-repository "deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main"
+    #- apt-get update
+    #- apt -o Acquire::AllowInsecureRepositories=true update
+    #- apt-get install -y clang-3.9 lldb-3.9
     - cargo fmt -- --check
     - cargo clippy --all-targets
     - cargo test
@@ -22,12 +28,12 @@ stages:
 
 stable:test:
   extends: .test:cargo
-  image: rustdocker/rust:stable
+  #image: rustdocker/rust:stable
 
 beta:test:
   extends: .test:cargo
-  image: rustdocker/rust:beta
+  #image: rustdocker/rust:beta
 
 nightly:test:
   extends: .test:cargo
-  image: rustdocker/rust:nightly
+  #image: rustdocker/rust:nightly
