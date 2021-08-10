@@ -7,3 +7,4 @@ members = [
     "serde-nvpair",
     "zfscore",
 ]
+resolver = "2"
