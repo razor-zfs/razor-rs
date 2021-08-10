@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::io::prelude::*;
 use zfscore::dataset::Dataset;
-use zfscore::zfs_property;
 
 #[test]
 fn create_basic_filesystem() {
@@ -35,7 +34,7 @@ fn create_basic_filesystem() {
     assert_eq!(expected, filesystem);*/
 }
 
-#[test]
+/*#[test]
 fn create_volume_dataset() {
     let volume = Dataset::new("dpool/volume")
         .unwrap()
@@ -69,4 +68,4 @@ fn create_bookmark_dataset() {
         .create_bookmark()
         .unwrap();
     dbg!(bookmark);
-}
+} */
