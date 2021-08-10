@@ -1,5 +1,7 @@
 .test:cargo:
   stage: test
+  tags:
+    - arm64_focal
   before_script:
     - apt update
     - apt install -y build-essential curl
