@@ -1,5 +1,7 @@
 use std::ffi::{CString, NulError};
+use std::ops::Not;
 use std::panic;
+use std::ptr;
 use std::result::Result as StdResult;
 
 use libc::c_char;
@@ -13,7 +15,7 @@ pub struct NvList {
 
 impl NvList {
     pub fn nvlist_alloc(flag: NvFlag) -> Result<Self> {
-        let mut nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
+        let mut nvlist: *mut sys::nvlist_t = ptr::null_mut();
         let nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
 
         match flag {
@@ -379,7 +381,7 @@ impl NvList {
     where
         T: AsRef<str>,
     {
-        let mut nvpair: *mut sys::nvpair_t = std::ptr::null_mut();
+        let mut nvpair: *mut sys::nvpair_t = ptr::null_mut();
         let nvpair_ptr: *mut *mut sys::nvpair_t = &mut nvpair;
 
         NvListError::from_nvlist_rc(unsafe {
@@ -400,7 +402,7 @@ impl From<*mut sys::nvlist_t> for NvList {
 
 impl Clone for NvList {
     fn clone(&self) -> Self {
-        let mut cloned_nvlist: *mut sys::nvlist_t = std::ptr::null_mut();
+        let mut cloned_nvlist: *mut sys::nvlist_t = ptr::null_mut();
         let cloned_nvlist_ptr: *mut *mut sys::nvlist_t = &mut cloned_nvlist;
         let rc = unsafe { sys::nvlist_dup(self.raw, cloned_nvlist_ptr, 0) };
 
@@ -442,19 +444,9 @@ impl Iterator for NvListIterator {
     type Item = NvPair;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let current = if let Some(nvp) = self.nvp {
-            nvp
-        } else {
-            std::ptr::null_mut()
-        };
-
-        let nvp = unsafe { sys::nvlist_next_nvpair(self.nvlist.raw, current) };
-        if nvp.is_null() {
-            self.nvp = None;
-        } else {
-            self.nvp = Some(nvp);
-        }
-
+        let nvp = self.nvp.unwrap_or_else(ptr::null_mut);
+        let nvp = unsafe { sys::nvlist_next_nvpair(self.nvlist.raw, nvp) };
+        self.nvp = nvp.is_null().not().then(|| nvp);
         self.nvp.map(NvPair::from)
     }
 }
@@ -477,9 +469,9 @@ mod tests {
         nvlist.add_uint32("b", 5).unwrap();
         nvlist.add_uint8_arr("d", arr).unwrap();
         let mut iter = nvlist.into_iter();
-        let pair1 = iter.next().unwrap();
-        let pair2 = iter.next().unwrap();
-        let pair3 = iter.next().unwrap();
+        let pair1 = dbg!(iter.next().unwrap());
+        let pair2 = dbg!(iter.next().unwrap());
+        let pair3 = dbg!(iter.next().unwrap());
         assert_eq!(pair1.name(), "a");
         assert_eq!(NvPairType::Uint16, pair1.r#type());
         assert_eq!(pair2.name(), "b");
