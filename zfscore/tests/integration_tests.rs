@@ -1,3 +1,5 @@
+use std::{thread, time::Duration};
+
 use zfscore::dataset::Dataset;
 
 #[test]
@@ -21,6 +23,7 @@ fn create_volume_dataset() {
         .unwrap();
     dbg!("AFTER THE TEST");
     dbg!(&volume);
+    thread::sleep(Duration::from_millis(1));
     volume.destroy().unwrap();
 }
 /*

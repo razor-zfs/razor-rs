@@ -74,7 +74,10 @@ pub struct Volume {
 impl Volume {
     pub fn destroy(self) -> Result<()> {
         unsafe { sys::libzfs_core_init() };
-        if unsafe { sys::lzc_destroy(CString::new(self.name)?.as_ptr()) } != 0 {
+        dbg!(&self.name);
+        let rc = unsafe { sys::lzc_destroy(CString::new(self.name)?.as_ptr()) };
+        dbg!(rc);
+        if rc != 0 {
             return Err(DatasetError::DatasetDeleteError);
         }
         unsafe { sys::libzfs_core_fini() };
