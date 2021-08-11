@@ -1,6 +1,7 @@
 use std::ffi::CString;
 
 use crate::dataset::filesystem::FilesystemIntermediate;
+use crate::dataset::volume::VolumeIntermediate;
 
 use super::libnvpair;
 use super::sys;
@@ -175,7 +176,7 @@ impl Dataset {
 
         if unsafe {
             sys::lzc_create(
-                CString::new(self.name)?.as_ptr(),
+                CString::new(self.name.clone())?.as_ptr(),
                 sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL,
                 self.nvlist.raw,
                 std::ptr::null_mut(),
@@ -186,7 +187,11 @@ impl Dataset {
             return Err(DatasetError::DatasetCreationFailure);
         }
 
-        Ok(from_nvlist(&mut self.nvlist)?)
+        self.zfs_handle.create_dataset_handle(&self.name)?;
+
+        let intervol: VolumeIntermediate = from_nvlist(&mut self.zfs_handle.get_dataset_nvlist()?)?;
+
+        intervol.convert_to_valid(&self.name)
     }
 }
 

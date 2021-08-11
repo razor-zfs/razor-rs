@@ -13,7 +13,7 @@ fn create_basic_filesystem() {
     filesystem.destroy().unwrap();
 }
 
-/*#[test]
+#[test]
 fn create_volume_dataset() {
     let volume = Dataset::new("dpool/volume")
         .unwrap()
@@ -22,7 +22,7 @@ fn create_volume_dataset() {
     dbg!("AFTER THE TEST");
     dbg!(volume);
 }
-
+/*
 #[test]
 fn create_snapshot_dataset() {
     let snapshot = Dataset::new("snapshot")

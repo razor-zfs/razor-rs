@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum Type {
     Filesystem,

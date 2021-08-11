@@ -371,11 +371,12 @@ impl<'de, 'a> de::Deserializer<'de> for &'a mut NvListDeserializer<'de> {
         todo!();
     }
 
-    fn deserialize_option<V>(self, _visitor: V) -> Result<V::Value>
+    fn deserialize_option<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        todo!();
+        dbg!("deserialize option");
+        visitor.visit_some(self)
     }
 
     fn deserialize_unit<V>(self, _visitor: V) -> Result<V::Value>
@@ -621,6 +622,7 @@ impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a, 'de> {
         if !self.finished {
             seed.deserialize(&mut *self.de).map(Some)
         } else {
+            dbg!("printing all");
             for x in &mut self.iter {
                 dbg!("key name: ", x.name());
             }
