@@ -502,7 +502,7 @@ impl<'a> Iterator for Items<'a> {
         self.nvp = nvp.is_null().not().then(|| nvp);
         self.nvp
             .map(NvPair::from)
-            .map(|nvpair| (nvpair.name().to_string(), nvpair.value()))
+            .map(|nvpair| (nvpair.name().to_string(), to_value(&nvpair)))
     }
 }
 

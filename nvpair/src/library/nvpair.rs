@@ -4,13 +4,9 @@ use std::{ffi::CStr, slice};
 
 use super::*;
 
-pub use self::value::Value;
-
-mod value;
-
 #[derive(Clone, Copy, PartialEq)]
 pub struct NvPair {
-    raw: *mut sys::nvpair_t,
+    pub(crate) raw: *mut sys::nvpair_t,
 }
 
 impl NvPair {

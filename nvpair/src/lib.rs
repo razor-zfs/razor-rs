@@ -16,6 +16,7 @@
 use razor_nvpair_sys as sys;
 
 pub use error::NvListError;
+pub use library::to_value;
 pub use library::ContextType;
 pub use library::CtxIter;
 pub use library::NvFlag;
