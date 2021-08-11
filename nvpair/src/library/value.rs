@@ -39,6 +39,7 @@ pub fn to_value(nvpair: &NvPair) -> Value {
     match data_type {
         DATA_TYPE_DONTCARE => todo!(),
         DATA_TYPE_UNKNOWN => todo!(),
+
         DATA_TYPE_BOOLEAN => {
             let value = unsafe {
                 let mut value = sys::boolean_t::B_FALSE;
@@ -193,7 +194,6 @@ pub fn to_value(nvpair: &NvPair) -> Value {
             let value = unsafe {
                 let mut len = 0;
                 let mut data = ptr::null_mut();
-                // let mut cstr = ptr::null_mut();
                 sys::nvpair_value_string_array(nvp, &mut data, &mut len);
                 debug_assert!(!data.is_null());
                 let len = len as usize;
