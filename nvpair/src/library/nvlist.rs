@@ -15,6 +15,16 @@ pub struct NvList {
 }
 
 impl NvList {
+    pub fn new(flag: NvFlag) -> Result<Self> {
+        let mut nvlist: *mut sys::nvlist_t = ptr::null_mut();
+        let flag = match flag {
+            NvFlag::UniqueName => sys::NV_UNIQUE_NAME,
+            NvFlag::UniqueNameType => sys::NV_UNIQUE_NAME_TYPE,
+        };
+        let rc = unsafe { sys::nvlist_alloc(&mut nvlist, flag, 0) };
+        NvListError::from_nvlist_rc(rc).map(|_| Self { raw: nvlist })
+    }
+
     pub fn nvlist_alloc(flag: NvFlag) -> Result<Self> {
         let mut nvlist: *mut sys::nvlist_t = ptr::null_mut();
         let nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
