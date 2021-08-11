@@ -70,3 +70,15 @@ pub struct Volume {
     logicalreferenced: zfs_property::LogicalReferenced,
     objsetid: zfs_property::ObjSetId,
 }
+
+impl Volume {
+    pub fn destroy(self) -> Result<()> {
+        unsafe { sys::libzfs_core_init() };
+        if unsafe { sys::lzc_destroy(CString::new(self.name)?.as_ptr()) } != 0 {
+            return Err(DatasetError::DatasetDeleteError);
+        }
+        unsafe { sys::libzfs_core_fini() };
+
+        Ok(())
+    }
+}

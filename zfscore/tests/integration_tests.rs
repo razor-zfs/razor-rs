@@ -20,7 +20,8 @@ fn create_volume_dataset() {
         .create_volume(128 * 1024)
         .unwrap();
     dbg!("AFTER THE TEST");
-    dbg!(volume);
+    dbg!(&volume);
+    volume.destroy().unwrap();
 }
 /*
 #[test]
