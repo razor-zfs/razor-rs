@@ -471,7 +471,6 @@ dependencies = [
  "razor-nvpair",
  "serde",
  "serde_json",
- "uuid",
 ]
 
 [[package]]
