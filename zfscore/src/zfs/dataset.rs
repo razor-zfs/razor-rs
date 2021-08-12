@@ -164,6 +164,8 @@ impl Dataset {
 
         self.nvlist.add_uint64("volsize", size)?;
 
+        self.nvlist.add_uint64("volmode", 3)?;
+
         if let Some(block_size) = self.volblocksize {
             if (block_size > 512 || block_size < 128000) && is_power_of_two(block_size) {
                 self.nvlist.add_uint64("volblocksize", block_size)?;
@@ -174,7 +176,7 @@ impl Dataset {
             self.nvlist.add_uint64("volblocksize", 8192)?;
         }
 
-        if unsafe {
+        let rc = unsafe {
             sys::lzc_create(
                 CString::new(self.name.clone())?.as_ptr(),
                 sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL,
@@ -182,8 +184,9 @@ impl Dataset {
                 std::ptr::null_mut(),
                 0,
             )
-        } != 0
-        {
+        };
+        if rc != 0 {
+            dbg!("error ", rc);
             return Err(DatasetError::DatasetCreationFailure);
         }
 
