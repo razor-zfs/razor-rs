@@ -1,7 +1,7 @@
 use std::ffi::CString;
 
-use crate::dataset::filesystem::FilesystemIntermediate;
-use crate::dataset::volume::VolumeIntermediate;
+pub use filesystem::{Filesystem, FilesystemIntermediate};
+use volume::VolumeIntermediate;
 
 use super::libnvpair;
 use super::sys;
@@ -11,9 +11,6 @@ use super::Result;
 use super::Zfs;
 use serde_nvpair::from_nvlist;
 
-pub use filesystem::Filesystem;
-pub use volume::Volume;
-
 use serde::{Deserialize, Serialize};
 
 mod bookmark;
@@ -21,7 +18,17 @@ mod filesystem;
 mod snapshot;
 mod volume;
 
-#[derive(Debug)]
+pub enum DatasetType {
+    Filesystem(filesystem::Filesystem),
+    Volume(volume::Volume),
+}
+
+pub struct Dataset {
+    name: String,
+    dataset: DatasetType,
+}
+
+/*#[derive(Debug)]
 pub struct Dataset {
     zfs_handle: Zfs,
     nvlist: libnvpair::NvList,
@@ -209,3 +216,4 @@ struct CommonProperties {
     logicalreferenced: zfs_property::LogicalReferenced,
     objsetid: zfs_property::ObjSetId,
 }
+*/
