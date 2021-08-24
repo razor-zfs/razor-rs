@@ -6,13 +6,11 @@ pub use onoffnoauto::OnOffNoAuto;
 pub use timestamp::TimeStamp;
 pub use yesno::YesNo;
 
-use std::convert::TryFrom;
 use std::ffi::CString;
 
 use serde::{Deserialize, Serialize};
 
 use super::sys;
-use super::Result;
 use crate::error::{DatasetError, InvalidProperty};
 
 mod checksum;
@@ -113,7 +111,7 @@ impl Atime {
 
     // TODO: 1.check mounted
     //       2. implement the same for relative, devices, exec, readonly, setuid, nbmand
-    pub fn default(dataset: impl AsRef<str>) -> Result<Atime> {
+    pub fn default(dataset: CString) -> Atime {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_ATIME) };
         let mut mnttab: sys::mnttab = unsafe { std::mem::zeroed() };
         let mnttab_ptr: *mut sys::mnttab = &mut mnttab;
@@ -122,10 +120,7 @@ impl Atime {
         dbg!("I GOT A TIME", x);
 
         let zfs_handle = unsafe {
-            sys::make_dataset_handle(
-                ZFS_HANDLER.lock().unwrap().handler(),
-                CString::new(dataset.as_ref())?.as_ptr(),
-            )
+            sys::make_dataset_handle(ZFS_HANDLER.lock().unwrap().handler(), dataset.as_ptr())
         };
 
         let rc = unsafe {
@@ -143,10 +138,11 @@ impl Atime {
                     (*mnttab_ptr).mnt_mntopts,
                 )
             }
-            if unsafe { (*zfs_handle).zfs_mntopts.is_null() } {
-                // TODO: change this from unknown
-                return Err(DatasetError::Unknown);
-            }
+            // TODO: check how to implement that
+            // if unsafe { (*zfs_handle).zfs_mntopts.is_null() } {
+            //     // TODO: change this from unknown
+            //     return Err(DatasetError::Unknown);
+            // }
 
             // TODO: boolean_t already exist in libnvpair
             unsafe { (*zfs_handle).zfs_mntcheck = sys::boolean_t::B_TRUE }
@@ -169,7 +165,7 @@ impl Atime {
                 .is_null()
             } && x == 0
             {
-                return Ok(Atime::new(OnOff::On));
+                return Atime::new(OnOff::On);
             } else if unsafe {
                 !sys::hasmntopt(
                     mntent_ptr,
@@ -178,11 +174,11 @@ impl Atime {
                 .is_null()
             } && x != 0
             {
-                return Ok(Atime::new(OnOff::Off));
+                return Atime::new(OnOff::Off);
             }
         }
 
-        Ok(Atime::new(OnOff::try_from(x)?))
+        Atime::new(OnOff::from(x))
     }
 
     pub fn value(&self) -> OnOff {
@@ -251,18 +247,15 @@ impl Mounted {
         Mounted { value }
     }
 
-    pub(super) fn default(dataset: impl AsRef<str>) -> Result<Mounted> {
+    pub(super) fn default(dataset: CString) -> Mounted {
         let zfs_handle = unsafe {
-            sys::make_dataset_handle(
-                ZFS_HANDLER.lock().unwrap().handler(),
-                CString::new(dataset.as_ref())?.as_ptr(),
-            )
+            sys::make_dataset_handle(ZFS_HANDLER.lock().unwrap().handler(), dataset.as_ptr())
         };
 
         if unsafe { (*zfs_handle).zfs_mntopts.is_null() } {
-            Ok(Mounted::new(YesNo::No))
+            Mounted::new(YesNo::No)
         } else {
-            Ok(Mounted::new(YesNo::Yes))
+            Mounted::new(YesNo::Yes)
         }
     }
 
@@ -277,10 +270,10 @@ impl CheckSum {
     }
 
     // TODO: impl same logic for all indexed properties
-    pub fn default() -> Result<CheckSum> {
+    pub fn default() -> CheckSum {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_CHECKSUM) };
         dbg!("I GOT Checksum", x);
-        Ok(CheckSum::new(CheckSumAlgo::try_from(x)?))
+        CheckSum::new(CheckSumAlgo::from(x))
     }
 
     pub fn value(&self) -> CheckSumAlgo {
@@ -293,10 +286,10 @@ impl Compression {
         Compression { value }
     }
 
-    pub fn default() -> Result<Compression> {
+    pub fn default() -> Compression {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_COMPRESSION) };
         dbg!("I GOT Compression", x);
-        Ok(Compression::new(CompressionAlgo::try_from(x)?))
+        Compression::new(CompressionAlgo::from(x))
     }
 
     pub fn value(&self) -> CompressionAlgo {
@@ -319,8 +312,9 @@ impl Name {
         Name { value }
     }
 
-    pub fn value(&self) -> String {
-        self.value.to_string_lossy().into_owned()
+    // TODO: remove clone
+    pub fn value(&self) -> CString {
+        self.value.clone()
     }
 }
 

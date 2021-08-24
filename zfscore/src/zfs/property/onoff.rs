@@ -1,9 +1,7 @@
+use std::fmt;
 use std::str::FromStr;
-use std::{convert::TryFrom, fmt};
 
 use serde::{Deserialize, Serialize};
-
-use crate::zfs::DatasetError;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub enum OnOff {
@@ -49,14 +47,11 @@ impl From<bool> for OnOff {
 }
 
 // TODO: write macro for all u and i
-impl TryFrom<u64> for OnOff {
-    type Error = DatasetError;
-
-    fn try_from(value: u64) -> Result<Self, Self::Error> {
+impl From<u64> for OnOff {
+    fn from(value: u64) -> Self {
         match value {
-            0 => Ok(OnOff::Off),
-            1 => Ok(OnOff::On),
-            _ => Err(DatasetError::InvalidArgument),
+            0 => OnOff::Off,
+            _ => OnOff::On,
         }
     }
 }

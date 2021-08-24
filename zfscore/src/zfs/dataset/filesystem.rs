@@ -28,10 +28,10 @@ impl Filesystem {
         self.available.value()
     }
 
-    pub fn atime(&self, name: impl AsRef<str>) -> Result<property::OnOff> {
+    pub fn atime(&self) -> property::OnOff {
         self.atime.map_or_else(
-            || Ok(property::Atime::default(name)?.value()),
-            |atime| Ok(atime.value()),
+            || property::Atime::default(self.name.value()).value(),
+            |atime| atime.value(),
         )
     }
 
@@ -46,24 +46,24 @@ impl Filesystem {
         }
     }
 
-    pub fn mounted(&self, name: impl AsRef<str>) -> Result<property::YesNo> {
+    pub fn mounted(&self) -> property::YesNo {
         self.mounted.map_or_else(
-            || Ok(property::Mounted::default(name)?.value()),
-            |mounted| Ok(mounted.value()),
+            || property::Mounted::default(self.name.value()).value(),
+            |mounted| mounted.value(),
         )
     }
 
-    pub fn checksum(&self) -> Result<property::CheckSumAlgo> {
+    pub fn checksum(&self) -> property::CheckSumAlgo {
         self.checksum.map_or_else(
-            || Ok(property::CheckSum::default()?.value()),
-            |checksum| Ok(checksum.value()),
+            || property::CheckSum::default().value(),
+            |checksum| checksum.value(),
         )
     }
 
-    pub fn compression(&self) -> Result<property::CompressionAlgo> {
+    pub fn compression(&self) -> property::CompressionAlgo {
         self.compression.map_or_else(
-            || Ok(property::Compression::default()?.value()),
-            |compression| Ok(compression.value()),
+            || property::Compression::default().value(),
+            |compression| compression.value(),
         )
     }
 

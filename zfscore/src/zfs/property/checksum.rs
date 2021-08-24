@@ -1,10 +1,7 @@
+use std::fmt;
 use std::str::FromStr;
-use std::{convert::TryFrom, fmt};
 
 use serde::{Deserialize, Serialize};
-
-use super::DatasetError;
-use super::Result;
 
 // checksum=on|off|fletcher2|fletcher4|sha256|noparity|sha512|skein|edonr
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
@@ -72,21 +69,19 @@ impl From<bool> for CheckSum {
 }
 
 // TODO: create macto for all u and i
-impl TryFrom<u64> for CheckSum {
-    type Error = DatasetError;
-
-    fn try_from(value: u64) -> Result<Self> {
+impl From<u64> for CheckSum {
+    fn from(value: u64) -> Self {
         match value {
-            1 => Ok(CheckSum::On),
-            2 => Ok(CheckSum::Off),
-            6 => Ok(CheckSum::Fletcher2),
-            7 => Ok(CheckSum::Fletcher4),
-            8 => Ok(CheckSum::Sha256),
-            10 => Ok(CheckSum::NoParity),
-            11 => Ok(CheckSum::Sha512),
-            12 => Ok(CheckSum::Skein),
-            13 => Ok(CheckSum::Edonr),
-            _ => Err(DatasetError::InvalidArgument),
+            1 => CheckSum::On,
+            2 => CheckSum::Off,
+            6 => CheckSum::Fletcher2,
+            7 => CheckSum::Fletcher4,
+            8 => CheckSum::Sha256,
+            10 => CheckSum::NoParity,
+            11 => CheckSum::Sha512,
+            12 => CheckSum::Skein,
+            13 => CheckSum::Edonr,
+            _ => CheckSum::Off,
         }
     }
 }
