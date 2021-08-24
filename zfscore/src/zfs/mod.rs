@@ -23,12 +23,8 @@ pub static ZFS: Lazy<Mutex<Zfs>> = Lazy::new(|| {
 
 pub struct Zfs {}
 
-// TODO: check this!!
-unsafe impl Send for Zfs {}
-unsafe impl Sync for Zfs {}
-
 impl Zfs {
-    pub fn init() -> Zfs {
+    fn init() -> Zfs {
         let guard = zfs_handler::ZFS_HANDLER.lock().unwrap();
         drop(guard);
         Zfs {}

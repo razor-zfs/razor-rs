@@ -22,29 +22,33 @@ pub struct Filesystem {
 }
 
 impl Filesystem {
-    pub fn available(&self) -> zfs_property::Available {
-        self.available
+    pub fn available(&self) -> u64 {
+        self.available.value()
     }
 
-    pub fn atime(&self, name: impl AsRef<str>) -> Result<zfs_property::Atime> {
-        self.atime
-            .map_or_else(|| zfs_property::Atime::default(name), Ok)
+    pub fn atime(&self, name: impl AsRef<str>) -> Result<zfs_property::OnOff> {
+        self.atime.map_or_else(
+            || Ok(zfs_property::Atime::default(name)?.value()),
+            |atime| Ok(atime.value()),
+        )
     }
 
-    pub fn logicalused(&self) -> zfs_property::LogicalUsed {
-        self.logicalused
+    pub fn logicalused(&self) -> u64 {
+        self.logicalused.value()
     }
 
-    pub fn canmount(&self) -> zfs_property::CanMount {
+    pub fn canmount(&self) -> zfs_property::OnOffNoAuto {
         match self.canmount {
-            Some(canmount) => canmount,
-            None => zfs_property::CanMount::default(),
+            Some(canmount) => canmount.value(),
+            None => zfs_property::CanMount::default().value(),
         }
     }
 
-    pub fn mounted(&self, name: impl AsRef<str>) -> Result<zfs_property::Mounted> {
-        self.mounted
-            .map_or_else(|| zfs_property::Mounted::default(name), Ok)
+    pub fn mounted(&self, name: impl AsRef<str>) -> Result<zfs_property::YesNo> {
+        self.mounted.map_or_else(
+            || Ok(zfs_property::Mounted::default(name)?.value()),
+            |mounted| Ok(mounted.value()),
+        )
     }
 
     pub fn checksum(&self) -> Result<zfs_property::CheckSum> {

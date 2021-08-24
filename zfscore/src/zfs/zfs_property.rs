@@ -186,6 +186,10 @@ impl Atime {
 
         Ok(Atime::new(OnOff::try_from(x)?))
     }
+
+    pub fn value(&self) -> OnOff {
+        self.value
+    }
 }
 
 impl Available {
@@ -198,6 +202,10 @@ impl Available {
         dbg!("I GOT available", x);
         Available::new(x)
     }
+
+    pub fn value(&self) -> u64 {
+        self.value
+    }
 }
 
 impl LogicalUsed {
@@ -209,6 +217,10 @@ impl LogicalUsed {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_LOGICALUSED) };
         dbg!("I GOT logicalused", x);
         LogicalUsed::new(x)
+    }
+
+    pub fn value(&self) -> u64 {
+        self.value
     }
 }
 
@@ -229,6 +241,10 @@ impl CanMount {
         } else {
             CanMount::new(OnOffNoAuto::NoAuto)
         }
+    }
+
+    pub fn value(&self) -> OnOffNoAuto {
+        self.value
     }
 }
 
@@ -251,6 +267,10 @@ impl Mounted {
             Ok(Mounted::new(YesNo::Yes))
         }
     }
+
+    pub fn value(&self) -> YesNo {
+        self.value
+    }
 }
 
 impl CheckSum {
@@ -264,6 +284,10 @@ impl CheckSum {
         dbg!("I GOT Checksum", x);
         Ok(CheckSum::new(CheckSumAlgo::try_from(x)?))
     }
+
+    pub fn value(&self) -> CheckSumAlgo {
+        self.value
+    }
 }
 
 impl Compression {
@@ -276,11 +300,19 @@ impl Compression {
         dbg!("I GOT Compression", x);
         Ok(Compression::new(CompressionAlgo::try_from(x)?))
     }
+
+    pub fn value(&self) -> CompressionAlgo {
+        self.value
+    }
 }
 
 impl Guid {
     pub fn new(value: u64) -> Self {
         Guid { value }
+    }
+
+    pub fn value(&self) -> u64 {
+        self.value
     }
 }
 
@@ -288,11 +320,19 @@ impl Creation {
     pub fn new(value: u64) -> Self {
         Creation { value }
     }
+
+    pub fn value(&self) -> u64 {
+        self.value
+    }
 }
 
 impl CreateTxg {
     pub fn new(value: u64) -> Self {
         CreateTxg { value }
+    }
+
+    pub fn value(&self) -> u64 {
+        self.value
     }
 }
 
@@ -300,11 +340,19 @@ impl CompressRatio {
     pub fn new(value: u64) -> Self {
         CompressRatio { value }
     }
+
+    pub fn value(&self) -> u64 {
+        self.value
+    }
 }
 
 impl Used {
     pub fn new(value: u64) -> Self {
         Used { value }
+    }
+
+    pub fn value(&self) -> u64 {
+        self.value
     }
 }
 
@@ -312,16 +360,28 @@ impl Referenced {
     pub fn new(value: u64) -> Self {
         Referenced { value }
     }
+
+    pub fn value(&self) -> u64 {
+        self.value
+    }
 }
 
 impl LogicalReferenced {
     pub fn new(value: u64) -> Self {
         LogicalReferenced { value }
     }
+
+    pub fn value(&self) -> u64 {
+        self.value
+    }
 }
 
 impl ObjSetId {
     pub fn new(value: u64) -> Self {
         ObjSetId { value }
+    }
+
+    pub fn value(&self) -> u64 {
+        self.value
     }
 }
