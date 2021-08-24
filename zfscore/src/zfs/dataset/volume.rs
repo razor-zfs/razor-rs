@@ -3,6 +3,8 @@ use crate::zfs::zfs_handler::ZFS_HANDLER;
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Volume {
+    #[serde(default)]
+    name: property::Name,
     available: property::Available,
     volsize: property::Volsize,
     volblocksize: property::VolBlockSize,
@@ -20,6 +22,14 @@ pub struct Volume {
 }
 
 impl Volume {
+    pub fn destroy(self) -> Result<()> {
+        if unsafe { sys::lzc_destroy(self.name.value().as_ptr()) } != 0 {
+            return Err(DatasetError::DatasetDeleteError);
+        }
+
+        Ok(())
+    }
+
     pub fn available(&self) -> property::Available {
         self.available
     }
@@ -152,6 +162,7 @@ impl VolumeBuilder {
             (num != 0) && ((num & (num - 1)) == 0)
         }
 
+        let cname = CString::new(self.name.as_bytes())?;
         match self.err {
             Some(err) => Err(err),
             None => {
@@ -198,9 +209,13 @@ impl VolumeBuilder {
                         }
                     };
 
+                    let volume: Volume = from_nvlist(&mut nvl).map(|fs| Volume {
+                        name: property::Name::new(cname),
+                        ..fs
+                    })?;
+
                     Ok(Dataset {
-                        name: self.name,
-                        dataset: DatasetType::Volume(from_nvlist(&mut nvl)?),
+                        dataset: DatasetType::Volume(volume),
                     })
                 } else {
                     Err(DatasetError::Unknown)

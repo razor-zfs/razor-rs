@@ -24,6 +24,14 @@ pub struct Filesystem {
 }
 
 impl Filesystem {
+    pub fn destroy(self) -> Result<()> {
+        if unsafe { sys::lzc_destroy(self.name.value().as_ptr()) } != 0 {
+            return Err(DatasetError::DatasetDeleteError);
+        }
+
+        Ok(())
+    }
+
     pub fn available(&self) -> u64 {
         self.available.value()
     }
@@ -371,7 +379,6 @@ impl FileSystemBuilder {
                     })?;
 
                     Ok(Dataset {
-                        name: self.name,
                         dataset: DatasetType::Filesystem(filesystem),
                     })
                 } else {

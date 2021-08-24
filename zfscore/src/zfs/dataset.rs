@@ -30,16 +30,5 @@ enum DatasetType {
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Dataset {
-    name: String,
     dataset: DatasetType,
-}
-
-impl Dataset {
-    pub fn destroy(self) -> Result<()> {
-        if unsafe { sys::lzc_destroy(CString::new(self.name)?.as_ptr()) } != 0 {
-            return Err(DatasetError::DatasetDeleteError);
-        }
-
-        Ok(())
-    }
 }
