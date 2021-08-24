@@ -67,15 +67,9 @@ impl NvPair {
     }
 
     pub fn value_uint8(&self) -> Result<u8> {
-        let mut x = 0;
-        let val: *mut u8 = &mut x;
-
-        NvListError::from_nvlist_rc(unsafe { sys::nvpair_value_uint8(self.raw, val) })?;
-
-        match unsafe { val.as_ref() } {
-            Some(u8val) => Ok(*u8val),
-            None => Err(NvListError::ConversionError),
-        }
+        let mut val = 0;
+        let rc = unsafe { sys::nvpair_value_uint8(self.raw, &mut val) };
+        NvListError::from_nvlist(rc, val)
     }
 
     pub fn value_uint16(&self) -> Result<u16> {

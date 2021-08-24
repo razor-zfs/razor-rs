@@ -35,6 +35,15 @@ impl NvListError {
             _ => unreachable!("invalid return code"),
         }
     }
+
+    pub(crate) fn from_nvlist<T>(rc: i32, val: T) -> Result<T, Self> {
+        match rc {
+            0 => Ok(val),
+            libc::EINVAL => Err(Self::InvalidArgument),
+            libc::ENOMEM => Err(Self::InsufficientMemory),
+            _ => unreachable!("invalid return code"),
+        }
+    }
 }
 
 impl From<ffi::NulError> for NvListError {
