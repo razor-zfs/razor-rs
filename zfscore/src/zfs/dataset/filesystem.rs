@@ -4,21 +4,21 @@ use crate::zfs::zfs_handler::ZFS_HANDLER;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Filesystem {
-    available: zfs_property::Available,
-    atime: Option<zfs_property::Atime>,
-    logicalused: zfs_property::LogicalUsed,
-    canmount: Option<zfs_property::CanMount>,
-    mounted: Option<zfs_property::Mounted>,
-    checksum: Option<zfs_property::CheckSum>,
-    compression: Option<zfs_property::Compression>,
-    guid: zfs_property::Guid,
-    creation: zfs_property::Creation,
-    createtxg: zfs_property::CreateTxg,
-    compressratio: zfs_property::CompressRatio,
-    used: zfs_property::Used,
-    referenced: zfs_property::Referenced,
-    logicalreferenced: zfs_property::LogicalReferenced,
-    objsetid: zfs_property::ObjSetId,
+    available: property::Available,
+    atime: Option<property::Atime>,
+    logicalused: property::LogicalUsed,
+    canmount: Option<property::CanMount>,
+    mounted: Option<property::Mounted>,
+    checksum: Option<property::CheckSum>,
+    compression: Option<property::Compression>,
+    guid: property::Guid,
+    creation: property::Creation,
+    createtxg: property::CreateTxg,
+    compressratio: property::CompressRatio,
+    used: property::Used,
+    referenced: property::Referenced,
+    logicalreferenced: property::LogicalReferenced,
+    objsetid: property::ObjSetId,
 }
 
 impl Filesystem {
@@ -26,9 +26,9 @@ impl Filesystem {
         self.available.value()
     }
 
-    pub fn atime(&self, name: impl AsRef<str>) -> Result<zfs_property::OnOff> {
+    pub fn atime(&self, name: impl AsRef<str>) -> Result<property::OnOff> {
         self.atime.map_or_else(
-            || Ok(zfs_property::Atime::default(name)?.value()),
+            || Ok(property::Atime::default(name)?.value()),
             |atime| Ok(atime.value()),
         )
     }
@@ -37,63 +37,64 @@ impl Filesystem {
         self.logicalused.value()
     }
 
-    pub fn canmount(&self) -> zfs_property::OnOffNoAuto {
+    pub fn canmount(&self) -> property::OnOffNoAuto {
         match self.canmount {
             Some(canmount) => canmount.value(),
-            None => zfs_property::CanMount::default().value(),
+            None => property::CanMount::default().value(),
         }
     }
 
-    pub fn mounted(&self, name: impl AsRef<str>) -> Result<zfs_property::YesNo> {
+    pub fn mounted(&self, name: impl AsRef<str>) -> Result<property::YesNo> {
         self.mounted.map_or_else(
-            || Ok(zfs_property::Mounted::default(name)?.value()),
+            || Ok(property::Mounted::default(name)?.value()),
             |mounted| Ok(mounted.value()),
         )
     }
 
-    pub fn checksum(&self) -> Result<zfs_property::CheckSum> {
+    pub fn checksum(&self) -> Result<property::CheckSum> {
         self.checksum
-            .map_or_else(|| zfs_property::CheckSum::default(), Ok)
+            .map_or_else(|| property::CheckSum::default(), Ok)
     }
 
-    pub fn compression(&self) -> Result<zfs_property::Compression> {
+    pub fn compression(&self) -> Result<property::Compression> {
         self.compression
-            .map_or_else(|| zfs_property::Compression::default(), Ok)
+            .map_or_else(|| property::Compression::default(), Ok)
     }
 
-    pub fn guid(&self) -> zfs_property::Guid {
+    pub fn guid(&self) -> property::Guid {
         self.guid
     }
 
-    pub fn creation(&self) -> zfs_property::Creation {
+    pub fn creation(&self) -> property::Creation {
         self.creation
     }
 
-    pub fn createtxg(&self) -> zfs_property::CreateTxg {
+    pub fn createtxg(&self) -> property::CreateTxg {
         self.createtxg
     }
 
-    pub fn compressratio(&self) -> zfs_property::CompressRatio {
+    pub fn compressratio(&self) -> property::CompressRatio {
         self.compressratio
     }
 
-    pub fn used(&self) -> zfs_property::Used {
+    pub fn used(&self) -> property::Used {
         self.used
     }
 
-    pub fn referenced(&self) -> zfs_property::Referenced {
+    pub fn referenced(&self) -> property::Referenced {
         self.referenced
     }
 
-    pub fn logicalreferenced(&self) -> zfs_property::LogicalReferenced {
+    pub fn logicalreferenced(&self) -> property::LogicalReferenced {
         self.logicalreferenced
     }
 
-    pub fn objsetid(&self) -> zfs_property::ObjSetId {
+    pub fn objsetid(&self) -> property::ObjSetId {
         self.objsetid
     }
 }
 
+#[derive(Debug)]
 pub struct FileSystemBuilder {
     nvlist: Option<libnvpair::NvList>,
     name: String,
@@ -116,7 +117,7 @@ impl FileSystemBuilder {
         }
     }
 
-    pub fn atime(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -132,7 +133,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn canmount(mut self, v: impl Into<zfs_property::OnOffNoAuto>) -> Self {
+    pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -148,7 +149,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn checksum(mut self, v: impl Into<zfs_property::CheckSumAlgo>) -> Self {
+    pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -164,7 +165,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn devices(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -180,7 +181,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn nbmand(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -196,7 +197,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn overlay(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -212,7 +213,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn readonly(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -228,7 +229,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn relatime(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -244,7 +245,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn setuid(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -260,7 +261,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn vscan(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -276,7 +277,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn zoned(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -292,7 +293,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn compression(mut self, v: impl Into<zfs_property::CompressionAlgo>) -> Self {
+    pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -308,7 +309,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn exec(mut self, v: impl Into<zfs_property::OnOff>) -> Self {
+    pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
         if self.err.is_some() {
             return self;
         }

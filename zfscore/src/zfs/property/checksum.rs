@@ -3,8 +3,8 @@ use std::{convert::TryFrom, fmt};
 
 use serde::{Deserialize, Serialize};
 
+use super::DatasetError;
 use super::Result;
-use crate::zfs::DatasetError;
 
 // checksum=on|off|fletcher2|fletcher4|sha256|noparity|sha512|skein|edonr
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
@@ -43,7 +43,7 @@ impl fmt::Display for CheckSum {
 }
 
 impl FromStr for CheckSum {
-    type Err = super::InvalidProperty;
+    type Err = super::DatasetError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
@@ -56,7 +56,7 @@ impl FromStr for CheckSum {
             "sha512" => Ok(Self::Sha512),
             "skein" => Ok(Self::Skein),
             "edonr" => Ok(Self::Edonr),
-            other => Err(super::InvalidProperty::invalid_value(other)),
+            other => Err(super::InvalidProperty::invalid_value(other).into()),
         }
     }
 }

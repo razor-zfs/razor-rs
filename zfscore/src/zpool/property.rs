@@ -1,3 +1,7 @@
+pub use allocated::Allocated;
+
+use super::InvalidProperty;
+
 mod allocated;
 mod altroot;
 mod ashift;
@@ -10,8 +14,7 @@ mod onoff;
 mod version;
 mod yesno;
 
-pub use super::property::{InvalidProperty, Property};
-use allocated::Allocated as AllocatedSize;
+/*use allocated::Allocated as AllocatedSize;
 use altroot::Altroot as AltrootDir;
 use ashift::Ashift as AshiftSectorSize;
 use bootfs::Bootfs as BootfsDataset;
@@ -48,3 +51,4 @@ pub type _Readonly = Property<OnOff>;
 pub type _Size = Property<u64>;
 pub type _Version = Property<PoolVersion>;
 pub type _Name = Property<String>;
+*/

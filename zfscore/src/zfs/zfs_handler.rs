@@ -8,7 +8,7 @@ pub(crate) static ZFS_HANDLER: Lazy<Mutex<ZfsHandler>> = Lazy::new(|| {
 });
 
 #[derive(Debug)]
-pub struct ZfsHandler {
+pub(crate) struct ZfsHandler {
     raw_libzfs_handle: *mut sys::libzfs_handle_t,
 }
 
@@ -24,7 +24,7 @@ impl ZfsHandler {
         }
     }
 
-    pub fn handler(&self) -> *mut sys::libzfs_handle_t {
+    pub(crate) fn handler(&self) -> *mut sys::libzfs_handle_t {
         self.raw_libzfs_handle
     }
 }

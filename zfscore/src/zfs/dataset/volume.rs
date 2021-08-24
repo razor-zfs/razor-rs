@@ -3,77 +3,78 @@ use crate::zfs::zfs_handler::ZFS_HANDLER;
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Volume {
-    available: zfs_property::Available,
-    volsize: zfs_property::Volsize,
-    volblocksize: zfs_property::VolBlockSize,
-    logicalused: Option<zfs_property::LogicalUsed>,
-    checksum: Option<zfs_property::CheckSum>,
-    compression: Option<zfs_property::Compression>,
-    guid: zfs_property::Guid,
-    creation: zfs_property::Creation,
-    createtxg: zfs_property::CreateTxg,
-    compressratio: zfs_property::CompressRatio,
-    used: zfs_property::Used,
-    referenced: zfs_property::Referenced,
-    logicalreferenced: zfs_property::LogicalReferenced,
-    objsetid: zfs_property::ObjSetId,
+    available: property::Available,
+    volsize: property::Volsize,
+    volblocksize: property::VolBlockSize,
+    logicalused: Option<property::LogicalUsed>,
+    checksum: Option<property::CheckSum>,
+    compression: Option<property::Compression>,
+    guid: property::Guid,
+    creation: property::Creation,
+    createtxg: property::CreateTxg,
+    compressratio: property::CompressRatio,
+    used: property::Used,
+    referenced: property::Referenced,
+    logicalreferenced: property::LogicalReferenced,
+    objsetid: property::ObjSetId,
 }
 
 impl Volume {
-    pub fn available(&self) -> zfs_property::Available {
+    pub fn available(&self) -> property::Available {
         self.available
     }
 
-    pub fn logicalused(&self) -> zfs_property::LogicalUsed {
+    pub fn logicalused(&self) -> property::LogicalUsed {
         match self.logicalused {
             Some(logicalused) => logicalused,
-            None => zfs_property::LogicalUsed::default(),
+            None => property::LogicalUsed::default(),
         }
     }
 
-    pub fn checksum(&self) -> Result<zfs_property::CheckSum> {
+    pub fn checksum(&self) -> Result<property::CheckSum> {
         self.checksum
-            .map_or_else(|| zfs_property::CheckSum::default(), Ok)
+            .map_or_else(|| property::CheckSum::default(), Ok)
     }
 
-    pub fn compression(&self) -> Result<zfs_property::Compression> {
+    pub fn compression(&self) -> Result<property::Compression> {
         self.compression
-            .map_or_else(|| zfs_property::Compression::default(), Ok)
+            .map_or_else(|| property::Compression::default(), Ok)
     }
 
-    pub fn guid(&self) -> zfs_property::Guid {
+    pub fn guid(&self) -> property::Guid {
         self.guid
     }
 
-    pub fn creation(&self) -> zfs_property::Creation {
+    pub fn creation(&self) -> property::Creation {
         self.creation
     }
 
-    pub fn createtxg(&self) -> zfs_property::CreateTxg {
+    pub fn createtxg(&self) -> property::CreateTxg {
         self.createtxg
     }
 
-    pub fn compressratio(&self) -> zfs_property::CompressRatio {
+    pub fn compressratio(&self) -> property::CompressRatio {
         self.compressratio
     }
 
-    pub fn used(&self) -> zfs_property::Used {
+    pub fn used(&self) -> property::Used {
         self.used
     }
 
-    pub fn referenced(&self) -> zfs_property::Referenced {
+    pub fn referenced(&self) -> property::Referenced {
         self.referenced
     }
 
-    pub fn logicalreferenced(&self) -> zfs_property::LogicalReferenced {
+    pub fn logicalreferenced(&self) -> property::LogicalReferenced {
         self.logicalreferenced
     }
 
-    pub fn objsetid(&self) -> zfs_property::ObjSetId {
+    pub fn objsetid(&self) -> property::ObjSetId {
         self.objsetid
     }
 }
 
+#[derive(Debug)]
 pub struct VolumeBuilder {
     nvlist: Option<libnvpair::NvList>,
     name: String,
@@ -99,7 +100,7 @@ impl VolumeBuilder {
         }
     }
 
-    pub fn checksum(mut self, v: impl Into<zfs_property::CheckSumAlgo>) -> Self {
+    pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
         if self.err.is_some() {
             return self;
         }
@@ -115,7 +116,7 @@ impl VolumeBuilder {
         self
     }
 
-    pub fn compression(mut self, v: impl Into<zfs_property::CompressionAlgo>) -> Self {
+    pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
         if self.err.is_some() {
             return self;
         }

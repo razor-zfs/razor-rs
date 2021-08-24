@@ -1,14 +1,9 @@
-use zfscore::ZFS;
+use zfscore::zfs::Zfs;
 
 #[test]
 fn create_basic_filesystem() {
     dbg!("starting create filesystem test");
-    let filesystem = ZFS
-        .lock()
-        .unwrap()
-        .new_filesystem("dpool/filesystem")
-        .create()
-        .unwrap();
+    let filesystem = Zfs::filesystem("dpool/filesystem").create().unwrap();
 
     dbg!(&filesystem);
 
@@ -17,12 +12,7 @@ fn create_basic_filesystem() {
 
 #[test]
 fn create_volume_dataset() {
-    let volume = ZFS
-        .lock()
-        .unwrap()
-        .new_volume("dpool/volume")
-        .create(128 * 1024)
-        .unwrap();
+    let volume = Zfs::volume("dpool/volume").create(128 * 1024).unwrap();
     dbg!(&volume);
 
     volume.destroy().unwrap();
