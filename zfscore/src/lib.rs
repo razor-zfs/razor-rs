@@ -12,6 +12,7 @@
 #![warn(rust_2018_idioms)]
 #![warn(unused)]
 #![deny(warnings)]
+#![feature(derive_default_enum)]
 
 use razor_nvpair as libnvpair;
 use razor_nvpair::NvListError;

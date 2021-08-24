@@ -4,6 +4,8 @@ use crate::zfs::zfs_handler::ZFS_HANDLER;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Filesystem {
+    #[serde(default)]
+    name: property::Name,
     available: property::Available,
     atime: Option<property::Atime>,
     logicalused: property::LogicalUsed,
@@ -51,46 +53,50 @@ impl Filesystem {
         )
     }
 
-    pub fn checksum(&self) -> Result<property::CheckSum> {
-        self.checksum
-            .map_or_else(|| property::CheckSum::default(), Ok)
+    pub fn checksum(&self) -> Result<property::CheckSumAlgo> {
+        self.checksum.map_or_else(
+            || Ok(property::CheckSum::default()?.value()),
+            |checksum| Ok(checksum.value()),
+        )
     }
 
-    pub fn compression(&self) -> Result<property::Compression> {
-        self.compression
-            .map_or_else(|| property::Compression::default(), Ok)
+    pub fn compression(&self) -> Result<property::CompressionAlgo> {
+        self.compression.map_or_else(
+            || Ok(property::Compression::default()?.value()),
+            |compression| Ok(compression.value()),
+        )
     }
 
-    pub fn guid(&self) -> property::Guid {
-        self.guid
+    pub fn guid(&self) -> u64 {
+        self.guid.value()
     }
 
-    pub fn creation(&self) -> property::Creation {
-        self.creation
+    pub fn creation(&self) -> u64 {
+        self.creation.value()
     }
 
-    pub fn createtxg(&self) -> property::CreateTxg {
-        self.createtxg
+    pub fn createtxg(&self) -> u64 {
+        self.createtxg.value()
     }
 
-    pub fn compressratio(&self) -> property::CompressRatio {
-        self.compressratio
+    pub fn compressratio(&self) -> u64 {
+        self.compressratio.value()
     }
 
-    pub fn used(&self) -> property::Used {
-        self.used
+    pub fn used(&self) -> u64 {
+        self.used.value()
     }
 
-    pub fn referenced(&self) -> property::Referenced {
-        self.referenced
+    pub fn referenced(&self) -> u64 {
+        self.referenced.value()
     }
 
-    pub fn logicalreferenced(&self) -> property::LogicalReferenced {
-        self.logicalreferenced
+    pub fn logicalreferenced(&self) -> u64 {
+        self.logicalreferenced.value()
     }
 
-    pub fn objsetid(&self) -> property::ObjSetId {
-        self.objsetid
+    pub fn objsetid(&self) -> u64 {
+        self.objsetid.value()
     }
 }
 
@@ -326,13 +332,14 @@ impl FileSystemBuilder {
     }
 
     pub fn create(self) -> Result<Dataset> {
+        let cname = CString::new(self.name.as_bytes())?;
         match self.err {
             Some(err) => Err(err),
             None => {
                 if let Some(nvlist) = self.nvlist {
                     let ret = unsafe {
                         sys::lzc_create(
-                            CString::new(self.name.as_bytes())?.as_ptr(),
+                            cname.as_ptr(),
                             sys::lzc_dataset_type::LZC_DATSET_TYPE_ZFS,
                             nvlist.raw,
                             std::ptr::null_mut(),
@@ -348,7 +355,7 @@ impl FileSystemBuilder {
                     let zfs_handle = unsafe {
                         sys::make_dataset_handle(
                             ZFS_HANDLER.lock().unwrap().handler(),
-                            CString::new(self.name.as_bytes())?.as_ptr(),
+                            cname.as_ptr(),
                         )
                     };
 
@@ -358,9 +365,14 @@ impl FileSystemBuilder {
                         }
                     };
 
+                    let filesystem: Filesystem = from_nvlist(&mut nvl).map(|fs| Filesystem {
+                        name: property::Name::new(cname),
+                        ..fs
+                    })?;
+
                     Ok(Dataset {
                         name: self.name,
-                        dataset: DatasetType::Filesystem(from_nvlist(&mut nvl)?),
+                        dataset: DatasetType::Filesystem(filesystem),
                     })
                 } else {
                     Err(DatasetError::Unknown)

@@ -29,9 +29,9 @@ use crate::zfs::zfs_handler::ZFS_HANDLER;
 pub struct Guid {
     value: u64,
 }
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Name {
-    value: String,
+    value: CString,
 }
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub struct Available {
@@ -251,7 +251,7 @@ impl Mounted {
         Mounted { value }
     }
 
-    pub fn default(dataset: impl AsRef<str>) -> Result<Mounted> {
+    pub(super) fn default(dataset: impl AsRef<str>) -> Result<Mounted> {
         let zfs_handle = unsafe {
             sys::make_dataset_handle(
                 ZFS_HANDLER.lock().unwrap().handler(),
@@ -311,6 +311,16 @@ impl Guid {
 
     pub fn value(&self) -> u64 {
         self.value
+    }
+}
+
+impl Name {
+    pub fn new(value: CString) -> Self {
+        Name { value }
+    }
+
+    pub fn value(&self) -> String {
+        self.value.to_string_lossy().into_owned()
     }
 }
 
