@@ -1,29 +1,30 @@
-use std::thread::sleep;
-use std::time::Duration;
-use zfscore::dataset::Dataset;
+use zfscore::ZFS;
 
 #[test]
 fn create_basic_filesystem() {
-    dbg!("BEFORE THE TEST");
-    println!("asdasdas");
-    let filesystem = Dataset::new("dpool/filesystem")
+    dbg!("starting create filesystem test");
+    let filesystem = ZFS
+        .lock()
         .unwrap()
-        .create_filesystem()
+        .new_filesystem("dpool/filesystem")
+        .create()
         .unwrap();
-    dbg!("AFTER THE TEST");
+
     dbg!(&filesystem);
+
     filesystem.destroy().unwrap();
 }
 
 #[test]
 fn create_volume_dataset() {
-    let volume = Dataset::new("dpool/volume")
+    let volume = ZFS
+        .lock()
         .unwrap()
-        .create_volume(128 * 1024)
+        .new_volume("dpool/volume")
+        .create(128 * 1024)
         .unwrap();
-    dbg!("AFTER THE TEST");
     dbg!(&volume);
-    sleep(Duration::from_millis(3000));
+
     volume.destroy().unwrap();
 }
 /*

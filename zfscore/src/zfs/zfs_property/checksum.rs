@@ -3,10 +3,11 @@ use std::{convert::TryFrom, fmt};
 
 use serde::{Deserialize, Serialize};
 
+use super::Result;
 use crate::zfs::DatasetError;
 
 // checksum=on|off|fletcher2|fletcher4|sha256|noparity|sha512|skein|edonr
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub enum CheckSum {
     On,
     Off,
@@ -44,7 +45,7 @@ impl fmt::Display for CheckSum {
 impl FromStr for CheckSum {
     type Err = super::InvalidProperty;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
             "on" => Ok(Self::On),
             "off" => Ok(Self::Off),
@@ -74,7 +75,7 @@ impl From<bool> for CheckSum {
 impl TryFrom<u64> for CheckSum {
     type Error = DatasetError;
 
-    fn try_from(value: u64) -> Result<Self, Self::Error> {
+    fn try_from(value: u64) -> Result<Self> {
         match value {
             1 => Ok(CheckSum::On),
             2 => Ok(CheckSum::Off),

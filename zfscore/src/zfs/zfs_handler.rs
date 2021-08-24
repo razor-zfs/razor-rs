@@ -3,17 +3,22 @@ use once_cell::sync::Lazy;
 use std::sync::Mutex;
 
 pub(crate) static ZFS_HANDLER: Lazy<Mutex<ZfsHandler>> = Lazy::new(|| {
-    let mut handler = ZfsHandler::init();
+    let handler = ZfsHandler::init();
     Mutex::new(handler)
 });
 
 #[derive(Debug)]
 pub struct ZfsHandler {
-    pub raw_libzfs_handle: *mut sys::libzfs_handle_t,
+    raw_libzfs_handle: *mut sys::libzfs_handle_t,
 }
 
+// TODO: check this!!
+unsafe impl Send for ZfsHandler {}
+unsafe impl Sync for ZfsHandler {}
+
 impl ZfsHandler {
-    pub fn init() -> Self {
+    fn init() -> Self {
+        dbg!("initializing zfs handler");
         ZfsHandler {
             raw_libzfs_handle: unsafe { sys::libzfs_init() },
         }

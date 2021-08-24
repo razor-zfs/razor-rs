@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::zfs::DatasetError;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub enum OnOff {
     Off,
     On,
