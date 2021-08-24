@@ -31,14 +31,18 @@ impl Volume {
         }
     }
 
-    pub fn checksum(&self) -> Result<property::CheckSum> {
-        self.checksum
-            .map_or_else(|| property::CheckSum::default(), Ok)
+    pub fn checksum(&self) -> property::CheckSumAlgo {
+        self.checksum.map_or_else(
+            || property::CheckSum::default().value(),
+            |checksum| checksum.value(),
+        )
     }
 
-    pub fn compression(&self) -> Result<property::Compression> {
-        self.compression
-            .map_or_else(|| property::Compression::default(), Ok)
+    pub fn compression(&self) -> property::CompressionAlgo {
+        self.compression.map_or_else(
+            || property::Compression::default().value(),
+            |compression| compression.value(),
+        )
     }
 
     pub fn guid(&self) -> property::Guid {
