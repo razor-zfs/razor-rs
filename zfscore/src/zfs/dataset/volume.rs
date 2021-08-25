@@ -92,7 +92,7 @@ impl Volume {
 pub struct VolumeBuilder {
     nvlist: Option<libnvpair::NvList>,
     name: String,
-    volblocksize: Option<u64>,
+    volblocksize: u64,
     err: Option<DatasetError>,
 }
 
@@ -102,13 +102,13 @@ impl VolumeBuilder {
             Ok(nvlist) => VolumeBuilder {
                 nvlist: Some(nvlist),
                 name: name.as_ref().to_string(),
-                volblocksize: None,
+                volblocksize: VolumeBuilder::calculate_default_volblocksize(),
                 err: None,
             },
             Err(error) => VolumeBuilder {
                 nvlist: None,
                 name: name.as_ref().to_string(),
-                volblocksize: None,
+                volblocksize: VolumeBuilder::calculate_default_volblocksize(),
                 err: Some(error.into()),
             },
         }
@@ -147,8 +147,13 @@ impl VolumeBuilder {
     }
 
     pub fn blocksize(mut self, v: u64) -> Result<Self> {
-        self.volblocksize = Some(v);
+        self.volblocksize = v;
         Ok(self)
+    }
+
+    // TODO: implement calculation algorithm
+    fn calculate_default_volblocksize() -> u64 {
+        8192
     }
 
     // TODO: 1. default block size should be calculated
@@ -158,7 +163,7 @@ impl VolumeBuilder {
     //       5. add zfs_mount_and_share functionality
     pub fn create(mut self, size: u64) -> Result<Volume> {
         #[inline]
-        fn is_power_of_two(num: u64) -> bool {
+        fn _is_power_of_two(num: u64) -> bool {
             (num != 0) && ((num & (num - 1)) == 0)
         }
 
@@ -171,16 +176,7 @@ impl VolumeBuilder {
 
                     nvlist.add_uint64("volmode", 3)?;
 
-                    if let Some(block_size) = self.volblocksize {
-                        if (block_size > 512 || block_size < 128000) && is_power_of_two(block_size)
-                        {
-                            nvlist.add_uint64("volblocksize", block_size)?;
-                        } else {
-                            return Err(DatasetError::BadVolumeBlockSize);
-                        }
-                    } else {
-                        nvlist.add_uint64("volblocksize", 8192)?;
-                    }
+                    nvlist.add_uint64("volblocksize", self.volblocksize)?;
 
                     let rc = unsafe {
                         sys::lzc_create(
