@@ -42,9 +42,9 @@ impl FromStr for OnOffNoAuto {
 impl From<bool> for OnOffNoAuto {
     fn from(v: bool) -> Self {
         if v {
-            OnOffNoAuto::On
+            Self::On
         } else {
-            OnOffNoAuto::Off
+            Self::Off
         }
     }
 }

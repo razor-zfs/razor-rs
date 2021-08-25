@@ -98,11 +98,11 @@ pub struct VolumeBuilder {
 
 impl VolumeBuilder {
     pub fn new(name: impl AsRef<str>) -> Self {
-        VolumeBuilder {
+        Self {
             nvlist: libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName)
                 .map_err(|nvlist_err| nvlist_err.into()),
             name: name.as_ref().to_string(),
-            volblocksize: VolumeBuilder::calculate_default_volblocksize(),
+            volblocksize: Self::calculate_default_volblocksize(),
         }
     }
 

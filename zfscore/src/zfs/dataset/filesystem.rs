@@ -117,7 +117,7 @@ pub struct FileSystemBuilder {
 
 impl FileSystemBuilder {
     pub fn new(name: impl AsRef<str>) -> Self {
-        FileSystemBuilder {
+        Self {
             nvlist: libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName)
                 .map_err(|err| err.into()),
             name: name.as_ref().to_string(),

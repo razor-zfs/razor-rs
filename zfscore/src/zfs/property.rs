@@ -106,12 +106,12 @@ pub struct Compression {
 
 impl Atime {
     pub fn new(value: OnOff) -> Self {
-        Atime { value }
+        Self { value }
     }
 
     // TODO: 1.check mounted
     //       2. implement the same for relative, devices, exec, readonly, setuid, nbmand
-    pub fn default(dataset: CString) -> Atime {
+    pub fn default(dataset: CString) -> Self {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_ATIME) };
         let mut mnttab: sys::mnttab = unsafe { std::mem::zeroed() };
         let mnttab_ptr: *mut sys::mnttab = &mut mnttab;
@@ -165,7 +165,7 @@ impl Atime {
                 .is_null()
             } && x == 0
             {
-                return Atime::new(OnOff::On);
+                return Self::new(OnOff::On);
             } else if unsafe {
                 !sys::hasmntopt(
                     mntent_ptr,
@@ -174,11 +174,11 @@ impl Atime {
                 .is_null()
             } && x != 0
             {
-                return Atime::new(OnOff::Off);
+                return Self::new(OnOff::Off);
             }
         }
 
-        Atime::new(OnOff::from(x))
+        Self::new(OnOff::from(x))
     }
 
     pub fn value(&self) -> OnOff {
@@ -188,13 +188,13 @@ impl Atime {
 
 impl Available {
     pub fn new(value: u64) -> Self {
-        Available { value }
+        Self { value }
     }
 
-    pub fn default() -> Available {
+    pub fn default() -> Self {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_AVAILABLE) };
         dbg!("I GOT available", x);
-        Available::new(x)
+        Self::new(x)
     }
 
     pub fn value(&self) -> u64 {
@@ -204,13 +204,13 @@ impl Available {
 
 impl LogicalUsed {
     pub fn new(value: u64) -> Self {
-        LogicalUsed { value }
+        Self { value }
     }
 
-    pub fn default() -> LogicalUsed {
+    pub fn default() -> Self {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_LOGICALUSED) };
         dbg!("I GOT logicalused", x);
-        LogicalUsed::new(x)
+        Self::new(x)
     }
 
     pub fn value(&self) -> u64 {
@@ -220,20 +220,20 @@ impl LogicalUsed {
 
 impl CanMount {
     pub fn new(value: OnOffNoAuto) -> Self {
-        CanMount { value }
+        Self { value }
     }
 
     // TODO: implement the same for volsize, quota, refquota, reservation, refreservation
     //          filesystem_limit, snapshot_limit, filesystem_count, snapshot_count
-    pub fn default() -> CanMount {
+    pub fn default() -> Self {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_CANMOUNT) };
         dbg!("I GOT CanMount", x);
         if x == 1 {
-            CanMount::new(OnOffNoAuto::On)
+            Self::new(OnOffNoAuto::On)
         } else if x == 0 {
-            CanMount::new(OnOffNoAuto::Off)
+            Self::new(OnOffNoAuto::Off)
         } else {
-            CanMount::new(OnOffNoAuto::NoAuto)
+            Self::new(OnOffNoAuto::NoAuto)
         }
     }
 
@@ -244,18 +244,18 @@ impl CanMount {
 
 impl Mounted {
     pub fn new(value: YesNo) -> Self {
-        Mounted { value }
+        Self { value }
     }
 
-    pub(super) fn default(dataset: CString) -> Mounted {
+    pub(super) fn default(dataset: CString) -> Self {
         let zfs_handle = unsafe {
             sys::make_dataset_handle(ZFS_HANDLER.lock().unwrap().handler(), dataset.as_ptr())
         };
 
         if unsafe { (*zfs_handle).zfs_mntopts.is_null() } {
-            Mounted::new(YesNo::No)
+            Self::new(YesNo::No)
         } else {
-            Mounted::new(YesNo::Yes)
+            Self::new(YesNo::Yes)
         }
     }
 
@@ -266,14 +266,14 @@ impl Mounted {
 
 impl CheckSum {
     pub fn new(value: CheckSumAlgo) -> Self {
-        CheckSum { value }
+        Self { value }
     }
 
     // TODO: impl same logic for all indexed properties
-    pub fn default() -> CheckSum {
+    pub fn default() -> Self {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_CHECKSUM) };
         dbg!("I GOT Checksum", x);
-        CheckSum::new(CheckSumAlgo::from(x))
+        Self::new(CheckSumAlgo::from(x))
     }
 
     pub fn value(&self) -> CheckSumAlgo {
@@ -283,13 +283,13 @@ impl CheckSum {
 
 impl Compression {
     pub fn new(value: CompressionAlgo) -> Self {
-        Compression { value }
+        Self { value }
     }
 
-    pub fn default() -> Compression {
+    pub fn default() -> Self {
         let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_COMPRESSION) };
         dbg!("I GOT Compression", x);
-        Compression::new(CompressionAlgo::from(x))
+        Self::new(CompressionAlgo::from(x))
     }
 
     pub fn value(&self) -> CompressionAlgo {
@@ -299,7 +299,7 @@ impl Compression {
 
 impl Guid {
     pub fn new(value: u64) -> Self {
-        Guid { value }
+        Self { value }
     }
 
     pub fn value(&self) -> u64 {
@@ -309,7 +309,7 @@ impl Guid {
 
 impl Name {
     pub fn new(value: CString) -> Self {
-        Name { value }
+        Self { value }
     }
 
     // TODO: remove clone
@@ -320,7 +320,7 @@ impl Name {
 
 impl Creation {
     pub fn new(value: u64) -> Self {
-        Creation { value }
+        Self { value }
     }
 
     pub fn value(&self) -> u64 {
@@ -330,7 +330,7 @@ impl Creation {
 
 impl CreateTxg {
     pub fn new(value: u64) -> Self {
-        CreateTxg { value }
+        Self { value }
     }
 
     pub fn value(&self) -> u64 {
@@ -340,7 +340,7 @@ impl CreateTxg {
 
 impl CompressRatio {
     pub fn new(value: u64) -> Self {
-        CompressRatio { value }
+        Self { value }
     }
 
     pub fn value(&self) -> u64 {
@@ -350,7 +350,7 @@ impl CompressRatio {
 
 impl Used {
     pub fn new(value: u64) -> Self {
-        Used { value }
+        Self { value }
     }
 
     pub fn value(&self) -> u64 {
@@ -360,7 +360,7 @@ impl Used {
 
 impl Referenced {
     pub fn new(value: u64) -> Self {
-        Referenced { value }
+        Self { value }
     }
 
     pub fn value(&self) -> u64 {
@@ -370,7 +370,7 @@ impl Referenced {
 
 impl LogicalReferenced {
     pub fn new(value: u64) -> Self {
-        LogicalReferenced { value }
+        Self { value }
     }
 
     pub fn value(&self) -> u64 {
@@ -380,7 +380,7 @@ impl LogicalReferenced {
 
 impl ObjSetId {
     pub fn new(value: u64) -> Self {
-        ObjSetId { value }
+        Self { value }
     }
 
     pub fn value(&self) -> u64 {

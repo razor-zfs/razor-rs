@@ -19,7 +19,7 @@ unsafe impl Sync for ZfsHandler {}
 impl ZfsHandler {
     fn init() -> Self {
         dbg!("initializing zfs handler");
-        ZfsHandler {
+        Self {
             raw_libzfs_handle: unsafe { sys::libzfs_init() },
         }
     }

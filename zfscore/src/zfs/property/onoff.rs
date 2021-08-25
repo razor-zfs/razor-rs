@@ -39,9 +39,9 @@ impl FromStr for OnOff {
 impl From<bool> for OnOff {
     fn from(v: bool) -> Self {
         if v {
-            OnOff::On
+            Self::On
         } else {
-            OnOff::Off
+            Self::Off
         }
     }
 }
@@ -50,8 +50,8 @@ impl From<bool> for OnOff {
 impl From<u64> for OnOff {
     fn from(value: u64) -> Self {
         match value {
-            0 => OnOff::Off,
-            _ => OnOff::On,
+            0 => Self::Off,
+            _ => Self::On,
         }
     }
 }

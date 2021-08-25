@@ -61,9 +61,9 @@ impl FromStr for CheckSum {
 impl From<bool> for CheckSum {
     fn from(v: bool) -> Self {
         if v {
-            CheckSum::On
+            Self::On
         } else {
-            CheckSum::Off
+            Self::Off
         }
     }
 }
@@ -72,16 +72,16 @@ impl From<bool> for CheckSum {
 impl From<u64> for CheckSum {
     fn from(value: u64) -> Self {
         match value {
-            1 => CheckSum::On,
-            2 => CheckSum::Off,
-            6 => CheckSum::Fletcher2,
-            7 => CheckSum::Fletcher4,
-            8 => CheckSum::Sha256,
-            10 => CheckSum::NoParity,
-            11 => CheckSum::Sha512,
-            12 => CheckSum::Skein,
-            13 => CheckSum::Edonr,
-            _ => CheckSum::Off,
+            1 => Self::On,
+            2 => Self::Off,
+            6 => Self::Fletcher2,
+            7 => Self::Fletcher4,
+            8 => Self::Sha256,
+            10 => Self::NoParity,
+            11 => Self::Sha512,
+            12 => Self::Skein,
+            13 => Self::Edonr,
+            _ => Self::Off,
         }
     }
 }

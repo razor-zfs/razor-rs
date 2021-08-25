@@ -84,9 +84,9 @@ impl FromStr for Compression {
 impl From<bool> for Compression {
     fn from(v: bool) -> Self {
         if v {
-            Compression::On
+            Self::On
         } else {
-            Compression::Off
+            Self::Off
         }
     }
 }
@@ -95,22 +95,22 @@ impl From<bool> for Compression {
 impl From<u64> for Compression {
     fn from(value: u64) -> Self {
         match value {
-            1 => Compression::On,
-            2 => Compression::Off,
-            3 => Compression::Lzjb,
-            10 => Compression::Gzip6,
-            5 => Compression::Gzip1,
-            6 => Compression::Gzip2,
-            7 => Compression::Gzip3,
-            8 => Compression::Gzip4,
-            9 => Compression::Gzip5,
-            11 => Compression::Gzip7,
-            12 => Compression::Gzip8,
-            13 => Compression::Gzip9,
-            14 => Compression::Zle,
-            15 => Compression::Lz4,
-            16 => Compression::Zstd,
-            _ => Compression::Off,
+            1 => Self::On,
+            2 => Self::Off,
+            3 => Self::Lzjb,
+            10 => Self::Gzip6,
+            5 => Self::Gzip1,
+            6 => Self::Gzip2,
+            7 => Self::Gzip3,
+            8 => Self::Gzip4,
+            9 => Self::Gzip5,
+            11 => Self::Gzip7,
+            12 => Self::Gzip8,
+            13 => Self::Gzip9,
+            14 => Self::Zle,
+            15 => Self::Lz4,
+            16 => Self::Zstd,
+            _ => Self::Off,
         }
     }
 }

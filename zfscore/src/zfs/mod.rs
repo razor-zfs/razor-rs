@@ -29,10 +29,10 @@ pub static ZFS: Lazy<Mutex<Zfs>> = Lazy::new(|| {
 pub struct Zfs {}
 
 impl Zfs {
-    fn init() -> Zfs {
+    fn init() -> Self {
         let guard = zfs_handler::ZFS_HANDLER.lock().unwrap();
         drop(guard);
-        Zfs {}
+        Self {}
     }
 
     pub fn filesystem(name: impl AsRef<str>) -> FileSystemBuilder {
