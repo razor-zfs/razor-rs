@@ -1,3 +1,6 @@
+use std::thread::sleep;
+use std::time::Duration;
+
 use zfscore::zfs::Zfs;
 
 #[test]
@@ -15,6 +18,7 @@ fn create_volume_dataset() {
     let volume = Zfs::volume("dpool/volume").create(128 * 1024).unwrap();
     dbg!(&volume);
 
+    sleep(Duration::from_millis(3000));
     volume.destroy().unwrap();
 }
 /*
