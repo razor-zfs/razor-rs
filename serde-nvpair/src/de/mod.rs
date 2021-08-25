@@ -722,7 +722,7 @@ mod tests {
             b: 5.9,
             c: 4.8,
         };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_float64("a", 3.5).unwrap();
         nvlist.add_float64("b", 5.9).unwrap();
         nvlist.add_float64("c", 4.8).unwrap();
@@ -743,7 +743,7 @@ mod tests {
             b: 5.9,
             c: 4.8,
         };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_float64("a", 3.5).unwrap();
         nvlist.add_float64("b", 5.9).unwrap();
         nvlist.add_float64("c", 4.8).unwrap();
@@ -760,7 +760,7 @@ mod tests {
             c: u8,
         }
         let expected = Test { a: 3, b: 5, c: 7 };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint8("a", 3).unwrap();
         nvlist.add_uint8("b", 5).unwrap();
         nvlist.add_uint8("c", 7).unwrap();
@@ -777,7 +777,7 @@ mod tests {
             c: u16,
         }
         let expected = Test { a: 3, b: 5, c: 7 };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint16("a", 3).unwrap();
         nvlist.add_uint16("b", 5).unwrap();
         nvlist.add_uint16("c", 7).unwrap();
@@ -794,7 +794,7 @@ mod tests {
             c: u32,
         }
         let expected = Test { a: 3, b: 5, c: 7 };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint32("a", 3).unwrap();
         nvlist.add_uint32("b", 5).unwrap();
         nvlist.add_uint32("c", 7).unwrap();
@@ -811,7 +811,7 @@ mod tests {
             c: u64,
         }
         let expected = Test { a: 3, b: 5, c: 7 };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint64("a", 3).unwrap();
         nvlist.add_uint64("b", 5).unwrap();
         nvlist.add_uint64("c", 7).unwrap();
@@ -828,7 +828,7 @@ mod tests {
             c: i8,
         }
         let expected = Test { a: 3, b: 5, c: 7 };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_int8("a", 3).unwrap();
         nvlist.add_int8("b", 5).unwrap();
         nvlist.add_int8("c", 7).unwrap();
@@ -845,7 +845,7 @@ mod tests {
             c: i16,
         }
         let expected = Test { a: 3, b: 5, c: 7 };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_int16("a", 3).unwrap();
         nvlist.add_int16("b", 5).unwrap();
         nvlist.add_int16("c", 7).unwrap();
@@ -862,7 +862,7 @@ mod tests {
             c: i32,
         }
         let expected = Test { a: 3, b: 5, c: 7 };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_int32("a", 3).unwrap();
         nvlist.add_int32("b", 5).unwrap();
         nvlist.add_int32("c", 7).unwrap();
@@ -879,7 +879,7 @@ mod tests {
             c: i64,
         }
         let expected = Test { a: 3, b: 5, c: 7 };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_int64("a", 3).unwrap();
         nvlist.add_int64("b", 5).unwrap();
         nvlist.add_int64("c", 7).unwrap();
@@ -900,7 +900,7 @@ mod tests {
             b: "test2".to_string(),
             c: "test3".to_string(),
         };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_string("a", "test1").unwrap();
         nvlist.add_string("b", "test2").unwrap();
         nvlist.add_string("c", "test3").unwrap();
@@ -921,7 +921,7 @@ mod tests {
             b: false,
             c: true,
         };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_boolean("a", true).unwrap();
         nvlist.add_boolean("b", false).unwrap();
         nvlist.add_boolean("c", true).unwrap();
@@ -957,7 +957,7 @@ mod tests {
             i: "test".to_string(),
             j: false,
         };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint8("a", 3).unwrap();
         nvlist.add_uint16("b", 5).unwrap();
         nvlist.add_uint32("c", 7).unwrap();
@@ -989,7 +989,7 @@ mod tests {
         let arr1: [u8; 5] = [1, 2, 3, 4, 5];
         let arr2: [u8; 5] = [6, 7, 8, 9, 10];
         let arr3: [u8; 5] = [11, 12, 13, 14, 15];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint8_arr("a", arr1).unwrap();
         nvlist.add_uint8_arr("b", arr2).unwrap();
         nvlist.add_uint8_arr("c", arr3).unwrap();
@@ -1013,7 +1013,7 @@ mod tests {
         let arr1: [u16; 5] = [1, 2, 3, 4, 5];
         let arr2: [u16; 5] = [6, 7, 8, 9, 10];
         let arr3: [u16; 5] = [11, 12, 13, 14, 15];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint16_arr("a", arr1).unwrap();
         nvlist.add_uint16_arr("b", arr2).unwrap();
         nvlist.add_uint16_arr("c", arr3).unwrap();
@@ -1037,7 +1037,7 @@ mod tests {
         let arr1: [u32; 5] = [1, 2, 3, 4, 5];
         let arr2: [u32; 5] = [6, 7, 8, 9, 10];
         let arr3: [u32; 5] = [11, 12, 13, 14, 15];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint32_arr("a", arr1).unwrap();
         nvlist.add_uint32_arr("b", arr2).unwrap();
         nvlist.add_uint32_arr("c", arr3).unwrap();
@@ -1061,7 +1061,7 @@ mod tests {
         let arr1: [u64; 5] = [1, 2, 3, 4, 5];
         let arr2: [u64; 5] = [6, 7, 8, 9, 10];
         let arr3: [u64; 5] = [11, 12, 13, 14, 15];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint64_arr("a", arr1).unwrap();
         nvlist.add_uint64_arr("b", arr2).unwrap();
         nvlist.add_uint64_arr("c", arr3).unwrap();
@@ -1085,7 +1085,7 @@ mod tests {
         let arr1: [i8; 5] = [1, 2, 3, 4, 5];
         let arr2: [i8; 5] = [6, 7, 8, 9, 10];
         let arr3: [i8; 5] = [11, 12, 13, 14, 15];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_int8_arr("a", arr1).unwrap();
         nvlist.add_int8_arr("b", arr2).unwrap();
         nvlist.add_int8_arr("c", arr3).unwrap();
@@ -1109,7 +1109,7 @@ mod tests {
         let arr1: [i16; 5] = [1, 2, 3, 4, 5];
         let arr2: [i16; 5] = [6, 7, 8, 9, 10];
         let arr3: [i16; 5] = [11, 12, 13, 14, 15];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_int16_arr("a", arr1).unwrap();
         nvlist.add_int16_arr("b", arr2).unwrap();
         nvlist.add_int16_arr("c", arr3).unwrap();
@@ -1133,7 +1133,7 @@ mod tests {
         let arr1 = &[1, 2, 3, 4, 5];
         let arr2 = &[6, 7, 8, 9, 10];
         let arr3 = &[11, 12, 13, 14, 15];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_int32_arr("a", arr1).unwrap();
         nvlist.add_int32_arr("b", arr2).unwrap();
         nvlist.add_int32_arr("c", arr3).unwrap();
@@ -1157,7 +1157,7 @@ mod tests {
         let arr1: [i64; 5] = [1, 2, 3, 4, 5];
         let arr2: [i64; 5] = [6, 7, 8, 9, 10];
         let arr3: [i64; 5] = [11, 12, 13, 14, 15];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_int64_arr("a", arr1).unwrap();
         nvlist.add_int64_arr("b", arr2).unwrap();
         nvlist.add_int64_arr("c", arr3).unwrap();
@@ -1217,7 +1217,7 @@ mod tests {
             "n".to_string(),
             "o".to_string(),
         ];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_string_arr("a", arr1).unwrap();
         nvlist.add_string_arr("b", arr2).unwrap();
         nvlist.add_string_arr("c", arr3).unwrap();
@@ -1241,7 +1241,7 @@ mod tests {
         let arr1: [bool; 5] = [true, true, true, true, true];
         let arr2: [bool; 5] = [false, false, false, false, false];
         let arr3: [bool; 5] = [true, true, false, true, true];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_boolean_arr("a", arr1).unwrap();
         nvlist.add_boolean_arr("b", arr2).unwrap();
         nvlist.add_boolean_arr("c", arr3).unwrap();
@@ -1299,7 +1299,7 @@ mod tests {
         ];
         let arr10: [bool; 5] = [true, true, false, true, true];
 
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint8_arr("a", arr1).unwrap();
         nvlist.add_uint16_arr("b", arr2).unwrap();
         nvlist.add_uint32_arr("c", arr3).unwrap();
@@ -1384,7 +1384,7 @@ mod tests {
         ];
         let arr10: [bool; 5] = [true, true, false, true, true];
 
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint8_arr("a", arr1).unwrap();
         nvlist.add_uint16_arr("b", arr2).unwrap();
         nvlist.add_uint32_arr("c", arr3).unwrap();
@@ -1433,10 +1433,10 @@ mod tests {
             e: 9,
             f: Nested { a: 11, b: 13 },
         };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        let mut nvlist_nested_first = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        let mut nvlist_nested_second = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        let mut nvlist_nested_third = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
+        let mut nvlist_nested_first = NvList::new(NvFlag::UniqueName).unwrap();
+        let mut nvlist_nested_second = NvList::new(NvFlag::UniqueName).unwrap();
+        let mut nvlist_nested_third = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist_nested_first.add_uint16("a", 3).unwrap();
         nvlist_nested_first.add_uint16("b", 5).unwrap();
         nvlist_nested_second.add_uint16("a", 7).unwrap();
@@ -1481,9 +1481,9 @@ mod tests {
             },
             c: 6,
         };
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        let mut nvlist_nested_depth_one = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
-        let mut nvlist_nested_depth_two = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
+        let mut nvlist_nested_depth_one = NvList::new(NvFlag::UniqueName).unwrap();
+        let mut nvlist_nested_depth_two = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist_nested_depth_two.add_uint16("a", 3).unwrap();
         nvlist_nested_depth_two.add_uint16("b", 4).unwrap();
         nvlist_nested_depth_one.add_uint16("a", 2).unwrap();
@@ -1518,7 +1518,7 @@ mod tests {
         };
         let arr: [u16; 5] = [1, 2, 3, 4, 5];
         let tup: [u16; 3] = [1, 2, 3];
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         nvlist.add_uint16("a", 3).unwrap();
         nvlist.add_uint32("b", 5).unwrap();
         nvlist.add_string("c", "test").unwrap();

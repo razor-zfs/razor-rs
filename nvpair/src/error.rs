@@ -116,3 +116,12 @@ impl From<i32> for NvListErrorInternal {
         }
     }
 }
+
+pub(crate) fn value_or_err<T>(val: T, rc: i32) -> Result<T, NvListError> {
+    match rc {
+        0 => Ok(val),
+        libc::EINVAL => Err(NvListError::InvalidArgument),
+        libc::ENOMEM => Err(NvListError::InsufficientMemory),
+        _ => unreachable!("invalid return code"),
+    }
+}

@@ -686,7 +686,7 @@ mod tests {
 
     #[test]
     fn basic_iter_u8() {
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         let arr: [u8; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint8_arr("d", arr).unwrap();
         let nvpair =
@@ -704,7 +704,7 @@ mod tests {
 
     #[test]
     fn basic_iter_u16() {
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         let arr: [u16; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint16_arr("d", arr).unwrap();
         let nvpair =
@@ -722,7 +722,7 @@ mod tests {
 
     #[test]
     fn basic_iter_u32() {
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         let arr: [u32; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint32_arr("d", arr).unwrap();
         let nvpair =
@@ -740,7 +740,7 @@ mod tests {
 
     #[test]
     fn basic_iter_u64() {
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         let arr: [u64; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint64_arr("d", arr).unwrap();
         let nvpair =

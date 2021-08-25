@@ -37,7 +37,7 @@ pub fn to_nvlist<T>(value: &T) -> Result<libnvpair::NvList>
 where
     T: Serialize,
 {
-    let nvlist = NvList::nvlist_alloc(NvFlag::UniqueName)?;
+    let nvlist = NvList::new(NvFlag::UniqueName)?;
 
     let mut serializer = NvListSerializer {
         raw_nvlist: nvlist,
@@ -526,7 +526,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             })
         } else {
             self.helpers.push(self.curr.clone());
-            let nvlist = NvList::nvlist_alloc(NvFlag::UniqueName)?;
+            let nvlist = NvList::new(NvFlag::UniqueName)?;
             self.helpers.push(SerializerHelper {
                 nvlist: Some(nvlist),
                 is_vec: false,

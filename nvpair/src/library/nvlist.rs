@@ -7,6 +7,8 @@ use std::result::Result as StdResult;
 
 use libc::c_char;
 
+use crate::error::value_or_err;
+
 use super::*;
 
 #[derive(PartialEq)]
@@ -16,31 +18,13 @@ pub struct NvList {
 
 impl NvList {
     pub fn new(flag: NvFlag) -> Result<Self> {
-        let mut nvlist: *mut sys::nvlist_t = ptr::null_mut();
+        let mut raw: *mut sys::nvlist_t = ptr::null_mut();
         let flag = match flag {
             NvFlag::UniqueName => sys::NV_UNIQUE_NAME,
             NvFlag::UniqueNameType => sys::NV_UNIQUE_NAME_TYPE,
         };
-        let rc = unsafe { sys::nvlist_alloc(&mut nvlist, flag, 0) };
-        NvListError::from_nvlist_rc(rc).map(|_| Self { raw: nvlist })
-    }
-
-    pub fn nvlist_alloc(flag: NvFlag) -> Result<Self> {
-        let mut nvlist: *mut sys::nvlist_t = ptr::null_mut();
-        let nvlist_ptr: *mut *mut sys::nvlist_t = &mut nvlist;
-
-        match flag {
-            NvFlag::UniqueName => NvListError::from_nvlist_rc(unsafe {
-                sys::nvlist_alloc(nvlist_ptr, sys::NV_UNIQUE_NAME, 0)
-            })?,
-            NvFlag::UniqueNameType => NvListError::from_nvlist_rc(unsafe {
-                sys::nvlist_alloc(nvlist_ptr, sys::NV_UNIQUE_NAME, 0)
-            })?,
-        }
-
-        Ok(Self {
-            raw: unsafe { *nvlist_ptr },
-        })
+        let rc = unsafe { sys::nvlist_alloc(&mut raw, flag, 0) };
+        value_or_err(Self { raw }, rc)
     }
 
     pub fn add_boolean<T>(&mut self, name: T, v: bool) -> Result<()>
@@ -528,7 +512,7 @@ mod tests {
 
     #[test]
     fn nvlist_iter() {
-        let mut nvlist = NvList::nvlist_alloc(NvFlag::UniqueName).unwrap();
+        let mut nvlist = NvList::new(NvFlag::UniqueName).unwrap();
         let arr: [u8; 5] = [1, 2, 3, 4, 5];
         nvlist.add_uint16("a", 3).unwrap();
         nvlist.add_uint32("b", 5).unwrap();
