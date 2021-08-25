@@ -176,6 +176,7 @@ impl VolumeBuilder {
 
                     nvlist.add_uint64("volmode", 3)?;
 
+                    // TODO: check if volblocksize is power of 2 and between 512 and 128000
                     nvlist.add_uint64("volblocksize", self.volblocksize)?;
 
                     let rc = unsafe {
