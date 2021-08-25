@@ -1,7 +1,8 @@
-use serde::{de, ser};
 use std::ffi;
 use std::fmt;
 use std::str;
+
+use serde::{de, ser};
 
 #[derive(Clone, Debug, PartialEq)]
 enum NvListErrorInternal {
