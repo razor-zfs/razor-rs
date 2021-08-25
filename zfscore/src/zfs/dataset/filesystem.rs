@@ -110,279 +110,200 @@ impl Filesystem {
 
 #[derive(Debug)]
 pub struct FileSystemBuilder {
-    nvlist: Option<libnvpair::NvList>,
+    nvlist: Result<libnvpair::NvList>,
     name: String,
-    err: Option<DatasetError>,
+    //err: Option<DatasetError>,
 }
 
 impl FileSystemBuilder {
     pub fn new(name: impl AsRef<str>) -> Self {
-        match libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName) {
-            Ok(nvlist) => FileSystemBuilder {
-                nvlist: Some(nvlist),
-                name: name.as_ref().to_string(),
-                err: None,
-            },
-            Err(error) => FileSystemBuilder {
-                nvlist: None,
-                name: name.as_ref().to_string(),
-                err: Some(error.into()),
-            },
+        FileSystemBuilder {
+            nvlist: libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName)
+                .map_err(|err| err.into()),
+            name: name.as_ref().to_string(),
         }
     }
 
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("atime", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("atime", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("canmount", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("canmount", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("checksum", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("checksum", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("devices", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("devices", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("nbmand", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("nbmand", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("overlay", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("overlay", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("readonly", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("readonly", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("relatime", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("relatime", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("setuid", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("setuid", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("vscan", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("vscan", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("zoned", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("zoned", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("compression", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("compression", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("exec", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("exec", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
-    pub fn create(self) -> Result<Filesystem> {
+    pub fn create(mut self) -> Result<Filesystem> {
         let cname = CString::new(self.name.as_bytes())?;
-        match self.err {
-            Some(err) => Err(err),
-            None => {
-                if let Some(nvlist) = self.nvlist {
-                    let ret = unsafe {
-                        sys::lzc_create(
-                            cname.as_ptr(),
-                            sys::lzc_dataset_type::LZC_DATSET_TYPE_ZFS,
-                            nvlist.raw,
-                            std::ptr::null_mut(),
-                            0,
-                        )
-                    };
-                    dbg!(ret);
+        match self.nvlist.as_mut() {
+            Ok(nvlist) => {
+                let ret = unsafe {
+                    sys::lzc_create(
+                        cname.as_ptr(),
+                        sys::lzc_dataset_type::LZC_DATSET_TYPE_ZFS,
+                        nvlist.raw,
+                        std::ptr::null_mut(),
+                        0,
+                    )
+                };
+                dbg!(ret);
 
-                    if ret != 0 {
-                        return Err(DatasetError::DatasetCreationFailure);
-                    }
-
-                    let zfs_handle = unsafe {
-                        sys::make_dataset_handle(
-                            ZFS_HANDLER.lock().unwrap().handler(),
-                            cname.as_ptr(),
-                        )
-                    };
-
-                    let mut nvl = unsafe {
-                        libnvpair::NvList {
-                            raw: (*zfs_handle).zfs_props,
-                        }
-                    };
-
-                    let filesystem: Filesystem = from_nvlist(&mut nvl).map(|fs| Filesystem {
-                        name: property::Name::new(cname),
-                        ..fs
-                    })?;
-
-                    Ok(filesystem)
-                } else {
-                    Err(DatasetError::Unknown)
+                if ret != 0 {
+                    return Err(DatasetError::DatasetCreationFailure);
                 }
+
+                let zfs_handle = unsafe {
+                    sys::make_dataset_handle(ZFS_HANDLER.lock().unwrap().handler(), cname.as_ptr())
+                };
+
+                let mut nvl = unsafe {
+                    libnvpair::NvList {
+                        raw: (*zfs_handle).zfs_props,
+                    }
+                };
+
+                let filesystem: Filesystem = from_nvlist(&mut nvl).map(|fs| Filesystem {
+                    name: property::Name::new(cname),
+                    ..fs
+                })?;
+
+                Ok(filesystem)
             }
+            Err(err) => Err(err.clone()), // TODO: check this line because it clones here
         }
     }
 }

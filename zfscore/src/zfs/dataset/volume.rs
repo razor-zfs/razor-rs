@@ -90,57 +90,40 @@ impl Volume {
 
 #[derive(Debug)]
 pub struct VolumeBuilder {
-    nvlist: Option<libnvpair::NvList>,
+    nvlist: Result<libnvpair::NvList>,
     name: String,
     volblocksize: u64,
-    err: Option<DatasetError>,
+    //err: Option<DatasetError>,
 }
 
 impl VolumeBuilder {
     pub fn new(name: impl AsRef<str>) -> Self {
-        match libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName) {
-            Ok(nvlist) => VolumeBuilder {
-                nvlist: Some(nvlist),
-                name: name.as_ref().to_string(),
-                volblocksize: VolumeBuilder::calculate_default_volblocksize(),
-                err: None,
-            },
-            Err(error) => VolumeBuilder {
-                nvlist: None,
-                name: name.as_ref().to_string(),
-                volblocksize: VolumeBuilder::calculate_default_volblocksize(),
-                err: Some(error.into()),
-            },
+        VolumeBuilder {
+            nvlist: libnvpair::NvList::nvlist_alloc(libnvpair::NvFlag::UniqueName)
+                .map_err(|nvlist_err| nvlist_err.into()),
+            name: name.as_ref().to_string(),
+            volblocksize: VolumeBuilder::calculate_default_volblocksize(),
         }
     }
 
     pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("checksum", value.as_str())
-                .map_err(Into::into)
-                .err();
+
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("checksum", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
     }
 
     pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
-        if self.err.is_some() {
-            return self;
-        }
-
         let value = v.into();
-        if let Some(nvlist) = self.nvlist.as_mut() {
-            self.err = nvlist
-                .add_string("compression", value.as_str())
-                .map_err(Into::into)
-                .err();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_string("compression", value.as_str()) {
+                self.nvlist = Err(err.into());
+            }
         }
 
         self
@@ -168,54 +151,50 @@ impl VolumeBuilder {
         }
 
         let cname = CString::new(self.name.as_bytes())?;
-        match self.err {
-            Some(err) => Err(err),
-            None => {
-                if let Some(nvlist) = self.nvlist.as_mut() {
-                    nvlist.add_uint64("volsize", size)?;
+        match self.nvlist.as_mut() {
+            Ok(nvlist) => {
+                nvlist.add_uint64("volsize", size)?;
 
-                    nvlist.add_uint64("volmode", 3)?;
+                nvlist.add_uint64("volmode", 3)?;
 
-                    // TODO: check if volblocksize is power of 2 and between 512 and 128000
-                    nvlist.add_uint64("volblocksize", self.volblocksize)?;
+                // TODO: check if volblocksize is power of 2 and between 512 and 128000
+                nvlist.add_uint64("volblocksize", self.volblocksize)?;
 
-                    let rc = unsafe {
-                        sys::lzc_create(
-                            CString::new(self.name.clone())?.as_ptr(),
-                            sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL,
-                            nvlist.raw,
-                            std::ptr::null_mut(),
-                            0,
-                        )
-                    };
-                    if rc != 0 {
-                        dbg!("error ", rc);
-                        return Err(DatasetError::DatasetCreationFailure);
-                    }
-
-                    let zfs_handle = unsafe {
-                        sys::make_dataset_handle(
-                            ZFS_HANDLER.lock().unwrap().handler(),
-                            CString::new(self.name.as_bytes())?.as_ptr(),
-                        )
-                    };
-
-                    let mut nvl = unsafe {
-                        libnvpair::NvList {
-                            raw: (*zfs_handle).zfs_props,
-                        }
-                    };
-
-                    let volume: Volume = from_nvlist(&mut nvl).map(|fs| Volume {
-                        name: property::Name::new(cname),
-                        ..fs
-                    })?;
-
-                    Ok(volume)
-                } else {
-                    Err(DatasetError::Unknown)
+                let rc = unsafe {
+                    sys::lzc_create(
+                        CString::new(self.name.clone())?.as_ptr(),
+                        sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL,
+                        nvlist.raw,
+                        std::ptr::null_mut(),
+                        0,
+                    )
+                };
+                if rc != 0 {
+                    dbg!("error ", rc);
+                    return Err(DatasetError::DatasetCreationFailure);
                 }
+
+                let zfs_handle = unsafe {
+                    sys::make_dataset_handle(
+                        ZFS_HANDLER.lock().unwrap().handler(),
+                        CString::new(self.name.as_bytes())?.as_ptr(),
+                    )
+                };
+
+                let mut nvl = unsafe {
+                    libnvpair::NvList {
+                        raw: (*zfs_handle).zfs_props,
+                    }
+                };
+
+                let volume: Volume = from_nvlist(&mut nvl).map(|fs| Volume {
+                    name: property::Name::new(cname),
+                    ..fs
+                })?;
+
+                Ok(volume)
             }
+            Err(err) => Err(err.clone()), // TODO: check this line because it clones here
         }
     }
 }
