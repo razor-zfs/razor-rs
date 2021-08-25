@@ -2,6 +2,8 @@ use std::borrow::Cow;
 use std::convert::TryFrom;
 use std::{ffi::CStr, slice};
 
+use crate::error::value_or_err;
+
 use super::*;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -69,7 +71,7 @@ impl NvPair {
     pub fn value_uint8(&self) -> Result<u8> {
         let mut val = 0;
         let rc = unsafe { sys::nvpair_value_uint8(self.raw, &mut val) };
-        NvListError::from_nvlist(rc, val)
+        value_or_err(val, rc)
     }
 
     pub fn value_uint16(&self) -> Result<u16> {
