@@ -156,7 +156,7 @@ impl VolumeBuilder {
     //       3. add noreserve functionality
     //       4. add parents creation if needed
     //       5. add zfs_mount_and_share functionality
-    pub fn create(mut self, size: u64) -> Result<Dataset> {
+    pub fn create(mut self, size: u64) -> Result<Volume> {
         #[inline]
         fn is_power_of_two(num: u64) -> bool {
             (num != 0) && ((num & (num - 1)) == 0)
@@ -214,9 +214,7 @@ impl VolumeBuilder {
                         ..fs
                     })?;
 
-                    Ok(Dataset {
-                        dataset: DatasetType::Volume(volume),
-                    })
+                    Ok(volume)
                 } else {
                     Err(DatasetError::Unknown)
                 }

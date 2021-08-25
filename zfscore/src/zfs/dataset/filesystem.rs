@@ -339,7 +339,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn create(self) -> Result<Dataset> {
+    pub fn create(self) -> Result<Filesystem> {
         let cname = CString::new(self.name.as_bytes())?;
         match self.err {
             Some(err) => Err(err),
@@ -378,9 +378,7 @@ impl FileSystemBuilder {
                         ..fs
                     })?;
 
-                    Ok(Dataset {
-                        dataset: DatasetType::Filesystem(filesystem),
-                    })
+                    Ok(filesystem)
                 } else {
                     Err(DatasetError::Unknown)
                 }

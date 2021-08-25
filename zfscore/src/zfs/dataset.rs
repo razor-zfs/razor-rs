@@ -28,7 +28,7 @@ enum DatasetType {
     Volume(volume::Volume),
 }
 
-#[derive(Debug, Deserialize, PartialEq, Clone)]
+/*#[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Dataset {
     dataset: DatasetType,
-}
+}*/
