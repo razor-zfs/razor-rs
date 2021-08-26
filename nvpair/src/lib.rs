@@ -13,22 +13,24 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use razor_nvpair_sys as sys;
-
 pub use error::NvListError;
-pub use library::to_value;
-pub use library::ContextType;
-pub use library::CtxIter;
-pub use library::NvFlag;
-pub use library::NvList;
-pub use library::NvListIterator;
-pub use library::NvPair;
-pub use library::NvPairType;
-pub use library::SafeNvPair;
-pub use library::Value;
+pub use nvlist::NvFlag;
+pub use nvlist::NvList;
+pub use nvlist::NvListIterator;
+pub use nvpair::ContextType;
+pub use nvpair::CtxIter;
+pub use nvpair::NvPair;
+pub use nvpair::NvPairType;
+pub use nvpair::SafeNvPair;
+pub use value::to_value;
+pub use value::Value;
+
+use razor_nvpair_sys as sys;
 
 mod error;
 mod impls;
-mod library;
+mod nvlist;
+mod nvpair;
+mod value;
 
 pub type Result<T> = std::result::Result<T, NvListError>;
