@@ -7,9 +7,11 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "lowercase")]
 pub enum Type {
     Filesystem,
-    Volume,
     Snapshot,
+    Volume,
+    Pool,
     Bookmark,
+    Unknown,
 }
 
 impl Type {
@@ -19,6 +21,8 @@ impl Type {
             Self::Volume => "volume",
             Self::Snapshot => "snapshot",
             Self::Bookmark => "bookmark",
+            Self::Pool => "pool",
+            Self::Unknown => "unknown",
         }
     }
 }
@@ -38,7 +42,23 @@ impl FromStr for Type {
             "volume" => Ok(Self::Volume),
             "snapshot" => Ok(Self::Snapshot),
             "bookmark" => Ok(Self::Bookmark),
+            "pool" => Ok(Self::Pool),
+            "unknown" => Ok(Self::Unknown),
             other => Err(super::InvalidProperty::invalid_value(other)),
+        }
+    }
+}
+
+// TODO: create macto for all u and i
+impl From<u64> for Type {
+    fn from(value: u64) -> Self {
+        match value {
+            1 => Self::Filesystem,
+            2 => Self::Snapshot,
+            4 => Self::Volume,
+            8 => Self::Pool,
+            16 => Self::Bookmark,
+            _ => Self::Unknown,
         }
     }
 }

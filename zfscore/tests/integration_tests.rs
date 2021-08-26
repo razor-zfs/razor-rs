@@ -21,6 +21,19 @@ fn create_volume_dataset() {
     sleep(Duration::from_millis(3000));
     volume.destroy().unwrap();
 }
+
+#[test]
+fn get_volume() {
+    let volume = Zfs::get_volume("dpool/vol").unwrap();
+    dbg!(&volume);
+}
+
+#[test]
+fn get_filesystem() {
+    let volume = Zfs::get_filesystem("dpool/test").unwrap();
+    dbg!(&volume);
+}
+
 /*
 #[test]
 fn create_snapshot_dataset() {

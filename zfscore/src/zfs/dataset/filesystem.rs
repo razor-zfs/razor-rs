@@ -5,22 +5,22 @@ use crate::zfs::zfs_handler::ZFS_HANDLER;
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Filesystem {
     #[serde(default)]
-    name: property::Name,
-    available: property::Available,
-    atime: Option<property::Atime>,
-    logicalused: property::LogicalUsed,
-    canmount: Option<property::CanMount>,
-    mounted: Option<property::Mounted>,
-    checksum: Option<property::CheckSum>,
-    compression: Option<property::Compression>,
-    guid: property::Guid,
-    creation: property::Creation,
-    createtxg: property::CreateTxg,
-    compressratio: property::CompressRatio,
-    used: property::Used,
-    referenced: property::Referenced,
-    logicalreferenced: property::LogicalReferenced,
-    objsetid: property::ObjSetId,
+    pub(crate) name: property::Name,
+    pub(crate) available: property::Available,
+    pub(crate) atime: Option<property::Atime>,
+    pub(crate) logicalused: property::LogicalUsed,
+    pub(crate) canmount: Option<property::CanMount>,
+    pub(crate) mounted: Option<property::Mounted>,
+    pub(crate) checksum: Option<property::CheckSum>,
+    pub(crate) compression: Option<property::Compression>,
+    pub(crate) guid: property::Guid,
+    pub(crate) creation: property::Creation,
+    pub(crate) createtxg: property::CreateTxg,
+    pub(crate) compressratio: property::CompressRatio,
+    pub(crate) used: property::Used,
+    pub(crate) referenced: property::Referenced,
+    pub(crate) logicalreferenced: property::LogicalReferenced,
+    pub(crate) objsetid: property::ObjSetId,
 }
 
 impl Filesystem {

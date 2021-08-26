@@ -1,6 +1,6 @@
 pub use checksum::CheckSum as CheckSumAlgo;
 pub use compression::Compression as CompressionAlgo;
-pub use dataset::Type as DatasetType;
+pub use dataset::Type as DsType;
 pub use onoff::OnOff;
 pub use onoffnoauto::OnOffNoAuto;
 pub use timestamp::TimeStamp;
@@ -41,7 +41,7 @@ pub struct CompressRatio {
 }
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub struct Type {
-    value: DatasetType,
+    value: DsType,
 }
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub struct Used {
@@ -182,6 +182,22 @@ impl Atime {
     }
 
     pub fn value(&self) -> OnOff {
+        self.value
+    }
+}
+
+impl Type {
+    pub fn new(value: DsType) -> Self {
+        Self { value }
+    }
+
+    pub fn default() -> Self {
+        let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_TYPE) };
+        dbg!("I GOT available", x);
+        Self::new(x.into())
+    }
+
+    pub fn value(&self) -> DsType {
         self.value
     }
 }

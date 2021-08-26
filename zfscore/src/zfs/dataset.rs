@@ -23,12 +23,12 @@ mod snapshot;
 mod volume;
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
-enum DatasetType {
+pub(crate) enum DatasetType {
     Filesystem(filesystem::Filesystem),
     Volume(volume::Volume),
 }
 
-/*#[derive(Debug, Deserialize, PartialEq, Clone)]
-pub struct Dataset {
+#[derive(Debug, Deserialize, PartialEq, Clone)]
+pub(crate) struct Dataset {
     dataset: DatasetType,
-}*/
+}
