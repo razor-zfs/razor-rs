@@ -1,12 +1,12 @@
 use std::thread::sleep;
 use std::time::Duration;
 
-use zfs;
+use zfs::zfs::*;
 
 #[test]
 fn create_basic_filesystem() {
     dbg!("starting create filesystem test");
-    let filesystem = zfs::Zfs::filesystem("dpool/filesystem").create().unwrap();
+    let filesystem = Zfs::filesystem("dpool/filesystem").create().unwrap();
 
     dbg!(&filesystem);
 
@@ -15,7 +15,7 @@ fn create_basic_filesystem() {
 
 #[test]
 fn create_volume_dataset() {
-    let volume = zfs::Zfs::volume("dpool/volume").create(128 * 1024).unwrap();
+    let volume = Zfs::volume("dpool/volume").create(128 * 1024).unwrap();
     dbg!(&volume);
 
     sleep(Duration::from_millis(3000));
@@ -24,13 +24,13 @@ fn create_volume_dataset() {
 
 #[test]
 fn get_volume() {
-    let volume = zfs::Zfs::get_volume("dpool/vol").unwrap();
+    let volume = Zfs::get_volume("dpool/vol").unwrap();
     dbg!(&volume);
 }
 
 #[test]
 fn get_filesystem() {
-    let volume = zfs::Zfs::get_filesystem("dpool/test").unwrap();
+    let volume = Zfs::get_filesystem("dpool/test").unwrap();
     dbg!(&volume);
 }
 

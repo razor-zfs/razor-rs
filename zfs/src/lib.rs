@@ -13,18 +13,11 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-pub use zfs::property;
-pub use zfs::Bookmark;
-pub use zfs::Filesystem;
-pub use zfs::Snapshot;
-pub use zfs::Volume;
-pub use zfs::Zfs;
-
 use razor_nvpair as libnvpair;
 use razor_nvpair::NvListError;
 use razor_zfscore_sys as sys;
 
 mod error;
-mod zfs;
+pub mod zfs;
 
 pub type Result<T> = std::result::Result<T, error::DatasetError>;
