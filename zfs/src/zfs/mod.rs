@@ -23,7 +23,7 @@ pub mod property;
 mod dataset;
 mod zfs_handler;
 
-pub static ZFS: Lazy<Mutex<Zfs>> = Lazy::new(|| {
+pub(crate) static ZFS: Lazy<Mutex<Zfs>> = Lazy::new(|| {
     let zfs = Zfs::init();
     Mutex::new(zfs)
 });

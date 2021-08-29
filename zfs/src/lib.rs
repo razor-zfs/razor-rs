@@ -13,10 +13,16 @@
 #![warn(unused)]
 #![deny(warnings)]
 
+pub use zfs::property;
+pub use zfs::Bookmark;
+pub use zfs::Filesystem;
+pub use zfs::Snapshot;
+pub use zfs::Volume;
+pub use zfs::Zfs;
+
 use razor_nvpair as libnvpair;
 use razor_nvpair::NvListError;
 use razor_zfscore_sys as sys;
-pub use zfs::Zfs;
 
 mod error;
 mod zfs;
