@@ -1,3 +1,11 @@
+use std::ffi::CString;
+
+use serde::{Deserialize, Serialize};
+
+use super::core;
+use super::sys;
+use crate::error::{DatasetError, InvalidProperty};
+
 pub use checksum::CheckSum as CheckSumAlgo;
 pub use compression::Compression as CompressionAlgo;
 pub use dataset::Type as DsType;
@@ -5,13 +13,6 @@ pub use onoff::OnOff;
 pub use onoffnoauto::OnOffNoAuto;
 pub use timestamp::TimeStamp;
 pub use yesno::YesNo;
-
-use std::ffi::CString;
-
-use serde::{Deserialize, Serialize};
-
-use super::sys;
-use crate::error::{DatasetError, InvalidProperty};
 
 mod checksum;
 mod compression;
@@ -112,7 +113,7 @@ impl Atime {
     // TODO: 1.check mounted
     //       2. implement the same for relative, devices, exec, readonly, setuid, nbmand
     pub fn default(dataset: CString) -> Self {
-        let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_ATIME) };
+        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_ATIME); //unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_ATIME) };
         let mut mnttab: sys::mnttab = unsafe { std::mem::zeroed() };
         let mnttab_ptr: *mut sys::mnttab = &mut mnttab;
         let mut mntent: sys::mntent = unsafe { std::mem::zeroed() };
@@ -187,7 +188,7 @@ impl Type {
     }
 
     pub fn default() -> Self {
-        let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_TYPE) };
+        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_TYPE);
         dbg!("I GOT available", x);
         Self::new(x.into())
     }
@@ -203,7 +204,7 @@ impl Available {
     }
 
     pub fn default() -> Self {
-        let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_AVAILABLE) };
+        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_AVAILABLE);
         dbg!("I GOT available", x);
         Self::new(x)
     }
@@ -219,7 +220,7 @@ impl LogicalUsed {
     }
 
     pub fn default() -> Self {
-        let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_LOGICALUSED) };
+        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_LOGICALUSED);
         dbg!("I GOT logicalused", x);
         Self::new(x)
     }
@@ -237,7 +238,7 @@ impl CanMount {
     // TODO: implement the same for volsize, quota, refquota, reservation, refreservation
     //          filesystem_limit, snapshot_limit, filesystem_count, snapshot_count
     pub fn default() -> Self {
-        let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_CANMOUNT) };
+        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_CANMOUNT);
         dbg!("I GOT CanMount", x);
         if x == 1 {
             Self::new(OnOffNoAuto::On)
@@ -282,7 +283,7 @@ impl CheckSum {
 
     // TODO: impl same logic for all indexed properties
     pub fn default() -> Self {
-        let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_CHECKSUM) };
+        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_CHECKSUM);
         dbg!("I GOT Checksum", x);
         Self::new(CheckSumAlgo::from(x))
     }
@@ -298,7 +299,7 @@ impl Compression {
     }
 
     pub fn default() -> Self {
-        let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_COMPRESSION) };
+        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_COMPRESSION);
         dbg!("I GOT Compression", x);
         Self::new(CompressionAlgo::from(x))
     }

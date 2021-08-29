@@ -63,3 +63,9 @@ pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
 
     value_or_err((), rc)
 }
+
+pub fn get_default_numeric_property(prop: sys::zfs_prop_t) -> u64 {
+    let default = unsafe { sys::zfs_prop_default_numeric(prop) };
+
+    default
+}
