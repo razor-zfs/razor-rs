@@ -1,5 +1,7 @@
 use std::ffi::CString;
 
+use crate::error::CoreError;
+
 use super::error::value_or_err;
 use super::nvpair;
 use super::sys;
@@ -36,7 +38,27 @@ pub fn create_dataset(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<nvp
     value_or_err(nvl, rc)
 }
 
+pub fn get_dataset_nvlist(name: impl AsRef<str>) -> Result<nvpair::NvList> {
+    init();
+    let cname = CString::new(name.as_ref())?;
+    let zfs_handle =
+        unsafe { sys::make_dataset_handle(ZFS_HANDLER.lock().handler(), cname.as_ptr()) };
+
+    if zfs_handle.is_null() {
+        return Err(CoreError::DatasetGetError);
+    }
+
+    let nvl = unsafe {
+        nvpair::NvList {
+            raw: (*zfs_handle).zfs_props,
+        }
+    };
+
+    Ok(nvl)
+}
+
 pub fn destroy_dataset(name: CString) -> Result<()> {
+    init();
     let rc = unsafe { sys::lzc_destroy(name.as_ptr()) };
 
     value_or_err((), rc)
