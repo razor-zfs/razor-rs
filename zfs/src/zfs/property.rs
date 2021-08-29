@@ -138,11 +138,6 @@ impl Atime {
                     (*mnttab_ptr).mnt_mntopts,
                 )
             }
-            // TODO: check how to implement that
-            // if unsafe { (*zfs_handle).zfs_mntopts.is_null() } {
-            //     // TODO: change this from unknown
-            //     return Err(DatasetError::Unknown);
-            // }
 
             // TODO: boolean_t already exist in libnvpair
             unsafe { (*zfs_handle).zfs_mntcheck = sys::boolean_t::B_TRUE }

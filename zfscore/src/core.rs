@@ -35,3 +35,9 @@ pub fn create_dataset(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<nvp
 
     value_or_err(nvl, rc)
 }
+
+pub fn destroy_dataset(name: CString) -> Result<()> {
+    let rc = unsafe { sys::lzc_destroy(name.as_ptr()) };
+
+    value_or_err((), rc)
+}

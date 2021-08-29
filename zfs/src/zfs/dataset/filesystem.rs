@@ -1,5 +1,4 @@
 use super::core;
-use super::sys;
 use super::*;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -25,11 +24,7 @@ pub struct Filesystem {
 
 impl Filesystem {
     pub fn destroy(self) -> Result<()> {
-        if unsafe { sys::lzc_destroy(self.name.value().as_ptr()) } != 0 {
-            return Err(DatasetError::DatasetDeleteError);
-        }
-
-        Ok(())
+        core::destroy_dataset(self.name.value()).map_err(|err| err.into())
     }
 
     pub fn available(&self) -> u64 {
