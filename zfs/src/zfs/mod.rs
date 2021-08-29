@@ -33,8 +33,7 @@ impl Zfs {
     }
 
     pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
-        let cname = CString::new(name.as_ref())?;
-        core::destroy_dataset(cname).map_err(|err| err.into())
+        core::destroy_dataset(name).map_err(|err| err.into())
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {

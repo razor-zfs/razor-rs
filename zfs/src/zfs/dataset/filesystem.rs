@@ -24,7 +24,7 @@ pub struct Filesystem {
 
 impl Filesystem {
     pub fn destroy(self) -> Result<()> {
-        core::destroy_dataset(self.name.value()).map_err(|err| err.into())
+        core::destroy_dataset(self.name.value().to_string_lossy()).map_err(|err| err.into())
     }
 
     pub fn available(&self) -> u64 {
