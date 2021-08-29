@@ -5,6 +5,6 @@ members = [
     "uutil-sys",
     "nvpair",
     "serde-nvpair",
-    "zfscore",
+    "zfs",
 ]
 resolver = "2"
