@@ -1,7 +1,7 @@
 use std::thread::sleep;
 use std::time::Duration;
 
-use zfs::zfs::*;
+use razor_zfs::zfs::*;
 
 #[test]
 fn create_basic_filesystem() {
