@@ -13,12 +13,14 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use razor_nvpair as libnvpair;
-use razor_nvpair::NvListError;
-use razor_zfscore::core;
+use razor_nvpair as nvpair;
 use razor_zfscore_sys as sys;
 
-mod error;
-pub mod zfs;
+use nvpair::NvListError;
 
-pub type Result<T> = std::result::Result<T, error::DatasetError>;
+pub mod core;
+pub mod error;
+
+mod zfs_handler;
+
+pub type Result<T> = std::result::Result<T, error::CoreError>;

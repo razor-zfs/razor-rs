@@ -10,6 +10,7 @@ use std::ffi::CString;
 
 use serde::{Deserialize, Serialize};
 
+use super::core;
 use super::libnvpair;
 use super::property;
 use super::sys;

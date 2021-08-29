@@ -6,6 +6,7 @@ use libnvpair::NvList;
 
 use std::ffi::CString;
 
+use super::core;
 use super::libnvpair;
 use super::sys;
 use super::Result;

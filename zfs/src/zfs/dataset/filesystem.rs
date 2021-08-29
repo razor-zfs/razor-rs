@@ -1,6 +1,6 @@
+use super::core;
 use super::sys;
 use super::*;
-use crate::zfs::zfs_handler::ZFS_HANDLER;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Filesystem {
@@ -270,30 +270,7 @@ impl FileSystemBuilder {
         let cname = CString::new(self.name.as_bytes())?;
         match self.nvlist.as_mut() {
             Ok(nvlist) => {
-                let ret = unsafe {
-                    sys::lzc_create(
-                        cname.as_ptr(),
-                        sys::lzc_dataset_type::LZC_DATSET_TYPE_ZFS,
-                        nvlist.raw,
-                        std::ptr::null_mut(),
-                        0,
-                    )
-                };
-                dbg!(ret);
-
-                if ret != 0 {
-                    return Err(DatasetError::DatasetCreationFailure);
-                }
-
-                let zfs_handle = unsafe {
-                    sys::make_dataset_handle(ZFS_HANDLER.lock().unwrap().handler(), cname.as_ptr())
-                };
-
-                let mut nvl = unsafe {
-                    libnvpair::NvList {
-                        raw: (*zfs_handle).zfs_props,
-                    }
-                };
+                let mut nvl = core::create_dataset(self.name, nvlist)?;
 
                 let filesystem: Filesystem = from_nvlist(&mut nvl).map(|fs| Filesystem {
                     name: property::Name::new(cname),

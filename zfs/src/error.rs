@@ -1,3 +1,5 @@
+use razor_zfscore::error;
+
 use thiserror::Error;
 
 use super::NvListError;
@@ -104,6 +106,8 @@ pub enum DatasetError {
     InvalidProperty(#[from] InvalidProperty),
     #[error(transparent)]
     NvListError(#[from] NvListError),
+    #[error(transparent)]
+    CoreErr(#[from] error::CoreError),
     #[error("failed to get dataset")]
     DatasetGetError,
     #[error("failed to delete dataset")]
