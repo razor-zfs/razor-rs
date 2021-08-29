@@ -156,32 +156,7 @@ impl VolumeBuilder {
                 // TODO: check if volblocksize is power of 2 and between 512 and 128000
                 nvlist.add_uint64("volblocksize", self.volblocksize)?;
 
-                let rc = unsafe {
-                    sys::lzc_create(
-                        CString::new(self.name.clone())?.as_ptr(),
-                        sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL,
-                        nvlist.raw,
-                        std::ptr::null_mut(),
-                        0,
-                    )
-                };
-                if rc != 0 {
-                    dbg!("error ", rc);
-                    return Err(DatasetError::DatasetCreationFailure);
-                }
-
-                let zfs_handle = unsafe {
-                    sys::make_dataset_handle(
-                        ZFS_HANDLER.lock().unwrap().handler(),
-                        CString::new(self.name.as_bytes())?.as_ptr(),
-                    )
-                };
-
-                let mut nvl = unsafe {
-                    libnvpair::NvList {
-                        raw: (*zfs_handle).zfs_props,
-                    }
-                };
+                let mut nvl = core::create_dataset(self.name, nvlist)?;
 
                 let volume: Volume = from_nvlist(&mut nvl).map(|fs| Volume {
                     name: property::Name::new(cname),
