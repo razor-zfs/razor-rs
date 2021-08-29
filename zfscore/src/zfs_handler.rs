@@ -1,6 +1,5 @@
 use super::sys;
 use once_cell::sync::Lazy;
-//use std::sync::Mutex;
 use parking_lot::Mutex;
 
 pub(crate) static ZFS_HANDLER: Lazy<Mutex<ZfsHandler>> = Lazy::new(|| {
