@@ -13,8 +13,6 @@ use serde::{Deserialize, Serialize};
 use super::core;
 use super::libnvpair;
 use super::property;
-use super::sys;
-use super::DatasetError;
 use super::Result;
 use serde_nvpair::from_nvlist;
 

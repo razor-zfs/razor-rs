@@ -9,7 +9,6 @@ use super::core;
 use super::libnvpair;
 use super::sys;
 use super::Result;
-use crate::error::DatasetError;
 
 use dataset::FileSystemBuilder;
 use dataset::VolumeBuilder;
