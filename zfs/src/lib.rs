@@ -16,9 +16,9 @@
 use razor_nvpair as libnvpair;
 use razor_nvpair::NvListError;
 use razor_zfscore_sys as sys;
-
-pub mod zfs;
+pub use zfs::Zfs;
 
 mod error;
+mod zfs;
 
 pub type Result<T> = std::result::Result<T, error::DatasetError>;
