@@ -51,7 +51,6 @@ impl Zfs {
     }
 
     pub fn get_volume(name: impl AsRef<str>) -> Result<Volume> {
-        //let mut nvl = ZFS.lock().unwrap().get(name.as_ref())?;
         let cname = CString::new(name.as_ref())?;
         let mut nvl = core::get_dataset_nvlist(name)?;
 
