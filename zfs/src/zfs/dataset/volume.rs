@@ -1,5 +1,4 @@
 use super::*;
-use crate::zfs::zfs_handler::ZFS_HANDLER;
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Volume {
