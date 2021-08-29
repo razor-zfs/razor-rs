@@ -23,11 +23,7 @@ pub struct Volume {
 
 impl Volume {
     pub fn destroy(self) -> Result<()> {
-        if unsafe { sys::lzc_destroy(self.name.value().as_ptr()) } != 0 {
-            return Err(DatasetError::DatasetDeleteError);
-        }
-
-        Ok(())
+        core::destroy_dataset(self.name.value().to_string_lossy()).map_err(|err| err.into())
     }
 
     pub fn available(&self) -> property::Available {
