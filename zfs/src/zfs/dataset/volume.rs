@@ -144,7 +144,7 @@ impl VolumeBuilder {
         fn _is_power_of_two(num: u64) -> bool {
             (num != 0) && ((num & (num - 1)) == 0)
         }
-
+        dbg!("creating volume");
         let cname = CString::new(self.name.as_bytes())?;
         match self.nvlist.as_mut() {
             Ok(nvlist) => {
@@ -155,7 +155,7 @@ impl VolumeBuilder {
                 // TODO: check if volblocksize is power of 2 and between 512 and 128000
                 nvlist.add_uint64("volblocksize", self.volblocksize)?;
 
-                let mut nvl = core::create_dataset(self.name, nvlist)?;
+                let mut nvl = core::create_volume(self.name, nvlist)?;
 
                 let volume: Volume = from_nvlist(&mut nvl).map(|fs| Volume {
                     name: property::Name::new(cname),

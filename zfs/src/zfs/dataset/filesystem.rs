@@ -265,7 +265,7 @@ impl FileSystemBuilder {
         let cname = CString::new(self.name.as_bytes())?;
         match self.nvlist.as_mut() {
             Ok(nvlist) => {
-                let mut nvl = core::create_dataset(self.name, nvlist)?;
+                let mut nvl = core::create_filesystem(self.name, nvlist)?;
 
                 let filesystem: Filesystem = from_nvlist(&mut nvl).map(|fs| Filesystem {
                     name: property::Name::new(cname),

@@ -469,6 +469,7 @@ dependencies = [
  "once_cell",
  "razor-nvpair",
  "razor-zfscore",
+ "razor-zfscore-sys",
  "serde",
  "serde-nvpair",
  "serde_json",

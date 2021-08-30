@@ -13,18 +13,25 @@ fn init() {
     drop(guard);
 }
 
-pub fn create_dataset(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<nvpair::NvList> {
+pub fn create_filesystem(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<nvpair::NvList> {
+    create_dataset(name, nvl, sys::lzc_dataset_type::LZC_DATSET_TYPE_ZFS)
+}
+
+pub fn create_volume(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<nvpair::NvList> {
+    create_dataset(name, nvl, sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL)
+}
+
+fn create_dataset(
+    name: impl AsRef<str>,
+    nvl: &nvpair::NvList,
+    prop: sys::lzc_dataset_type,
+) -> Result<nvpair::NvList> {
     init();
     let cname = CString::new(name.as_ref())?;
-    let rc = unsafe {
-        sys::lzc_create(
-            cname.as_ptr(),
-            sys::lzc_dataset_type::LZC_DATSET_TYPE_ZFS,
-            nvl.raw,
-            std::ptr::null_mut(),
-            0,
-        )
-    };
+
+    let rc = unsafe { sys::lzc_create(cname.as_ptr(), prop, nvl.raw, std::ptr::null_mut(), 0) };
+
+    value_or_err((), rc)?;
 
     let zfs_handle =
         unsafe { sys::make_dataset_handle(ZFS_HANDLER.lock().handler(), cname.as_ptr()) };
