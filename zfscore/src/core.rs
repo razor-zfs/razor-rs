@@ -67,12 +67,12 @@ pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
 // TODO: 1.check mounted
 //       2. implement the same for relative, devices, exec, readonly, setuid, nbmand
 pub fn default_atime(name: CString) -> u64 {
-    let x = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_ATIME) };
+    let res = unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_ATIME) };
     let mut mnttab: sys::mnttab = unsafe { std::mem::zeroed() };
     let mnttab_ptr: *mut sys::mnttab = &mut mnttab;
     let mut mntent: sys::mntent = unsafe { std::mem::zeroed() };
     let mntent_ptr: *mut sys::mntent = &mut mntent;
-    dbg!("I GOT A TIME", x);
+    dbg!("I GOT A TIME", res);
 
     let zfs_handle =
         unsafe { sys::make_dataset_handle(ZFS_HANDLER.lock().handler(), name.as_ptr()) };
@@ -110,7 +110,7 @@ pub fn default_atime(name: CString) -> u64 {
                 CString::from_vec_unchecked(b"atime".to_vec()).as_ptr(),
             )
             .is_null()
-        } && x == 0
+        } && res == 0
         {
             return 1;
         } else if unsafe {
@@ -119,13 +119,13 @@ pub fn default_atime(name: CString) -> u64 {
                 CString::from_vec_unchecked(b"noatime".to_vec()).as_ptr(),
             )
             .is_null()
-        } && x != 0
+        } && res != 0
         {
             return 0;
         }
     }
 
-    return x;
+    res
 }
 
 pub fn default_type() -> u64 {
