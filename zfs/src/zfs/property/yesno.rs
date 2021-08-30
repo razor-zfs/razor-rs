@@ -44,3 +44,12 @@ impl From<YesNo> for bool {
         }
     }
 }
+
+impl From<bool> for YesNo {
+    fn from(v: bool) -> Self {
+        match v {
+            true => Self::Yes,
+            false => Self::No,
+        }
+    }
+}

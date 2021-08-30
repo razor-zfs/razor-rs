@@ -39,6 +39,17 @@ impl FromStr for OnOffNoAuto {
     }
 }
 
+// TODO: write macro for all u and i
+impl From<u64> for OnOffNoAuto {
+    fn from(value: u64) -> Self {
+        match value {
+            0 => Self::Off,
+            1 => Self::On,
+            _ => Self::NoAuto,
+        }
+    }
+}
+
 impl From<bool> for OnOffNoAuto {
     fn from(v: bool) -> Self {
         if v {

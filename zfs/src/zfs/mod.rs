@@ -7,7 +7,6 @@ use std::ffi::CString;
 
 use super::core;
 use super::libnvpair;
-use super::sys;
 use super::Result;
 
 use dataset::FileSystemBuilder;
@@ -17,7 +16,6 @@ use serde_nvpair::from_nvlist;
 pub mod property;
 
 mod dataset;
-mod zfs_handler;
 
 #[derive(Debug)]
 pub struct Zfs {}

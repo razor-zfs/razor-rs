@@ -3,7 +3,6 @@ use std::ffi::CString;
 use serde::{Deserialize, Serialize};
 
 use super::core;
-use super::sys;
 use crate::error::{DatasetError, InvalidProperty};
 
 pub use checksum::CheckSum as CheckSumAlgo;
@@ -21,8 +20,6 @@ mod onoff;
 mod onoffnoauto;
 mod timestamp;
 mod yesno;
-
-use crate::zfs::zfs_handler::ZFS_HANDLER;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub struct Guid {
@@ -110,71 +107,8 @@ impl Atime {
         Self { value }
     }
 
-    // TODO: 1.check mounted
-    //       2. implement the same for relative, devices, exec, readonly, setuid, nbmand
     pub fn default(dataset: CString) -> Self {
-        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_ATIME); //unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_ATIME) };
-        let mut mnttab: sys::mnttab = unsafe { std::mem::zeroed() };
-        let mnttab_ptr: *mut sys::mnttab = &mut mnttab;
-        let mut mntent: sys::mntent = unsafe { std::mem::zeroed() };
-        let mntent_ptr: *mut sys::mntent = &mut mntent;
-        dbg!("I GOT A TIME", x);
-
-        let zfs_handle = unsafe {
-            sys::make_dataset_handle(ZFS_HANDLER.lock().unwrap().handler(), dataset.as_ptr())
-        };
-
-        let rc = unsafe {
-            sys::libzfs_mnttab_find(
-                ZFS_HANDLER.lock().unwrap().handler(),
-                (*zfs_handle).zfs_name.as_ptr(),
-                mnttab_ptr,
-            )
-        };
-
-        if rc == 0 {
-            unsafe {
-                (*zfs_handle).zfs_mntopts = sys::zfs_strdup(
-                    ZFS_HANDLER.lock().unwrap().handler(),
-                    (*mnttab_ptr).mnt_mntopts,
-                )
-            }
-
-            // TODO: boolean_t already exist in libnvpair
-            unsafe { (*zfs_handle).zfs_mntcheck = sys::boolean_t::B_TRUE }
-        }
-
-        if unsafe { (*zfs_handle).zfs_mntopts.is_null() } {
-            dbg!("zfs mntops is null");
-            unsafe { (*mntent_ptr).mnt_opts = std::ptr::null_mut() };
-        } else {
-            dbg!("zfs mntops is not null");
-            unsafe { (*mntent_ptr).mnt_opts = (*zfs_handle).zfs_mntopts }
-        }
-
-        if unsafe { !(*mntent_ptr).mnt_opts.is_null() } {
-            if unsafe {
-                !sys::hasmntopt(
-                    mntent_ptr,
-                    CString::from_vec_unchecked(b"atime".to_vec()).as_ptr(),
-                )
-                .is_null()
-            } && x == 0
-            {
-                return Self::new(OnOff::On);
-            } else if unsafe {
-                !sys::hasmntopt(
-                    mntent_ptr,
-                    CString::from_vec_unchecked(b"noatime".to_vec()).as_ptr(),
-                )
-                .is_null()
-            } && x != 0
-            {
-                return Self::new(OnOff::Off);
-            }
-        }
-
-        Self::new(OnOff::from(x))
+        Self::new(OnOff::from(core::default_atime(dataset)))
     }
 
     pub fn value(&self) -> OnOff {
@@ -188,9 +122,7 @@ impl Type {
     }
 
     pub fn default() -> Self {
-        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_TYPE);
-        dbg!("I GOT available", x);
-        Self::new(x.into())
+        Self::new(core::default_type().into())
     }
 
     pub fn value(&self) -> DsType {
@@ -204,9 +136,7 @@ impl Available {
     }
 
     pub fn default() -> Self {
-        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_AVAILABLE);
-        dbg!("I GOT available", x);
-        Self::new(x)
+        Self::new(core::default_available())
     }
 
     pub fn value(&self) -> u64 {
@@ -220,9 +150,7 @@ impl LogicalUsed {
     }
 
     pub fn default() -> Self {
-        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_LOGICALUSED);
-        dbg!("I GOT logicalused", x);
-        Self::new(x)
+        Self::new(core::default_logicalused())
     }
 
     pub fn value(&self) -> u64 {
@@ -238,15 +166,7 @@ impl CanMount {
     // TODO: implement the same for volsize, quota, refquota, reservation, refreservation
     //          filesystem_limit, snapshot_limit, filesystem_count, snapshot_count
     pub fn default() -> Self {
-        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_CANMOUNT);
-        dbg!("I GOT CanMount", x);
-        if x == 1 {
-            Self::new(OnOffNoAuto::On)
-        } else if x == 0 {
-            Self::new(OnOffNoAuto::Off)
-        } else {
-            Self::new(OnOffNoAuto::NoAuto)
-        }
+        Self::new(core::default_canmount().into())
     }
 
     pub fn value(&self) -> OnOffNoAuto {
@@ -260,15 +180,7 @@ impl Mounted {
     }
 
     pub(super) fn default(dataset: CString) -> Self {
-        let zfs_handle = unsafe {
-            sys::make_dataset_handle(ZFS_HANDLER.lock().unwrap().handler(), dataset.as_ptr())
-        };
-
-        if unsafe { (*zfs_handle).zfs_mntopts.is_null() } {
-            Self::new(YesNo::No)
-        } else {
-            Self::new(YesNo::Yes)
-        }
+        Self::new(core::default_mounted(dataset).into())
     }
 
     pub fn value(&self) -> YesNo {
@@ -283,9 +195,7 @@ impl CheckSum {
 
     // TODO: impl same logic for all indexed properties
     pub fn default() -> Self {
-        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_CHECKSUM);
-        dbg!("I GOT Checksum", x);
-        Self::new(CheckSumAlgo::from(x))
+        Self::new(core::default_checksum().into())
     }
 
     pub fn value(&self) -> CheckSumAlgo {
@@ -299,9 +209,7 @@ impl Compression {
     }
 
     pub fn default() -> Self {
-        let x = core::get_default_numeric_property(sys::zfs_prop_t::ZFS_PROP_COMPRESSION);
-        dbg!("I GOT Compression", x);
-        Self::new(CompressionAlgo::from(x))
+        Self::new(core::default_compression().into())
     }
 
     pub fn value(&self) -> CompressionAlgo {

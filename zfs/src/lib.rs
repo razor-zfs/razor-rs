@@ -16,7 +16,6 @@
 use razor_nvpair as libnvpair;
 use razor_nvpair::NvListError;
 use razor_zfscore::core;
-use razor_zfscore_sys as sys;
 
 mod error;
 pub mod zfs;
