@@ -163,6 +163,10 @@ pub fn default_checksum() -> u64 {
     unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_CHECKSUM) }
 }
 
+pub fn default_volmode() -> u64 {
+    unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_VOLMODE) }
+}
+
 pub fn default_compression() -> u64 {
     unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_COMPRESSION) }
 }

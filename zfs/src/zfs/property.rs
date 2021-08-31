@@ -11,6 +11,7 @@ pub use dataset::Type as DsType;
 pub use onoff::OnOff;
 pub use onoffnoauto::OnOffNoAuto;
 pub use timestamp::TimeStamp;
+pub use volmode::VolMode as VolModeId;
 pub use yesno::YesNo;
 
 mod checksum;
@@ -19,6 +20,7 @@ mod dataset;
 mod onoff;
 mod onoffnoauto;
 mod timestamp;
+mod volmode;
 mod yesno;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
@@ -96,6 +98,10 @@ pub struct Mounted {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub struct CheckSum {
     value: CheckSumAlgo,
+}
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
+pub struct Volmode {
+    value: VolModeId,
 }
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub struct Compression {
@@ -193,12 +199,25 @@ impl CheckSum {
         Self { value }
     }
 
-    // TODO: impl same logic for all indexed properties
     pub fn default() -> Self {
         Self::new(core::default_checksum().into())
     }
 
     pub fn value(&self) -> CheckSumAlgo {
+        self.value
+    }
+}
+
+impl Volmode {
+    pub fn new(value: VolModeId) -> Self {
+        Self { value }
+    }
+
+    pub fn default() -> Self {
+        Self::new(core::default_volmode().into())
+    }
+
+    pub fn value(&self) -> VolModeId {
         self.value
     }
 }

@@ -133,6 +133,17 @@ impl VolumeBuilder {
         8192
     }
 
+    pub fn volmode(mut self, v: impl Into<property::VolModeId>) -> Self {
+        let value = v.into();
+        if let Ok(nvlist) = &mut self.nvlist {
+            if let Err(err) = nvlist.add_uint64("volmode", value.into()) {
+                self.nvlist = Err(err.into());
+            }
+        }
+
+        self
+    }
+
     // TODO: 1. default block size should be calculated
     //       2. volsize should be multiple of volblocksize and rounded to nearest 128k bytes
     //       3. add noreserve functionality
@@ -148,8 +159,6 @@ impl VolumeBuilder {
         match self.nvlist.as_mut() {
             Ok(nvlist) => {
                 nvlist.add_uint64("volsize", size)?;
-
-                nvlist.add_uint64("volmode", 3)?;
 
                 // TODO: check if volblocksize is power of 2 and between 512 and 128000
                 nvlist.add_uint64("volblocksize", self.volblocksize)?;
