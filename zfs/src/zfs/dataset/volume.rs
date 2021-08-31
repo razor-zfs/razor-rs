@@ -88,7 +88,6 @@ pub struct VolumeBuilder {
     nvlist: Result<libnvpair::NvList>,
     name: String,
     volblocksize: u64,
-    //err: Option<DatasetError>,
 }
 
 impl VolumeBuilder {
