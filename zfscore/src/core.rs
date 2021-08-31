@@ -66,7 +66,8 @@ pub fn get_dataset_nvlist(name: impl AsRef<str>) -> Result<nvpair::NvList> {
 
 pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
     init();
-    let rc = unsafe { sys::lzc_destroy(name.as_ref().as_ptr()) };
+    let cname = CString::new(name.as_ref())?;
+    let rc = unsafe { sys::lzc_destroy(cname.to_string_lossy().as_ptr()) };
 
     value_or_err((), rc)
 }

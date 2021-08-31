@@ -34,6 +34,23 @@ fn get_filesystem() {
     dbg!(&volume);
 }
 
+#[test]
+fn create_delete_volume() {
+    let volume = Zfs::volume("dpool/vol_to_delete")
+        .create(128 * 1024)
+        .unwrap();
+    dbg!(&volume);
+    Zfs::destroy_dataset("dpool/vol_to_delete").unwrap();
+}
+
+#[test]
+fn create_delete_filesystem() {
+    let filesystem = Zfs::filesystem("dpool/fs_to_delete").create().unwrap();
+
+    dbg!(&filesystem);
+    Zfs::destroy_dataset("dpool/fs_to_delete").unwrap();
+}
+
 /*
 #[test]
 fn create_snapshot_dataset() {
