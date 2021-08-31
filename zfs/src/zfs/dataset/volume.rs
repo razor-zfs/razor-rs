@@ -25,14 +25,14 @@ impl Volume {
         core::destroy_dataset(self.name.value().to_string_lossy()).map_err(|err| err.into())
     }
 
-    pub fn available(&self) -> property::Available {
-        self.available
+    pub fn available(&self) -> u64 {
+        self.available.value()
     }
 
-    pub fn logicalused(&self) -> property::LogicalUsed {
+    pub fn logicalused(&self) -> u64 {
         match self.logicalused {
-            Some(logicalused) => logicalused,
-            None => property::LogicalUsed::default(),
+            Some(logicalused) => logicalused.value(),
+            None => property::LogicalUsed::default().value(),
         }
     }
 
@@ -50,36 +50,36 @@ impl Volume {
         )
     }
 
-    pub fn guid(&self) -> property::Guid {
-        self.guid
+    pub fn guid(&self) -> u64 {
+        self.guid.value()
     }
 
-    pub fn creation(&self) -> property::Creation {
-        self.creation
+    pub fn creation(&self) -> u64 {
+        self.creation.value()
     }
 
-    pub fn createtxg(&self) -> property::CreateTxg {
-        self.createtxg
+    pub fn createtxg(&self) -> u64 {
+        self.createtxg.value()
     }
 
-    pub fn compressratio(&self) -> property::CompressRatio {
-        self.compressratio
+    pub fn compressratio(&self) -> u64 {
+        self.compressratio.value()
     }
 
-    pub fn used(&self) -> property::Used {
-        self.used
+    pub fn used(&self) -> u64 {
+        self.used.value()
     }
 
-    pub fn referenced(&self) -> property::Referenced {
-        self.referenced
+    pub fn referenced(&self) -> u64 {
+        self.referenced.value()
     }
 
-    pub fn logicalreferenced(&self) -> property::LogicalReferenced {
-        self.logicalreferenced
+    pub fn logicalreferenced(&self) -> u64 {
+        self.logicalreferenced.value()
     }
 
-    pub fn objsetid(&self) -> property::ObjSetId {
-        self.objsetid
+    pub fn objsetid(&self) -> u64 {
+        self.objsetid.value()
     }
 }
 
