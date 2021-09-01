@@ -22,7 +22,7 @@ impl ZfsRpc for service::ZfsRpcService {
         service::Volume::create(
             request.pool,
             request.name,
-            Some(request.capacity),
+            request.capacity,
             request.properties,
         )
         .map_err(|e| Status::new(Code::Internal, e.to_string()))?;

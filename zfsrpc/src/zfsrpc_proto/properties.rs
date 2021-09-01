@@ -9,13 +9,11 @@ use razor_zfs::zfs::property;
 
 /// Defining functions for creating property variant
 /// example:
-/// ```
 /// // Creating CanMount property with variant "off":
 /// impl_functions(can_mount => on,off)
 /// // using this created function:
 /// let _canmount = dataset_properties::CanMount::off();
 /// let _canmount = dataset_properties::CanMount::on();
-/// ```
 /// Note: This macro is mainly used by impl_property! macro below
 macro_rules! impl_functions {
 
@@ -35,7 +33,6 @@ macro_rules! impl_functions {
 /// Implementing 'From' trait.
 /// Converting from dataset generic property to specific property (Filesystem/Volume/etc.)
 /// example:
-/// ```
 /// // Implementing 'From' trait for filesystem_property:
 /// impl_property_for_type!(can_mount, filesystem_property)
 /// // Using the created trait when creating filesystem properties vector:
@@ -46,7 +43,6 @@ macro_rules! impl_functions {
 ///     //...
 ///     properties,
 /// }
-/// ```
 /// Note: This macro is used by impl_property! macro
 macro_rules! impl_property_for_type {
 
@@ -68,7 +64,6 @@ macro_rules! impl_property_for_type {
 /// Implementing 'From' trait.
 /// Converting from protobuf generated dataset property variants to razor_zfs property variants
 /// example:
-/// ```
 /// // Implementing 'From' trait for canmount with variants: on/off/noauto
 /// // when razor_zfs variants of canmount are specified at enum OnOffNoAuto {On, Off, NoAuto}
 /// impl_property_for_zfs!(can_mount, OnOffNoAuto, On,Off,NoAuto)
@@ -84,7 +79,6 @@ macro_rules! impl_property_for_type {
 /// fs_builder.canmount(canmount.values.ok_or_else(|| DatasetError::InvalidArgument)?);
 ///                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 /// // ...
-/// ```
 /// Note: This macro is used by impl_property! macro
 macro_rules! impl_property_for_zfs{
 

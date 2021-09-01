@@ -46,7 +46,7 @@ impl Volume {
     pub fn create(
         pool: String,
         name: String,
-        capacity: Option<u64>,
+        capacity: u64,
         properties: impl IntoIterator<Item = VolumeProperty>,
     ) -> Result<()> {
         let builder = Zfs::volume(format!("{}/{}", pool, name));
@@ -55,7 +55,7 @@ impl Volume {
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
-            .create(capacity.unwrap_or(ZfsRpcService::DEFAULT_CAPACITY))?;
+            .create(capacity)?;
 
         Ok(())
     }
@@ -68,8 +68,8 @@ impl Volume {
             pool,
             name,
             available: volume.available(),
-            volsize: 1,      // Not implementes yet @razor
-            volblocksize: 2, // Not impllemented yet @razor
+            volsize: 1,      // Not implemented yet @razor
+            volblocksize: 2, // Not implemented yet @razor
             logicalused: volume.logicalused(),
             checksum: Some(volume.checksum().into()),
             compression: Some(volume.compression().into()),
