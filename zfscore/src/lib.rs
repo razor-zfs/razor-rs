@@ -22,5 +22,6 @@ pub mod core;
 pub mod error;
 
 mod libzfs_handler;
+mod zfs_handler;
 
 pub type Result<T> = std::result::Result<T, error::CoreError>;
