@@ -55,7 +55,7 @@ pub fn get_dataset_nvlist(name: impl AsRef<str>) -> Result<nvpair::NvList> {
         unsafe { sys::make_dataset_handle(LIB_ZFS_HANDLER.lock().handler(), cname.as_ptr()) };
 
     if zfs_handle.is_null() {
-        return Err(CoreError::DatasetGetError);
+        return Err(CoreError::DatasetNotExist);
     }
 
     let nvl = unsafe {

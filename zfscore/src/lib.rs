@@ -18,6 +18,8 @@ use razor_zfscore_sys as sys;
 
 use nvpair::NvListError;
 
+pub use zfs_handler::ZfsDatasetHandler;
+
 pub mod core;
 pub mod error;
 

@@ -72,21 +72,15 @@ pub enum CoreError {
     MathArgOutOfFunc,
     #[error("Math result not representable")]
     MathResultNotRepresentable,
-    #[error("block size out of range or does not match")]
-    BadVolumeBlockSize,
     #[error("failed to convert string to C string")]
     StringConversionError(#[from] std::ffi::NulError),
     #[error("failed to create dataset")]
-    DatasetCreationFailure,
-    #[error("failed to load zfs module")]
     ZfsInitFailure,
     #[error(transparent)]
     NvListError(#[from] NvListError),
-    #[error("failed to get dataset")]
-    DatasetGetError,
+    #[error("requested dataset not exist")]
+    DatasetNotExist,
     #[error("failed to delete dataset")]
-    DatasetDeleteError,
-    #[error("unknown builder error")]
     Unknown,
 }
 
