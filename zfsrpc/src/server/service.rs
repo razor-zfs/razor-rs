@@ -23,9 +23,7 @@ macro_rules! match_dataset_property {
 }
 
 #[derive(Debug)]
-pub struct ZfsRpcService {
-    blocksize: u64,
-}
+pub struct ZfsRpcService {}
 
 impl ZfsRpcService {
     pub const DEFAULT_BLOCKSIZE: u64 = 8192;
@@ -35,9 +33,7 @@ impl ZfsRpcService {
 
 impl Default for ZfsRpcService {
     fn default() -> Self {
-        Self {
-            blocksize: Self::DEFAULT_BLOCKSIZE,
-        }
+        Self {}
     }
 }
 
@@ -55,7 +51,7 @@ impl Volume {
     ) -> Result<()> {
         let builder = Zfs::volume(format!("{}/{}", pool, name));
 
-        properties
+        let _volume = properties
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
@@ -131,12 +127,12 @@ impl Filesystem {
         name: String,
         properties: impl IntoIterator<Item = FilesystemProperty>,
     ) -> Result<()> {
-        let fs = Zfs::filesystem(format!("{}/{}", pool, name));
+        let builder = Zfs::filesystem(format!("{}/{}", pool, name));
 
-        properties
+        let _fs = properties
             .into_iter()
             .filter_map(|property| property.property)
-            .try_fold(fs, Self::add_property)?
+            .try_fold(builder, Self::add_property)?
             .create()?;
 
         println!("#########   create_filesystem() Done.   #########");

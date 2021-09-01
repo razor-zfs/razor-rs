@@ -13,7 +13,7 @@ service ZfsRpc {
 message CreateVolumeRequest {
     string pool = 1;
     string name = 2;
-    optional uint64 capacity = 3;
+    uint64 capacity = 3;
     repeated VolumeProperty properties = 4;
 }
 
