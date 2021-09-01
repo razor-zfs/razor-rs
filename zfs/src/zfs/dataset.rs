@@ -3,8 +3,8 @@ pub use filesystem::Filesystem;
 pub use snapshot::Snapshot;
 pub use volume::Volume;
 
-pub(crate) use filesystem::FileSystemBuilder;
-pub(crate) use volume::VolumeBuilder;
+pub use filesystem::FileSystemBuilder;
+pub use volume::VolumeBuilder;
 
 use std::ffi::CString;
 

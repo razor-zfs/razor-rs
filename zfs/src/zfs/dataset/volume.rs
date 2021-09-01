@@ -123,9 +123,9 @@ impl VolumeBuilder {
         self
     }
 
-    pub fn blocksize(mut self, v: u64) -> Result<Self> {
+    pub fn blocksize(mut self, v: u64) -> Self {
         self.volblocksize = v;
-        Ok(self)
+        self
     }
 
     // TODO: implement calculation algorithm

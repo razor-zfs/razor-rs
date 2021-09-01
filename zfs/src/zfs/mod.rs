@@ -9,8 +9,8 @@ use super::core;
 use super::libnvpair;
 use super::Result;
 
-use dataset::FileSystemBuilder;
-use dataset::VolumeBuilder;
+pub use dataset::FileSystemBuilder;
+pub use dataset::VolumeBuilder;
 use serde_nvpair::from_nvlist;
 
 pub mod property;
