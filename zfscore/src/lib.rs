@@ -21,6 +21,6 @@ use nvpair::NvListError;
 pub mod core;
 pub mod error;
 
-mod zfs_handler;
+mod libzfs_handler;
 
 pub type Result<T> = std::result::Result<T, error::CoreError>;

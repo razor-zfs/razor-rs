@@ -5,9 +5,9 @@ use nvpair::NvListAccess;
 use crate::error::CoreError;
 
 use super::error::value_or_err;
+use super::libzfs_handler::ZFS_HANDLER;
 use super::nvpair;
 use super::sys;
-use super::zfs_handler::ZFS_HANDLER;
 use super::Result;
 
 fn init() {
