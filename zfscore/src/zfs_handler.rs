@@ -1,7 +1,8 @@
 use std::ffi::CString;
 
-use crate::error::CoreError;
+use libc;
 
+use super::error::CoreError;
 use super::libzfs_handler::LIB_ZFS_HANDLER;
 use super::nvpair::NvList;
 use super::sys;
@@ -34,5 +35,13 @@ impl ZfsDatasetHandler {
             zfs_user_props: zfs_user_props.into(),
             zfs_recvd_props: zfs_recvd_props.into(),
         })
+    }
+}
+
+// TODO: check how to free zfs_handle_t
+impl Drop for ZfsDatasetHandler {
+    fn drop(&mut self) {
+        unsafe { libc::free((*self.raw).zfs_mntopts as *mut libc::c_void) };
+        unsafe { libc::free(self.raw as *mut libc::c_void) };
     }
 }
