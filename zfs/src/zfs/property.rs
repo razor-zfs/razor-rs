@@ -2,7 +2,6 @@ use std::ffi::CString;
 
 use serde::{Deserialize, Serialize};
 
-use super::core;
 use crate::error::{DatasetError, InvalidProperty};
 
 pub use checksum::CheckSum as CheckSumAlgo;
@@ -113,10 +112,6 @@ impl Atime {
         Self { value }
     }
 
-    pub fn default(dataset: CString) -> Self {
-        Self::new(OnOff::from(core::default_atime(dataset)))
-    }
-
     pub fn value(&self) -> OnOff {
         self.value
     }
@@ -125,10 +120,6 @@ impl Atime {
 impl Type {
     pub fn new(value: DsType) -> Self {
         Self { value }
-    }
-
-    pub fn default() -> Self {
-        Self::new(core::default_type().into())
     }
 
     pub fn value(&self) -> DsType {
@@ -141,10 +132,6 @@ impl Available {
         Self { value }
     }
 
-    pub fn default() -> Self {
-        Self::new(core::default_available())
-    }
-
     pub fn value(&self) -> u64 {
         self.value
     }
@@ -153,10 +140,6 @@ impl Available {
 impl LogicalUsed {
     pub fn new(value: u64) -> Self {
         Self { value }
-    }
-
-    pub fn default() -> Self {
-        Self::new(core::default_logicalused())
     }
 
     pub fn value(&self) -> u64 {
@@ -169,12 +152,6 @@ impl CanMount {
         Self { value }
     }
 
-    // TODO: implement the same for volsize, quota, refquota, reservation, refreservation
-    //          filesystem_limit, snapshot_limit, filesystem_count, snapshot_count
-    pub fn default() -> Self {
-        Self::new(core::default_canmount().into())
-    }
-
     pub fn value(&self) -> OnOffNoAuto {
         self.value
     }
@@ -183,10 +160,6 @@ impl CanMount {
 impl Mounted {
     pub fn new(value: YesNo) -> Self {
         Self { value }
-    }
-
-    pub(super) fn default(dataset: CString) -> Self {
-        Self::new(core::default_mounted(dataset).into())
     }
 
     pub fn value(&self) -> YesNo {
@@ -199,10 +172,6 @@ impl CheckSum {
         Self { value }
     }
 
-    pub fn default() -> Self {
-        Self::new(core::default_checksum().into())
-    }
-
     pub fn value(&self) -> CheckSumAlgo {
         self.value
     }
@@ -213,10 +182,6 @@ impl Volmode {
         Self { value }
     }
 
-    pub fn default() -> Self {
-        Self::new(core::default_volmode().into())
-    }
-
     pub fn value(&self) -> VolModeId {
         self.value
     }
@@ -225,10 +190,6 @@ impl Volmode {
 impl Compression {
     pub fn new(value: CompressionAlgo) -> Self {
         Self { value }
-    }
-
-    pub fn default() -> Self {
-        Self::new(core::default_compression().into())
     }
 
     pub fn value(&self) -> CompressionAlgo {

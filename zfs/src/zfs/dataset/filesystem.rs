@@ -1,8 +1,12 @@
+use razor_zfscore::ZfsDatasetHandler;
+
 use super::core;
 use super::*;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Filesystem {
+    #[serde(skip)]
+    pub(crate) dataset_handler: Option<ZfsDatasetHandler>,
     #[serde(default)]
     pub(crate) name: property::Name,
     pub(crate) available: property::Available,
@@ -33,7 +37,7 @@ impl Filesystem {
 
     pub fn atime(&self) -> property::OnOff {
         self.atime.map_or_else(
-            || property::Atime::default(self.name.value()).value(),
+            || self.dataset_handler.clone().unwrap().default_atime().into(),
             |atime| atime.value(),
         )
     }
@@ -45,27 +49,50 @@ impl Filesystem {
     pub fn canmount(&self) -> property::OnOffNoAuto {
         match self.canmount {
             Some(canmount) => canmount.value(),
-            None => property::CanMount::default().value(),
+            None => self
+                .dataset_handler
+                .clone()
+                .unwrap()
+                .default_canmount()
+                .into(),
         }
     }
 
     pub fn mounted(&self) -> property::YesNo {
         self.mounted.map_or_else(
-            || property::Mounted::default(self.name.value()).value(),
+            || {
+                self.dataset_handler
+                    .clone()
+                    .unwrap()
+                    .default_mounted()
+                    .into()
+            },
             |mounted| mounted.value(),
         )
     }
 
     pub fn checksum(&self) -> property::CheckSumAlgo {
         self.checksum.map_or_else(
-            || property::CheckSum::default().value(),
+            || {
+                self.dataset_handler
+                    .clone()
+                    .unwrap()
+                    .default_checksum()
+                    .into()
+            },
             |checksum| checksum.value(),
         )
     }
 
     pub fn compression(&self) -> property::CompressionAlgo {
         self.compression.map_or_else(
-            || property::Compression::default().value(),
+            || {
+                self.dataset_handler
+                    .clone()
+                    .unwrap()
+                    .default_compression()
+                    .into()
+            },
             |compression| compression.value(),
         )
     }
@@ -107,7 +134,6 @@ impl Filesystem {
 pub struct FileSystemBuilder {
     nvlist: Result<libnvpair::NvList>,
     name: String,
-    //err: Option<DatasetError>,
 }
 
 impl FileSystemBuilder {
@@ -266,8 +292,9 @@ impl FileSystemBuilder {
         match self.nvlist.as_mut() {
             Ok(nvlist) => {
                 let mut nvl = core::create_filesystem(self.name, nvlist)?;
-
-                let filesystem: Filesystem = from_nvlist(&mut nvl).map(|fs| Filesystem {
+                let dataset_handler = ZfsDatasetHandler::new(cname.clone())?; // TODO: remove clone
+                let filesystem: Filesystem = from_nvlist(&mut nvl).map(move |fs| Filesystem {
+                    dataset_handler: Some(dataset_handler),
                     name: property::Name::new(cname),
                     ..fs
                 })?;

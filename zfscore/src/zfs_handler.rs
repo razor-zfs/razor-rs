@@ -8,7 +8,7 @@ use super::nvpair::NvList;
 use super::sys;
 use super::Result;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 struct MntOpts {
     raw: *mut u8,
 }
@@ -35,7 +35,7 @@ impl From<*mut u8> for MntOpts {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 struct MntFsType {
     raw: *mut u8,
 }
@@ -58,7 +58,7 @@ impl From<*mut u8> for MntFsType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 struct MntMountp {
     raw: *mut u8,
 }
@@ -81,7 +81,7 @@ impl From<*mut u8> for MntMountp {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 struct MntSpecial {
     raw: *mut u8,
 }
@@ -104,7 +104,7 @@ impl From<*mut u8> for MntSpecial {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 struct MntData {
     raw: *mut sys::mnttab,
     mnt_opts: MntOpts,
@@ -168,7 +168,7 @@ impl MntData {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ZfsDatasetHandler {
     raw: *mut sys::zfs_handle_t,
     mntdata: Option<MntData>,
@@ -256,6 +256,33 @@ impl ZfsDatasetHandler {
             Some(mntdata) => mntdata.mntopts().exist(),
             None => false,
         }
+    }
+    pub fn default_type(&self) -> u64 {
+        unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_TYPE) }
+    }
+
+    pub fn default_available(&self) -> u64 {
+        unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_AVAILABLE) }
+    }
+
+    pub fn default_logicalused(&self) -> u64 {
+        unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_LOGICALUSED) }
+    }
+
+    pub fn default_canmount(&self) -> u64 {
+        unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_CANMOUNT) }
+    }
+
+    pub fn default_checksum(&self) -> u64 {
+        unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_CHECKSUM) }
+    }
+
+    pub fn default_volmode(&self) -> u64 {
+        unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_VOLMODE) }
+    }
+
+    pub fn default_compression(&self) -> u64 {
+        unsafe { sys::zfs_prop_default_numeric(sys::zfs_prop_t::ZFS_PROP_COMPRESSION) }
     }
 }
 
