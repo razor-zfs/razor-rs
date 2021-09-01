@@ -5,13 +5,13 @@ use nvpair::NvListAccess;
 use crate::error::CoreError;
 
 use super::error::value_or_err;
-use super::libzfs_handler::ZFS_HANDLER;
+use super::libzfs_handler::LIB_ZFS_HANDLER;
 use super::nvpair;
 use super::sys;
 use super::Result;
 
 fn init() {
-    let guard = ZFS_HANDLER.lock();
+    let guard = LIB_ZFS_HANDLER.lock();
     drop(guard);
 }
 
@@ -36,7 +36,7 @@ fn create_dataset(
     value_or_err((), rc)?;
 
     let zfs_handle =
-        unsafe { sys::make_dataset_handle(ZFS_HANDLER.lock().handler(), cname.as_ptr()) };
+        unsafe { sys::make_dataset_handle(LIB_ZFS_HANDLER.lock().handler(), cname.as_ptr()) };
 
     let nvl = nvpair::NvListRef::from_raw(zfs_handle.zfs_props, &zfs_handle);
     unsafe {
@@ -52,7 +52,7 @@ pub fn get_dataset_nvlist(name: impl AsRef<str>) -> Result<nvpair::NvList> {
     init();
     let cname = CString::new(name.as_ref())?;
     let zfs_handle =
-        unsafe { sys::make_dataset_handle(ZFS_HANDLER.lock().handler(), cname.as_ptr()) };
+        unsafe { sys::make_dataset_handle(LIB_ZFS_HANDLER.lock().handler(), cname.as_ptr()) };
 
     if zfs_handle.is_null() {
         return Err(CoreError::DatasetGetError);
@@ -86,11 +86,11 @@ pub fn default_atime(name: CString) -> u64 {
     dbg!("I GOT A TIME", res);
 
     let zfs_handle =
-        unsafe { sys::make_dataset_handle(ZFS_HANDLER.lock().handler(), name.as_ptr()) };
+        unsafe { sys::make_dataset_handle(LIB_ZFS_HANDLER.lock().handler(), name.as_ptr()) };
 
     let rc = unsafe {
         sys::libzfs_mnttab_find(
-            ZFS_HANDLER.lock().handler(),
+            LIB_ZFS_HANDLER.lock().handler(),
             (*zfs_handle).zfs_name.as_ptr(),
             mnttab_ptr,
         )
@@ -99,7 +99,7 @@ pub fn default_atime(name: CString) -> u64 {
     if rc == 0 {
         unsafe {
             (*zfs_handle).zfs_mntopts =
-                sys::zfs_strdup(ZFS_HANDLER.lock().handler(), (*mnttab_ptr).mnt_mntopts)
+                sys::zfs_strdup(LIB_ZFS_HANDLER.lock().handler(), (*mnttab_ptr).mnt_mntopts)
         }
 
         // TODO: boolean_t already exist in libnvpair
@@ -157,7 +157,7 @@ pub fn default_canmount() -> u64 {
 
 pub fn default_mounted(name: CString) -> bool {
     let zfs_handle =
-        unsafe { sys::make_dataset_handle(ZFS_HANDLER.lock().handler(), name.as_ptr()) };
+        unsafe { sys::make_dataset_handle(LIB_ZFS_HANDLER.lock().handler(), name.as_ptr()) };
 
     unsafe { (*zfs_handle).zfs_mntopts.is_null() }
 }

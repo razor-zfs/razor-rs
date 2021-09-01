@@ -2,7 +2,7 @@ use super::sys;
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 
-pub(crate) static ZFS_HANDLER: Lazy<Mutex<LibZfsHandler>> = Lazy::new(|| {
+pub(crate) static LIB_ZFS_HANDLER: Lazy<Mutex<LibZfsHandler>> = Lazy::new(|| {
     let handler = LibZfsHandler::init();
     Mutex::new(handler)
 });
