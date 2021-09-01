@@ -1,7 +1,11 @@
+use razor_zfscore::ZfsDatasetHandler;
+
 use super::*;
 
 #[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Volume {
+    #[serde(skip)]
+    pub(crate) dataset_handler: Option<ZfsDatasetHandler>,
     #[serde(default)]
     pub(crate) name: property::Name,
     pub(crate) available: property::Available,
@@ -32,20 +36,37 @@ impl Volume {
     pub fn logicalused(&self) -> u64 {
         match self.logicalused {
             Some(logicalused) => logicalused.value(),
-            None => property::LogicalUsed::default().value(),
+            None => self
+                .dataset_handler
+                .clone()
+                .unwrap()
+                .default_logicalused()
+                .into(),
         }
     }
 
     pub fn checksum(&self) -> property::CheckSumAlgo {
         self.checksum.map_or_else(
-            || property::CheckSum::default().value(),
+            || {
+                self.dataset_handler
+                    .clone()
+                    .unwrap()
+                    .default_checksum()
+                    .into()
+            },
             |checksum| checksum.value(),
         )
     }
 
     pub fn compression(&self) -> property::CompressionAlgo {
         self.compression.map_or_else(
-            || property::Compression::default().value(),
+            || {
+                self.dataset_handler
+                    .clone()
+                    .unwrap()
+                    .default_compression()
+                    .into()
+            },
             |compression| compression.value(),
         )
     }
@@ -164,8 +185,10 @@ impl VolumeBuilder {
                 nvlist.add_uint64("volblocksize", self.volblocksize)?;
 
                 let mut nvl = core::create_volume(self.name, nvlist)?;
+                let dataset_handler = ZfsDatasetHandler::new(cname.clone())?; // TODO: remove clone
 
                 let volume: Volume = from_nvlist(&mut nvl).map(|fs| Volume {
+                    dataset_handler: Some(dataset_handler),
                     name: property::Name::new(cname),
                     ..fs
                 })?;
