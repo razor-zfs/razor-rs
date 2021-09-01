@@ -7,5 +7,6 @@ members = [
     "serde-nvpair",
     "zfscore",
     "zfs",
+    "zfsrpc"
 ]
 resolver = "2"

@@ -1,0 +1,220 @@
+syntax = "proto3";
+package zfsrpc;
+
+service ZfsRpc {
+    rpc CreateVolume (CreateVolumeRequest) returns (Empty);
+    rpc GetVolume (BasicDatasetRequest) returns (Volume);
+    rpc CreateFilesystem (CreateFilesystemRequest) returns (Empty);
+    rpc GetFilesystem (BasicDatasetRequest) returns (Filesystem);
+    rpc DestroyVolume (BasicDatasetRequest) returns (Empty);
+    rpc DestroyFilesystem (BasicDatasetRequest) returns (Empty);
+}
+
+message CreateVolumeRequest {
+    string pool = 1;
+    string name = 2;
+    optional uint64 capacity = 3;
+    repeated VolumeProperty properties = 4;
+}
+
+message CreateFilesystemRequest {
+    string pool = 1;
+    string name = 2;
+    repeated FilesystemProperty properties = 3;
+}
+
+message BasicDatasetRequest {
+    string pool = 1;
+    string name = 2;
+}
+
+message Volume {
+    string pool = 1;
+    string name = 2;
+    uint64 available = 3;
+    uint64 volsize = 4;
+    uint64 volblocksize = 5;
+    uint64 logicalused = 6;
+    DatasetProperties.Checksum checksum = 7;
+    DatasetProperties.Compression compression = 8;
+    uint64 guid = 9;
+    uint64 creation = 10;
+    uint64 createtxg = 11;
+    uint64 compressratio = 12;
+    uint64 used = 13;
+    uint64 referenced = 14;
+    uint64 logicalreferenced = 15;
+    uint64 objsetid = 16;    
+}
+
+message Filesystem {
+    string pool = 1;
+    string name = 2;
+    uint64 available = 3;
+    DatasetProperties.ATime atime = 4;
+    DatasetProperties.CanMount canmount = 5;
+    DatasetProperties.Mounted mounted = 6;
+    DatasetProperties.Checksum checksum = 7;
+    DatasetProperties.Compression compression = 8;
+    uint64 guid = 9;
+    uint64 creation = 10;
+    uint64 createtxg = 11;
+    uint64 compressratio = 12;
+    uint64 used = 13;
+    uint64 logicalused = 14;
+    uint64 referenced = 15;
+    uint64 logicalreferenced = 16;
+    uint64 objsetid = 17;    
+}
+
+message VolumeProperty {
+    oneof property{
+        DatasetProperties.Checksum checksum = 1;
+        DatasetProperties.Compression compression = 2;
+    }
+}
+
+message FilesystemProperty {
+    oneof property{
+        DatasetProperties.CanMount can_mount = 1;
+        DatasetProperties.ATime a_time = 2;
+        DatasetProperties.Checksum checksum = 3;
+        DatasetProperties.Compression compression = 4;
+        DatasetProperties.Devices devices = 5;
+        DatasetProperties.Exec exec = 6;
+        DatasetProperties.Nbmand nbmand = 7;
+        DatasetProperties.Overlay overlay = 8;
+        DatasetProperties.Readonly readonly = 9;
+        DatasetProperties.Relatime relatime = 10;
+        DatasetProperties.Setuid setuid = 11;
+        DatasetProperties.Vscan vscan = 12;
+        DatasetProperties.Zoned zoned = 13;
+    }
+}
+
+message DatasetProperties {
+    message CanMount {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+            Variant no_auto = 3;
+        }
+    }
+
+    message Mounted {
+        oneof values {
+            Variant yes = 1;
+            Variant no = 2;
+        }
+    }
+
+    message ATime {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Checksum {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+            Variant fletcher2 = 3;
+            Variant fletcher4 = 4;
+            Variant sha256 = 5;
+            Variant no_parity = 6;
+            Variant sha512 = 7;
+            Variant skein = 8;
+            Variant edonr = 9;
+        }
+    }
+
+    message Devices {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Exec {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Nbmand {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Overlay {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Readonly {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Relatime {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Setuid {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Vscan {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Zoned {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message Compression {
+        oneof values {
+            Variant on = 1;
+            Variant off = 2;
+            Variant gzip = 3;
+            Variant gzip_1 = 4;
+            Variant gzip_2 = 5;
+            Variant gzip_3 = 6;
+            Variant gzip_4 = 7;
+            Variant gzip_5 = 8;
+            Variant gzip_6 = 9;
+            Variant gzip_7 = 10;
+            Variant gzip_8 = 11;
+            Variant gzip_9 = 12;
+            Variant lz4 = 13;
+            Variant lzjb = 14;
+            Variant zle = 15;
+            Variant zstd = 16;
+            Variant zstd_fast = 17;
+        }
+    }
+}
+
+message Empty {}
+message Variant {}
+
