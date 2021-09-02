@@ -15,12 +15,19 @@
 
 use std::time;
 
+use tracing_subscriber::{fmt, EnvFilter};
+
 use tonic::transport::Server;
 use zfsrpc::server::service;
 use zfsrpc::zfsrpc_proto::zfs_rpc_server::ZfsRpcServer;
 
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
+    fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .with_timer(fmt::time::ChronoUtc::default())
+        .init();
+
     let addr = "0.0.0.0:50051".parse()?;
     let rpc = service::ZfsRpcService::default();
     Server::builder()

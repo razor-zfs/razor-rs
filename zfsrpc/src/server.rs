@@ -1,5 +1,7 @@
 use tonic::{Code, Request, Response, Status};
 
+use tracing::trace;
+
 use super::zfsrpc_proto::zfs_rpc_server::ZfsRpc;
 use super::zfsrpc_proto::{BasicDatasetRequest, CreateFilesystemRequest, CreateVolumeRequest};
 use super::zfsrpc_proto::{Empty, Filesystem, Volume};
@@ -14,7 +16,7 @@ impl ZfsRpc for service::ZfsRpcService {
     ) -> Result<Response<Empty>, Status> {
         let request = request.into_inner();
 
-        println!(
+        trace!(
             "#########   create_volume() Got request: {:?}   #########",
             request
         );
@@ -27,6 +29,8 @@ impl ZfsRpc for service::ZfsRpcService {
         )
         .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
+        trace!("#########   create_volume() Done! #########",);
+
         Ok(Response::new(Empty {}))
     }
 
@@ -36,7 +40,7 @@ impl ZfsRpc for service::ZfsRpcService {
     ) -> Result<Response<Empty>, Status> {
         let request = request.into_inner();
 
-        println!(
+        trace!(
             "#########   create_filesystem() Got request: {:?}   #########",
             request
         );
@@ -53,6 +57,11 @@ impl ZfsRpc for service::ZfsRpcService {
     ) -> Result<Response<Volume>, Status> {
         let request = request.into_inner();
 
+        trace!(
+            "#########   get_volume() Got request: {:?}   #########",
+            request
+        );
+
         Ok(Response::new(
             service::Volume::get(request.pool, request.name)
                 .map_err(|e| Status::new(Code::Internal, e.to_string()))?
@@ -65,6 +74,11 @@ impl ZfsRpc for service::ZfsRpcService {
         request: Request<BasicDatasetRequest>,
     ) -> Result<Response<Filesystem>, Status> {
         let request = request.into_inner();
+
+        trace!(
+            "#########   get_filesystem() Got request: {:?}   #########",
+            request
+        );
 
         Ok(Response::new(
             service::Filesystem::get(request.pool, request.name)

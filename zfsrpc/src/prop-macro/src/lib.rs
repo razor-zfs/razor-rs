@@ -30,12 +30,12 @@ pub fn classcase_path_end(ts: TokenStream) -> TokenStream {
 /// This func:
 /// snakecase!(
 /// fn FooBar(i: u32) {
-///     println!("i={}", i);
+///     some_func(i);
 /// })
 ///
 /// Will vecome this:
 /// fn foo_bar(i: u32) {
-///     println!("i={}", i);
+///     some_func(i);
 /// }
 #[proc_macro]
 pub fn snakecase_fn(ts: TokenStream) -> TokenStream {

@@ -135,8 +135,6 @@ impl Filesystem {
             .try_fold(builder, Self::add_property)?
             .create()?;
 
-        println!("#########   create_filesystem() Done.   #########");
-
         Ok(())
     }
 

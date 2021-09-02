@@ -13,11 +13,19 @@
 #![warn(unused)]
 #![deny(warnings)]
 
+use tracing::info;
+use tracing_subscriber::{fmt, EnvFilter};
+
 use zfsrpc::zfsrpc_proto::zfs_rpc_client::ZfsRpcClient;
 use zfsrpc::zfsrpc_proto::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .with_timer(fmt::time::ChronoUtc::default())
+        .init();
+
     let mut client = ZfsRpcClient::connect("http://0.0.0.0:50051").await?;
 
     // let capacity = Some(10 * 1024 * 1024 * 1024);
@@ -47,7 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //client.destroy_dataset(request).await?;
     let fs = client.get_filesystem(request).await?;
 
-    println!("{:?}", fs);
+    info!(?fs);
 
     Ok(())
 }
