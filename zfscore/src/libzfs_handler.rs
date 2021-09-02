@@ -13,6 +13,9 @@ pub(crate) struct LibZfsHandler {
     raw_libzfs_handle: *mut sys::libzfs_handle_t,
 }
 
+unsafe impl Send for LibZfsHandler {}
+unsafe impl Sync for LibZfsHandler {}
+
 impl LibZfsHandler {
     fn init() -> Self {
         dbg!("initializing zfs handler");

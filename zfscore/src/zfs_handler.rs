@@ -1,7 +1,7 @@
 use std::ffi::CString;
 
 use super::error::CoreError;
-use super::libzfs_handler::LIB_ZFS_HANDLER;
+use super::libzfs_handler::LibZfsHandler;
 use super::nvpair::NvList;
 use super::sys;
 use super::Result;
@@ -177,7 +177,7 @@ impl ZfsDatasetHandler {
         let mut mnt = unsafe { std::mem::zeroed() };
 
         let zfs_handle =
-            unsafe { sys::make_dataset_handle(LIB_ZFS_HANDLER.lock().handler(), name.as_ptr()) };
+            unsafe { sys::make_dataset_handle(LibZfsHandler::handler(), name.as_ptr()) };
 
         if zfs_handle.is_null() {
             return Err(CoreError::DatasetNotExist);
@@ -185,7 +185,7 @@ impl ZfsDatasetHandler {
 
         let rc = unsafe {
             sys::libzfs_mnttab_find(
-                LIB_ZFS_HANDLER.lock().handler(),
+                LibZfsHandler::handler(),
                 (*zfs_handle).zfs_name.as_ptr(),
                 &mut mnt,
             )

@@ -5,14 +5,13 @@ use nvpair::NvListAccess;
 use crate::error::CoreError;
 
 use super::error::value_or_err;
-use super::libzfs_handler::LIB_ZFS_HANDLER;
+use super::libzfs_handler::LibZfsHandler;
 use super::nvpair;
 use super::sys;
 use super::Result;
 
 fn init() {
-    let guard = LIB_ZFS_HANDLER.lock();
-    drop(guard);
+    LibZfsHandler::handler();
 }
 
 pub fn create_filesystem(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<nvpair::NvList> {
@@ -35,8 +34,7 @@ fn create_dataset(
 
     value_or_err((), rc)?;
 
-    let zfs_handle =
-        unsafe { sys::make_dataset_handle(LIB_ZFS_HANDLER.lock().handler(), cname.as_ptr()) };
+    let zfs_handle = unsafe { sys::make_dataset_handle(LibZfsHandler::handler(), cname.as_ptr()) };
 
     let nvl = nvpair::NvListRef::from_raw(zfs_handle.zfs_props, &zfs_handle);
     unsafe {
@@ -51,8 +49,7 @@ fn create_dataset(
 pub fn get_dataset_nvlist(name: impl AsRef<str>) -> Result<nvpair::NvList> {
     init();
     let cname = CString::new(name.as_ref())?;
-    let zfs_handle =
-        unsafe { sys::make_dataset_handle(LIB_ZFS_HANDLER.lock().handler(), cname.as_ptr()) };
+    let zfs_handle = unsafe { sys::make_dataset_handle(LibZfsHandler::handler(), cname.as_ptr()) };
 
     if zfs_handle.is_null() {
         return Err(CoreError::DatasetNotExist);
