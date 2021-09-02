@@ -1,7 +1,5 @@
 use std::ffi::CString;
 
-use libc;
-
 use super::error::CoreError;
 use super::libzfs_handler::LIB_ZFS_HANDLER;
 use super::nvpair::NvList;
