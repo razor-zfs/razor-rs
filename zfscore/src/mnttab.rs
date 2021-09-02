@@ -5,7 +5,7 @@ use razor_zfscore_sys as sys;
 
 use super::libzfs_handler::LibZfsHandler;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub(crate) struct Mnttab {
     fstype: String,
     mntopts: String,
