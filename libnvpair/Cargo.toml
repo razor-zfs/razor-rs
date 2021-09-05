@@ -1,0 +1,8 @@
+[package]
+name = "razor-libnvpair"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libc = "0.2"
+razor-libnvpair-sys = {version = "0.1", path = "../libnvpair-sys"}

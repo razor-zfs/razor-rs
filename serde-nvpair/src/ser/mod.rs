@@ -1,16 +1,18 @@
-use self::name_serializer::NameSerializer;
-use super::*;
-use libnvpair::{ContextType, NvFlag, NvList, NvListError};
+use nvpair::{ContextType, NvFlag, NvList, NvListAccess, NvListError};
 use serde::{ser, Serialize};
+
+use super::*;
+
+use self::name_serializer::NameSerializer;
 
 mod name_serializer;
 
 #[derive(Clone, Debug, PartialEq)]
 struct SerializerHelper {
-    nvlist: Option<libnvpair::NvList>,
+    nvlist: Option<nvpair::NvList>,
     is_vec: bool,
     name: Option<String>,
-    context_type: libnvpair::ContextType,
+    context_type: nvpair::ContextType,
 }
 
 impl SerializerHelper {
@@ -19,25 +21,25 @@ impl SerializerHelper {
             nvlist: None,
             is_vec: false,
             name: None,
-            context_type: libnvpair::ContextType::Empty,
+            context_type: nvpair::ContextType::Empty,
         }
     }
 }
 
 #[derive(Debug, PartialEq)]
 pub struct NvListSerializer {
-    raw_nvlist: libnvpair::NvList,
+    raw_nvlist: nvpair::NvList,
     name_serializer: NameSerializer,
     is_first: bool,
     helpers: Vec<SerializerHelper>,
     curr: SerializerHelper,
 }
 
-pub fn to_nvlist<T>(value: &T) -> Result<libnvpair::NvList>
+pub fn to_nvlist<T>(value: &T) -> Result<nvpair::NvList>
 where
     T: Serialize,
 {
-    let nvlist = NvList::new(NvFlag::UniqueName)?;
+    let nvlist = NvList::new(NvFlag::UniqueName);
 
     let mut serializer = NvListSerializer {
         raw_nvlist: nvlist,
@@ -67,7 +69,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
     type Ok = ();
 
     // The error type when some error occurs during serialization.
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     // Associated types for keeping track of additional state while serializing
     // compound data structures like sequences and maps. In this case no
@@ -85,13 +87,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing bool");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::BooleanArr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::BooleanArr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::BooleanArr(x) => {
+                nvpair::ContextType::BooleanArr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -114,13 +116,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing i8");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::I8Arr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::I8Arr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::I8Arr(x) => {
+                nvpair::ContextType::I8Arr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -143,13 +145,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing i16");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::I16Arr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::I16Arr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::I16Arr(x) => {
+                nvpair::ContextType::I16Arr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -172,13 +174,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing i32");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::I32Arr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::I32Arr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::I32Arr(x) => {
+                nvpair::ContextType::I32Arr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -201,13 +203,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing i64");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::I64Arr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::I64Arr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::I64Arr(x) => {
+                nvpair::ContextType::I64Arr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -230,13 +232,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing u8");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::U8Arr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::U8Arr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::U8Arr(x) => {
+                nvpair::ContextType::U8Arr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -259,13 +261,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing u16");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::U16Arr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::U16Arr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::U16Arr(x) => {
+                nvpair::ContextType::U16Arr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -288,13 +290,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing u32");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::U32Arr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::U32Arr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::U32Arr(x) => {
+                nvpair::ContextType::U32Arr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -317,13 +319,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing u64");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::U64Arr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::U64Arr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::U64Arr(x) => {
+                nvpair::ContextType::U64Arr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -351,13 +353,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing f64");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::DoubleArr(vec![v]);
+                    self.curr.context_type = nvpair::ContextType::DoubleArr(vec![v]);
                     Ok(())
                 }
-                libnvpair::ContextType::DoubleArr(x) => {
+                nvpair::ContextType::DoubleArr(x) => {
                     x.push(v);
                     Ok(())
                 }
@@ -384,13 +386,13 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
         dbg!("Serializing string");
         if self.curr.is_vec {
             match &mut self.curr.context_type {
-                libnvpair::ContextType::Empty => {
+                nvpair::ContextType::Empty => {
                     dbg!("in empty context");
                     dbg!(&self.curr.context_type);
-                    self.curr.context_type = libnvpair::ContextType::StrArr(vec![v.to_string()]);
+                    self.curr.context_type = nvpair::ContextType::StrArr(vec![v.to_string()]);
                     Ok(())
                 }
-                libnvpair::ContextType::StrArr(x) => {
+                nvpair::ContextType::StrArr(x) => {
                     x.push(v.to_string());
                     Ok(())
                 }
@@ -415,7 +417,7 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
             Some(name) => {
                 dbg!("serializing name: ", &name);
                 if let Some(nvlist) = &mut self.curr.nvlist {
-                    nvlist.add_uint8_arr(name, v)?;
+                    nvlist.add_uint8_array(name, v)?;
                     Ok(())
                 } else {
                     Err(NvListError::NvListDontExist)
@@ -522,16 +524,16 @@ impl<'a> ser::Serializer for &'a mut NvListSerializer {
                 nvlist: Some(self.raw_nvlist.to_owned()),
                 is_vec: false,
                 name: None,
-                context_type: libnvpair::ContextType::Empty,
+                context_type: nvpair::ContextType::Empty,
             })
         } else {
             self.helpers.push(self.curr.clone());
-            let nvlist = NvList::new(NvFlag::UniqueName)?;
+            let nvlist = NvList::new(NvFlag::UniqueName);
             self.helpers.push(SerializerHelper {
                 nvlist: Some(nvlist),
                 is_vec: false,
                 name: None,
-                context_type: libnvpair::ContextType::Empty,
+                context_type: nvpair::ContextType::Empty,
             })
         }
         if let Some(last) = self.helpers.pop() {
@@ -559,7 +561,7 @@ impl<'a> ser::SerializeSeq for &'a mut NvListSerializer {
     // Must match the `Ok` type of the serializer.
     type Ok = ();
     // Must match the `Error` type of the serializer.
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     // Serialize a single element of the sequence.
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
@@ -576,16 +578,16 @@ impl<'a> ser::SerializeSeq for &'a mut NvListSerializer {
             self.curr.is_vec = false;
             match &self.curr.name {
                 Some(name) => match &self.curr.context_type {
-                    ContextType::U8Arr(arr) => Ok(nvlist.add_uint8_arr(name, arr)?),
-                    ContextType::U16Arr(arr) => Ok(nvlist.add_uint16_arr(name, arr)?),
-                    ContextType::U32Arr(arr) => Ok(nvlist.add_uint32_arr(name, arr)?),
-                    ContextType::U64Arr(arr) => Ok(nvlist.add_uint64_arr(name, arr)?),
-                    ContextType::I8Arr(arr) => Ok(nvlist.add_int8_arr(name, arr)?),
-                    ContextType::I16Arr(arr) => Ok(nvlist.add_int16_arr(name, arr)?),
-                    ContextType::I32Arr(arr) => Ok(nvlist.add_int32_arr(name, arr)?),
-                    ContextType::I64Arr(arr) => Ok(nvlist.add_int64_arr(name, arr)?),
-                    ContextType::BooleanArr(arr) => Ok(nvlist.add_boolean_arr(name, arr)?),
-                    ContextType::StrArr(arr) => Ok(nvlist.add_string_arr(name, arr)?),
+                    ContextType::U8Arr(arr) => Ok(nvlist.add_uint8_array(name, arr)?),
+                    ContextType::U16Arr(arr) => Ok(nvlist.add_uint16_array(name, arr)?),
+                    ContextType::U32Arr(arr) => Ok(nvlist.add_uint32_array(name, arr)?),
+                    ContextType::U64Arr(arr) => Ok(nvlist.add_uint64_array(name, arr)?),
+                    ContextType::I8Arr(arr) => Ok(nvlist.add_int8_array(name, arr)?),
+                    ContextType::I16Arr(arr) => Ok(nvlist.add_int16_array(name, arr)?),
+                    ContextType::I32Arr(arr) => Ok(nvlist.add_int32_array(name, arr)?),
+                    ContextType::I64Arr(arr) => Ok(nvlist.add_int64_array(name, arr)?),
+                    ContextType::BooleanArr(arr) => Ok(nvlist.add_boolean_array(name, arr)?),
+                    ContextType::StrArr(arr) => Ok(nvlist.add_string_array(name, arr)?),
                     ContextType::DoubleArr(_) => Err(NvListError::RestrictedOperation),
                     ContextType::NvListArr(_) => todo!(),
                     _ => Err(NvListError::RestrictedOperation),
@@ -601,7 +603,7 @@ impl<'a> ser::SerializeSeq for &'a mut NvListSerializer {
 // Same thing but for tuples.
 impl<'a> ser::SerializeTuple for &'a mut NvListSerializer {
     type Ok = ();
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
     where
@@ -618,7 +620,7 @@ impl<'a> ser::SerializeTuple for &'a mut NvListSerializer {
 
 impl<'a> ser::SerializeTupleStruct for &'a mut NvListSerializer {
     type Ok = ();
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<()>
     where
@@ -635,7 +637,7 @@ impl<'a> ser::SerializeTupleStruct for &'a mut NvListSerializer {
 
 impl<'a> ser::SerializeTupleVariant for &'a mut NvListSerializer {
     type Ok = ();
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<()>
     where
@@ -652,7 +654,7 @@ impl<'a> ser::SerializeTupleVariant for &'a mut NvListSerializer {
 
 impl<'a> ser::SerializeMap for &'a mut NvListSerializer {
     type Ok = ();
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn serialize_key<T>(&mut self, key: &T) -> Result<()>
     where
@@ -681,7 +683,7 @@ impl<'a> ser::SerializeMap for &'a mut NvListSerializer {
 
 impl<'a> ser::SerializeStruct for &'a mut NvListSerializer {
     type Ok = ();
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
     where
@@ -719,7 +721,7 @@ impl<'a> ser::SerializeStruct for &'a mut NvListSerializer {
 
 impl<'a> ser::SerializeStructVariant for &'a mut NvListSerializer {
     type Ok = ();
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn serialize_field<T>(&mut self, _key: &'static str, value: &T) -> Result<()>
     where

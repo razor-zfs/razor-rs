@@ -1,5 +1,5 @@
 use super::*;
-use libnvpair::ContextType;
+use nvpair::ContextType;
 
 pub struct CtxTypeDeserializer {
     input: ContextType,
@@ -19,7 +19,7 @@ impl From<ContextType> for CtxTypeDeserializer {
 }
 
 impl<'de, 'a> de::Deserializer<'de> for CtxTypeDeserializer {
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn deserialize_any<V>(self, _visitor: V) -> Result<V::Value>
     where
@@ -314,7 +314,7 @@ impl<'a, 'de> NvSeqAnalyzer<'a> {
 }
 
 impl<'de, 'a> SeqAccess<'de> for NvSeqAnalyzer<'a> {
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn next_element_seed<T>(&mut self, _seed: T) -> Result<Option<T::Value>>
     where
@@ -325,7 +325,7 @@ impl<'de, 'a> SeqAccess<'de> for NvSeqAnalyzer<'a> {
 }
 
 impl<'de, 'a> MapAccess<'de> for CommaSeparated<'a> {
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn next_key_seed<K>(&mut self, _seed: K) -> Result<Option<K::Value>>
     where
@@ -353,7 +353,7 @@ impl<'a, 'de> Enum<'a> {
 }
 
 impl<'de, 'a> EnumAccess<'de> for Enum<'a> {
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
     type Variant = Self;
 
     fn variant_seed<V>(self, _seed: V) -> Result<(V::Value, Self::Variant)>
@@ -365,7 +365,7 @@ impl<'de, 'a> EnumAccess<'de> for Enum<'a> {
 }
 
 impl<'de, 'a> VariantAccess<'de> for Enum<'a> {
-    type Error = libnvpair::NvListError;
+    type Error = nvpair::NvListError;
 
     fn unit_variant(self) -> Result<()> {
         todo!();

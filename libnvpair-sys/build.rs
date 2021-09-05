@@ -15,6 +15,8 @@ fn main() {
         // bindings for.
         .header("wrapper.h")
         .clang_args(vec!["-I/usr/include/libzfs", "-I/usr/include/libspl"])
+        .size_t_is_usize(true)
+        .ctypes_prefix("libc")
         .allowlist_var(r#"(^NV_\w*)"#)
         .allowlist_type(r#"(\w*nvpair\w*)"#)
         .allowlist_type(r#"(\w*nvlist\w*)"#)

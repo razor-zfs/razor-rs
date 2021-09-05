@@ -1,11 +1,11 @@
 [package]
-name = "razor-zfscore-sys"
+name = "razor-libnvpair-sys"
 version = "0.1.0"
 edition = "2021"
 build = "build.rs"
 
 [dependencies]
-razor-libnvpair-sys = { version = "0.1", path = "../libnvpair-sys" }
+libc = "0.2"
 
 [build-dependencies]
 bindgen = "0.59"

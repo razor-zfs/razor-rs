@@ -16,16 +16,16 @@
 pub use error::NvListError;
 pub use nvlist::NvFlag;
 pub use nvlist::NvList;
+pub use nvlist::NvListAccess;
 pub use nvlist::NvListIterator;
-pub use nvpair::ContextType;
-pub use nvpair::CtxIter;
+pub use nvlist::NvListRef;
+// pub use nvpair::ContextType;
+// pub use nvpair::CtxIter;
 pub use nvpair::NvPair;
-pub use nvpair::NvPairType;
-pub use nvpair::SafeNvPair;
+// pub use nvpair::NvPairType;
+// pub use nvpair::SafeNvPair;
 pub use value::to_value;
 pub use value::Value;
-
-use razor_nvpair_sys as sys;
 
 mod error;
 mod impls;

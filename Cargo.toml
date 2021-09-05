@@ -1,10 +1,11 @@
 [workspace]
 members = [
-    "nvpair-sys",
-    "zfscore-sys",
-    "uutil-sys",
+    "libnvpair-sys",
+    "libnvpair",
     "nvpair",
+    "uutil-sys",
     "serde-nvpair",
+    "zfscore-sys",
     "zfscore",
     "zfs",
     "zfsrpc"
