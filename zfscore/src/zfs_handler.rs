@@ -18,7 +18,7 @@ pub struct ZfsDatasetHandler {
 }
 
 impl ZfsDatasetHandler {
-    pub fn new(name: CString) -> Result<ZfsDatasetHandler> {
+    pub fn new(name: CString) -> Result<Self> {
         let zfs_handle =
             unsafe { sys::make_dataset_handle(LibZfsHandler::handler(), name.as_ptr()) };
 
@@ -54,23 +54,19 @@ impl ZfsDatasetHandler {
     }
 
     pub fn check_mnt_option(&self, opt: impl AsRef<str>) -> bool {
-        let res = if let Some(mnt) = &self.mntdata {
+        if let Some(mnt) = &self.mntdata {
             mnt.hasmntopt(opt)
         } else {
             false
-        };
-
-        res
+        }
     }
 
     pub fn is_mounted(&self) -> bool {
-        let res = if let Some(mnt) = &self.mntdata {
+        if let Some(mnt) = &self.mntdata {
             !mnt.mntopts().is_empty()
         } else {
             false
-        };
-
-        res
+        }
     }
 
     pub fn search_property(&self, name: impl AsRef<str>) -> Result<Value> {

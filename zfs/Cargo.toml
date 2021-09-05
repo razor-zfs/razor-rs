@@ -12,7 +12,6 @@ serde_json = "1.0"
 razor-nvpair = {version = "0.1", path = "../nvpair"}
 razor-zfscore-sys = {version = "0.1", path = "../zfscore-sys"}
 razor-zfscore = {version = "0.1", path = "../zfscore"}
-serde-nvpair = {version = "0.1", path = "../serde-nvpair"}
 serde_with = { version = "1.6", features = ["chrono"] }
 thiserror = "1.0"
 libc = "0.2"

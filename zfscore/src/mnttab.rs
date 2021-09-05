@@ -46,7 +46,7 @@ impl Mnttab {
 
     pub(crate) fn hasmntopt(&self, opt: impl AsRef<str>) -> bool {
         let opt = opt.as_ref();
-        self.mntopts.split(",").any(|o| o == opt)
+        self.mntopts.split(',').any(|o| o == opt)
     }
 
     unsafe fn from_entry(entry: sys::mnttab) -> Self {

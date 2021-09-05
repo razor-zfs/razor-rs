@@ -45,6 +45,16 @@ impl From<YesNo> for bool {
     }
 }
 
+// TODO: write macro for all u and i
+impl From<u64> for YesNo {
+    fn from(value: u64) -> Self {
+        match value {
+            0 => Self::No,
+            _ => Self::Yes,
+        }
+    }
+}
+
 impl From<bool> for YesNo {
     fn from(v: bool) -> Self {
         match v {

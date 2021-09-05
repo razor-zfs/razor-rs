@@ -1,5 +1,9 @@
 use std::ffi::CString;
 
+use libnvpair::NvListAccess;
+
+use crate::error::DatasetError;
+
 use super::core;
 use super::libnvpair;
 use super::property;
@@ -22,23 +26,23 @@ impl Filesystem {
     }
 
     pub fn available(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("available")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("available");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_AVAILABLE)
+        }
     }
 
     pub fn atime(&self) -> property::OnOff {
         let prop = self.dataset_handler.search_property("atime");
 
-        let res = if let Ok(prop) = prop {
+        if let Ok(prop) = prop {
             match prop {
                 libnvpair::Value::U64(val) => val.into(),
                 _ => todo!(),
@@ -55,29 +59,27 @@ impl Filesystem {
             } else {
                 default.into()
             }
-        };
-
-        res
+        }
     }
 
     pub fn logicalused(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("logicalused")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("logicalused");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_LOGICALUSED)
+        }
     }
 
     pub fn canmount(&self) -> property::OnOffNoAuto {
         let prop = self.dataset_handler.search_property("canmount");
 
-        let res = if let Ok(prop) = prop {
+        if let Ok(prop) = prop {
             match prop {
                 libnvpair::Value::U64(val) => val.into(),
                 _ => todo!(),
@@ -86,30 +88,26 @@ impl Filesystem {
             self.dataset_handler
                 .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_CANMOUNT)
                 .into()
-        };
-
-        res
+        }
     }
 
     pub fn mounted(&self) -> property::YesNo {
         let prop = self.dataset_handler.search_property("mounted");
 
-        let res = if let Ok(prop) = prop {
+        if let Ok(prop) = prop {
             match prop {
                 libnvpair::Value::U64(val) => val.into(),
                 _ => todo!(),
             }
         } else {
             self.dataset_handler.is_mounted().into()
-        };
-
-        res
+        }
     }
 
     pub fn checksum(&self) -> property::CheckSumAlgo {
         let prop = self.dataset_handler.search_property("checksum");
 
-        let res = if let Ok(prop) = prop {
+        if let Ok(prop) = prop {
             match prop {
                 libnvpair::Value::U64(val) => val.into(),
                 _ => todo!(),
@@ -118,15 +116,13 @@ impl Filesystem {
             self.dataset_handler
                 .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_CHECKSUM)
                 .into()
-        };
-
-        res
+        }
     }
 
     pub fn compression(&self) -> property::CompressionAlgo {
         let prop = self.dataset_handler.search_property("compression");
 
-        let res = if let Ok(prop) = prop {
+        if let Ok(prop) = prop {
             match prop {
                 libnvpair::Value::U64(val) => val.into(),
                 _ => todo!(),
@@ -135,151 +131,149 @@ impl Filesystem {
             self.dataset_handler
                 .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_COMPRESSION)
                 .into()
-        };
-
-        res
+        }
     }
 
     pub fn guid(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("guid")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("guid");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_GUID)
+        }
     }
 
     pub fn creation(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("creation")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("creation");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_CREATION)
+        }
     }
 
     pub fn createtxg(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("createtxg")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("createtxg");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_CREATETXG)
+        }
     }
 
     pub fn compressratio(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("compressratio")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("compressratio");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_COMPRESSRATIO)
+        }
     }
 
     pub fn used(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("used")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("used");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_USED)
+        }
     }
 
     pub fn referenced(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("referenced")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("referenced");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_REFERENCED)
+        }
     }
 
     pub fn logicalreferenced(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("logicalreferenced")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("logicalreferenced");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_LOGICALREFERENCED)
+        }
     }
 
     pub fn objsetid(&self) -> u64 {
-        let prop = self
-            .dataset_handler
-            .search_property("objsetid")
-            .unwrap_or_default();
+        let prop = self.dataset_handler.search_property("objsetid");
 
-        let res = match prop {
-            libnvpair::Value::U64(val) => val,
-            _ => todo!(),
-        };
-
-        res
+        if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val,
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_OBJSETID)
+        }
     }
 
-    pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {
+    pub fn get_filesystem(name: impl AsRef<str>) -> Result<Self> {
         let cname = CString::new(name.as_ref())?;
         let dataset_handler = ZfsDatasetHandler::new(cname)?;
 
-        Ok(Filesystem { dataset_handler })
+        Ok(Self { dataset_handler })
     }
 }
 
 #[derive(Debug)]
 pub struct FileSystemBuilder {
-    nvlist: Result<libnvpair::NvList>,
+    nvlist: libnvpair::NvList,
     name: String,
+    err: Option<DatasetError>,
 }
 
 impl FileSystemBuilder {
     pub fn new(name: impl AsRef<str>) -> Self {
         Self {
-            nvlist: libnvpair::NvList::new(libnvpair::NvFlag::UniqueName).map_err(|err| err.into()),
+            nvlist: libnvpair::NvList::new(libnvpair::NvFlag::UniqueName),
             name: name.as_ref().to_string(),
+            err: None,
         }
     }
 
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("atime", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+        if let Err(err) = self.nvlist.add_string("atime", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -287,10 +281,9 @@ impl FileSystemBuilder {
 
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("canmount", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("canmount", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -298,10 +291,8 @@ impl FileSystemBuilder {
 
     pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("checksum", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+        if let Err(err) = self.nvlist.add_string("checksum", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -309,10 +300,9 @@ impl FileSystemBuilder {
 
     pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("devices", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("devices", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -320,10 +310,8 @@ impl FileSystemBuilder {
 
     pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("nbmand", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+        if let Err(err) = self.nvlist.add_string("nbmand", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -331,10 +319,9 @@ impl FileSystemBuilder {
 
     pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("overlay", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("overlay", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -342,10 +329,9 @@ impl FileSystemBuilder {
 
     pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("readonly", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("readonly", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -353,10 +339,9 @@ impl FileSystemBuilder {
 
     pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("relatime", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("relatime", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -364,10 +349,9 @@ impl FileSystemBuilder {
 
     pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("setuid", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("setuid", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -375,10 +359,9 @@ impl FileSystemBuilder {
 
     pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("vscan", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("vscan", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -386,10 +369,9 @@ impl FileSystemBuilder {
 
     pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("zoned", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("zoned", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -397,10 +379,9 @@ impl FileSystemBuilder {
 
     pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("compression", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("compression", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
@@ -408,26 +389,25 @@ impl FileSystemBuilder {
 
     pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Ok(nvlist) = &mut self.nvlist {
-            if let Err(err) = nvlist.add_string("exec", value.as_str()) {
-                self.nvlist = Err(err.into());
-            }
+
+        if let Err(err) = self.nvlist.add_string("exec", value.as_str()) {
+            self.err = Some(err.into());
         }
 
         self
     }
 
-    pub fn create(mut self) -> Result<Filesystem> {
+    pub fn create(self) -> Result<Filesystem> {
         let cname = CString::new(self.name.as_bytes())?;
-        match self.nvlist.as_mut() {
-            Ok(nvlist) => {
-                core::create_filesystem(&self.name, nvlist)?;
+        match self.err {
+            Some(err) => Err(err),
+            None => {
+                core::create_filesystem(&self.name, &self.nvlist)?;
                 let dataset_handler = ZfsDatasetHandler::new(cname)?;
                 let filesystem: Filesystem = Filesystem { dataset_handler };
 
                 Ok(filesystem)
             }
-            Err(err) => Err(err.clone()), // TODO: check this line because it clones here
         }
     }
 }

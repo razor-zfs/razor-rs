@@ -20,7 +20,7 @@ impl NvPair {
 
     #[inline]
     pub fn value(&self) -> Value {
-        to_value(&self)
+        to_value(self)
     }
 
     #[inline]
