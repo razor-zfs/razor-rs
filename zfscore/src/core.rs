@@ -2,8 +2,6 @@ use std::ffi::CString;
 
 use nvpair::NvListAccess;
 
-use crate::error::CoreError;
-
 use super::error::value_or_err;
 use super::libzfs_handler::LibZfsHandler;
 use super::nvpair;
