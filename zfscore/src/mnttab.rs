@@ -19,7 +19,7 @@ impl Mnttab {
         let handler = LibZfsHandler::handler();
 
         unsafe {
-            let entry = mem::MaybeUninit::uninit();
+            let mut entry = mem::MaybeUninit::uninit();
             if sys::libzfs_mnttab_find(handler, name.as_ptr(), entry.as_mut_ptr()) == 0 {
                 Some(Self::from_entry(entry.assume_init()))
             } else {
@@ -28,23 +28,23 @@ impl Mnttab {
         }
     }
 
-    pub(crate) fn fstype(&self) -> &str {
+    pub(crate) fn _fstype(&self) -> &str {
         &self.fstype
     }
 
-    pub(crate) fn mntopts(&self) -> &str {
+    pub(crate) fn _mntopts(&self) -> &str {
         &self.mntopts
     }
 
-    pub(crate) fn mountp(&self) -> &str {
+    pub(crate) fn _mountp(&self) -> &str {
         &self.mountp
     }
 
-    pub(crate) fn special(&self) -> &str {
+    pub(crate) fn _special(&self) -> &str {
         &self.special
     }
 
-    pub(crate) fn hasmntopt(&self, opt: impl AsRef<str>) -> bool {
+    pub(crate) fn _hasmntopt(&self, opt: impl AsRef<str>) -> bool {
         let opt = opt.as_ref();
         self.mntopts.split(",").any(|o| o == opt)
     }

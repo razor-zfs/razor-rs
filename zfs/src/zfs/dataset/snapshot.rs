@@ -1,6 +1,2 @@
-use super::*;
-
-#[derive(Debug, Deserialize)]
-pub struct Snapshot {
-    //common: CommonProperties,
-}
+#[derive(Debug)]
+pub struct Snapshot {}

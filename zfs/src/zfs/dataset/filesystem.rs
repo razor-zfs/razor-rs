@@ -1,132 +1,31 @@
+use std::ffi::CString;
+
 use razor_zfscore::ZfsDatasetHandler;
 
 use super::core;
-use super::*;
+use super::libnvpair;
+use super::property;
+use super::Result;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug)]
 pub struct Filesystem {
-    #[serde(skip)]
-    pub(crate) dataset_handler: Option<ZfsDatasetHandler>,
-    #[serde(default)]
-    pub(crate) name: property::Name,
-    pub(crate) available: property::Available,
-    pub(crate) atime: Option<property::Atime>,
-    pub(crate) logicalused: property::LogicalUsed,
-    pub(crate) canmount: Option<property::CanMount>,
-    pub(crate) mounted: Option<property::Mounted>,
-    pub(crate) checksum: Option<property::CheckSum>,
-    pub(crate) compression: Option<property::Compression>,
-    pub(crate) guid: property::Guid,
-    pub(crate) creation: property::Creation,
-    pub(crate) createtxg: property::CreateTxg,
-    pub(crate) compressratio: property::CompressRatio,
-    pub(crate) used: property::Used,
-    pub(crate) referenced: property::Referenced,
-    pub(crate) logicalreferenced: property::LogicalReferenced,
-    pub(crate) objsetid: property::ObjSetId,
+    dataset_handler: ZfsDatasetHandler,
 }
 
 impl Filesystem {
     pub fn destroy(self) -> Result<()> {
-        core::destroy_dataset(self.name.value().to_string_lossy()).map_err(|err| err.into())
+        core::destroy_dataset(self.name()).map_err(|err| err.into())
     }
 
-    pub fn available(&self) -> u64 {
-        self.available.value()
+    pub fn name(&self) -> String {
+        self.dataset_handler.get_name()
     }
 
-    pub fn atime(&self) -> property::OnOff {
-        self.atime.map_or_else(
-            || self.dataset_handler.clone().unwrap().default_atime().into(),
-            |atime| atime.value(),
-        )
-    }
+    pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {
+        let cname = CString::new(name.as_ref())?;
+        let dataset_handler = ZfsDatasetHandler::new(cname)?;
 
-    pub fn logicalused(&self) -> u64 {
-        self.logicalused.value()
-    }
-
-    pub fn canmount(&self) -> property::OnOffNoAuto {
-        match self.canmount {
-            Some(canmount) => canmount.value(),
-            None => self
-                .dataset_handler
-                .clone()
-                .unwrap()
-                .default_canmount()
-                .into(),
-        }
-    }
-
-    pub fn mounted(&self) -> property::YesNo {
-        self.mounted.map_or_else(
-            || {
-                self.dataset_handler
-                    .clone()
-                    .unwrap()
-                    .default_mounted()
-                    .into()
-            },
-            |mounted| mounted.value(),
-        )
-    }
-
-    pub fn checksum(&self) -> property::CheckSumAlgo {
-        self.checksum.map_or_else(
-            || {
-                self.dataset_handler
-                    .clone()
-                    .unwrap()
-                    .default_checksum()
-                    .into()
-            },
-            |checksum| checksum.value(),
-        )
-    }
-
-    pub fn compression(&self) -> property::CompressionAlgo {
-        self.compression.map_or_else(
-            || {
-                self.dataset_handler
-                    .clone()
-                    .unwrap()
-                    .default_compression()
-                    .into()
-            },
-            |compression| compression.value(),
-        )
-    }
-
-    pub fn guid(&self) -> u64 {
-        self.guid.value()
-    }
-
-    pub fn creation(&self) -> u64 {
-        self.creation.value()
-    }
-
-    pub fn createtxg(&self) -> u64 {
-        self.createtxg.value()
-    }
-
-    pub fn compressratio(&self) -> u64 {
-        self.compressratio.value()
-    }
-
-    pub fn used(&self) -> u64 {
-        self.used.value()
-    }
-
-    pub fn referenced(&self) -> u64 {
-        self.referenced.value()
-    }
-
-    pub fn logicalreferenced(&self) -> u64 {
-        self.logicalreferenced.value()
-    }
-
-    pub fn objsetid(&self) -> u64 {
-        self.objsetid.value()
+        Ok(Filesystem { dataset_handler })
     }
 }
 
@@ -291,13 +190,9 @@ impl FileSystemBuilder {
         let cname = CString::new(self.name.as_bytes())?;
         match self.nvlist.as_mut() {
             Ok(nvlist) => {
-                let mut nvl = core::create_filesystem(self.name, nvlist)?;
-                let dataset_handler = ZfsDatasetHandler::new(cname.clone())?; // TODO: remove clone
-                let filesystem: Filesystem = from_nvlist(&mut nvl).map(move |fs| Filesystem {
-                    dataset_handler: Some(dataset_handler),
-                    name: property::Name::new(cname),
-                    ..fs
-                })?;
+                core::create_filesystem(&self.name, nvlist)?;
+                let dataset_handler = ZfsDatasetHandler::new(cname)?;
+                let filesystem: Filesystem = Filesystem { dataset_handler };
 
                 Ok(filesystem)
             }

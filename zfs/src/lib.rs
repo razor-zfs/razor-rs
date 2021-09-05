@@ -13,7 +13,6 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use razor_nvpair as libnvpair;
 use razor_nvpair::NvListError;
 use razor_zfscore::core;
 

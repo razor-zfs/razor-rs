@@ -1,33 +1,16 @@
-pub use bookmark::Bookmark;
-pub use filesystem::Filesystem;
-pub use snapshot::Snapshot;
-pub use volume::Volume;
-
-pub use filesystem::FileSystemBuilder;
-pub use volume::VolumeBuilder;
-
-use std::ffi::CString;
-
-use serde::{Deserialize, Serialize};
-
 use super::core;
-use super::libnvpair;
 use super::property;
 use super::Result;
-use serde_nvpair::from_nvlist;
+
+pub use bookmark::Bookmark;
+pub use filesystem::FileSystemBuilder;
+pub use filesystem::Filesystem;
+use razor_nvpair as libnvpair;
+pub use snapshot::Snapshot;
+pub use volume::Volume;
+pub use volume::VolumeBuilder;
 
 mod bookmark;
 mod filesystem;
 mod snapshot;
 mod volume;
-
-#[derive(Debug, Deserialize, PartialEq, Clone)]
-pub(crate) enum DatasetType {
-    Filesystem(filesystem::Filesystem),
-    Volume(volume::Volume),
-}
-
-#[derive(Debug, Deserialize, PartialEq, Clone)]
-pub(crate) struct Dataset {
-    dataset: DatasetType,
-}

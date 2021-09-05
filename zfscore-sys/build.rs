@@ -25,6 +25,7 @@ fn main() {
         .allowlist_type(r#"(\w*zfs_prop_t\w*)"#)
         .allowlist_function(r#"(\w*zfs_strdup\w*)"#)
         .allowlist_function(r#"(\w*zfs_prop_default_numeric\w*)"#)
+        .allowlist_function(r#"(\w*zfs_prop_default_string\w*)"#)
         .allowlist_function(r#"(\w*libzfs_mnttab_find\w*)"#)
         .allowlist_function(r#"(\w*zfs_close\w*)"#)
         .allowlist_function(r#"(\w*libzfs_init\w*)"#)
