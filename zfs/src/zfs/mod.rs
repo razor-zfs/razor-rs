@@ -4,6 +4,8 @@ pub use dataset::Snapshot;
 pub use dataset::Volume;
 
 use super::core;
+use super::ZfsDatasetHandler;
+use super::zfs_prop_t;
 use super::Result;
 
 pub use dataset::FileSystemBuilder;

@@ -1,6 +1,8 @@
 use super::core;
 use super::property;
+use super::zfs_prop_t;
 use super::Result;
+use super::ZfsDatasetHandler;
 
 pub use bookmark::Bookmark;
 pub use filesystem::FileSystemBuilder;

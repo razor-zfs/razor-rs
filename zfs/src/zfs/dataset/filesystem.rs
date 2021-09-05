@@ -1,11 +1,11 @@
 use std::ffi::CString;
 
-use razor_zfscore::ZfsDatasetHandler;
-
 use super::core;
 use super::libnvpair;
 use super::property;
+use super::zfs_prop_t;
 use super::Result;
+use super::ZfsDatasetHandler;
 
 #[derive(Debug)]
 pub struct Filesystem {
@@ -19,6 +19,21 @@ impl Filesystem {
 
     pub fn name(&self) -> String {
         self.dataset_handler.get_name()
+    }
+
+    pub fn available(&self) -> u64 {
+        self.dataset_handler
+            .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_AVAILABLE)
+    }
+
+    pub fn available(&self) -> u64 {
+        self.dataset_handler
+            .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_AVAILABLE)
+    }
+
+    pub fn atime(&self) -> property::OnOff {
+        self.dataset_handler
+            .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_AVAILABLE)
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {

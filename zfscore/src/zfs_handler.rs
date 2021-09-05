@@ -1,6 +1,9 @@
 use std::ffi::CStr;
 use std::ffi::CString;
 
+use razor_nvpair::NvListAccess;
+use razor_nvpair::Value;
+
 use super::error::CoreError;
 use super::libzfs_handler::LibZfsHandler;
 use super::mnttab::Mnttab;
@@ -9,7 +12,8 @@ use super::Result;
 
 #[derive(Debug)]
 pub struct ZfsDatasetHandler {
-    raw: *mut sys::zfs_handle_t,
+    name: CString,
+    zfs_props: razor_nvpair::NvList,
     mntdata: Option<Mnttab>,
 }
 
@@ -22,24 +26,19 @@ impl ZfsDatasetHandler {
             return Err(CoreError::DatasetNotExist);
         }
 
-        let mntdata = Mnttab::find(name);
+        let zfs_props = razor_nvpair::NvList::from(unsafe { (*zfs_handle).zfs_props });
+
+        let mntdata = Mnttab::find(&name);
 
         Ok(Self {
-            raw: zfs_handle,
+            name,
+            zfs_props,
             mntdata,
         })
     }
 
-    fn _name_ptr(&self) -> String {
-        unsafe {
-            CStr::from_bytes_with_nul_unchecked(&(*self.raw).zfs_name)
-                .to_string_lossy()
-                .into_owned()
-        }
-    }
-
     pub fn get_name(&self) -> String {
-        unsafe { String::from_utf8_lossy(&(*self.raw).zfs_name).into_owned() }
+        self.name.to_string_lossy().into_owned()
     }
 
     pub fn get_prop_default_numeric(&self, prop: sys::zfs_prop_t) -> u64 {
@@ -53,12 +52,17 @@ impl ZfsDatasetHandler {
                 .into_owned()
         }
     }
+
+    pub fn search_property(&self, name: impl AsRef<str>) -> Result<Value> {
+        let nvp = self.zfs_props.lookup_nvpair(name)?;
+        Ok(nvp.value())
+    }
 }
 
 // TODO: check how to free zfs_handle_t
-impl Drop for ZfsDatasetHandler {
-    fn drop(&mut self) {
-        unsafe { libc::free((*self.raw).zfs_mntopts as *mut libc::c_void) };
-        unsafe { libc::free(self.raw as *mut libc::c_void) };
-    }
-}
+// impl Drop for ZfsDatasetHandler {
+//     fn drop(&mut self) {
+//         unsafe { sys::zfs_close((*self.raw).zfs_mntopts as *mut libc::c_void) };
+//         unsafe { libc::free(self.raw as *mut libc::c_void) };
+//     }
+// }

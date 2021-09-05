@@ -6,7 +6,6 @@ use std::slice;
 use razor_libnvpair as libnvpair;
 
 // use crate::error::value_or_err;
-
 use super::*;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -17,6 +16,11 @@ pub struct NvPair {
 impl NvPair {
     pub fn nvp(&self) -> *mut libnvpair::nvpair_t {
         self.nvp
+    }
+
+    #[inline]
+    pub fn value(&self) -> Value {
+        to_value(&self)
     }
 
     #[inline]
