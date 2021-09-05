@@ -26,14 +26,29 @@ impl Filesystem {
             .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_AVAILABLE)
     }
 
-    pub fn available(&self) -> u64 {
-        self.dataset_handler
-            .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_AVAILABLE)
-    }
-
     pub fn atime(&self) -> property::OnOff {
-        self.dataset_handler
-            .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_AVAILABLE)
+        let prop = self.dataset_handler.search_property("atime");
+
+        let res = if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val.into(),
+                _ => todo!(),
+            }
+        } else {
+            let default = self
+                .dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_ATIME);
+
+            if self.dataset_handler.check_mnt_option("atime") && default == 0 {
+                property::OnOff::On
+            } else if self.dataset_handler.check_mnt_option("noatime") && default != 0 {
+                property::OnOff::Off
+            } else {
+                default.into()
+            }
+        };
+
+        res
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {

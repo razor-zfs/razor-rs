@@ -44,7 +44,7 @@ impl Mnttab {
         &self.special
     }
 
-    pub(crate) fn _hasmntopt(&self, opt: impl AsRef<str>) -> bool {
+    pub(crate) fn hasmntopt(&self, opt: impl AsRef<str>) -> bool {
         let opt = opt.as_ref();
         self.mntopts.split(",").any(|o| o == opt)
     }

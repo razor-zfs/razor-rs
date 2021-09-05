@@ -53,6 +53,16 @@ impl ZfsDatasetHandler {
         }
     }
 
+    pub fn check_mnt_option(&self, opt: impl AsRef<str>) -> bool {
+        let res = if let Some(mnt) = &self.mntdata {
+            mnt.hasmntopt(opt)
+        } else {
+            false
+        };
+
+        res
+    }
+
     pub fn search_property(&self, name: impl AsRef<str>) -> Result<Value> {
         let nvp = self.zfs_props.lookup_nvpair(name)?;
         Ok(nvp.value())
