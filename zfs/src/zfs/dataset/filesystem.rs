@@ -24,7 +24,7 @@ impl Filesystem {
     pub fn available(&self) -> u64 {
         let prop = self
             .dataset_handler
-            .search_property("logicalused")
+            .search_property("available")
             .unwrap_or_default();
 
         let res = match prop {

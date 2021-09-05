@@ -1,11 +1,11 @@
 use std::ffi::CString;
 
-use razor_zfscore::ZfsDatasetHandler;
-
 use super::core;
 use super::libnvpair;
 use super::property;
+use super::zfs_prop_t;
 use super::Result;
+use super::ZfsDatasetHandler;
 
 #[derive(Debug)]
 pub struct Volume {
@@ -26,6 +26,211 @@ impl Volume {
         let dataset_handler = ZfsDatasetHandler::new(cname)?;
 
         Ok(Volume { dataset_handler })
+    }
+
+    pub fn available(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("available")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn volsize(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("volsize")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn volsize(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("volblocksize")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn logicalused(&self) -> property::CheckSumAlgo {
+        let prop = self.dataset_handler.search_property("logicalused");
+
+        let res = if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val.into(),
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_LOGICALUSED)
+                .into()
+        };
+
+        res
+    }
+
+    pub fn checksum(&self) -> property::CheckSumAlgo {
+        let prop = self.dataset_handler.search_property("checksum");
+
+        let res = if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val.into(),
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_CHECKSUM)
+                .into()
+        };
+
+        res
+    }
+
+    pub fn compression(&self) -> property::CompressionAlgo {
+        let prop = self.dataset_handler.search_property("compression");
+
+        let res = if let Ok(prop) = prop {
+            match prop {
+                libnvpair::Value::U64(val) => val.into(),
+                _ => todo!(),
+            }
+        } else {
+            self.dataset_handler
+                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_COMPRESSION)
+                .into()
+        };
+
+        res
+    }
+
+    pub fn guid(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("guid")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn creation(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("creation")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn createtxg(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("createtxg")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn compressratio(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("compressratio")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn used(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("used")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn referenced(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("referenced")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn logicalreferenced(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("logicalreferenced")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
+    }
+
+    pub fn objsetid(&self) -> u64 {
+        let prop = self
+            .dataset_handler
+            .search_property("objsetid")
+            .unwrap_or_default();
+
+        let res = match prop {
+            libnvpair::Value::U64(val) => val,
+            _ => todo!(),
+        };
+
+        res
     }
 }
 
