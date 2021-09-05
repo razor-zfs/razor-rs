@@ -63,6 +63,16 @@ impl ZfsDatasetHandler {
         res
     }
 
+    pub fn is_mounted(&self) -> bool {
+        let res = if let Some(mnt) = &self.mntdata {
+            !mnt.mntopts().is_empty()
+        } else {
+            false
+        };
+
+        res
+    }
+
     pub fn search_property(&self, name: impl AsRef<str>) -> Result<Value> {
         let nvp = self.zfs_props.lookup_nvpair(name)?;
         Ok(nvp.value())

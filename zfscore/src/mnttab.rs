@@ -32,7 +32,7 @@ impl Mnttab {
         &self.fstype
     }
 
-    pub(crate) fn _mntopts(&self) -> &str {
+    pub(crate) fn mntopts(&self) -> &str {
         &self.mntopts
     }
 
