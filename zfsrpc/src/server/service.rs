@@ -1,5 +1,5 @@
-use crate::zfsrpc_proto::{filesystem_property, volume_property};
-use crate::zfsrpc_proto::{
+use crate::zfsrpc_proto::tonic_zfsrpc::{filesystem_property, volume_property};
+use crate::zfsrpc_proto::tonic_zfsrpc::{
     Filesystem as ProtoFilesystem, FilesystemProperty, Volume as ProtoVolume, VolumeProperty,
 };
 use paste::paste;

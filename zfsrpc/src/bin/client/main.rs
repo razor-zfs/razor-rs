@@ -16,17 +16,26 @@
 use tracing::info;
 use tracing_subscriber::{fmt, EnvFilter};
 
-use zfsrpc::zfsrpc_proto::zfs_rpc_client::ZfsRpcClient;
-use zfsrpc::zfsrpc_proto::*;
+use zfsrpc::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_client::ZfsRpcClient;
+use zfsrpc::zfsrpc_proto::tonic_zfsrpc::*;
+use zfsrpc::zfsrpc_proto::tonic_zfstracer;
+use zfsrpc::zfsrpc_proto::tonic_zfstracer::zfs_tracer_client::ZfsTracerClient;
+use zfsrpc::zfsrpc_proto::tonic_zfstracer::*;
+
+const DEFAULT_TRACE_LEVEL: &str = "warn";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let filter =
+        EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(DEFAULT_TRACE_LEVEL));
+
     fmt()
-        .with_env_filter(EnvFilter::from_default_env())
+        .with_env_filter(filter)
         .with_timer(fmt::time::ChronoUtc::default())
         .init();
 
     let mut client = ZfsRpcClient::connect("http://0.0.0.0:50051").await?;
+    let mut tracer_client = ZfsTracerClient::connect("http://0.0.0.0:50051").await?;
 
     // let capacity = Some(10 * 1024 * 1024 * 1024);
     let pool: String = "dpool".to_string();
@@ -47,6 +56,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     //let request = tonic::Request::new(request);
     // client.create_volume(request).await?;
+
+    let request = BasicDatasetRequest {
+        pool: pool.clone(),
+        name: name.clone(),
+    };
+
+    let request = tonic::Request::new(request);
+
+    //client.destroy_dataset(request).await?;
+    let _fs = client.get_filesystem(request).await?;
+
+    let request = TraceLevel {
+        level: Some(trace_level::Level::Warn(tonic_zfstracer::Variant {})),
+    };
+    let request = tonic::Request::new(request);
+    tracer_client.set_tracing_level(request).await?;
 
     let request = BasicDatasetRequest { pool, name };
 

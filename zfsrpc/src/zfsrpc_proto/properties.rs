@@ -1,4 +1,4 @@
-use crate::zfsrpc_proto::{
+use crate::zfsrpc_proto::tonic_zfsrpc::{
     dataset_properties, filesystem_property, volume_property, FilesystemProperty, Variant,
     VolumeProperty,
 };

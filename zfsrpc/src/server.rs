@@ -2,9 +2,11 @@ use tonic::{Code, Request, Response, Status};
 
 use tracing::trace;
 
-use super::zfsrpc_proto::zfs_rpc_server::ZfsRpc;
-use super::zfsrpc_proto::{BasicDatasetRequest, CreateFilesystemRequest, CreateVolumeRequest};
-use super::zfsrpc_proto::{Empty, Filesystem, Volume};
+use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
+use super::zfsrpc_proto::tonic_zfsrpc::{
+    BasicDatasetRequest, CreateFilesystemRequest, CreateVolumeRequest,
+};
+use super::zfsrpc_proto::tonic_zfsrpc::{Empty, Filesystem, Volume};
 
 pub mod service;
 

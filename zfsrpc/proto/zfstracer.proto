@@ -1,0 +1,19 @@
+syntax = "proto3";
+package zfstracer;
+
+service ZfsTracer {
+    rpc SetTracingLevel(TraceLevel) returns (Empty);
+}
+
+message TraceLevel {
+    oneof level {
+        Variant trace = 1;
+        Variant debug = 2;
+        Variant info = 3;
+        Variant warn = 4;
+        Variant error = 5;
+    }
+}
+
+message Empty {}
+message Variant {}
