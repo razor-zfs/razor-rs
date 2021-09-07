@@ -5,11 +5,10 @@
   before_script:
     - apt update
     - apt install -y build-essential curl
-    - apt update
-    - curl https://sh.rustup.rs -sSf | bash -s -- -y
-    - export PATH="/root/.cargo/bin:${PATH}"
     - apt install -y libzfslinux-dev
     - apt install -y llvm-dev libclang-dev clang
+    - curl https://sh.rustup.rs -sSf | bash -s -- -y --default-toolchain $RUST_TOOLCHAIN
+    - export PATH="/root/.cargo/bin:${PATH}"
   script:
     #- apt install -y apt-transport-https ca-certificates
     #- apt install -y lsb-release wget software-properties-common
@@ -29,18 +28,24 @@ stages:
   - test
 
 stable:test:
+  variables:
+    RUST_TOOLCHAIN: stable
   #tags:
   #  - zfs_runner
   extends: .test:cargo
   #image: rustdocker/rust:stable
 
 beta:test:
+  variables:
+    RUST_TOOLCHAIN: beta
   #tags:
   #  - zfs_runner
   extends: .test:cargo
   #image: rustdocker/rust:beta
 
 nightly:test:
+  variables:
+    RUST_TOOLCHAIN: nightly
   #tags:
   #  - zfs_runner
   extends: .test:cargo
