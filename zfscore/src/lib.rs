@@ -14,15 +14,14 @@
 #![deny(warnings)]
 
 use razor_nvpair as nvpair;
-use razor_zfscore_sys as sys;
 
 use nvpair::NvListError;
 
-pub use sys::zfs_prop_t;
+pub use crate::lzc::zfs_prop_t;
 pub use zfs_handler::ZfsDatasetHandler;
 
-pub mod core;
 pub mod error;
+pub mod lzc;
 
 mod libzfs;
 mod mnttab;

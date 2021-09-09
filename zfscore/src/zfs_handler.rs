@@ -1,11 +1,11 @@
-use std::ffi::CStr;
 use std::ffi::CString;
 
-use razor_nvpair::NvListAccess;
-use razor_nvpair::Value;
-use razor_zfscore_sys as sys;
+use razor_nvpair as nvpair;
+
+use nvpair::NvListAccess;
 
 use crate::libzfs;
+use crate::lzc;
 
 use super::error::CoreError;
 use super::mnttab::Mnttab;
@@ -14,43 +14,32 @@ use super::Result;
 #[derive(Debug)]
 pub struct ZfsDatasetHandler {
     name: CString,
-    zfs_props: razor_nvpair::NvList,
+    handle: *mut lzc::zfs_handle_t,
+    // zfs_props: razor_nvpair::NvList,
     mntdata: Option<Mnttab>,
 }
 
 impl ZfsDatasetHandler {
     pub fn new(name: CString) -> Result<Self> {
-        let zfs_handle = unsafe { libzfs::make_dataset_handle(name.as_ptr()) };
+        let handle = unsafe { libzfs::make_dataset_handle(name.as_ptr()) };
 
-        if zfs_handle.is_null() {
+        if handle.is_null() {
             return Err(CoreError::DatasetNotExist);
         }
 
-        let zfs_props = razor_nvpair::NvList::from(unsafe { (*zfs_handle).zfs_props });
+        // let zfs_props = razor_nvpair::NvList::from(unsafe { (*zfs_handle).zfs_props });
 
         let mntdata = Mnttab::find(&name);
 
         Ok(Self {
             name,
-            zfs_props,
+            handle,
             mntdata,
         })
     }
 
     pub fn get_name(&self) -> String {
         self.name.to_string_lossy().into_owned()
-    }
-
-    pub fn get_prop_default_numeric(&self, prop: sys::zfs_prop_t) -> u64 {
-        unsafe { sys::zfs_prop_default_numeric(prop) }
-    }
-
-    pub fn get_prop_default_string(&self, prop: sys::zfs_prop_t) -> String {
-        unsafe {
-            CStr::from_ptr(sys::zfs_prop_default_string(prop))
-                .to_string_lossy()
-                .into_owned()
-        }
     }
 
     pub fn check_mnt_option(&self, opt: impl AsRef<str>) -> bool {
@@ -69,9 +58,26 @@ impl ZfsDatasetHandler {
         }
     }
 
-    pub fn search_property(&self, name: impl AsRef<str>) -> Result<Value> {
-        let nvp = self.zfs_props.lookup_nvpair(name)?;
-        Ok(nvp.value())
+    pub fn numeric_property(&self, name: &str, property: lzc::zfs_prop_t) -> u64 {
+        let nvl = unsafe { (*self.handle).zfs_props };
+        let nvl = nvpair::NvListRef::from_raw(nvl, self);
+
+        if let Ok(nvp) = nvl.lookup_nvpair(name) {
+            nvp.uint64()
+        } else {
+            lzc::zfs_prop_default_numeric(property)
+        }
+    }
+
+    pub fn string_property(&self, name: &str, property: lzc::zfs_prop_t) -> String {
+        let nvl = unsafe { (*self.handle).zfs_props };
+        let nvl = nvpair::NvListRef::from_raw(nvl, self);
+
+        if let Ok(nvp) = nvl.lookup_nvpair(name) {
+            nvp.string().to_string()
+        } else {
+            lzc::zfs_prop_default_string(property).to_string()
+        }
     }
 }
 

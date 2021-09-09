@@ -1,13 +1,13 @@
 use std::ffi::CString;
 
-use libnvpair::NvListAccess;
+use razor_nvpair as nvpair;
+use razor_zfscore::lzc;
+
+use nvpair::NvListAccess;
 
 use crate::error::DatasetError;
 
-use super::core;
-use super::libnvpair;
 use super::property;
-use super::zfs_prop_t;
 use super::Result;
 use super::ZfsDatasetHandler;
 
@@ -18,7 +18,7 @@ pub struct Filesystem {
 
 impl Filesystem {
     pub fn destroy(self) -> Result<()> {
-        core::destroy_dataset(self.name()).map_err(|err| err.into())
+        lzc::destroy_dataset(self.name()).map_err(|err| err.into())
     }
 
     pub fn name(&self) -> String {
@@ -26,224 +26,93 @@ impl Filesystem {
     }
 
     pub fn available(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("available");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_AVAILABLE)
-        }
+        self.dataset_handler
+            .numeric_property("available", lzc::zfs_prop_t::ZFS_PROP_AVAILABLE)
     }
 
     pub fn atime(&self) -> property::OnOff {
-        let prop = self.dataset_handler.search_property("atime");
+        self.dataset_handler
+            .numeric_property("atime", lzc::zfs_prop_t::ZFS_PROP_ATIME)
+            .into()
 
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val.into(),
-                _ => todo!(),
-            }
-        } else {
-            let default = self
-                .dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_ATIME);
+        // let default = self.dataset_handler.get_prop_default_numeric();
 
-            if self.dataset_handler.check_mnt_option("atime") && default == 0 {
-                property::OnOff::On
-            } else if self.dataset_handler.check_mnt_option("noatime") && default != 0 {
-                property::OnOff::Off
-            } else {
-                default.into()
-            }
-        }
+        // if self.dataset_handler.check_mnt_option("atime") && default == 0 {
+        //     property::OnOff::On
+        // } else if self.dataset_handler.check_mnt_option("noatime") && default != 0 {
+        //     property::OnOff::Off
+        // } else {
+        //     default.into()
+        // }
     }
 
     pub fn logicalused(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("logicalused");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_LOGICALUSED)
-        }
+        self.dataset_handler
+            .numeric_property("logicalused", lzc::zfs_prop_t::ZFS_PROP_LOGICALUSED)
     }
 
     pub fn canmount(&self) -> property::OnOffNoAuto {
-        let prop = self.dataset_handler.search_property("canmount");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val.into(),
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_CANMOUNT)
-                .into()
-        }
+        self.dataset_handler
+            .numeric_property("canmount", lzc::zfs_prop_t::ZFS_PROP_CANMOUNT)
+            .into()
     }
 
     pub fn mounted(&self) -> property::YesNo {
-        let prop = self.dataset_handler.search_property("mounted");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val.into(),
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler.is_mounted().into()
-        }
+        self.dataset_handler.is_mounted().into()
     }
 
     pub fn checksum(&self) -> property::CheckSumAlgo {
-        let prop = self.dataset_handler.search_property("checksum");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val.into(),
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_CHECKSUM)
-                .into()
-        }
+        self.dataset_handler
+            .numeric_property("checksum", lzc::zfs_prop_t::ZFS_PROP_CHECKSUM)
+            .into()
     }
 
     pub fn compression(&self) -> property::CompressionAlgo {
-        let prop = self.dataset_handler.search_property("compression");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val.into(),
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_COMPRESSION)
-                .into()
-        }
+        self.dataset_handler
+            .numeric_property("compression", lzc::zfs_prop_t::ZFS_PROP_COMPRESSION)
+            .into()
     }
 
     pub fn guid(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("guid");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_GUID)
-        }
+        self.dataset_handler
+            .numeric_property("guid", lzc::zfs_prop_t::ZFS_PROP_GUID)
     }
 
     pub fn creation(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("creation");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_CREATION)
-        }
+        self.dataset_handler
+            .numeric_property("creation", lzc::zfs_prop_t::ZFS_PROP_CREATION)
     }
 
     pub fn createtxg(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("createtxg");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_CREATETXG)
-        }
+        self.dataset_handler
+            .numeric_property("createtxg", lzc::zfs_prop_t::ZFS_PROP_CREATETXG)
     }
 
     pub fn compressratio(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("compressratio");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_COMPRESSRATIO)
-        }
+        self.dataset_handler
+            .numeric_property("compressratio", lzc::zfs_prop_t::ZFS_PROP_COMPRESSRATIO)
     }
 
     pub fn used(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("used");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_USED)
-        }
+        self.dataset_handler
+            .numeric_property("used", lzc::zfs_prop_t::ZFS_PROP_USED)
     }
 
     pub fn referenced(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("referenced");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_REFERENCED)
-        }
+        self.dataset_handler
+            .numeric_property("referenced", lzc::zfs_prop_t::ZFS_PROP_REFERENCED)
     }
 
     pub fn logicalreferenced(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("logicalreferenced");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_LOGICALREFERENCED)
-        }
+        self.dataset_handler.numeric_property(
+            "logicalreferenced",
+            lzc::zfs_prop_t::ZFS_PROP_LOGICALREFERENCED,
+        )
     }
 
     pub fn objsetid(&self) -> u64 {
-        let prop = self.dataset_handler.search_property("objsetid");
-
-        if let Ok(prop) = prop {
-            match prop {
-                libnvpair::Value::U64(val) => val,
-                _ => todo!(),
-            }
-        } else {
-            self.dataset_handler
-                .get_prop_default_numeric(zfs_prop_t::ZFS_PROP_OBJSETID)
-        }
+        self.dataset_handler
+            .numeric_property("objsetid", lzc::zfs_prop_t::ZFS_PROP_OBJSETID)
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Self> {
@@ -256,15 +125,16 @@ impl Filesystem {
 
 #[derive(Debug)]
 pub struct FileSystemBuilder {
-    nvlist: libnvpair::NvList,
+    nvlist: nvpair::NvList,
     name: String,
     err: Option<DatasetError>,
 }
 
 impl FileSystemBuilder {
     pub fn new(name: impl AsRef<str>) -> Self {
+        let nvlist = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
         Self {
-            nvlist: libnvpair::NvList::new(libnvpair::NvFlag::UniqueName),
+            nvlist,
             name: name.as_ref().to_string(),
             err: None,
         }
@@ -402,7 +272,7 @@ impl FileSystemBuilder {
         match self.err {
             Some(err) => Err(err),
             None => {
-                core::create_filesystem(&self.name, &self.nvlist)?;
+                lzc::create_filesystem(&self.name, &self.nvlist)?;
                 let dataset_handler = ZfsDatasetHandler::new(cname)?;
                 let filesystem: Filesystem = Filesystem { dataset_handler };
 

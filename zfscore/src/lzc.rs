@@ -1,4 +1,5 @@
-use std::ffi::CString;
+use std::borrow::Cow;
+use std::ffi;
 use std::ptr;
 
 use once_cell::sync::Lazy;
@@ -7,6 +8,9 @@ use razor_nvpair as nvpair;
 use razor_zfscore_sys as sys;
 
 use nvpair::NvListAccess;
+
+pub use sys::zfs_handle_t;
+pub use sys::zfs_prop_t;
 
 use super::error::value_or_err;
 use super::Result;
@@ -35,6 +39,14 @@ impl Lzc {
     unsafe fn lzc_destroy(&self, name: *const libc::c_char) -> libc::c_int {
         sys::lzc_destroy(name)
     }
+
+    unsafe fn zfs_prop_default_string(&self, property: zfs_prop_t) -> *const libc::c_char {
+        sys::zfs_prop_default_string(property)
+    }
+
+    unsafe fn zfs_prop_default_numeric(&self, property: zfs_prop_t) -> u64 {
+        sys::zfs_prop_default_numeric(property)
+    }
 }
 
 pub fn create_filesystem(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<()> {
@@ -50,7 +62,7 @@ fn create_dataset(
     dataset_type: sys::lzc_dataset_type,
     nvl: &nvpair::NvList,
 ) -> Result<()> {
-    let cname = CString::new(name.as_ref())?;
+    let cname = ffi::CString::new(name.as_ref())?;
     let name = cname.as_ptr();
     let nvl = nvl.nvl();
 
@@ -60,9 +72,20 @@ fn create_dataset(
 }
 
 pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
-    let cname = CString::new(name.as_ref())?;
+    let cname = ffi::CString::new(name.as_ref())?;
     let name = cname.as_ptr();
     let rc = unsafe { LIBZFS_CORE.lzc_destroy(name) };
 
     value_or_err((), rc)
+}
+
+pub fn zfs_prop_default_string(property: zfs_prop_t) -> Cow<'static, str> {
+    unsafe {
+        let cstr = LIBZFS_CORE.zfs_prop_default_string(property);
+        ffi::CStr::from_ptr(cstr).to_string_lossy()
+    }
+}
+
+pub fn zfs_prop_default_numeric(property: zfs_prop_t) -> u64 {
+    unsafe { LIBZFS_CORE.zfs_prop_default_numeric(property) }
 }

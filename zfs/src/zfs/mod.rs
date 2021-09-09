@@ -1,12 +1,12 @@
+use razor_zfscore::lzc;
+
 pub use dataset::Bookmark;
 pub use dataset::Filesystem;
 pub use dataset::Snapshot;
 pub use dataset::Volume;
 
-use super::core;
-use super::ZfsDatasetHandler;
-use super::zfs_prop_t;
 use super::Result;
+use super::ZfsDatasetHandler;
 
 pub use dataset::FileSystemBuilder;
 pub use dataset::VolumeBuilder;
@@ -28,7 +28,7 @@ impl Zfs {
     }
 
     pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
-        core::destroy_dataset(name).map_err(|err| err.into())
+        lzc::destroy_dataset(name).map_err(|err| err.into())
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {
