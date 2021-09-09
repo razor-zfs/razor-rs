@@ -24,7 +24,7 @@ pub use zfs_handler::ZfsDatasetHandler;
 pub mod core;
 pub mod error;
 
-mod libzfs_handler;
+mod libzfs;
 mod mnttab;
 mod zfs_handler;
 

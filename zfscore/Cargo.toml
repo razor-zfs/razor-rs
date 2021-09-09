@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 libc = "0.2"
 once_cell = "1.8"
-parking_lot = "0.11"
-razor-zfscore-sys = { version = "0.1", path = "../zfscore-sys" }
+razor-libnvpair = { version = "0.1", path = "../libnvpair" }
 razor-nvpair = { version = "0.1", path = "../nvpair" }
+razor-zfscore-sys = { version = "0.1", path = "../zfscore-sys" }
 thiserror = "1.0"

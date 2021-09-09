@@ -1,9 +1,8 @@
 use std::ffi;
-use std::mem;
 
 use razor_zfscore_sys as sys;
 
-use super::libzfs_handler::LibZfsHandler;
+use crate::libzfs;
 
 #[derive(Clone, Debug)]
 pub(crate) struct Mnttab {
@@ -16,16 +15,7 @@ pub(crate) struct Mnttab {
 impl Mnttab {
     pub(crate) fn find(name: impl AsRef<ffi::CStr>) -> Option<Self> {
         let name = name.as_ref();
-        let handler = LibZfsHandler::handler();
-
-        unsafe {
-            let mut entry = mem::MaybeUninit::uninit();
-            if sys::libzfs_mnttab_find(handler, name.as_ptr(), entry.as_mut_ptr()) == 0 {
-                Some(Self::from_entry(entry.assume_init()))
-            } else {
-                None
-            }
-        }
+        unsafe { libzfs::libzfs_mnttab_find(name.as_ptr()).map(|entry| Self::from_entry(entry)) }
     }
 
     pub(crate) fn _fstype(&self) -> &str {

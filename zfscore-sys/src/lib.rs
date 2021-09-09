@@ -3,6 +3,6 @@
 #![allow(non_snake_case)]
 #![allow(deref_nullptr)]
 
-use razor_libnvpair_sys::*;
+use razor_libnvpair::*;
 
 include!(concat!(env!("OUT_DIR"), "/zfs_core.rs"));

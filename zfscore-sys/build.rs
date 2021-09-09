@@ -14,6 +14,8 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("wrapper.h")
+        .size_t_is_usize(true)
+        .ctypes_prefix("libc")
         .allowlist_type(r#"(\w*zfs_type_dataset\w*)"#)
         .allowlist_type(r#"(\w*zfs_handle_t\w*)"#)
         .allowlist_type(r#"(\w*libzfs_handle_t\w*)"#)

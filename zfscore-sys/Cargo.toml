@@ -5,7 +5,9 @@ edition = "2021"
 build = "build.rs"
 
 [dependencies]
-razor-libnvpair-sys = { version = "0.1", path = "../libnvpair-sys" }
+libc = "0.2"
+razor-libnvpair = { version = "0.1", path = "../libnvpair" }
+
 
 [build-dependencies]
 bindgen = "0.59"

@@ -3,11 +3,12 @@ use std::ffi::CString;
 
 use razor_nvpair::NvListAccess;
 use razor_nvpair::Value;
+use razor_zfscore_sys as sys;
+
+use crate::libzfs;
 
 use super::error::CoreError;
-use super::libzfs_handler::LibZfsHandler;
 use super::mnttab::Mnttab;
-use super::sys;
 use super::Result;
 
 #[derive(Debug)]
@@ -19,8 +20,7 @@ pub struct ZfsDatasetHandler {
 
 impl ZfsDatasetHandler {
     pub fn new(name: CString) -> Result<Self> {
-        let zfs_handle =
-            unsafe { sys::make_dataset_handle(LibZfsHandler::handler(), name.as_ptr()) };
+        let zfs_handle = unsafe { libzfs::make_dataset_handle(name.as_ptr()) };
 
         if zfs_handle.is_null() {
             return Err(CoreError::DatasetNotExist);
