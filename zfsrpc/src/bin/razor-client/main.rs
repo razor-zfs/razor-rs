@@ -13,11 +13,12 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use tracing::info;
+//use tracing::info;
 use tracing_subscriber::{fmt, EnvFilter};
 
-use zfsrpc::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_client::ZfsRpcClient;
-use zfsrpc::zfsrpc_proto::tonic_zfsrpc::*;
+use razor_zfsrpc as zfsrpc;
+//use zfsrpc::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_client::ZfsRpcClient;
+//use zfsrpc::zfsrpc_proto::tonic_zfsrpc::*;
 use zfsrpc::zfsrpc_proto::tonic_zfstracer;
 use zfsrpc::zfsrpc_proto::tonic_zfstracer::zfs_tracer_client::ZfsTracerClient;
 use zfsrpc::zfsrpc_proto::tonic_zfstracer::*;
@@ -34,12 +35,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_timer(fmt::time::ChronoUtc::default())
         .init();
 
-    let mut client = ZfsRpcClient::connect("http://0.0.0.0:50051").await?;
+    //let mut client = ZfsRpcClient::connect("http://0.0.0.0:50051").await?;
     let mut tracer_client = ZfsTracerClient::connect("http://0.0.0.0:50051").await?;
 
     // let capacity = Some(10 * 1024 * 1024 * 1024);
-    let pool: String = "dpool".to_string();
-    let name: String = "Vol2".to_string();
+    //let pool: String = "dpool".to_string();
+    //let name: String = "Vol2".to_string();
     //let canmount = dataset_properties::CanMount::off().into();
     //let atime = dataset_properties::ATime::off().into();
 
@@ -57,15 +58,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //let request = tonic::Request::new(request);
     // client.create_volume(request).await?;
 
-    let request = BasicDatasetRequest {
-        pool: pool.clone(),
-        name: name.clone(),
-    };
+    // let request = BasicDatasetRequest {
+    //     pool: pool.clone(),
+    //     name: name.clone(),
+    // };
 
-    let request = tonic::Request::new(request);
+    // let request = tonic::Request::new(request);
 
-    //client.destroy_dataset(request).await?;
-    let _fs = client.get_filesystem(request).await?;
+    // //client.destroy_dataset(request).await?;
+    // let _fs = client.get_filesystem(request).await?;
 
     let request = TraceLevel {
         level: Some(trace_level::Level::Warn(tonic_zfstracer::Variant {})),
@@ -73,14 +74,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let request = tonic::Request::new(request);
     tracer_client.set_tracing_level(request).await?;
 
-    let request = BasicDatasetRequest { pool, name };
+    // let request = BasicDatasetRequest { pool, name };
 
-    let request = tonic::Request::new(request);
+    // let request = tonic::Request::new(request);
 
-    //client.destroy_dataset(request).await?;
-    let fs = client.get_filesystem(request).await?;
+    // //client.destroy_dataset(request).await?;
+    // let fs = client.get_filesystem(request).await?;
 
-    info!(?fs);
+    // info!(?fs);
 
     Ok(())
 }

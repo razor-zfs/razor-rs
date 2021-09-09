@@ -1,5 +1,5 @@
 [package]
-name = "zfsrpc"
+name = "razor-zfsrpc"
 version = "0.1.0"
 edition = "2018"
 
@@ -17,13 +17,3 @@ anyhow = "1.0"
 
 [build-dependencies]
 tonic-build = "0.5"
-
-[lib]
-name = "zfsrpc"
-
-[[bin]]
-name = "client"
-
-[[bin]]
-name = "server"
-

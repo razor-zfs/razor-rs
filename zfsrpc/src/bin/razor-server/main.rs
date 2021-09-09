@@ -16,6 +16,8 @@
 use std::time;
 
 use tonic::transport::Server;
+
+use razor_zfsrpc as zfsrpc;
 use zfsrpc::server::service;
 use zfsrpc::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpcServer;
 use zfsrpc::zfsrpc_proto::tonic_zfstracer::zfs_tracer_server::ZfsTracerServer;
@@ -26,6 +28,8 @@ pub mod zfs_tracing {
 
     use tonic::{Code, Request, Response, Status};
     use tracing_subscriber::{fmt, reload::Handle, EnvFilter};
+
+    use razor_zfsrpc as zfsrpc;
     use zfsrpc::zfsrpc_proto::tonic_zfstracer::zfs_tracer_server::ZfsTracer;
     use zfsrpc::zfsrpc_proto::tonic_zfstracer::{trace_level, Empty, TraceLevel};
 

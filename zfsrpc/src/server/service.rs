@@ -43,13 +43,13 @@ impl Volume {
         capacity: u64,
         properties: impl IntoIterator<Item = VolumeProperty>,
     ) -> Result<()> {
-        let builder = Zfs::volume(format!("{}/{}", pool, name));
+        let builder = Zfs::volume();
 
         let _volume = properties
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
-            .create(capacity)?;
+            .create(format!("{}/{}", pool, name), capacity)?;
 
         Ok(())
     }
@@ -121,13 +121,13 @@ impl Filesystem {
         name: String,
         properties: impl IntoIterator<Item = FilesystemProperty>,
     ) -> Result<()> {
-        let builder = Zfs::filesystem(format!("{}/{}", pool, name));
+        let builder = Zfs::filesystem();
 
         let _fs = properties
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
-            .create()?;
+            .create(format!("{}/{}", pool, name))?;
 
         Ok(())
     }
