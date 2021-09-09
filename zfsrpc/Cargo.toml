@@ -9,7 +9,7 @@ razor-zfs= { version = "0.1.0", path = "../zfs" }
 tonic = "0.5"
 paste = "1.0"
 prost = "0.8"
-prop-macro = {version = "0.1", path = "./src/prop-macro"}
+prop-macro = {version = "0.1", path = "../prop-macro"}
 tracing = "0.1"
 tracing-subscriber = "0.2"
 tracing-appender = "0.1"
