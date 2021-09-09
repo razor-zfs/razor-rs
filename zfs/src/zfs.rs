@@ -6,7 +6,7 @@ pub use dataset::Snapshot;
 pub use dataset::Volume;
 
 use super::Result;
-use super::ZfsDatasetHandler;
+use super::ZfsDatasetHandle;
 
 pub use dataset::FileSystemBuilder;
 pub use dataset::VolumeBuilder;

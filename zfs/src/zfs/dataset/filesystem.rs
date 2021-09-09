@@ -9,11 +9,11 @@ use crate::error::DatasetError;
 
 use super::property;
 use super::Result;
-use super::ZfsDatasetHandler;
+use super::ZfsDatasetHandle;
 
 #[derive(Debug)]
 pub struct Filesystem {
-    dataset_handler: ZfsDatasetHandler,
+    dataset: ZfsDatasetHandle,
 }
 
 impl Filesystem {
@@ -22,16 +22,16 @@ impl Filesystem {
     }
 
     pub fn name(&self) -> String {
-        self.dataset_handler.get_name()
+        self.dataset.get_name()
     }
 
     pub fn available(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("available", lzc::zfs_prop_t::ZFS_PROP_AVAILABLE)
     }
 
     pub fn atime(&self) -> property::OnOff {
-        self.dataset_handler
+        self.dataset
             .numeric_property("atime", lzc::zfs_prop_t::ZFS_PROP_ATIME)
             .into()
 
@@ -47,79 +47,79 @@ impl Filesystem {
     }
 
     pub fn logicalused(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("logicalused", lzc::zfs_prop_t::ZFS_PROP_LOGICALUSED)
     }
 
     pub fn canmount(&self) -> property::OnOffNoAuto {
-        self.dataset_handler
+        self.dataset
             .numeric_property("canmount", lzc::zfs_prop_t::ZFS_PROP_CANMOUNT)
             .into()
     }
 
     pub fn mounted(&self) -> property::YesNo {
-        self.dataset_handler.is_mounted().into()
+        self.dataset.is_mounted().into()
     }
 
     pub fn checksum(&self) -> property::CheckSumAlgo {
-        self.dataset_handler
+        self.dataset
             .numeric_property("checksum", lzc::zfs_prop_t::ZFS_PROP_CHECKSUM)
             .into()
     }
 
     pub fn compression(&self) -> property::CompressionAlgo {
-        self.dataset_handler
+        self.dataset
             .numeric_property("compression", lzc::zfs_prop_t::ZFS_PROP_COMPRESSION)
             .into()
     }
 
     pub fn guid(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("guid", lzc::zfs_prop_t::ZFS_PROP_GUID)
     }
 
     pub fn creation(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("creation", lzc::zfs_prop_t::ZFS_PROP_CREATION)
     }
 
     pub fn createtxg(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("createtxg", lzc::zfs_prop_t::ZFS_PROP_CREATETXG)
     }
 
     pub fn compressratio(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("compressratio", lzc::zfs_prop_t::ZFS_PROP_COMPRESSRATIO)
     }
 
     pub fn used(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("used", lzc::zfs_prop_t::ZFS_PROP_USED)
     }
 
     pub fn referenced(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("referenced", lzc::zfs_prop_t::ZFS_PROP_REFERENCED)
     }
 
     pub fn logicalreferenced(&self) -> u64 {
-        self.dataset_handler.numeric_property(
+        self.dataset.numeric_property(
             "logicalreferenced",
             lzc::zfs_prop_t::ZFS_PROP_LOGICALREFERENCED,
         )
     }
 
     pub fn objsetid(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("objsetid", lzc::zfs_prop_t::ZFS_PROP_OBJSETID)
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Self> {
         let cname = CString::new(name.as_ref())?;
-        let dataset_handler = ZfsDatasetHandler::new(cname)?;
+        let dataset = ZfsDatasetHandle::new(cname)?;
 
-        Ok(Self { dataset_handler })
+        Ok(Self { dataset })
     }
 }
 
@@ -273,8 +273,10 @@ impl FileSystemBuilder {
             Some(err) => Err(err),
             None => {
                 lzc::create_filesystem(&self.name, &self.nvlist)?;
-                let dataset_handler = ZfsDatasetHandler::new(cname)?;
-                let filesystem: Filesystem = Filesystem { dataset_handler };
+                let dataset_handler = ZfsDatasetHandle::new(cname)?;
+                let filesystem: Filesystem = Filesystem {
+                    dataset: dataset_handler,
+                };
 
                 Ok(filesystem)
             }

@@ -12,14 +12,14 @@ use super::mnttab::Mnttab;
 use super::Result;
 
 #[derive(Debug)]
-pub struct ZfsDatasetHandler {
+pub struct ZfsDatasetHandle {
     name: CString,
     handle: *mut lzc::zfs_handle_t,
     // zfs_props: razor_nvpair::NvList,
     mntdata: Option<Mnttab>,
 }
 
-impl ZfsDatasetHandler {
+impl ZfsDatasetHandle {
     pub fn new(name: CString) -> Result<Self> {
         let handle = unsafe { libzfs::make_dataset_handle(name.as_ptr()) };
 

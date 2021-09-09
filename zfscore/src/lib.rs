@@ -17,14 +17,14 @@ use razor_nvpair as nvpair;
 
 use nvpair::NvListError;
 
+pub use crate::dataset::ZfsDatasetHandle;
 pub use crate::lzc::zfs_prop_t;
-pub use zfs_handler::ZfsDatasetHandler;
 
 pub mod error;
 pub mod lzc;
 
+mod dataset;
 mod libzfs;
 mod mnttab;
-mod zfs_handler;
 
 pub type Result<T> = std::result::Result<T, error::CoreError>;

@@ -14,7 +14,7 @@
 #![deny(warnings)]
 
 use razor_nvpair::NvListError;
-use razor_zfscore::ZfsDatasetHandler;
+use razor_zfscore::ZfsDatasetHandle;
 
 pub mod error;
 pub mod zfs;

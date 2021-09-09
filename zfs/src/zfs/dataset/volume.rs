@@ -9,11 +9,11 @@ use crate::error::DatasetError;
 
 use super::property;
 use super::Result;
-use super::ZfsDatasetHandler;
+use super::ZfsDatasetHandle;
 
 #[derive(Debug)]
 pub struct Volume {
-    dataset_handler: ZfsDatasetHandler,
+    dataset: ZfsDatasetHandle,
 }
 
 impl Volume {
@@ -22,87 +22,87 @@ impl Volume {
     }
 
     pub fn name(&self) -> String {
-        self.dataset_handler.get_name()
+        self.dataset.get_name()
     }
 
     pub fn get_volume(name: impl AsRef<str>) -> Result<Self> {
         let cname = CString::new(name.as_ref())?;
-        let dataset_handler = ZfsDatasetHandler::new(cname)?;
+        let dataset = ZfsDatasetHandle::new(cname)?;
 
-        Ok(Self { dataset_handler })
+        Ok(Self { dataset })
     }
 
     pub fn available(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("available", lzc::zfs_prop_t::ZFS_PROP_AVAILABLE)
     }
 
     pub fn volsize(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("volsize", lzc::zfs_prop_t::ZFS_PROP_VOLSIZE)
     }
 
     pub fn volblocksize(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("volblocksize", lzc::zfs_prop_t::ZFS_PROP_VOLBLOCKSIZE)
     }
 
     pub fn logicalused(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("logicalused", lzc::zfs_prop_t::ZFS_PROP_LOGICALUSED)
     }
 
     pub fn checksum(&self) -> property::CheckSumAlgo {
-        self.dataset_handler
+        self.dataset
             .numeric_property("checksum", lzc::zfs_prop_t::ZFS_PROP_CHECKSUM)
             .into()
     }
 
     pub fn compression(&self) -> property::CompressionAlgo {
-        self.dataset_handler
+        self.dataset
             .numeric_property("compression", lzc::zfs_prop_t::ZFS_PROP_COMPRESSION)
             .into()
     }
 
     pub fn guid(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("guid", lzc::zfs_prop_t::ZFS_PROP_GUID)
     }
 
     pub fn creation(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("creation", lzc::zfs_prop_t::ZFS_PROP_CREATION)
     }
 
     pub fn createtxg(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("createtxg", lzc::zfs_prop_t::ZFS_PROP_CREATETXG)
     }
 
     pub fn compressratio(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("compressratio", lzc::zfs_prop_t::ZFS_PROP_COMPRESSRATIO)
     }
 
     pub fn used(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("used", lzc::zfs_prop_t::ZFS_PROP_USED)
     }
 
     pub fn referenced(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("referenced", lzc::zfs_prop_t::ZFS_PROP_REFERENCED)
     }
 
     pub fn logicalreferenced(&self) -> u64 {
-        self.dataset_handler.numeric_property(
+        self.dataset.numeric_property(
             "logicalreferenced",
             lzc::zfs_prop_t::ZFS_PROP_LOGICALREFERENCED,
         )
     }
 
     pub fn objsetid(&self) -> u64 {
-        self.dataset_handler
+        self.dataset
             .numeric_property("objsetid", lzc::zfs_prop_t::ZFS_PROP_OBJSETID)
     }
 }
@@ -187,9 +187,11 @@ impl VolumeBuilder {
                 self.nvlist.add_uint64("volblocksize", self.volblocksize)?;
 
                 lzc::create_volume(&self.name, &self.nvlist)?;
-                let dataset_handler = ZfsDatasetHandler::new(cname)?;
+                let dataset_handler = ZfsDatasetHandle::new(cname)?;
 
-                let volume: Volume = Volume { dataset_handler };
+                let volume: Volume = Volume {
+                    dataset: dataset_handler,
+                };
 
                 Ok(volume)
             }
