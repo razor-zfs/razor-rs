@@ -3,7 +3,6 @@ use std::ffi;
 use std::ptr;
 
 use once_cell::sync::Lazy;
-use razor_libnvpair as libnvpair;
 use razor_nvpair as nvpair;
 use razor_zfscore_sys as sys;
 
@@ -29,7 +28,7 @@ impl Lzc {
         &self,
         name: *const libc::c_char,
         dataset_type: sys::lzc_dataset_type,
-        props: *mut libnvpair::nvlist_t,
+        props: *mut sys::nvlist_t,
     ) -> libc::c_int {
         let wkeydata = ptr::null_mut();
         let wkeylen = 0;

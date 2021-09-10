@@ -66,3 +66,7 @@ pub(crate) unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle
 pub(crate) unsafe fn zfs_close(handle: *mut sys::zfs_handle_t) {
     LIBZFS_HANDLE.zfs_close(handle)
 }
+
+pub(crate) unsafe fn zfs_get_all_props(handle: *mut sys::zfs_handle_t) -> *mut sys::nvlist_t {
+    sys::zfs_get_all_props(handle)
+}
