@@ -1,5 +1,7 @@
 use super::*;
 
+use ::std::result::Result as StdResult;
+
 pub trait NvListAccess {
     fn nvl(&self) -> *mut libnvpair::nvlist_t;
 

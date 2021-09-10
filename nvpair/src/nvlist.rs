@@ -2,7 +2,6 @@ use std::ffi::CString;
 use std::marker::PhantomData;
 use std::ops::Not;
 use std::ptr;
-use std::result::Result as StdResult;
 
 use razor_libnvpair as libnvpair;
 
@@ -55,14 +54,6 @@ impl NvList {
         let nvl = unsafe { libnvpair::nvlist_alloc(flag) };
         Self { nvl }
     }
-
-    // pub fn iter(&self) -> Iter<'_> {
-    //     Iter {
-    //         nvl: self.nvl,
-    //         nvp: None,
-    //         anchor: PhantomData,
-    //     }
-    // }
 }
 
 impl From<*mut libnvpair::nvlist_t> for NvList {
