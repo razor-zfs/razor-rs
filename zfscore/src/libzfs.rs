@@ -58,7 +58,7 @@ pub(crate) unsafe fn zfs_get_all_props(handle: *mut sys::zfs_handle_t) -> *mut s
     sys::zfs_get_all_props(handle)
 }
 
-pub(crate) unsafe fn zfs_prop_get_numeric(
+pub(crate) unsafe fn _zfs_prop_get_numeric(
     handle: *mut sys::zfs_handle_t,
     property: sys::zfs_prop_t,
 ) -> u64 {
@@ -80,6 +80,14 @@ pub(crate) unsafe fn zfs_prop_get_numeric(
     } else {
         panic!("zfs_prop_get_numeric failed");
     }
+}
+
+pub(crate) unsafe fn zfs_prop_get_int(
+    handle: *mut sys::zfs_handle_t,
+    property: sys::zfs_prop_t,
+) -> u64 {
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zfs_prop_get_int(handle, property)
 }
 
 pub(crate) unsafe fn zfs_prop_to_name(property: sys::zfs_prop_t) -> *const libc::c_char {

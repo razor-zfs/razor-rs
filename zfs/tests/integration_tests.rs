@@ -9,6 +9,8 @@ fn create_basic_filesystem() {
     let filesystem = Zfs::filesystem("dpool/filesystem").create().unwrap();
 
     dbg!(&filesystem);
+    assert_eq!(filesystem.name(), "dpool/filesystem");
+    assert_eq!(filesystem.mounted(), property::YesNo::No);
 
     filesystem.destroy().unwrap();
 }

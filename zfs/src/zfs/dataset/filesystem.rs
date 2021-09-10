@@ -11,6 +11,8 @@ use super::property;
 use super::Result;
 use super::ZfsDatasetHandle;
 
+use lzc::zfs_prop_t::*;
+
 #[derive(Debug)]
 pub struct Filesystem {
     dataset: ZfsDatasetHandle,
@@ -25,15 +27,14 @@ impl Filesystem {
         self.dataset.get_name()
     }
 
+    #[inline]
     pub fn available(&self) -> u64 {
-        self.dataset
-            .numeric_property("available", lzc::zfs_prop_t::ZFS_PROP_AVAILABLE)
+        self.dataset.numeric_property(ZFS_PROP_AVAILABLE)
     }
 
+    #[inline]
     pub fn atime(&self) -> property::OnOff {
-        self.dataset
-            .numeric_property("atime", lzc::zfs_prop_t::ZFS_PROP_ATIME)
-            .into()
+        self.dataset.numeric_property(ZFS_PROP_ATIME).into()
 
         // let default = self.dataset_handler.get_prop_default_numeric();
 
@@ -46,73 +47,69 @@ impl Filesystem {
         // }
     }
 
+    #[inline]
     pub fn logicalused(&self) -> u64 {
-        self.dataset
-            .numeric_property("logicalused", lzc::zfs_prop_t::ZFS_PROP_LOGICALUSED)
+        self.dataset.numeric_property(ZFS_PROP_LOGICALUSED)
     }
 
+    #[inline]
     pub fn canmount(&self) -> property::OnOffNoAuto {
-        self.dataset
-            .numeric_property("canmount", lzc::zfs_prop_t::ZFS_PROP_CANMOUNT)
-            .into()
+        self.dataset.numeric_property(ZFS_PROP_CANMOUNT).into()
     }
 
+    #[inline]
     pub fn mounted(&self) -> property::YesNo {
         self.dataset.is_mounted().into()
     }
 
+    #[inline]
     pub fn checksum(&self) -> property::CheckSumAlgo {
-        self.dataset
-            .numeric_property("checksum", lzc::zfs_prop_t::ZFS_PROP_CHECKSUM)
-            .into()
+        self.dataset.numeric_property(ZFS_PROP_CHECKSUM).into()
     }
 
+    #[inline]
     pub fn compression(&self) -> property::CompressionAlgo {
-        self.dataset
-            .numeric_property("compression", lzc::zfs_prop_t::ZFS_PROP_COMPRESSION)
-            .into()
+        self.dataset.numeric_property(ZFS_PROP_COMPRESSION).into()
     }
 
+    #[inline]
     pub fn guid(&self) -> u64 {
-        self.dataset
-            .numeric_property("guid", lzc::zfs_prop_t::ZFS_PROP_GUID)
+        self.dataset.numeric_property(ZFS_PROP_GUID)
     }
 
+    #[inline]
     pub fn creation(&self) -> u64 {
-        self.dataset
-            .numeric_property("creation", lzc::zfs_prop_t::ZFS_PROP_CREATION)
+        self.dataset.numeric_property(ZFS_PROP_CREATION)
     }
 
+    #[inline]
     pub fn createtxg(&self) -> u64 {
-        self.dataset
-            .numeric_property("createtxg", lzc::zfs_prop_t::ZFS_PROP_CREATETXG)
+        self.dataset.numeric_property(ZFS_PROP_CREATETXG)
     }
 
+    #[inline]
     pub fn compressratio(&self) -> u64 {
-        self.dataset
-            .numeric_property("compressratio", lzc::zfs_prop_t::ZFS_PROP_COMPRESSRATIO)
+        self.dataset.numeric_property(ZFS_PROP_COMPRESSRATIO)
     }
 
+    #[inline]
     pub fn used(&self) -> u64 {
-        self.dataset
-            .numeric_property("used", lzc::zfs_prop_t::ZFS_PROP_USED)
+        self.dataset.numeric_property(ZFS_PROP_USED)
     }
 
+    #[inline]
     pub fn referenced(&self) -> u64 {
-        self.dataset
-            .numeric_property("referenced", lzc::zfs_prop_t::ZFS_PROP_REFERENCED)
+        self.dataset.numeric_property(ZFS_PROP_REFERENCED)
     }
 
+    #[inline]
     pub fn logicalreferenced(&self) -> u64 {
-        self.dataset.numeric_property(
-            "logicalreferenced",
-            lzc::zfs_prop_t::ZFS_PROP_LOGICALREFERENCED,
-        )
+        self.dataset.numeric_property(ZFS_PROP_LOGICALREFERENCED)
     }
 
+    #[inline]
     pub fn objsetid(&self) -> u64 {
-        self.dataset
-            .numeric_property("objsetid", lzc::zfs_prop_t::ZFS_PROP_OBJSETID)
+        self.dataset.numeric_property(ZFS_PROP_OBJSETID)
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Self> {
