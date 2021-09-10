@@ -1,4 +1,5 @@
 use std::mem;
+use std::ptr;
 
 use once_cell::sync::Lazy;
 use razor_zfscore_sys as sys;
@@ -40,10 +41,6 @@ impl LibZfsHandle {
         let types = types.0 as i32;
         sys::zfs_open(self.libzfs_handle, name, types)
     }
-
-    unsafe fn zfs_close(&self, handle: *mut sys::zfs_handle_t) {
-        sys::zfs_close(handle)
-    }
 }
 
 // pub(crate) unsafe fn make_dataset_handle(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
@@ -64,9 +61,35 @@ pub(crate) unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle
 }
 
 pub(crate) unsafe fn zfs_close(handle: *mut sys::zfs_handle_t) {
-    LIBZFS_HANDLE.zfs_close(handle)
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zfs_close(handle);
 }
 
 pub(crate) unsafe fn zfs_get_all_props(handle: *mut sys::zfs_handle_t) -> *mut sys::nvlist_t {
+    Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_get_all_props(handle)
+}
+
+pub(crate) unsafe fn zfs_prop_get_numeric(
+    handle: *mut sys::zfs_handle_t,
+    property: sys::zfs_prop_t,
+) -> u64 {
+    Lazy::force(&LIBZFS_HANDLE);
+    let mut value = 0;
+    let mut src = mem::MaybeUninit::uninit();
+    let statbuf = ptr::null_mut();
+    let statlen = 0;
+    let rc = sys::zfs_prop_get_numeric(
+        handle,
+        property,
+        &mut value,
+        src.as_mut_ptr(),
+        statbuf,
+        statlen,
+    );
+    if rc == 0 {
+        value
+    } else {
+        panic!("zfs_prop_get_numeric failed");
+    }
 }

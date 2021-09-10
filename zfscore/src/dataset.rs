@@ -69,6 +69,10 @@ impl ZfsDatasetHandle {
         }
     }
 
+    pub fn numeric_property_new(&self, property: lzc::zfs_prop_t) -> u64 {
+        unsafe { libzfs::zfs_prop_get_numeric(self.handle, property) }
+    }
+
     pub fn string_property(&self, name: &str, property: lzc::zfs_prop_t) -> String {
         let nvl = unsafe { libzfs::zfs_get_all_props(self.handle) };
         let nvl = nvpair::NvListRef::from_raw(nvl, self);
