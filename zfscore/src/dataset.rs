@@ -1,4 +1,5 @@
-use std::ffi::CString;
+use std::borrow::Cow;
+use std::ffi;
 
 use razor_nvpair as nvpair;
 
@@ -12,23 +13,25 @@ use super::Result;
 
 #[derive(Debug)]
 pub struct ZfsDatasetHandle {
-    name: CString,
     handle: *mut lzc::zfs_handle_t,
 }
 
 impl ZfsDatasetHandle {
-    pub fn new(name: CString) -> Result<Self> {
+    pub fn new(name: ffi::CString) -> Result<Self> {
         let handle = unsafe { libzfs::zfs_open(name.as_ptr()) };
 
         if handle.is_null() {
             return Err(CoreError::DatasetNotExist);
         }
 
-        Ok(Self { name, handle })
+        Ok(Self { handle })
     }
 
-    pub fn get_name(&self) -> String {
-        self.name.to_string_lossy().into_owned()
+    pub fn name(&self) -> Cow<'_, str> {
+        unsafe {
+            let cstr = libzfs::zfs_get_name(self.handle);
+            ffi::CStr::from_ptr(cstr).to_string_lossy()
+        }
     }
 
     pub fn numeric_property_old(&self, name: &str, property: lzc::zfs_prop_t) -> u64 {

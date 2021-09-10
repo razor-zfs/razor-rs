@@ -24,7 +24,7 @@ impl Volume {
     }
 
     pub fn name(&self) -> String {
-        self.dataset.get_name()
+        self.dataset.name().to_string()
     }
 
     pub fn get_volume(name: impl AsRef<str>) -> Result<Self> {
@@ -116,12 +116,43 @@ pub struct VolumeBuilder {
 impl VolumeBuilder {
     pub fn new(name: impl AsRef<str>) -> Self {
         let nvlist = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
+        let name = name.as_ref().to_string();
+        let volblocksize = Self::calculate_default_volblocksize();
+
         Self {
             nvlist,
-            name: name.as_ref().to_string(),
-            volblocksize: Self::calculate_default_volblocksize(),
+            name,
+            volblocksize,
             err: None,
         }
+    }
+
+    // TODO: 1. default block size should be calculated
+    //       2. volsize should be multiple of volblocksize and rounded to nearest 128k bytes
+    //       3. add noreserve functionality
+    //       4. add parents creation if needed
+    //       5. add zfs_mount_and_share functionality
+    pub fn create(mut self, size: u64) -> Result<Volume> {
+        #[inline]
+        fn _is_power_of_two(num: u64) -> bool {
+            (num != 0) && ((num & (num - 1)) == 0)
+        }
+        dbg!("creating volume");
+        let cname = CString::new(self.name.as_bytes())?;
+
+        if let Some(err) = self.err {
+            return Err(err);
+        }
+
+        self.nvlist.add_uint64("volsize", size)?;
+        // TODO: check if volblocksize is power of 2 and between 512 and 128000
+        self.nvlist.add_uint64("volblocksize", self.volblocksize)?;
+        lzc::create_volume(&self.name, &self.nvlist)?;
+
+        let dataset = ZfsDatasetHandle::new(cname)?;
+        let volume = Volume { dataset };
+
+        Ok(volume)
     }
 
     pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
@@ -162,37 +193,5 @@ impl VolumeBuilder {
         }
 
         self
-    }
-
-    // TODO: 1. default block size should be calculated
-    //       2. volsize should be multiple of volblocksize and rounded to nearest 128k bytes
-    //       3. add noreserve functionality
-    //       4. add parents creation if needed
-    //       5. add zfs_mount_and_share functionality
-    pub fn create(mut self, size: u64) -> Result<Volume> {
-        #[inline]
-        fn _is_power_of_two(num: u64) -> bool {
-            (num != 0) && ((num & (num - 1)) == 0)
-        }
-        dbg!("creating volume");
-        let cname = CString::new(self.name.as_bytes())?;
-        match self.err {
-            Some(err) => Err(err),
-            None => {
-                self.nvlist.add_uint64("volsize", size)?;
-
-                // TODO: check if volblocksize is power of 2 and between 512 and 128000
-                self.nvlist.add_uint64("volblocksize", self.volblocksize)?;
-
-                lzc::create_volume(&self.name, &self.nvlist)?;
-                let dataset_handler = ZfsDatasetHandle::new(cname)?;
-
-                let volume: Volume = Volume {
-                    dataset: dataset_handler,
-                };
-
-                Ok(volume)
-            }
-        }
     }
 }

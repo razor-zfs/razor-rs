@@ -24,7 +24,7 @@ impl Filesystem {
     }
 
     pub fn name(&self) -> String {
-        self.dataset.get_name()
+        self.dataset.name().to_string()
     }
 
     #[inline]
@@ -130,11 +130,26 @@ pub struct FileSystemBuilder {
 impl FileSystemBuilder {
     pub fn new(name: impl AsRef<str>) -> Self {
         let nvlist = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
+        let name = name.as_ref().to_string();
         Self {
             nvlist,
-            name: name.as_ref().to_string(),
+            name,
             err: None,
         }
+    }
+
+    pub fn create(self) -> Result<Filesystem> {
+        let cname = CString::new(self.name.as_bytes())?;
+        if let Some(err) = self.err {
+            return Err(err);
+        }
+
+        lzc::create_filesystem(&self.name, &self.nvlist)?;
+
+        let dataset = ZfsDatasetHandle::new(cname)?;
+        let filesystem = Filesystem { dataset };
+
+        Ok(filesystem)
     }
 
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
@@ -262,21 +277,5 @@ impl FileSystemBuilder {
         }
 
         self
-    }
-
-    pub fn create(self) -> Result<Filesystem> {
-        let cname = CString::new(self.name.as_bytes())?;
-        match self.err {
-            Some(err) => Err(err),
-            None => {
-                lzc::create_filesystem(&self.name, &self.nvlist)?;
-                let dataset_handler = ZfsDatasetHandle::new(cname)?;
-                let filesystem: Filesystem = Filesystem {
-                    dataset: dataset_handler,
-                };
-
-                Ok(filesystem)
-            }
-        }
     }
 }
