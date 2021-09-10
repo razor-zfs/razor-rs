@@ -11,6 +11,8 @@ use nvpair::NvListAccess;
 pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
 
+use crate::libzfs;
+
 use super::error::value_or_err;
 use super::Result;
 
@@ -37,14 +39,6 @@ impl Lzc {
 
     unsafe fn lzc_destroy(&self, name: *const libc::c_char) -> libc::c_int {
         sys::lzc_destroy(name)
-    }
-
-    unsafe fn zfs_prop_default_string(&self, property: zfs_prop_t) -> *const libc::c_char {
-        sys::zfs_prop_default_string(property)
-    }
-
-    unsafe fn zfs_prop_default_numeric(&self, property: zfs_prop_t) -> u64 {
-        sys::zfs_prop_default_numeric(property)
     }
 }
 
@@ -80,11 +74,18 @@ pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
 
 pub fn zfs_prop_default_string(property: zfs_prop_t) -> Cow<'static, str> {
     unsafe {
-        let cstr = LIBZFS_CORE.zfs_prop_default_string(property);
+        let cstr = libzfs::zfs_prop_default_string(property);
         ffi::CStr::from_ptr(cstr).to_string_lossy()
     }
 }
 
 pub fn zfs_prop_default_numeric(property: zfs_prop_t) -> u64 {
-    unsafe { LIBZFS_CORE.zfs_prop_default_numeric(property) }
+    unsafe { libzfs::zfs_prop_default_numeric(property) }
+}
+
+pub fn zfs_prop_to_name(property: zfs_prop_t) -> Cow<'static, str> {
+    unsafe {
+        let cstr = libzfs::zfs_prop_to_name(property);
+        ffi::CStr::from_ptr(cstr).to_string_lossy()
+    }
 }

@@ -29,14 +29,6 @@ impl LibZfsHandle {
         sys::libzfs_print_on_error(handle, sys::boolean_t::B_FALSE);
         handle
     }
-
-    unsafe fn zfs_open(&self, name: *const libc::c_char) -> *mut sys::zfs_handle_t {
-        let types = sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
-            | sys::zfs_type_t::ZFS_TYPE_VOLUME
-            | sys::zfs_type_t::ZFS_TYPE_SNAPSHOT;
-        let types = types.0 as i32;
-        sys::zfs_open(self.libzfs_handle, name, types)
-    }
 }
 
 pub(crate) unsafe fn libzfs_mnttab_find(name: *const libc::c_char) -> Option<sys::mnttab> {
@@ -49,7 +41,11 @@ pub(crate) unsafe fn libzfs_mnttab_find(name: *const libc::c_char) -> Option<sys
 }
 
 pub(crate) unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
-    LIBZFS_HANDLE.zfs_open(name)
+    let types = sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
+        | sys::zfs_type_t::ZFS_TYPE_VOLUME
+        | sys::zfs_type_t::ZFS_TYPE_SNAPSHOT;
+    let types = types.0 as i32;
+    sys::zfs_open(LIBZFS_HANDLE.libzfs_handle, name, types)
 }
 
 pub(crate) unsafe fn zfs_close(handle: *mut sys::zfs_handle_t) {
@@ -84,4 +80,19 @@ pub(crate) unsafe fn zfs_prop_get_numeric(
     } else {
         panic!("zfs_prop_get_numeric failed");
     }
+}
+
+pub(crate) unsafe fn zfs_prop_to_name(property: sys::zfs_prop_t) -> *const libc::c_char {
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zfs_prop_to_name(property)
+}
+
+pub(crate) unsafe fn zfs_prop_default_string(property: sys::zfs_prop_t) -> *const libc::c_char {
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zfs_prop_default_string(property)
+}
+
+pub(crate) unsafe fn zfs_prop_default_numeric(property: sys::zfs_prop_t) -> u64 {
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zfs_prop_default_numeric(property)
 }
