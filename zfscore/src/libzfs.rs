@@ -30,10 +30,6 @@ impl LibZfsHandle {
         handle
     }
 
-    // unsafe fn make_dataset_handle(&self, name: *const libc::c_char) -> *mut sys::zfs_handle_t {
-    //     sys::make_dataset_handle(self.libzfs_handle, name)
-    // }
-
     unsafe fn zfs_open(&self, name: *const libc::c_char) -> *mut sys::zfs_handle_t {
         let types = sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
             | sys::zfs_type_t::ZFS_TYPE_VOLUME
@@ -42,10 +38,6 @@ impl LibZfsHandle {
         sys::zfs_open(self.libzfs_handle, name, types)
     }
 }
-
-// pub(crate) unsafe fn make_dataset_handle(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
-//     LIBZFS_HANDLE.make_dataset_handle(name)
-// }
 
 pub(crate) unsafe fn libzfs_mnttab_find(name: *const libc::c_char) -> Option<sys::mnttab> {
     let mut entry = mem::MaybeUninit::uninit();
