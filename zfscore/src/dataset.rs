@@ -21,7 +21,7 @@ pub struct ZfsDatasetHandle {
 
 impl ZfsDatasetHandle {
     pub fn new(name: CString) -> Result<Self> {
-        let handle = unsafe { libzfs::make_dataset_handle(name.as_ptr()) };
+        let handle = unsafe { libzfs::zfs_open(name.as_ptr()) };
 
         if handle.is_null() {
             return Err(CoreError::DatasetNotExist);
@@ -81,10 +81,8 @@ impl ZfsDatasetHandle {
     }
 }
 
-// TODO: check how to free zfs_handle_t
-// impl Drop for ZfsDatasetHandler {
-//     fn drop(&mut self) {
-//         unsafe { sys::zfs_close((*self.raw).zfs_mntopts as *mut libc::c_void) };
-//         unsafe { libc::free(self.raw as *mut libc::c_void) };
-//     }
-// }
+impl Drop for ZfsDatasetHandle {
+    fn drop(&mut self) {
+        unsafe { libzfs::zfs_close(self.handle) };
+    }
+}
