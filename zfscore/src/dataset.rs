@@ -34,6 +34,10 @@ impl ZfsDatasetHandle {
         }
     }
 
+    pub fn r#type(&self) -> lzc::zfs_type_t {
+        unsafe { libzfs::zfs_get_type(self.handle) }
+    }
+
     pub fn numeric_property_old(&self, name: &str, property: lzc::zfs_prop_t) -> u64 {
         let nvl = unsafe { libzfs::zfs_get_all_props(self.handle) };
         let nvl = nvpair::NvListRef::from_raw(nvl, self);

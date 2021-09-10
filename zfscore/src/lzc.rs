@@ -10,6 +10,7 @@ use nvpair::NvListAccess;
 
 pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
+pub use sys::zfs_type_t;
 
 use crate::libzfs;
 

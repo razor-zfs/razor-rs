@@ -49,6 +49,11 @@ pub(crate) unsafe fn zfs_get_name(handle: *mut sys::zfs_handle_t) -> *const libc
     sys::zfs_get_name(handle)
 }
 
+pub(crate) unsafe fn zfs_get_type(handle: *mut sys::zfs_handle_t) -> sys::zfs_type_t {
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zfs_get_type(handle)
+}
+
 pub(crate) unsafe fn zfs_get_all_props(handle: *mut sys::zfs_handle_t) -> *mut sys::nvlist_t {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_get_all_props(handle)
