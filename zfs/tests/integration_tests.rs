@@ -1,5 +1,6 @@
-use std::thread::sleep;
-use std::time::Duration;
+// Make sure to run
+// echo 3 | sudo tee /sys/module/zfs/parameters/zvol_volmode
+// before running this test.
 
 use razor_zfs::zfs::*;
 
@@ -17,10 +18,12 @@ fn create_basic_filesystem() {
 
 #[test]
 fn create_volume_dataset() {
-    let volume = Zfs::volume("dpool/volume").create(128 * 1024).unwrap();
+    let volume = Zfs::volume("dpool/volume")
+        .volmode(property::VolModeId::None)
+        .create(128 * 1024)
+        .unwrap();
     dbg!(&volume);
 
-    sleep(Duration::from_millis(3000));
     volume.destroy().unwrap();
 }
 
@@ -42,7 +45,6 @@ fn create_delete_volume() {
         .create(128 * 1024)
         .unwrap();
     dbg!(&volume);
-    sleep(Duration::from_millis(3000));
     Zfs::destroy_dataset("dpool/vol_to_delete").unwrap();
 }
 

@@ -31,15 +31,6 @@ impl LibZfsHandle {
     }
 }
 
-pub(crate) unsafe fn libzfs_mnttab_find(name: *const libc::c_char) -> Option<sys::mnttab> {
-    let mut entry = mem::MaybeUninit::uninit();
-    if sys::libzfs_mnttab_find(LIBZFS_HANDLE.libzfs_handle, name, entry.as_mut_ptr()) == 0 {
-        Some(entry.assume_init())
-    } else {
-        None
-    }
-}
-
 pub(crate) unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
     let types = sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
         | sys::zfs_type_t::ZFS_TYPE_VOLUME

@@ -8,15 +8,12 @@ use crate::libzfs;
 use crate::lzc;
 
 use super::error::CoreError;
-use super::mnttab::Mnttab;
 use super::Result;
 
 #[derive(Debug)]
 pub struct ZfsDatasetHandle {
     name: CString,
     handle: *mut lzc::zfs_handle_t,
-    // zfs_props: razor_nvpair::NvList,
-    mntdata: Option<Mnttab>,
 }
 
 impl ZfsDatasetHandle {
@@ -27,35 +24,11 @@ impl ZfsDatasetHandle {
             return Err(CoreError::DatasetNotExist);
         }
 
-        // let zfs_props = razor_nvpair::NvList::from(unsafe { (*zfs_handle).zfs_props });
-
-        let mntdata = Mnttab::find(&name);
-
-        Ok(Self {
-            name,
-            handle,
-            mntdata,
-        })
+        Ok(Self { name, handle })
     }
 
     pub fn get_name(&self) -> String {
         self.name.to_string_lossy().into_owned()
-    }
-
-    pub fn check_mnt_option(&self, opt: impl AsRef<str>) -> bool {
-        if let Some(mnt) = &self.mntdata {
-            mnt.hasmntopt(opt)
-        } else {
-            false
-        }
-    }
-
-    pub fn is_mounted(&self) -> bool {
-        if let Some(mnt) = &self.mntdata {
-            !mnt.mntopts().is_empty()
-        } else {
-            false
-        }
     }
 
     pub fn numeric_property_old(&self, name: &str, property: lzc::zfs_prop_t) -> u64 {

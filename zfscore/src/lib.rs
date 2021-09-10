@@ -25,6 +25,5 @@ pub mod lzc;
 
 mod dataset;
 mod libzfs;
-mod mnttab;
 
 pub type Result<T> = std::result::Result<T, error::CoreError>;

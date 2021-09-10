@@ -59,7 +59,7 @@ impl Filesystem {
 
     #[inline]
     pub fn mounted(&self) -> property::YesNo {
-        self.dataset.is_mounted().into()
+        self.dataset.numeric_property(ZFS_PROP_MOUNTED).into()
     }
 
     #[inline]
