@@ -108,20 +108,17 @@ impl Volume {
 #[derive(Debug)]
 pub struct VolumeBuilder {
     nvlist: nvpair::NvList,
-    //name: String,
     volblocksize: u64,
     err: Option<DatasetError>,
 }
 
 impl VolumeBuilder {
-    pub fn new(/*name: impl AsRef<str>*/) -> Self {
+    pub fn new() -> Self {
         let nvlist = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
-        //let name = name.as_ref().to_string();
         let volblocksize = Self::calculate_default_volblocksize();
 
         Self {
             nvlist,
-            //name,
             volblocksize,
             err: None,
         }
