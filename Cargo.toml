@@ -8,6 +8,8 @@ members = [
     "zfscore-sys",
     "zfscore",
     "zfs",
-    #"zfsrpc"
+    "zfsrpc",
+    "rpc-client",
+    "rpc-server",
 ]
 resolver = "2"
