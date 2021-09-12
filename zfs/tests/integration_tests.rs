@@ -18,9 +18,9 @@ fn create_basic_filesystem() {
 
 #[test]
 fn create_volume_dataset() {
-    let volume = Zfs::volume("dpool/volume")
+    let volume = Zfs::volume()
         .volmode(property::VolModeId::None)
-        .create(128 * 1024)
+        .create("dpool/volume", 128 * 1024)
         .unwrap();
     dbg!(&volume);
 
@@ -41,8 +41,8 @@ fn get_filesystem() {
 
 #[test]
 fn create_delete_volume() {
-    let volume = Zfs::volume("dpool/vol_to_delete")
-        .create(128 * 1024)
+    let volume = Zfs::volume()
+        .create("dpool/vol_to_delete", 128 * 1024)
         .unwrap();
     dbg!(&volume);
     Zfs::destroy_dataset("dpool/vol_to_delete").unwrap();

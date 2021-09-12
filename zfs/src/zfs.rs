@@ -23,8 +23,8 @@ impl Zfs {
         FileSystemBuilder::new(name)
     }
 
-    pub fn volume(name: impl AsRef<str>) -> VolumeBuilder {
-        VolumeBuilder::new(name)
+    pub fn volume() -> VolumeBuilder {
+        VolumeBuilder::new()
     }
 
     pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {

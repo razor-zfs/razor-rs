@@ -108,20 +108,20 @@ impl Volume {
 #[derive(Debug)]
 pub struct VolumeBuilder {
     nvlist: nvpair::NvList,
-    name: String,
+    //name: String,
     volblocksize: u64,
     err: Option<DatasetError>,
 }
 
 impl VolumeBuilder {
-    pub fn new(name: impl AsRef<str>) -> Self {
+    pub fn new(/*name: impl AsRef<str>*/) -> Self {
         let nvlist = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
-        let name = name.as_ref().to_string();
+        //let name = name.as_ref().to_string();
         let volblocksize = Self::calculate_default_volblocksize();
 
         Self {
             nvlist,
-            name,
+            //name,
             volblocksize,
             err: None,
         }
@@ -132,13 +132,13 @@ impl VolumeBuilder {
     //       3. add noreserve functionality
     //       4. add parents creation if needed
     //       5. add zfs_mount_and_share functionality
-    pub fn create(mut self, size: u64) -> Result<Volume> {
+    pub fn create(mut self, name: impl AsRef<str>, size: u64) -> Result<Volume> {
         #[inline]
         fn _is_power_of_two(num: u64) -> bool {
             (num != 0) && ((num & (num - 1)) == 0)
         }
         dbg!("creating volume");
-        let cname = CString::new(self.name.as_bytes())?;
+        let cname = CString::new(name.as_ref())?;
 
         if let Some(err) = self.err {
             return Err(err);
@@ -151,7 +151,8 @@ impl VolumeBuilder {
             lzc::zfs_prop_to_name(ZFS_PROP_VOLBLOCKSIZE),
             self.volblocksize,
         )?;
-        lzc::create_volume(&self.name, &self.nvlist)?;
+
+        lzc::create_volume(name.as_ref(), &self.nvlist)?;
 
         let dataset = ZfsDatasetHandle::new(cname)?;
         let volume = Volume { dataset };
