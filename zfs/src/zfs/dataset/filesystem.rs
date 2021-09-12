@@ -312,3 +312,9 @@ impl FileSystemBuilder {
         self
     }
 }
+
+impl Default for FileSystemBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}

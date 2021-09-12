@@ -9,6 +9,7 @@ edition = "2021"
 chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+rand = "0.8"
 razor-nvpair = {version = "0.1", path = "../nvpair"}
 razor-zfscore-sys = {version = "0.1", path = "../zfscore-sys"}
 razor-zfscore = {version = "0.1", path = "../zfscore"}

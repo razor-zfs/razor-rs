@@ -206,3 +206,9 @@ impl VolumeBuilder {
         self
     }
 }
+
+impl Default for VolumeBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}

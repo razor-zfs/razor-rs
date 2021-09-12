@@ -2,15 +2,40 @@
 // echo 3 | sudo tee /sys/module/zfs/parameters/zvol_volmode
 // before running this test.
 
+use rand::Rng;
+
 use razor_zfs::zfs::*;
+
+use std::sync::Once;
+
+static INIT: Once = Once::new();
+
+pub fn initialize() -> String {
+    let mut namespace = String::new();
+
+    INIT.call_once(|| {
+        let mut rng = rand::thread_rng();
+        let identifier: u8 = rng.gen();
+        namespace.push_str("dpool/test");
+        namespace.push_str(identifier.to_string().as_str());
+        dbg!("trying to create dataset: ", &namespace);
+        Zfs::filesystem().create(&namespace).unwrap();
+        dbg!("created test namespace");
+    });
+
+    namespace
+}
 
 #[test]
 fn create_basic_filesystem() {
+    let namespace = initialize();
     dbg!("starting create filesystem test");
-    let filesystem = Zfs::filesystem().create("dpool/filesystem").unwrap();
+    let filesystem_name = format!("{}/{}", namespace, "filesystem");
+    dbg!("name: ", &filesystem_name);
+    let filesystem = Zfs::filesystem().create(&filesystem_name).unwrap();
 
     dbg!(&filesystem);
-    assert_eq!(filesystem.name(), "dpool/filesystem");
+    assert_eq!(filesystem.name(), filesystem_name);
     assert_eq!(filesystem.mounted(), property::YesNo::No);
 
     filesystem.destroy().unwrap();
