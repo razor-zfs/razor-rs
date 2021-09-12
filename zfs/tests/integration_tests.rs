@@ -7,7 +7,7 @@ use razor_zfs::zfs::*;
 #[test]
 fn create_basic_filesystem() {
     dbg!("starting create filesystem test");
-    let filesystem = Zfs::filesystem("dpool/filesystem").create().unwrap();
+    let filesystem = Zfs::filesystem().create("dpool/filesystem").unwrap();
 
     dbg!(&filesystem);
     assert_eq!(filesystem.name(), "dpool/filesystem");
@@ -50,7 +50,7 @@ fn create_delete_volume() {
 
 #[test]
 fn create_delete_filesystem() {
-    let filesystem = Zfs::filesystem("dpool/fs_to_delete").create().unwrap();
+    let filesystem = Zfs::filesystem().create("dpool/fs_to_delete").unwrap();
 
     dbg!(&filesystem);
     Zfs::destroy_dataset("dpool/fs_to_delete").unwrap();

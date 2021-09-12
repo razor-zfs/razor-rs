@@ -123,28 +123,22 @@ impl Filesystem {
 #[derive(Debug)]
 pub struct FileSystemBuilder {
     nvlist: nvpair::NvList,
-    name: String,
     err: Option<DatasetError>,
 }
 
 impl FileSystemBuilder {
-    pub fn new(name: impl AsRef<str>) -> Self {
+    pub fn new() -> Self {
         let nvlist = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
-        let name = name.as_ref().to_string();
-        Self {
-            nvlist,
-            name,
-            err: None,
-        }
+        Self { nvlist, err: None }
     }
 
-    pub fn create(self) -> Result<Filesystem> {
-        let cname = CString::new(self.name.as_bytes())?;
+    pub fn create(self, name: impl AsRef<str>) -> Result<Filesystem> {
+        let cname = CString::new(name.as_ref())?;
         if let Some(err) = self.err {
             return Err(err);
         }
 
-        lzc::create_filesystem(&self.name, &self.nvlist)?;
+        lzc::create_filesystem(name.as_ref(), &self.nvlist)?;
 
         let dataset = ZfsDatasetHandle::new(cname)?;
         let filesystem = Filesystem { dataset };

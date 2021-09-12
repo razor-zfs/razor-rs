@@ -19,8 +19,8 @@ mod dataset;
 pub struct Zfs {}
 
 impl Zfs {
-    pub fn filesystem(name: impl AsRef<str>) -> FileSystemBuilder {
-        FileSystemBuilder::new(name)
+    pub fn filesystem() -> FileSystemBuilder {
+        FileSystemBuilder::new()
     }
 
     pub fn volume() -> VolumeBuilder {
