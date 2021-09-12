@@ -144,9 +144,13 @@ impl VolumeBuilder {
             return Err(err);
         }
 
-        self.nvlist.add_uint64("volsize", size)?;
+        self.nvlist
+            .add_uint64(lzc::zfs_prop_to_name(ZFS_PROP_VOLSIZE), size)?;
         // TODO: check if volblocksize is power of 2 and between 512 and 128000
-        self.nvlist.add_uint64("volblocksize", self.volblocksize)?;
+        self.nvlist.add_uint64(
+            lzc::zfs_prop_to_name(ZFS_PROP_VOLBLOCKSIZE),
+            self.volblocksize,
+        )?;
         lzc::create_volume(&self.name, &self.nvlist)?;
 
         let dataset = ZfsDatasetHandle::new(cname)?;
@@ -158,7 +162,10 @@ impl VolumeBuilder {
     pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("checksum", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_CHECKSUM), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -168,7 +175,10 @@ impl VolumeBuilder {
     pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("compression", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_COMPRESSION), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -188,7 +198,10 @@ impl VolumeBuilder {
     pub fn volmode(mut self, v: impl Into<property::VolModeId>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_uint64("volmode", value.into()) {
+        if let Err(err) = self
+            .nvlist
+            .add_uint64(lzc::zfs_prop_to_name(ZFS_PROP_VOLMODE), value.into())
+        {
             self.err = Some(err.into());
         }
 
