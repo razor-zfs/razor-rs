@@ -154,7 +154,10 @@ impl FileSystemBuilder {
 
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Err(err) = self.nvlist.add_string("atime", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_ATIME), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -164,7 +167,10 @@ impl FileSystemBuilder {
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("canmount", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_CANMOUNT), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -173,7 +179,10 @@ impl FileSystemBuilder {
 
     pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
         let value = v.into();
-        if let Err(err) = self.nvlist.add_string("checksum", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_CHECKSUM), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -183,7 +192,10 @@ impl FileSystemBuilder {
     pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("devices", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_DEVICES), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -192,7 +204,10 @@ impl FileSystemBuilder {
 
     pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Err(err) = self.nvlist.add_string("nbmand", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_NBMAND), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -202,7 +217,10 @@ impl FileSystemBuilder {
     pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("overlay", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_OVERLAY), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -212,7 +230,10 @@ impl FileSystemBuilder {
     pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("readonly", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_READONLY), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -222,7 +243,10 @@ impl FileSystemBuilder {
     pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("relatime", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_RELATIME), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -232,7 +256,10 @@ impl FileSystemBuilder {
     pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("setuid", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_SETUID), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -242,7 +269,10 @@ impl FileSystemBuilder {
     pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("vscan", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_VSCAN), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -252,7 +282,10 @@ impl FileSystemBuilder {
     pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("zoned", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_ZONED), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -262,7 +295,10 @@ impl FileSystemBuilder {
     pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("compression", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_COMPRESSION), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
@@ -272,7 +308,10 @@ impl FileSystemBuilder {
     pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string("exec", value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_EXEC), value.as_str())
+        {
             self.err = Some(err.into());
         }
 
