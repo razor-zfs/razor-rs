@@ -11,60 +11,55 @@ service ZfsRpc {
 }
 
 message CreateVolumeRequest {
-    string pool = 1;
-    string name = 2;
-    uint64 capacity = 3;
-    repeated VolumeProperty properties = 4;
+    string vol_name = 1;
+    uint64 capacity = 2;
+    repeated VolumeProperty properties = 3;
 }
 
 message CreateFilesystemRequest {
-    string pool = 1;
-    string name = 2;
-    repeated FilesystemProperty properties = 3;
+    string fs_name = 1;
+    repeated FilesystemProperty properties = 2;
 }
 
 message BasicDatasetRequest {
-    string pool = 1;
-    string name = 2;
+    string name = 1;
 }
 
 message Volume {
-    string pool = 1;
-    string name = 2;
-    uint64 available = 3;
-    uint64 volsize = 4;
-    uint64 volblocksize = 5;
-    uint64 logicalused = 6;
-    DatasetProperties.Checksum checksum = 7;
-    DatasetProperties.Compression compression = 8;
-    uint64 guid = 9;
-    uint64 creation = 10;
-    uint64 createtxg = 11;
-    uint64 compressratio = 12;
-    uint64 used = 13;
-    uint64 referenced = 14;
-    uint64 logicalreferenced = 15;
-    uint64 objsetid = 16;    
+    string vol_name = 1;
+    uint64 available = 2;
+    uint64 volsize = 3;
+    uint64 volblocksize = 4;
+    uint64 logicalused = 5;
+    DatasetProperties.Checksum checksum = 6;
+    DatasetProperties.Compression compression = 7;
+    uint64 guid = 8;
+    uint64 creation = 9;
+    uint64 createtxg = 10;
+    uint64 compressratio = 11;
+    uint64 used = 12;
+    uint64 referenced = 13;
+    uint64 logicalreferenced = 14;
+    uint64 objsetid = 15;    
 }
 
 message Filesystem {
-    string pool = 1;
-    string name = 2;
-    uint64 available = 3;
-    DatasetProperties.ATime atime = 4;
-    DatasetProperties.CanMount canmount = 5;
-    DatasetProperties.Mounted mounted = 6;
-    DatasetProperties.Checksum checksum = 7;
-    DatasetProperties.Compression compression = 8;
-    uint64 guid = 9;
-    uint64 creation = 10;
-    uint64 createtxg = 11;
-    uint64 compressratio = 12;
-    uint64 used = 13;
-    uint64 logicalused = 14;
-    uint64 referenced = 15;
-    uint64 logicalreferenced = 16;
-    uint64 objsetid = 17;    
+    string fs_name = 1;
+    uint64 available = 2;
+    DatasetProperties.ATime atime = 3;
+    DatasetProperties.CanMount canmount = 4;
+    DatasetProperties.Mounted mounted = 5;
+    DatasetProperties.Checksum checksum = 6;
+    DatasetProperties.Compression compression = 7;
+    uint64 guid = 8;
+    uint64 creation = 9;
+    uint64 createtxg = 10;
+    uint64 compressratio = 11;
+    uint64 used = 12;
+    uint64 logicalused = 13;
+    uint64 referenced = 14;
+    uint64 logicalreferenced = 15;
+    uint64 objsetid = 16;    
 }
 
 message VolumeProperty {

@@ -38,8 +38,7 @@ pub struct Volume {
 
 impl Volume {
     pub fn create(
-        pool: String,
-        name: String,
+        vol_name: String,
         capacity: u64,
         properties: impl IntoIterator<Item = VolumeProperty>,
     ) -> Result<()> {
@@ -49,18 +48,16 @@ impl Volume {
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
-            .create(format!("{}/{}", pool, name), capacity)?;
+            .create(vol_name, capacity)?;
 
         Ok(())
     }
 
-    pub fn get(pool: String, name: String) -> Result<Self> {
-        let vol_name = format!("{}/{}", pool, name);
-        let volume = Zfs::get_volume(vol_name)?;
+    pub fn get(vol_name: String) -> Result<Self> {
+        let volume = Zfs::get_volume(vol_name.to_string())?;
 
         let inner = ProtoVolume {
-            pool,
-            name,
+            vol_name,
             available: volume.available(),
             volsize: 1,      // Not implemented yet @razor
             volblocksize: 2, // Not implemented yet @razor
@@ -117,8 +114,7 @@ pub struct Filesystem {
 
 impl Filesystem {
     pub fn create(
-        pool: String,
-        name: String,
+        fs_name: String,
         properties: impl IntoIterator<Item = FilesystemProperty>,
     ) -> Result<()> {
         let builder = Zfs::filesystem();
@@ -127,18 +123,16 @@ impl Filesystem {
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
-            .create(format!("{}/{}", pool, name))?;
+            .create(fs_name)?;
 
         Ok(())
     }
 
-    pub fn get(pool: String, name: String) -> Result<Self> {
-        let fs_name = format!("{}/{}", pool, name);
-        let fs = Zfs::get_filesystem(fs_name)?;
+    pub fn get(fs_name: String) -> Result<Self> {
+        let fs = Zfs::get_filesystem(fs_name.to_string())?;
 
         let inner = ProtoFilesystem {
-            pool,
-            name,
+            fs_name,
             available: fs.available(),
             canmount: Some(fs.canmount().into()),
             atime: Some(fs.atime().into()),
