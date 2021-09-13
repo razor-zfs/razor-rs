@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 use std::ffi::CString;
+use std::marker::PhantomData;
 
 use once_cell::sync::Lazy;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
@@ -45,7 +46,77 @@ pub struct Volume {
     dataset: ZfsDatasetHandle,
 }
 
+#[derive(Debug)]
+pub struct VolumeSetter<'a, T> {
+    dataset_handler: &'a ZfsDatasetHandle,
+    anchor: PhantomData<&'a T>,
+    nvl: nvpair::NvList,
+    err: Option<DatasetError>,
+}
+
+impl<'a, T> VolumeSetter<'a, T> {
+    pub fn new(dataset_handler: &'a ZfsDatasetHandle, _anchor: &'a T) -> Self {
+        let nvl = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
+        Self {
+            dataset_handler,
+            anchor: PhantomData,
+            nvl,
+            err: None,
+        }
+    }
+
+    pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(COMPRESSION.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn blocksize(mut self, v: u64) -> Self {
+        let value = v;
+
+        if let Err(err) = self.nvl.add_uint64(VOLBLOCKSIZE.as_ref(), value) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn volmode(mut self, v: impl Into<property::VolModeId>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_uint64(VOLMODE.as_ref(), value.into()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn add(self) -> Result<()> {
+        self.dataset_handler.set_properties(self.nvl);
+
+        Ok(())
+    }
+}
+
 impl Volume {
+    pub fn set<'a>(&self) -> VolumeSetter<'_, Self> {
+        VolumeSetter::new(&self.dataset, self)
+    }
+
     pub fn destroy(self) -> Result<()> {
         lzc::destroy_dataset(self.name()).map_err(|err| err.into())
     }
