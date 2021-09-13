@@ -208,7 +208,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
 }
 
 impl Filesystem {
-    pub fn set<'a>(&self) -> FilesytemSetter<'_, Self> {
+    pub fn set(&self) -> FilesytemSetter<'_, Self> {
         FilesytemSetter::new(&self.dataset, self)
     }
 

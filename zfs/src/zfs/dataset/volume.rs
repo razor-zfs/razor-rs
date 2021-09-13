@@ -113,7 +113,7 @@ impl<'a, T> VolumeSetter<'a, T> {
 }
 
 impl Volume {
-    pub fn set<'a>(&self) -> VolumeSetter<'_, Self> {
+    pub fn set(&self) -> VolumeSetter<'_, Self> {
         VolumeSetter::new(&self.dataset, self)
     }
 
