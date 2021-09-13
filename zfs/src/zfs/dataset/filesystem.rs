@@ -123,6 +123,11 @@ impl Filesystem {
     }
 
     #[inline]
+    pub fn exec(&self) -> property::OnOff {
+        self.dataset.numeric_property(ZFS_PROP_EXEC).into()
+    }
+
+    #[inline]
     pub fn logicalused(&self) -> u64 {
         self.dataset.numeric_property(ZFS_PROP_LOGICALUSED)
     }
@@ -201,7 +206,7 @@ impl Serialize for Filesystem {
         S: Serializer,
     {
         dbg!("serializing filesystem");
-        let mut state = serializer.serialize_struct("Filesystem", 19)?;
+        let mut state = serializer.serialize_struct("Filesystem", 25)?;
         state.serialize_field(NAME.as_ref(), &self.name())?;
         state.serialize_field(AVAILABLE.as_ref(), &self.available())?;
         state.serialize_field(ATIME.as_ref(), &self.atime())?;
@@ -215,6 +220,7 @@ impl Serialize for Filesystem {
         state.serialize_field(SETUID.as_ref(), &self.setuid())?;
         state.serialize_field(VSCAN.as_ref(), &self.vscan())?;
         state.serialize_field(ZONED.as_ref(), &self.zoned())?;
+        state.serialize_field(EXEC.as_ref(), &self.exec())?;
         state.serialize_field(NBMAND.as_ref(), &self.nbmand())?;
         state.serialize_field(CHECKSUM.as_ref(), &self.checksum())?;
         state.serialize_field(COMPRESSION.as_ref(), &self.compression())?;
@@ -375,7 +381,6 @@ impl FileSystemBuilder {
         self
     }
 
-    // TODO: add getter for this variable
     pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
