@@ -260,7 +260,6 @@ impl FileSystemBuilder {
         self
     }
 
-    // TODO: add getter for this variable
     pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
         if let Err(err) = self.nvlist.add_string(NBMAND.as_ref(), value.as_str()) {
