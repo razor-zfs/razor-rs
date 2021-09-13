@@ -88,6 +88,11 @@ impl Filesystem {
     }
 
     #[inline]
+    pub fn nbmand(&self) -> property::OnOff {
+        self.dataset.numeric_property(ZFS_PROP_NBMAND).into()
+    }
+
+    #[inline]
     pub fn logicalused(&self) -> u64 {
         self.dataset.numeric_property(ZFS_PROP_LOGICALUSED)
     }
@@ -166,7 +171,7 @@ impl Serialize for Filesystem {
         S: Serializer,
     {
         dbg!("serializing filesystem");
-        let mut state = serializer.serialize_struct("Filesystem", 16)?;
+        let mut state = serializer.serialize_struct("Filesystem", 18)?;
         state.serialize_field(NAME.as_ref(), &self.name())?;
         state.serialize_field(AVAILABLE.as_ref(), &self.available())?;
         state.serialize_field(ATIME.as_ref(), &self.atime())?;
@@ -174,6 +179,7 @@ impl Serialize for Filesystem {
         state.serialize_field(CANMOUNT.as_ref(), &self.canmount())?;
         state.serialize_field(MOUNTED.as_ref(), &self.mounted())?;
         state.serialize_field(DEVICES.as_ref(), &self.devices())?;
+        state.serialize_field(NBMAND.as_ref(), &self.nbmand())?;
         state.serialize_field(CHECKSUM.as_ref(), &self.checksum())?;
         state.serialize_field(COMPRESSION.as_ref(), &self.compression())?;
         state.serialize_field(GUID.as_ref(), &self.guid())?;
