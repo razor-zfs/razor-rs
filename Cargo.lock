@@ -936,10 +936,17 @@ dependencies = [
 name = "razor-rpc-server"
 version = "0.1.0"
 dependencies = [
- "anyhow",
+ "razor-tracing",
  "razor-zfsrpc",
  "tokio",
  "tonic",
+]
+
+[[package]]
+name = "razor-tracing"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
  "tracing",
  "tracing-subscriber",
 ]
@@ -997,6 +1004,7 @@ dependencies = [
  "paste",
  "prop-macro",
  "prost",
+ "razor-tracing",
  "razor-zfs",
  "tokio",
  "tonic",

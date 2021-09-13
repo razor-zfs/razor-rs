@@ -13,7 +13,8 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-pub mod server;
+pub mod tracing_server;
+pub mod zfs_server;
 
 #[allow(unreachable_pub)]
 pub mod zfsrpc_proto;

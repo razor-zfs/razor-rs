@@ -11,5 +11,6 @@ members = [
     "zfsrpc",
     "rpc-client",
     "rpc-server",
+    "tracing"
 ]
 resolver = "2"
