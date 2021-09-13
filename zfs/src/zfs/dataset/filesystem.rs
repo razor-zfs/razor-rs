@@ -1,4 +1,8 @@
+use std::borrow::Cow;
 use std::ffi::CString;
+
+use once_cell::sync::Lazy;
+use serde::ser::{Serialize, SerializeStruct, Serializer};
 
 use razor_nvpair as nvpair;
 use razor_zfscore::lzc;
@@ -12,6 +16,37 @@ use super::Result;
 use super::ZfsDatasetHandle;
 
 use lzc::zfs_prop_t::*;
+
+static AVAILABLE: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_AVAILABLE));
+static LOGICALUSED: Lazy<Cow<'static, str>> =
+    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_LOGICALUSED));
+static CHECKSUM: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_CHECKSUM));
+static COMPRESSION: Lazy<Cow<'static, str>> =
+    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_COMPRESSION));
+static GUID: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_GUID));
+static CREATION: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_CREATION));
+static CREATETXG: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_CREATETXG));
+static COMPRESSRATIO: Lazy<Cow<'static, str>> =
+    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_COMPRESSRATIO));
+static USED: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_USED));
+static REFERENCED: Lazy<Cow<'static, str>> =
+    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_REFERENCED));
+static LOGICALREFERENCED: Lazy<Cow<'static, str>> =
+    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_LOGICALREFERENCED));
+static OBJSETID: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_OBJSETID));
+static ATIME: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_ATIME));
+static CANMOUNT: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_CANMOUNT));
+static MOUNTED: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_MOUNTED));
+static DEVICES: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_DEVICES));
+static NBMAND: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_NBMAND));
+static OVERLAY: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_OVERLAY));
+static READONLY: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_READONLY));
+static RELATIME: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_RELATIME));
+static SETUID: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_SETUID));
+static VSCAN: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_VSCAN));
+static EXEC: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_EXEC));
+static ZONED: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_ZONED));
+static NAME: &str = "name";
 
 #[derive(Debug)]
 pub struct Filesystem {
@@ -120,6 +155,35 @@ impl Filesystem {
     }
 }
 
+impl Serialize for Filesystem {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        dbg!("serializing filesystem");
+        let mut state = serializer.serialize_struct("Filesystem", 16)?;
+        state.serialize_field(NAME.as_ref(), &self.name())?;
+        state.serialize_field(AVAILABLE.as_ref(), &self.available())?;
+        state.serialize_field(ATIME.as_ref(), &self.atime())?;
+        state.serialize_field(LOGICALUSED.as_ref(), &self.logicalused())?;
+        state.serialize_field(CANMOUNT.as_ref(), &self.canmount())?;
+        state.serialize_field(MOUNTED.as_ref(), &self.mounted())?;
+        state.serialize_field(CHECKSUM.as_ref(), &self.checksum())?;
+        state.serialize_field(COMPRESSION.as_ref(), &self.compression())?;
+        state.serialize_field(GUID.as_ref(), &self.guid())?;
+        state.serialize_field(CREATION.as_ref(), &self.creation())?;
+        state.serialize_field(CREATETXG.as_ref(), &self.createtxg())?;
+        state.serialize_field(COMPRESSRATIO.as_ref(), &self.compressratio())?;
+        state.serialize_field(USED.as_ref(), &self.used())?;
+        state.serialize_field(REFERENCED.as_ref(), &self.referenced())?;
+        state.serialize_field(LOGICALREFERENCED.as_ref(), &self.logicalreferenced())?;
+        state.serialize_field(OBJSETID.as_ref(), &self.objsetid())?;
+        dbg!("serializing finished");
+
+        state.end()
+    }
+}
+
 #[derive(Debug)]
 pub struct FileSystemBuilder {
     nvlist: nvpair::NvList,
@@ -148,10 +212,7 @@ impl FileSystemBuilder {
 
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_ATIME), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(ATIME.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
@@ -161,10 +222,7 @@ impl FileSystemBuilder {
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_CANMOUNT), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(CANMOUNT.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
@@ -173,113 +231,94 @@ impl FileSystemBuilder {
 
     pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
         let value = v.into();
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_CHECKSUM), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(CHECKSUM.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
         self
     }
 
+    // TODO: add getter for this variable
     pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_DEVICES), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(DEVICES.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
         self
     }
 
+    // TODO: add getter for this variable
     pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_NBMAND), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(NBMAND.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
         self
     }
 
+    // TODO: add getter for this variable
     pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_OVERLAY), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(OVERLAY.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
         self
     }
 
+    // TODO: add getter for this variable
     pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_READONLY), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(READONLY.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
         self
     }
 
+    // TODO: add getter for this variable
     pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_RELATIME), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(RELATIME.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
         self
     }
 
+    // TODO: add getter for this variable
     pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_SETUID), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(SETUID.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
         self
     }
 
+    // TODO: add getter for this variable
     pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_VSCAN), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(VSCAN.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
         self
     }
 
+    // TODO: add getter for this variable
     pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_ZONED), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(ZONED.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
@@ -289,23 +328,18 @@ impl FileSystemBuilder {
     pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_COMPRESSION), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(COMPRESSION.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
         self
     }
 
+    // TODO: add getter for this variable
     pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self
-            .nvlist
-            .add_string(lzc::zfs_prop_to_name(ZFS_PROP_EXEC), value.as_str())
-        {
+        if let Err(err) = self.nvlist.add_string(EXEC.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
