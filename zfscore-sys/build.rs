@@ -18,6 +18,7 @@ fn main() {
         .ctypes_prefix("libc")
         .allowlist_type(r#"(\w*zfs_type_dataset\w*)"#)
         .allowlist_type(r#"(\w*zfs_handle_t\w*)"#)
+        .allowlist_type(r#"(\w*zfs_error_t\w*)"#)
         .allowlist_type(r#"(\w*libzfs_handle_t\w*)"#)
         .allowlist_type(r#"(\w*hasmntopt\w*)"#)
         //.allowlist_type(r#"(\w*dmu_objset_stats_t\w*)"#)

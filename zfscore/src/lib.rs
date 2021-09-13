@@ -19,6 +19,7 @@ use nvpair::NvListError;
 
 pub use crate::dataset::ZfsDatasetHandle;
 pub use crate::lzc::zfs_prop_t;
+pub use razor_zfscore_sys::zfs_error_t;
 
 pub mod error;
 pub mod lzc;

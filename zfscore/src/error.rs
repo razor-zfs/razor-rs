@@ -1,3 +1,4 @@
+use razor_zfscore_sys as sys;
 use thiserror::Error;
 
 use super::NvListError;
@@ -80,11 +81,17 @@ pub enum CoreError {
     NvListError(#[from] NvListError),
     #[error("requested dataset not exist")]
     DatasetNotExist,
-    #[error("failed to delete dataset")]
+    #[error("property may be set but unable to remount filesystem")]
+    ZfsMountFailed,
+    #[error("property may be set but unable to reshare filesystem")]
+    ZfsShareNfsFailed,
+    #[error("unknown error")]
     Unknown,
 }
 
 pub(crate) fn value_or_err<T>(val: T, rc: i32) -> Result<T, CoreError> {
+    const MOUNT_FAILED: i32 = sys::zfs_error_t::EZFS_MOUNTFAILED as i32;
+    const SHARE_FAILED: i32 = sys::zfs_error_t::EZFS_SHARENFSFAILED as i32;
     match rc {
         0 => Ok(val),
         libc::EPERM => Err(CoreError::OperationNotPermited),
@@ -121,6 +128,8 @@ pub(crate) fn value_or_err<T>(val: T, rc: i32) -> Result<T, CoreError> {
         libc::EPIPE => Err(CoreError::BrokenPipe),
         libc::EDOM => Err(CoreError::MathArgOutOfFunc),
         libc::ERANGE => Err(CoreError::MathResultNotRepresentable),
+        MOUNT_FAILED => Err(CoreError::ZfsMountFailed),
+        SHARE_FAILED => Err(CoreError::ZfsShareNfsFailed),
         _ => Err(CoreError::Unknown),
     }
 }
