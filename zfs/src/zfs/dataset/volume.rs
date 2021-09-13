@@ -92,6 +92,11 @@ impl Volume {
     }
 
     #[inline]
+    pub fn volmode(&self) -> property::VolModeId {
+        self.dataset.numeric_property(ZFS_PROP_COMPRESSION).into()
+    }
+
+    #[inline]
     pub fn guid(&self) -> u64 {
         self.dataset.numeric_property(ZFS_PROP_GUID)
     }
@@ -137,11 +142,12 @@ impl Serialize for Volume {
     where
         S: Serializer,
     {
-        let mut state = serializer.serialize_struct("Volume", 15)?;
+        let mut state = serializer.serialize_struct("Volume", 16)?;
         state.serialize_field(NAME.as_ref(), &self.name())?;
         state.serialize_field(AVAILABLE.as_ref(), &self.available())?;
         state.serialize_field(VOLSIZE.as_ref(), &self.volsize())?;
         state.serialize_field(VOLBLOCKSIZE.as_ref(), &self.volblocksize())?;
+        state.serialize_field(VOLMODE.as_ref(), &self.volmode())?;
         state.serialize_field(LOGICALUSED.as_ref(), &self.logicalused())?;
         state.serialize_field(CHECKSUM.as_ref(), &self.checksum())?;
         state.serialize_field(COMPRESSION.as_ref(), &self.compression())?;
@@ -237,7 +243,6 @@ impl VolumeBuilder {
         8192
     }
 
-    // TODO: add getter for this variable
     pub fn volmode(mut self, v: impl Into<property::VolModeId>) -> Self {
         let value = v.into();
 
