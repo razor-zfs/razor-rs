@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 use std::ffi::CString;
+use std::marker::PhantomData;
 
 use once_cell::sync::Lazy;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
@@ -53,7 +54,164 @@ pub struct Filesystem {
     dataset: ZfsDatasetHandle,
 }
 
+#[derive(Debug)]
+pub struct FilesytemSetter<'a, T> {
+    dataset_handler: &'a ZfsDatasetHandle,
+    anchor: PhantomData<&'a T>,
+    nvl: nvpair::NvList,
+    err: Option<DatasetError>,
+}
+
+impl<'a, T> FilesytemSetter<'a, T> {
+    pub fn new(dataset_handler: &'a ZfsDatasetHandle, _anchor: &'a T) -> Self {
+        let nvl = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
+        Self {
+            dataset_handler,
+            anchor: PhantomData,
+            nvl,
+            err: None,
+        }
+    }
+
+    pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+        if let Err(err) = self.nvl.add_string(ATIME.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(CANMOUNT.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
+        let value = v.into();
+        if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(DEVICES.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+        if let Err(err) = self.nvl.add_string(NBMAND.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(OVERLAY.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(READONLY.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(RELATIME.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(SETUID.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(VSCAN.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(ZONED.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(COMPRESSION.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
+        let value = v.into();
+
+        if let Err(err) = self.nvl.add_string(EXEC.as_ref(), value.as_str()) {
+            self.err = Some(err.into());
+        }
+
+        self
+    }
+
+    pub fn add(self) -> Result<()> {
+        self.dataset_handler.set_properties(self.nvl);
+
+        Ok(())
+    }
+}
+
 impl Filesystem {
+    pub fn set<'a>(&self) -> FilesytemSetter<'_, Self> {
+        FilesytemSetter::new(&self.dataset, self)
+    }
+
     pub fn destroy(self) -> Result<()> {
         lzc::destroy_dataset(self.name()).map_err(|err| err.into())
     }

@@ -91,6 +91,14 @@ pub(crate) unsafe fn zfs_prop_get_int(
     sys::zfs_prop_get_int(handle, property)
 }
 
+pub(crate) unsafe fn zfs_prop_set_list(
+    dataset_handle: *mut sys::zfs_handle_t,
+    nvl: *mut sys::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zfs_prop_set_list(dataset_handle, nvl)
+}
+
 pub(crate) unsafe fn zfs_prop_to_name(property: sys::zfs_prop_t) -> *const libc::c_char {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_prop_to_name(property)

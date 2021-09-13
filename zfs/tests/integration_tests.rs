@@ -33,8 +33,14 @@ fn create_basic_filesystem() {
     let filesystem_name = format!("{}/{}", namespace, "filesystem");
     dbg!("name: ", &filesystem_name);
     let filesystem = Zfs::filesystem().create(&filesystem_name).unwrap();
-
-    dbg!(&filesystem);
+    dbg!(serde_json::to_string(&filesystem).unwrap());
+    filesystem
+        .set()
+        .overlay(property::OnOff::On)
+        .readonly(property::OnOff::On)
+        .add()
+        .unwrap();
+    dbg!(serde_json::to_string(&filesystem).unwrap());
     assert_eq!(filesystem.name(), filesystem_name);
     assert_eq!(filesystem.mounted(), property::YesNo::No);
 

@@ -63,6 +63,10 @@ impl ZfsDatasetHandle {
             lzc::zfs_prop_default_string(property).to_string()
         }
     }
+
+    pub fn set_properties(&self, nvl: nvpair::NvList) -> libc::c_int {
+        unsafe { libzfs::zfs_prop_set_list(self.handle, nvl.nvl()) }
+    }
 }
 
 impl Drop for ZfsDatasetHandle {
