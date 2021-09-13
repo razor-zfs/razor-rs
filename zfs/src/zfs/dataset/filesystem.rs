@@ -98,6 +98,31 @@ impl Filesystem {
     }
 
     #[inline]
+    pub fn readonly(&self) -> property::OnOff {
+        self.dataset.numeric_property(ZFS_PROP_READONLY).into()
+    }
+
+    #[inline]
+    pub fn relatime(&self) -> property::OnOff {
+        self.dataset.numeric_property(ZFS_PROP_RELATIME).into()
+    }
+
+    #[inline]
+    pub fn setuid(&self) -> property::OnOff {
+        self.dataset.numeric_property(ZFS_PROP_SETUID).into()
+    }
+
+    #[inline]
+    pub fn vscan(&self) -> property::OnOff {
+        self.dataset.numeric_property(ZFS_PROP_VSCAN).into()
+    }
+
+    #[inline]
+    pub fn zoned(&self) -> property::OnOff {
+        self.dataset.numeric_property(ZFS_PROP_ZONED).into()
+    }
+
+    #[inline]
     pub fn logicalused(&self) -> u64 {
         self.dataset.numeric_property(ZFS_PROP_LOGICALUSED)
     }
@@ -185,6 +210,11 @@ impl Serialize for Filesystem {
         state.serialize_field(MOUNTED.as_ref(), &self.mounted())?;
         state.serialize_field(DEVICES.as_ref(), &self.devices())?;
         state.serialize_field(OVERLAY.as_ref(), &self.overlay())?;
+        state.serialize_field(READONLY.as_ref(), &self.readonly())?;
+        state.serialize_field(RELATIME.as_ref(), &self.relatime())?;
+        state.serialize_field(SETUID.as_ref(), &self.setuid())?;
+        state.serialize_field(VSCAN.as_ref(), &self.vscan())?;
+        state.serialize_field(ZONED.as_ref(), &self.zoned())?;
         state.serialize_field(NBMAND.as_ref(), &self.nbmand())?;
         state.serialize_field(CHECKSUM.as_ref(), &self.checksum())?;
         state.serialize_field(COMPRESSION.as_ref(), &self.compression())?;
@@ -285,7 +315,6 @@ impl FileSystemBuilder {
         self
     }
 
-    // TODO: add getter for this variable
     pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -296,7 +325,6 @@ impl FileSystemBuilder {
         self
     }
 
-    // TODO: add getter for this variable
     pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -307,7 +335,6 @@ impl FileSystemBuilder {
         self
     }
 
-    // TODO: add getter for this variable
     pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -318,7 +345,6 @@ impl FileSystemBuilder {
         self
     }
 
-    // TODO: add getter for this variable
     pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -329,7 +355,6 @@ impl FileSystemBuilder {
         self
     }
 
-    // TODO: add getter for this variable
     pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
