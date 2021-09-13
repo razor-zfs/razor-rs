@@ -237,6 +237,7 @@ impl VolumeBuilder {
         8192
     }
 
+    // TODO: add getter for this variable
     pub fn volmode(mut self, v: impl Into<property::VolModeId>) -> Self {
         let value = v.into();
 
