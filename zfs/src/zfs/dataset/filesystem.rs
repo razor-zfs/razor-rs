@@ -83,6 +83,11 @@ impl Filesystem {
     }
 
     #[inline]
+    pub fn devices(&self) -> property::OnOff {
+        self.dataset.numeric_property(ZFS_PROP_DEVICES).into()
+    }
+
+    #[inline]
     pub fn logicalused(&self) -> u64 {
         self.dataset.numeric_property(ZFS_PROP_LOGICALUSED)
     }
@@ -168,6 +173,7 @@ impl Serialize for Filesystem {
         state.serialize_field(LOGICALUSED.as_ref(), &self.logicalused())?;
         state.serialize_field(CANMOUNT.as_ref(), &self.canmount())?;
         state.serialize_field(MOUNTED.as_ref(), &self.mounted())?;
+        state.serialize_field(DEVICES.as_ref(), &self.devices())?;
         state.serialize_field(CHECKSUM.as_ref(), &self.checksum())?;
         state.serialize_field(COMPRESSION.as_ref(), &self.compression())?;
         state.serialize_field(GUID.as_ref(), &self.guid())?;
@@ -238,7 +244,6 @@ impl FileSystemBuilder {
         self
     }
 
-    // TODO: add getter for this variable
     pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
