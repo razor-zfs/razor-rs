@@ -23,7 +23,7 @@ impl ZfsRpc for service::ZfsRpcService {
             request
         );
 
-        service::Volume::create(request.vol_name, request.capacity, request.properties)
+        service::Volume::create(request.name, request.capacity, request.properties)
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         trace!("#########   create_volume() Done! #########",);
@@ -42,7 +42,7 @@ impl ZfsRpc for service::ZfsRpcService {
             request
         );
 
-        service::Filesystem::create(request.fs_name, request.properties)
+        service::Filesystem::create(request.name, request.properties)
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         Ok(Response::new(Empty {}))

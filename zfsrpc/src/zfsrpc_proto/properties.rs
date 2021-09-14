@@ -128,7 +128,49 @@ macro_rules! impl_property {
     };
 }
 
+macro_rules! impl_from_u64_for_dataset_properties {
+    ($($prop:ident),+) => {
+        $(
+            impl From<u64> for dataset_properties::$prop {
+                fn from(u: u64) -> Self {
+                    Self{value: u}
+                }
+            }
+        )+
+    };
+}
+
+macro_rules! impl_from_string_for_dataset_properties {
+    ($($prop:ident),+) => {
+        $(
+            impl From<String> for dataset_properties::$prop {
+                fn from(s: String) -> Self {
+                    Self{value: s}
+                }
+            }
+        )+
+    };
+}
+
 // Generating code
+
+impl_from_string_for_dataset_properties!(Name);
+
+impl_from_u64_for_dataset_properties!(
+    Available,
+    LogicalUsed,
+    Guid,
+    Creation,
+    CreateTxg,
+    CompressRatio,
+    Used,
+    Referenced,
+    LogicalReferenced,
+    ObjSetId,
+    VolSize,
+    VolBlockSize
+);
+
 impl_property!(can_mount for filesystem_property and OnOffNoAuto => On,Off,NoAuto);
 impl_property!(a_time for filesystem_property and OnOff => On,Off);
 impl_property!(exec for filesystem_property and OnOff => On,Off);

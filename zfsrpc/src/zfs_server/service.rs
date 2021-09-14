@@ -38,7 +38,7 @@ pub struct Volume {
 
 impl Volume {
     pub fn create(
-        vol_name: String,
+        name: String,
         capacity: u64,
         properties: impl IntoIterator<Item = VolumeProperty>,
     ) -> Result<()> {
@@ -48,30 +48,30 @@ impl Volume {
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
-            .create(vol_name, capacity)?;
+            .create(name, capacity)?;
 
         Ok(())
     }
 
-    pub fn get(vol_name: String) -> Result<Self> {
-        let volume = Zfs::get_volume(vol_name.to_string())?;
+    pub fn get(name: String) -> Result<Self> {
+        let volume = Zfs::get_volume(&name)?;
 
         let inner = ProtoVolume {
-            vol_name,
-            available: volume.available(),
-            volsize: 1,      // Not implemented yet @razor
-            volblocksize: 2, // Not implemented yet @razor
-            logicalused: volume.logicalused(),
+            name: Some(name.into()),
+            available: Some(volume.available().into()),
+            volsize: Some(1.into()),      // Not implemented yet @razor
+            volblocksize: Some(2.into()), // Not implemented yet @razor
+            logicalused: Some(volume.logicalused().into()),
             checksum: Some(volume.checksum().into()),
             compression: Some(volume.compression().into()),
-            guid: volume.guid(),
-            creation: volume.creation(),
-            createtxg: volume.createtxg(),
-            compressratio: volume.compressratio(),
-            used: volume.used(),
-            referenced: volume.referenced(),
-            logicalreferenced: volume.logicalreferenced(),
-            objsetid: volume.objsetid(),
+            guid: Some(volume.guid().into()),
+            creation: Some(volume.creation().into()),
+            createtxg: Some(volume.createtxg().into()),
+            compressratio: Some(volume.compressratio().into()),
+            used: Some(volume.used().into()),
+            referenced: Some(volume.referenced().into()),
+            logicalreferenced: Some(volume.logicalreferenced().into()),
+            objsetid: Some(volume.objsetid().into()),
         };
 
         Ok(Self { inner })
@@ -114,7 +114,7 @@ pub struct Filesystem {
 
 impl Filesystem {
     pub fn create(
-        fs_name: String,
+        name: String,
         properties: impl IntoIterator<Item = FilesystemProperty>,
     ) -> Result<()> {
         let builder = Zfs::filesystem();
@@ -123,31 +123,31 @@ impl Filesystem {
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
-            .create(fs_name)?;
+            .create(name)?;
 
         Ok(())
     }
 
-    pub fn get(fs_name: String) -> Result<Self> {
-        let fs = Zfs::get_filesystem(fs_name.to_string())?;
+    pub fn get(name: String) -> Result<Self> {
+        let fs = Zfs::get_filesystem(&name)?;
 
         let inner = ProtoFilesystem {
-            fs_name,
-            available: fs.available(),
+            name: Some(name.into()),
+            available: Some(fs.available().into()),
             canmount: Some(fs.canmount().into()),
             atime: Some(fs.atime().into()),
             mounted: Some(fs.mounted().into()),
             checksum: Some(fs.checksum().into()),
             compression: Some(fs.compression().into()),
-            guid: fs.guid(),
-            creation: fs.creation(),
-            createtxg: fs.createtxg(),
-            compressratio: fs.compressratio(),
-            used: fs.used(),
-            logicalused: fs.logicalused(),
-            referenced: fs.referenced(),
-            logicalreferenced: fs.logicalreferenced(),
-            objsetid: fs.objsetid(),
+            guid: Some(fs.guid().into()),
+            creation: Some(fs.creation().into()),
+            createtxg: Some(fs.createtxg().into()),
+            compressratio: Some(fs.compressratio().into()),
+            used: Some(fs.used().into()),
+            logicalused: Some(fs.logicalused().into()),
+            referenced: Some(fs.referenced().into()),
+            logicalreferenced: Some(fs.logicalreferenced().into()),
+            objsetid: Some(fs.objsetid().into()),
         };
 
         Ok(Self { inner })

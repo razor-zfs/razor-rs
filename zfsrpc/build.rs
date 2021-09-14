@@ -1,7 +1,8 @@
-fn main() {
-    tonic_build::compile_protos("proto/zfsrpc.proto")
-        .unwrap_or_else(|e| panic!("Failed to compile protos {:?}", e));
+use std::io;
 
-    tonic_build::compile_protos("proto/zfstracer.proto")
-        .unwrap_or_else(|e| panic!("Failed to compile protos {:?}", e));
+fn main() -> io::Result<()> {
+    tonic_build::compile_protos("proto/zfsrpc.proto")?;
+    tonic_build::compile_protos("proto/zfstracer.proto")?;
+
+    Ok(())
 }

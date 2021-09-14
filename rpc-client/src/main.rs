@@ -49,8 +49,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //let request = CreateFilesystemRequest {
     // let request = CreateVolumeRequest {
     //     capacity,
-    //      vol_name: name.clone(),
-    //      fs_name: name.clone(),
+    //      name: name.clone(),
+    //      name: name.clone(),
     //      properties,
     //  };
 
