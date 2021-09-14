@@ -25,6 +25,7 @@ fn main() {
         .allowlist_type("zfs_type_t")
         .bitfield_enum("zfs_type_t")
         .allowlist_function(r#"zfs_strdup"#)
+        .allowlist_function(r#"zfs_iter_\w*"#)
         .allowlist_function(r#"zfs_prop_default_numeric"#)
         .allowlist_function(r#"zfs_prop_default_string"#)
         .allowlist_function(r#"libzfs_mnttab_find"#)

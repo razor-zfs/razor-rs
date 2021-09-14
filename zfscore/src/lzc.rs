@@ -12,6 +12,7 @@ pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
 pub use sys::zfs_type_t;
 
+use crate::dataset;
 use crate::libzfs;
 
 use super::error::value_or_err;
@@ -82,6 +83,14 @@ pub fn zfs_prop_default_string(property: zfs_prop_t) -> Cow<'static, str> {
 
 pub fn zfs_prop_default_numeric(property: zfs_prop_t) -> u64 {
     unsafe { libzfs::zfs_prop_default_numeric(property) }
+}
+
+pub fn zfs_list_datasets() -> Vec<dataset::ZfsDatasetHandle> {
+    let datasets = unsafe { libzfs::list_datasets() };
+    datasets
+        .iter()
+        .map(|handle| dataset::ZfsDatasetHandle::from(*handle))
+        .collect()
 }
 
 pub fn zfs_prop_to_name(property: zfs_prop_t) -> Cow<'static, str> {

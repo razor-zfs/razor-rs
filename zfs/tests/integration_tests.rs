@@ -59,6 +59,16 @@ fn create_volume_dataset() {
 }
 
 #[test]
+fn list_datasets() {
+    let datasets = Zfs::list_datasets();
+
+    dbg!("printing datasets");
+    for dataset in datasets {
+        dbg!(dataset.name().to_owned().to_string());
+    }
+}
+
+#[test]
 fn get_volume() {
     let volume = Zfs::get_volume("dpool/vol").unwrap();
     dbg!(&volume);

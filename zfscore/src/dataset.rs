@@ -69,6 +69,12 @@ impl ZfsDatasetHandle {
     }
 }
 
+impl From<*mut razor_zfscore_sys::zfs_handle_t> for ZfsDatasetHandle {
+    fn from(handle: *mut razor_zfscore_sys::zfs_handle_t) -> Self {
+        Self { handle }
+    }
+}
+
 impl Drop for ZfsDatasetHandle {
     fn drop(&mut self) {
         unsafe { libzfs::zfs_close(self.handle) };

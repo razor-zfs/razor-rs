@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 libc = "0.2"
 once_cell = "1.8"
+lazy_static = "1.4"
 razor-libnvpair = { version = "0.1", path = "../libnvpair" }
 razor-nvpair = { version = "0.1", path = "../nvpair" }
 razor-zfscore-sys = { version = "0.1", path = "../zfscore-sys" }
