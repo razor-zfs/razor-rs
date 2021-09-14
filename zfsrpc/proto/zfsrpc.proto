@@ -40,32 +40,44 @@ message Volume {
     DatasetProperties.LogicalReferenced logicalreferenced = 12;
     DatasetProperties.ObjSetId objsetid = 13;
     DatasetProperties.VolSize volsize = 14;
-    DatasetProperties.VolBlockSize volblocksize = 15;
+    DatasetProperties.BlockSize blocksize = 15;
+    DatasetProperties.VolMode volmode = 16;
 }
 
 message Filesystem {
     DatasetProperties.Name name = 1;
     DatasetProperties.Available available = 2;
-    DatasetProperties.Checksum checksum = 3;
-    DatasetProperties.Compression compression = 4;
-    DatasetProperties.LogicalUsed logicalused = 5;
-    DatasetProperties.Guid guid = 6;
-    DatasetProperties.Creation creation = 7;
-    DatasetProperties.CreateTxg createtxg = 8;
-    DatasetProperties.CompressRatio compressratio = 9;
-    DatasetProperties.Used used = 10;
-    DatasetProperties.Referenced referenced = 11;
-    DatasetProperties.LogicalReferenced logicalreferenced = 12;
-    DatasetProperties.ObjSetId objsetid = 13;
-    DatasetProperties.ATime atime = 14;
-    DatasetProperties.CanMount canmount = 15;
-    DatasetProperties.Mounted mounted = 16;
+    DatasetProperties.ATime atime = 3;
+    DatasetProperties.Devices devices = 4;
+    DatasetProperties.Nbmand nbmand = 5;
+    DatasetProperties.Overlay overlay = 6;
+    DatasetProperties.Readonly readonly = 7;
+    DatasetProperties.Relatime relatime = 8;
+    DatasetProperties.Setuid setuid = 9;
+    DatasetProperties.Vscan vscan = 10;
+    DatasetProperties.Zoned zoned = 11;
+    DatasetProperties.Exec exec = 12;
+    DatasetProperties.CanMount canmount = 13;
+    DatasetProperties.Mounted mounted = 14;
+    DatasetProperties.Checksum checksum = 15;
+    DatasetProperties.Compression compression = 16;
+    DatasetProperties.LogicalUsed logicalused = 17;
+    DatasetProperties.Guid guid = 18;
+    DatasetProperties.Creation creation = 19;
+    DatasetProperties.CreateTxg createtxg = 20;
+    DatasetProperties.CompressRatio compressratio = 21;
+    DatasetProperties.Used used = 22;
+    DatasetProperties.Referenced referenced = 23;
+    DatasetProperties.LogicalReferenced logicalreferenced = 24;
+    DatasetProperties.ObjSetId objsetid = 25;
 }
 
 message VolumeProperty {
     oneof property{
         DatasetProperties.Checksum checksum = 1;
         DatasetProperties.Compression compression = 2;
+        DatasetProperties.VolMode vol_mode = 3;
+        DatasetProperties.BlockSize block_size = 4;
     }
 }
 
@@ -89,7 +101,7 @@ message FilesystemProperty {
 
 message DatasetProperties {
     message CanMount {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
             Variant no_auto = 3;
@@ -97,21 +109,21 @@ message DatasetProperties {
     }
 
     message Mounted {
-        oneof values {
+        oneof value {
             Variant yes = 1;
             Variant no = 2;
         }
     }
 
     message ATime {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Checksum {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
             Variant fletcher2 = 3;
@@ -125,70 +137,70 @@ message DatasetProperties {
     }
 
     message Devices {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Exec {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Nbmand {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Overlay {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Readonly {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Relatime {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Setuid {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Vscan {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Zoned {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
         }
     }
 
     message Compression {
-        oneof values {
+        oneof value {
             Variant on = 1;
             Variant off = 2;
             Variant gzip = 3;
@@ -206,6 +218,17 @@ message DatasetProperties {
             Variant zle = 15;
             Variant zstd = 16;
             Variant zstd_fast = 17;
+        }
+    }
+
+    message VolMode {
+        oneof value {
+            Variant default = 1;
+            Variant full = 2;
+            Variant geom = 3;
+            Variant dev = 4;
+            Variant none = 5;
+            Variant unknown = 6;
         }
     }
 
@@ -257,7 +280,7 @@ message DatasetProperties {
         uint64 value = 1;
     }
 
-    message VolBlockSize{
+    message BlockSize{
         uint64 value = 1;
     }
 }

@@ -5,6 +5,12 @@ use crate::zfsrpc_proto::tonic_zfsrpc::{
 use prop_macro::{classcase, classcase_path_end, snakecase_fn};
 use razor_zfs::zfs::property;
 
+impl dataset_properties::BlockSize {
+    pub(crate) fn check(&self) -> std::io::Result<Self> {
+        todo!("implement blocksize restrictions")
+    }
+}
+
 /// Macros used by client code:
 
 /// Defining functions for creating property variant
@@ -20,9 +26,9 @@ macro_rules! impl_functions {
     ($p:ident => $($fn:ident),*) => {
         $(
             snakecase_fn!(pub fn $fn() -> Self {
-                use dataset_properties::$p::Values::*;
+                use dataset_properties::$p::Value::*;
                 Self {
-                    values: Some($fn(Variant {})),
+                    value: Some($fn(Variant {})),
                 }
             });
         )*
@@ -76,17 +82,17 @@ macro_rules! impl_property_for_type {
 /// // ...
 /// let canmount = request.properties.first().property;
 /// let fs_builder = Zfs::filesystem("pool/fs1".into());
-/// fs_builder.canmount(canmount.values.ok_or_else(|| DatasetError::InvalidArgument)?);
+/// fs_builder.canmount(canmount.value.ok_or_else(|| DatasetError::InvalidArgument)?);
 ///                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 /// // ...
 /// Note: This macro is used by impl_property! macro
 macro_rules! impl_property_for_zfs{
 
     ($prop:ident, $zfs_enum:ident, $($var:ident),+) => {
-        impl From<dataset_properties::$prop::Values> for property::$zfs_enum {
-            fn from(v: dataset_properties::$prop::Values) -> Self {
+        impl From<dataset_properties::$prop::Value> for property::$zfs_enum {
+            fn from(v: dataset_properties::$prop::Value) -> Self {
                 match v {
-                    $(dataset_properties::$prop::Values::$var(_) => property::$zfs_enum::$var),+
+                    $(dataset_properties::$prop::Value::$var(_) => property::$zfs_enum::$var),+
                 }
             }
         }
@@ -99,13 +105,13 @@ macro_rules! impl_zfs_for_property {
 
         impl From<property::$zfs_enum> for classcase_path_end!(dataset_properties::$prop) {
             fn from(prop: property::$zfs_enum) -> Self {
-                let values = match prop {
+                let value = match prop {
                     $(
-                        property::$zfs_enum::$var => dataset_properties::$prop::Values::$var(Variant {})
+                        property::$zfs_enum::$var => dataset_properties::$prop::Value::$var(Variant {})
                     ),+
                 };
 
-                Self {values: Some(values)}
+                Self {value: Some(value)}
             }
         }
     }
@@ -168,7 +174,7 @@ impl_from_u64_for_dataset_properties!(
     LogicalReferenced,
     ObjSetId,
     VolSize,
-    VolBlockSize
+    BlockSize
 );
 
 impl_property!(can_mount for filesystem_property and OnOffNoAuto => On,Off,NoAuto);
@@ -211,6 +217,14 @@ impl_property!(compression for filesystem_property,volume_property and Compressi
     Lz4,
     Zstd,
     ZstdFast
+);
+impl_property!(vol_mode for volume_property and VolModeId =>
+    Default,
+    Full,
+    Geom,
+    Dev,
+    None,
+    Unknown
 );
 
 // Only Getter property, thus doesn't exists at filesystem_property mod
