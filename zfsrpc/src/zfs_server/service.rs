@@ -6,6 +6,9 @@ use razor_zfs::{
     error::DatasetError, zfs::FileSystemBuilder, zfs::VolumeBuilder, zfs::Zfs, Result,
 };
 
+#[allow(unused)]
+use tracing::{debug, error, info, trace, warn};
+
 #[derive(Debug, Default)]
 pub struct ZfsRpcService {}
 

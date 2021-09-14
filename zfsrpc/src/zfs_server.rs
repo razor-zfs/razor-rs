@@ -1,6 +1,7 @@
 use tonic::{Code, Request, Response, Status};
 
-use tracing::trace;
+#[allow(unused)]
+use tracing::{debug, error, info, trace, warn};
 
 use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 use super::zfsrpc_proto::tonic_zfsrpc::{
@@ -17,16 +18,10 @@ impl ZfsRpc for service::ZfsRpcService {
         request: Request<CreateVolumeRequest>,
     ) -> Result<Response<Empty>, Status> {
         let request = request.into_inner();
-
-        trace!(
-            "#########   create_volume() Got request: {:?}   #########",
-            request
-        );
+        debug!(?request);
 
         service::Volume::create(request.name, request.capacity, request.properties)
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
-
-        trace!("#########   create_volume() Done! #########",);
 
         Ok(Response::new(Empty {}))
     }
@@ -36,11 +31,7 @@ impl ZfsRpc for service::ZfsRpcService {
         request: Request<CreateFilesystemRequest>,
     ) -> Result<Response<Empty>, Status> {
         let request = request.into_inner();
-
-        trace!(
-            "#########   create_filesystem() Got request: {:?}   #########",
-            request
-        );
+        debug!(?request);
 
         service::Filesystem::create(request.name, request.properties)
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
@@ -53,11 +44,7 @@ impl ZfsRpc for service::ZfsRpcService {
         request: Request<BasicDatasetRequest>,
     ) -> Result<Response<Volume>, Status> {
         let request = request.into_inner();
-
-        trace!(
-            "#########   get_volume() Got request: {:?}   #########",
-            request
-        );
+        debug!(?request);
 
         Ok(Response::new(
             service::Volume::get(request.name)
@@ -71,11 +58,7 @@ impl ZfsRpc for service::ZfsRpcService {
         request: Request<BasicDatasetRequest>,
     ) -> Result<Response<Filesystem>, Status> {
         let request = request.into_inner();
-
-        trace!(
-            "#########   get_filesystem() Got request: {:?}   #########",
-            request
-        );
+        debug!(?request);
 
         Ok(Response::new(
             service::Filesystem::get(request.name)
@@ -89,6 +72,7 @@ impl ZfsRpc for service::ZfsRpcService {
         request: Request<BasicDatasetRequest>,
     ) -> Result<Response<Empty>, Status> {
         let request = request.into_inner();
+        debug!(?request);
 
         service::Volume::destroy(request.name)
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
@@ -101,6 +85,7 @@ impl ZfsRpc for service::ZfsRpcService {
         request: Request<BasicDatasetRequest>,
     ) -> Result<Response<Empty>, Status> {
         let request = request.into_inner();
+        debug!(?request);
 
         service::Filesystem::destroy(request.name)
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;

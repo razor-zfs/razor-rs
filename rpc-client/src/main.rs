@@ -39,22 +39,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut tracer_client = ZfsTracerClient::connect("http://0.0.0.0:50051").await?;
 
     // let capacity = Some(10 * 1024 * 1024 * 1024);
-    let name: String = "dpool/Vol2".to_string();
-    //let canmount = dataset_properties::CanMount::off().into();
-    //let atime = dataset_properties::ATime::off().into();
+    let name: String = "dpool/fs3".to_string();
+    let canmount = dataset_properties::CanMount::off().into();
+    let atime = dataset_properties::ATime::off().into();
 
-    //let properties = vec![canmount, atime];
+    let properties = vec![canmount, atime];
     // let properties = Vec::new();
 
-    //let request = CreateFilesystemRequest {
-    // let request = CreateVolumeRequest {
-    //     capacity,
-    //      name: name.clone(),
-    //      name: name.clone(),
-    //      properties,
-    //  };
+    let request = CreateFilesystemRequest {
+        // let request = CreateVolumeRequest {
+        //     capacity,
+        name: name.clone(),
+        properties,
+    };
 
-    //let request = tonic::Request::new(request);
+    let request = tonic::Request::new(request);
+    client.create_filesystem(request).await?;
     // client.create_volume(request).await?;
 
     // let request = BasicDatasetRequest {
