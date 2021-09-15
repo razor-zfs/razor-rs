@@ -76,7 +76,8 @@ impl<'a, T> FilesytemSetter<'a, T> {
 
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Err(err) = self.nvl.add_string(ATIME.as_ref(), value.as_str()) {
+
+        if let Err(err) = self.nvl.add_uint64(ATIME.as_ref(), value.into()) {
             self.err = Some(err.into());
         }
 
@@ -86,7 +87,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(CANMOUNT.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_uint64(CANMOUNT.as_ref(), value.into()) {
             self.err = Some(err.into());
         }
 
