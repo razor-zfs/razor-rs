@@ -423,7 +423,8 @@ impl FileSystemBuilder {
 
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Err(err) = self.nvlist.add_string(ATIME.as_ref(), value.as_str()) {
+
+        if let Err(err) = self.nvlist.add_uint64(ATIME.as_ref(), value.into()) {
             self.err = Some(err.into());
         }
 
@@ -433,7 +434,7 @@ impl FileSystemBuilder {
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(CANMOUNT.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(CANMOUNT.as_ref(), value.into()) {
             self.err = Some(err.into());
         }
 

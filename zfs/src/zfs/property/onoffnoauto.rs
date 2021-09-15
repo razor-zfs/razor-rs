@@ -50,6 +50,16 @@ impl From<u64> for OnOffNoAuto {
     }
 }
 
+impl From<OnOffNoAuto> for u64 {
+    fn from(value: OnOffNoAuto) -> Self {
+        match value {
+            OnOffNoAuto::Off => 0,
+            OnOffNoAuto::On => 1,
+            OnOffNoAuto::NoAuto => 2,
+        }
+    }
+}
+
 impl From<bool> for OnOffNoAuto {
     fn from(v: bool) -> Self {
         if v {

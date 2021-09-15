@@ -32,7 +32,11 @@ fn create_basic_filesystem() {
     dbg!("starting create filesystem test");
     let filesystem_name = format!("{}/{}", namespace, "filesystem");
     dbg!("name: ", &filesystem_name);
-    let filesystem = Zfs::filesystem().create(&filesystem_name).unwrap();
+    let filesystem = Zfs::filesystem()
+        .atime(property::OnOff::Off)
+        .canmount(property::OnOffNoAuto::Off)
+        .create(&filesystem_name)
+        .unwrap();
     dbg!(serde_json::to_string(&filesystem).unwrap());
     filesystem
         .set()

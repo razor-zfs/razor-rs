@@ -56,6 +56,15 @@ impl From<u64> for OnOff {
     }
 }
 
+impl From<OnOff> for u64 {
+    fn from(value: OnOff) -> Self {
+        match value {
+            OnOff::Off => 0,
+            OnOff::On => 1,
+        }
+    }
+}
+
 impl From<OnOff> for bool {
     fn from(onoff: OnOff) -> Self {
         match onoff {
