@@ -27,7 +27,7 @@
 stages:
   - test
 
-stable:test:
+.stable:test:
   variables:
     RUST_TOOLCHAIN: stable
   #tags:
