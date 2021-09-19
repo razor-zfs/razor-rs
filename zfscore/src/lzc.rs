@@ -91,6 +91,10 @@ pub fn zfs_list_datasets() -> Vec<dataset::ZfsDatasetHandle> {
     datasets.get_all()
 }
 
+pub fn zfs_list() -> dataset_collector::DatasetCollectorBuilder {
+    dataset_collector::DatasetCollectorBuilder::new()
+}
+
 pub fn zfs_list_volumes() -> Vec<dataset::ZfsDatasetHandle> {
     let datasets = dataset_collector::DatasetCollector::new();
     datasets.get_volumes()

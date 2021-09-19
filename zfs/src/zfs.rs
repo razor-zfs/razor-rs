@@ -5,6 +5,7 @@ pub use dataset::Filesystem;
 pub use dataset::Snapshot;
 pub use dataset::Volume;
 
+use super::DatasetCollectorBuilder;
 use super::Result;
 use super::ZfsDatasetHandle;
 
@@ -37,6 +38,10 @@ impl Zfs {
 
     pub fn list_volumes() -> Vec<ZfsDatasetHandle> {
         lzc::zfs_list_volumes()
+    }
+
+    pub fn list() -> DatasetCollectorBuilder {
+        lzc::zfs_list()
     }
 
     pub fn list_filesystems() -> Vec<ZfsDatasetHandle> {

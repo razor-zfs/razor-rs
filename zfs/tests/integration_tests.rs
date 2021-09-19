@@ -93,6 +93,11 @@ fn list_filesystems() {
 }
 
 #[test]
+fn list() {
+    let _datasets = Zfs::list().get_collection();
+}
+
+#[test]
 fn get_volume() {
     let volume = Zfs::get_volume("dpool/vol").unwrap();
     dbg!(&volume);
