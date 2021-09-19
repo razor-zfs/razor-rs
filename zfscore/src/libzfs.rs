@@ -4,6 +4,7 @@ use std::ptr;
 use once_cell::sync::Lazy;
 use razor_zfscore_sys as sys;
 
+pub(crate) use sys::zfs_prop_t;
 pub(crate) use sys::zfs_type_t;
 
 static LIBZFS_HANDLE: Lazy<LibZfsHandle> = Lazy::new(LibZfsHandle::init);
