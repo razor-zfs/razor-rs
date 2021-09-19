@@ -100,9 +100,7 @@ impl DatasetCollectorBuilder {
             )
         };
 
-        DatasetCollector {
-            datasets: self.datasets,
-        }
+        DatasetCollector::new(self.datasets)
     }
 }
 
@@ -112,50 +110,18 @@ pub struct DatasetCollector {
 }
 
 impl DatasetCollector {
-    pub(crate) fn new() -> Self {
-        Self {
-            datasets: Vec::new(),
-        }
+    pub(crate) fn new(datasets: Vec<ZfsDatasetHandle>) -> Self {
+        Self { datasets }
     }
+}
 
-    pub(crate) fn get_all(mut self) -> Vec<ZfsDatasetHandle> {
-        unsafe {
-            libzfs::zfs_iter_root(
-                zfs_list_cb,
-                &mut self.datasets as *mut _ as *mut libc::c_void,
-            )
-        };
+impl IntoIterator for DatasetCollector {
+    type Item = ZfsDatasetHandle;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
 
-        self.datasets
+    fn into_iter(self) -> Self::IntoIter {
+        self.datasets.into_iter()
     }
-
-    pub(crate) fn get_volumes(self) -> Vec<ZfsDatasetHandle> {
-        self.get_all()
-            .into_iter()
-            .filter(|dataset| dataset.is_volume())
-            .collect()
-    }
-
-    pub(crate) fn get_filesystems(self) -> Vec<ZfsDatasetHandle> {
-        self.get_all()
-            .into_iter()
-            .filter(|dataset| dataset.is_filesystem())
-            .collect()
-    }
-
-    // fn add_dataset(&mut self, handle: *mut sys::zfs_handle_t) {
-    //     self.datasets.push(ZfsDatasetHandle::from(handle));
-
-    //     unsafe {
-    //         if sys::zfs_get_type(handle) == sys::zfs_type_t::ZFS_TYPE_FILESYSTEM {
-    //             sys::zfs_iter_filesystems(
-    //                 handle,
-    //                 Some(zfs_list_cb),
-    //                 &mut self.datasets as *mut _ as *mut libc::c_void,
-    //             );
-    //         }
-    //     }
-    // }
 }
 
 #[no_mangle]

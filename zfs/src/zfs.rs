@@ -32,20 +32,8 @@ impl Zfs {
         lzc::destroy_dataset(name).map_err(|err| err.into())
     }
 
-    pub fn list_datasets() -> Vec<ZfsDatasetHandle> {
-        lzc::zfs_list_datasets()
-    }
-
-    pub fn list_volumes() -> Vec<ZfsDatasetHandle> {
-        lzc::zfs_list_volumes()
-    }
-
     pub fn list() -> DatasetCollectorBuilder {
         lzc::zfs_list()
-    }
-
-    pub fn list_filesystems() -> Vec<ZfsDatasetHandle> {
-        lzc::zfs_list_filesystems()
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {

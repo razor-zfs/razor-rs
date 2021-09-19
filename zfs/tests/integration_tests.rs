@@ -63,38 +63,12 @@ fn create_volume_dataset() {
 }
 
 #[test]
-fn list_datasets() {
-    let datasets = Zfs::list_datasets();
-
-    dbg!("printing datasets");
-    for dataset in datasets {
-        dbg!(dataset.name().to_owned().to_string());
-    }
-}
-
-#[test]
-fn list_volumes() {
-    let datasets = Zfs::list_volumes();
-
-    dbg!("printing datasets");
-    for dataset in datasets {
-        dbg!(dataset.name().to_owned().to_string());
-    }
-}
-
-#[test]
-fn list_filesystems() {
-    let datasets = Zfs::list_filesystems();
-
-    dbg!("printing datasets");
-    for dataset in datasets {
-        dbg!(dataset.name().to_owned().to_string());
-    }
-}
-
-#[test]
 fn list() {
-    let _datasets = Zfs::list().get_collection();
+    let datasets = Zfs::list().get_collection();
+
+    for dataset in datasets {
+        dbg!(dataset.name());
+    }
 }
 
 #[test]
