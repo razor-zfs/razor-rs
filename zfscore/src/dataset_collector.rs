@@ -44,7 +44,7 @@ impl DatasetCollectorBuilder {
         self
     }
 
-    pub fn _recursive(mut self) -> Self {
+    pub fn recursive(mut self) -> Self {
         self.recursive = Some(true);
 
         self
@@ -63,12 +63,14 @@ impl DatasetCollectorBuilder {
             self.datasets.push(converted_handle);
         }
 
-        unsafe {
-            sys::zfs_iter_filesystems(
-                handle,
-                Some(zfs_list_cb),
-                &mut self.datasets as *mut _ as *mut libc::c_void,
-            );
+        if let Some(_) = self.recursive {
+            unsafe {
+                sys::zfs_iter_filesystems(
+                    handle,
+                    Some(zfs_list_cb),
+                    &mut self.datasets as *mut _ as *mut libc::c_void,
+                );
+            }
         }
     }
 
