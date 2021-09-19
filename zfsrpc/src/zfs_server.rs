@@ -3,11 +3,13 @@ use tonic::{Code, Request, Response, Status};
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
 
+use crate::zfs_server::service::Dataset;
+
 use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 use super::zfsrpc_proto::tonic_zfsrpc::{
     BasicDatasetRequest, CreateFilesystemRequest, CreateVolumeRequest,
 };
-use super::zfsrpc_proto::tonic_zfsrpc::{Empty, Filesystem, Volume};
+use super::zfsrpc_proto::tonic_zfsrpc::{Datasets, Empty, Filesystem, Volume};
 
 pub mod service;
 
@@ -20,7 +22,7 @@ impl ZfsRpc for service::ZfsRpcService {
         let request = request.into_inner();
         debug!(?request);
 
-        service::Volume::create(request.name, request.capacity, request.properties)
+        Volume::create(request.name, request.capacity, request.properties)
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         Ok(Response::new(Empty {}))
@@ -33,7 +35,7 @@ impl ZfsRpc for service::ZfsRpcService {
         let request = request.into_inner();
         debug!(?request);
 
-        service::Filesystem::create(request.name, request.properties)
+        Filesystem::create(request.name, 0, request.properties)
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         Ok(Response::new(Empty {}))
@@ -47,9 +49,7 @@ impl ZfsRpc for service::ZfsRpcService {
         debug!(?request);
 
         Ok(Response::new(
-            service::Volume::get(request.name)
-                .map_err(|e| Status::new(Code::Internal, e.to_string()))?
-                .into(),
+            Volume::get(request.name).map_err(|e| Status::new(Code::Internal, e.to_string()))?,
         ))
     }
 
@@ -61,9 +61,8 @@ impl ZfsRpc for service::ZfsRpcService {
         debug!(?request);
 
         Ok(Response::new(
-            service::Filesystem::get(request.name)
-                .map_err(|e| Status::new(Code::Internal, e.to_string()))?
-                .into(),
+            Filesystem::get(request.name)
+                .map_err(|e| Status::new(Code::Internal, e.to_string()))?,
         ))
     }
 
@@ -74,8 +73,7 @@ impl ZfsRpc for service::ZfsRpcService {
         let request = request.into_inner();
         debug!(?request);
 
-        service::Volume::destroy(request.name)
-            .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
+        Volume::destroy(request.name).map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         Ok(Response::new(Empty {}))
     }
@@ -87,9 +85,15 @@ impl ZfsRpc for service::ZfsRpcService {
         let request = request.into_inner();
         debug!(?request);
 
-        service::Filesystem::destroy(request.name)
+        Filesystem::destroy(request.name)
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         Ok(Response::new(Empty {}))
+    }
+
+    async fn dataset_list(&self, _request: Request<Empty>) -> Result<Response<Datasets>, Status> {
+        let datasets = service::list().map_err(|e| Status::new(Code::Internal, e.to_string()))?;
+
+        Ok(Response::new(datasets))
     }
 }

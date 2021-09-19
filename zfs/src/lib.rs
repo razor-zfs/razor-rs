@@ -16,9 +16,9 @@
 use razor_nvpair::NvListError;
 use razor_property::InvalidProperty;
 use razor_zfscore::DatasetCollectorBuilder;
-use razor_zfscore::ZfsDatasetHandle;
 
 pub use razor_zfscore::zfs_type_t;
+pub use razor_zfscore::ZfsDatasetHandle;
 
 pub mod error;
 pub mod zfs;

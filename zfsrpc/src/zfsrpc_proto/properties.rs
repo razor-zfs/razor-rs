@@ -86,7 +86,7 @@ macro_rules! impl_property_for_type {
 ///                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 /// // ...
 /// Note: This macro is used by impl_property! macro
-macro_rules! impl_property_for_zfs{
+macro_rules! impl_property_for_zfs {
 
     ($prop:ident, $zfs_enum:ident, $($var:ident),+) => {
         impl From<dataset_properties::$prop::Value> for property::$zfs_enum {
@@ -131,6 +131,9 @@ macro_rules! impl_property {
         impl_property_for_zfs!($prop, $zfs_enum, $($variant),+);
 
         impl_zfs_for_property!($prop, $zfs_enum, $($variant),+);
+
+        // impl_from_zfs_prop_for_type_prop!($prop, $($ds_type),+ $zfs_enum);
+
     };
 }
 
@@ -152,6 +155,20 @@ macro_rules! impl_from_string_for_dataset_properties {
             impl From<String> for dataset_properties::$prop {
                 fn from(s: String) -> Self {
                     Self{value: s}
+                }
+            }
+        )+
+    };
+}
+
+#[allow(unused)]
+macro_rules! impl_from_zfs_prop_for_type_prop {
+    ($prop:ident, $zfs_enum:ident, $($ds_type:tt),+) => {
+        $(
+            impl From<property::$zfs_enum> for classcase!($ds_type) {
+                fn from(p: property::$zfs_enum) -> Self {
+                    let p: classcase_path_end!(dataset_properties::$prop) = p.into();
+                    p.into()
                 }
             }
         )+

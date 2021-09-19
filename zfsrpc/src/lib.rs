@@ -16,5 +16,5 @@
 pub mod tracing_server;
 pub mod zfs_server;
 
-#[allow(unreachable_pub)]
+#[allow(unreachable_pub, clippy::use_self)]
 pub mod zfsrpc_proto;

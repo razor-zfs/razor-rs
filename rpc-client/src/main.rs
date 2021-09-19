@@ -13,20 +13,14 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use tracing::info;
 use tracing_subscriber::{fmt, EnvFilter};
 
-use razor_zfsrpc as zfsrpc;
-use zfsrpc::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_client::ZfsRpcClient;
-use zfsrpc::zfsrpc_proto::tonic_zfsrpc::*;
-use zfsrpc::zfsrpc_proto::tonic_zfstracer;
-use zfsrpc::zfsrpc_proto::tonic_zfstracer::zfs_tracer_client::ZfsTracerClient;
-use zfsrpc::zfsrpc_proto::tonic_zfstracer::*;
+pub mod cli;
 
 const DEFAULT_TRACE_LEVEL: &str = "info";
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> anyhow::Result<()> {
     let filter =
         EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(DEFAULT_TRACE_LEVEL));
 
@@ -35,51 +29,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_timer(fmt::time::ChronoUtc::default())
         .init();
 
-    let mut client = ZfsRpcClient::connect("http://0.0.0.0:50051").await?;
-    let mut tracer_client = ZfsTracerClient::connect("http://0.0.0.0:50051").await?;
-
-    // let capacity = Some(10 * 1024 * 1024 * 1024);
-    let name: String = "dpool/fs3".to_string();
-    let canmount = dataset_properties::CanMount::off().into();
-    let atime = dataset_properties::ATime::off().into();
-
-    let properties = vec![canmount, atime];
-    // let properties = Vec::new();
-
-    let request = CreateFilesystemRequest {
-        // let request = CreateVolumeRequest {
-        //     capacity,
-        name: name.clone(),
-        properties,
-    };
-
-    let request = tonic::Request::new(request);
-    client.create_filesystem(request).await?;
-    // client.create_volume(request).await?;
-
-    // let request = BasicDatasetRequest {
-    //     name: name.clone(),
-    // };
-
-    // let request = tonic::Request::new(request);
-
-    // //client.destroy_dataset(request).await?;
-    // let _fs = client.get_filesystem(request).await?;
-
-    let request = TraceLevel {
-        level: Some(trace_level::Level::Warn(tonic_zfstracer::Variant {})),
-    };
-    let request = tonic::Request::new(request);
-    tracer_client.set_tracing_level(request).await?;
-
-    let request = BasicDatasetRequest { name };
-
-    let request = tonic::Request::new(request);
-
-    // //client.destroy_dataset(request).await?;
-    let fs = client.get_filesystem(request).await?;
-
-    info!(?fs);
-
-    Ok(())
+    cli::Cli::execute().await
 }

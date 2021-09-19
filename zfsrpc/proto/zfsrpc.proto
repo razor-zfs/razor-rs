@@ -2,12 +2,17 @@ syntax = "proto3";
 package zfsrpc;
 
 service ZfsRpc {
+    rpc DatasetList (Empty) returns (Datasets);
     rpc CreateVolume (CreateVolumeRequest) returns (Empty);
     rpc GetVolume (BasicDatasetRequest) returns (Volume);
     rpc DestroyVolume (BasicDatasetRequest) returns (Empty);
     rpc CreateFilesystem (CreateFilesystemRequest) returns (Empty);
     rpc GetFilesystem (BasicDatasetRequest) returns (Filesystem);
     rpc DestroyFilesystem (BasicDatasetRequest) returns (Empty);
+}
+
+message Datasets {
+    repeated Dataset datasets = 1;
 }
 
 message CreateVolumeRequest {
@@ -23,6 +28,19 @@ message CreateFilesystemRequest {
 
 message BasicDatasetRequest {
     string name = 1;
+}
+
+message Dataset {
+    enum Type {
+        FILESYSTEM = 0;
+        SNAPSHOT = 1;
+        VOLUME = 2;
+        POOL = 3;
+        BOOKMARK = 4;
+    };
+
+    string name = 1;
+    Type type = 2;
 }
 
 message Volume {

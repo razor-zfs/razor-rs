@@ -27,6 +27,7 @@
 
 stages:
   - test
+  - build
 
 .stable:test:
   variables:
@@ -51,3 +52,25 @@ nightly:test:
   #  - zfs_runner
   extends: .test:cargo
   #image: rustdocker/rust:nightly
+
+image:build:
+  stage: build
+  image: docker:git
+  tags: 
+    - "ondemand"
+  services:
+    - docker:dind
+  rules:
+      - if: '$BUILD_DOCKER == "true"'
+        when: always
+  before_script:
+    - git config --global credential.helper store
+    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com" > ~/.git-credentials
+    - chmod 0600 ~/.git-credentials
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker build --secret id=git,src=$HOME/.git-credentials -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG --build-arg RUST_TOOLCHAIN=nightly .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  after_script:
+    - rm ~/.git-credentials
+

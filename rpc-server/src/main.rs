@@ -27,8 +27,8 @@ use razor_tracing as tracing;
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let addr = "0.0.0.0:50051".parse()?;
-    let rpc = service::ZfsRpcService::default();
     let tracer = tracing::init()?;
+    let rpc = service::ZfsRpcService::init().await;
     Server::builder()
         .timeout(time::Duration::from_secs(
             service::ZfsRpcService::DEFAULT_TIMEOUT,
