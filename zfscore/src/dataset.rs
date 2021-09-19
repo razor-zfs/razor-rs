@@ -38,6 +38,14 @@ impl ZfsDatasetHandle {
         unsafe { libzfs::zfs_get_type(self.handle) }
     }
 
+    pub fn is_volume(&self) -> bool {
+        self.r#type() == libzfs::zfs_type_t::ZFS_TYPE_VOLUME
+    }
+
+    pub fn is_filesystem(&self) -> bool {
+        self.r#type() == libzfs::zfs_type_t::ZFS_TYPE_FILESYSTEM
+    }
+
     pub fn numeric_property_old(&self, name: &str, property: lzc::zfs_prop_t) -> u64 {
         let nvl = unsafe { libzfs::zfs_get_all_props(self.handle) };
         let nvl = nvpair::NvListRef::from_raw(nvl, self);

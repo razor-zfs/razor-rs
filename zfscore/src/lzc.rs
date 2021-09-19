@@ -13,6 +13,7 @@ pub use sys::zfs_prop_t;
 pub use sys::zfs_type_t;
 
 use crate::dataset;
+use crate::dataset_collector;
 use crate::libzfs;
 
 use super::error::value_or_err;
@@ -86,11 +87,18 @@ pub fn zfs_prop_default_numeric(property: zfs_prop_t) -> u64 {
 }
 
 pub fn zfs_list_datasets() -> Vec<dataset::ZfsDatasetHandle> {
-    let datasets = unsafe { libzfs::list_datasets() };
-    datasets
-        .iter()
-        .map(|handle| dataset::ZfsDatasetHandle::from(*handle))
-        .collect()
+    let datasets = dataset_collector::DatasetCollector::new();
+    datasets.get_all()
+}
+
+pub fn zfs_list_volumes() -> Vec<dataset::ZfsDatasetHandle> {
+    let datasets = dataset_collector::DatasetCollector::new();
+    datasets.get_volumes()
+}
+
+pub fn zfs_list_filesystems() -> Vec<dataset::ZfsDatasetHandle> {
+    let datasets = dataset_collector::DatasetCollector::new();
+    datasets.get_filesystems()
 }
 
 pub fn zfs_prop_to_name(property: zfs_prop_t) -> Cow<'static, str> {

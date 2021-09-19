@@ -73,6 +73,26 @@ fn list_datasets() {
 }
 
 #[test]
+fn list_volumes() {
+    let datasets = Zfs::list_volumes();
+
+    dbg!("printing datasets");
+    for dataset in datasets {
+        dbg!(dataset.name().to_owned().to_string());
+    }
+}
+
+#[test]
+fn list_filesystems() {
+    let datasets = Zfs::list_filesystems();
+
+    dbg!("printing datasets");
+    for dataset in datasets {
+        dbg!(dataset.name().to_owned().to_string());
+    }
+}
+
+#[test]
 fn get_volume() {
     let volume = Zfs::get_volume("dpool/vol").unwrap();
     dbg!(&volume);
