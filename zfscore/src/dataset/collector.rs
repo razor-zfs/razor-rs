@@ -108,9 +108,9 @@ impl DatasetCollectorBuilder {
         let mut children = Vec::<*mut sys::zfs_handle_t>::new();
         if let Some(parent) = parent {
             unsafe {
-                sys::zfs_iter_filesystems(
+                libzfs::zfs_iter_filesystems(
                     parent.handle,
-                    Some(zfs_list_cb),
+                    zfs_list_cb,
                     &mut children as *mut _ as *mut libc::c_void,
                 );
             }

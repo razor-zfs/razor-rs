@@ -135,6 +135,18 @@ pub(crate) unsafe fn zfs_iter_root(
     sys::zfs_iter_root(LIBZFS_HANDLE.libzfs_handle, Some(f), ptr);
 }
 
+pub(crate) unsafe fn zfs_iter_filesystems(
+    handle: *mut sys::zfs_handle_t,
+    f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
+    ptr: *mut libc::c_void,
+) {
+    sys::zfs_iter_filesystems(
+        handle,
+        Some(f),
+        ptr,
+    );
+}
+
 // pub(crate) struct DatasetCollector {
 //     datasets: Vec<*mut sys::zfs_handle_t>,
 // }
