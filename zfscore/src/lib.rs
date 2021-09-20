@@ -26,7 +26,6 @@ pub mod error;
 pub mod lzc;
 
 mod dataset;
-mod dataset_collector;
 mod libzfs;
 
 pub type Result<T> = std::result::Result<T, error::CoreError>;

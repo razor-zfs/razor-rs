@@ -64,6 +64,7 @@ fn create_volume_dataset() {
 
 #[test]
 fn list_filesystems() {
+    dbg!("starting list_filesystem test");
     let datasets = Zfs::list()
         .filesystems()
         .recursive()
@@ -77,6 +78,7 @@ fn list_filesystems() {
 
 #[test]
 fn list_filesystems_from() {
+    dbg!("starting list_filesystem_from test");
     let datasets = Zfs::list_from("dpool/export")
         .filesystems()
         .recursive()
@@ -90,6 +92,7 @@ fn list_filesystems_from() {
 
 #[test]
 fn list_volumes() {
+    dbg!("starting list_volumes test");
     let datasets = Zfs::list().volumes().recursive().get_collection().unwrap();
 
     for dataset in datasets {
@@ -99,6 +102,7 @@ fn list_volumes() {
 
 #[test]
 fn list_all() {
+    dbg!("starting list_all test");
     let datasets = Zfs::list()
         .filesystems()
         .volumes()
@@ -113,6 +117,7 @@ fn list_all() {
 
 #[test]
 fn list_all_non_recursive() {
+    dbg!("starting list_all_non_recursive test");
     let datasets = Zfs::list()
         .filesystems()
         .volumes()
