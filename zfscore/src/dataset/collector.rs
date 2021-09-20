@@ -86,7 +86,6 @@ impl DatasetCollectorBuilder {
             None
         };
 
-        //let mut datasets = Vec::new();
         let children = Self::get_children(handle);
 
         for child in children {
