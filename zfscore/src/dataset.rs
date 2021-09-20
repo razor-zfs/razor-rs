@@ -13,10 +13,6 @@ pub use zfs_dataset_handle::ZfsDatasetHandle;
 use super::error::CoreError;
 use super::Result;
 
-// #[derive(Debug)]
-// pub struct ZfsDatasetHandle {
-//     pub(super) handle: *mut lzc::zfs_handle_t,
-// }
 mod collector;
 mod zfs_dataset_handle;
 
