@@ -116,18 +116,6 @@ pub(crate) unsafe fn zfs_prop_default_numeric(property: sys::zfs_prop_t) -> u64 
     sys::zfs_prop_default_numeric(property)
 }
 
-// pub(crate) unsafe fn list_datasets() -> DatasetCollector {
-//     let mut datasets = DatasetCollector::new();
-
-//     sys::zfs_iter_root(
-//         LIBZFS_HANDLE.libzfs_handle,
-//         Some(rust_function),
-//         &mut datasets as *mut _ as *mut libc::c_void,
-//     );
-
-//     datasets
-// }
-
 pub(crate) unsafe fn zfs_iter_root(
     f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
     ptr: *mut libc::c_void,
@@ -140,48 +128,5 @@ pub(crate) unsafe fn zfs_iter_filesystems(
     f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
     ptr: *mut libc::c_void,
 ) {
-    sys::zfs_iter_filesystems(
-        handle,
-        Some(f),
-        ptr,
-    );
+    sys::zfs_iter_filesystems(handle, Some(f), ptr);
 }
-
-// pub(crate) struct DatasetCollector {
-//     datasets: Vec<*mut sys::zfs_handle_t>,
-// }
-
-// impl DatasetCollector {
-//     fn new() -> Self {
-//         Self {
-//             datasets: Vec::new(),
-//         }
-//     }
-
-//     fn add_dataset(&mut self, dataset: *mut sys::zfs_handle_t) {
-//         self.datasets.push(dataset)
-//     }
-
-//     pub(crate) fn get_datasets(&self) -> &Vec<*mut sys::zfs_handle_t> {
-//         &self.datasets
-//     }
-// }
-
-// TODO: add snapshots and bookmarks
-// #[no_mangle]
-// extern "C" fn rust_function(handle: *mut sys::zfs_handle_t, ptr: *mut libc::c_void) -> libc::c_int {
-//     let data: &mut DatasetCollector = unsafe { &mut *(ptr as *mut DatasetCollector) };
-//     data.add_dataset(handle);
-
-//     unsafe {
-//         let cstr = zfs_get_name(handle);
-//         let name = ffi::CStr::from_ptr(cstr).to_string_lossy();
-//         dbg!(name);
-//     }
-//     unsafe {
-//         if sys::zfs_get_type(handle) == sys::zfs_type_t::ZFS_TYPE_FILESYSTEM {
-//             sys::zfs_iter_filesystems(handle, Some(rust_function), ptr);
-//         }
-//     }
-//     0
-// }

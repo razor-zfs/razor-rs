@@ -148,8 +148,5 @@ extern "C" fn zfs_list_cb(handle: *mut sys::zfs_handle_t, ptr: *mut libc::c_void
     let children = unsafe { &mut *(ptr as *mut Vec<*mut sys::zfs_handle_t>) };
     children.push(handle);
 
-    // let data: &mut DatasetCollectorBuilder = unsafe { &mut *(ptr as *mut DatasetCollectorBuilder) };
-    // data.add_dataset(handle);
-
     0
 }
