@@ -36,6 +36,10 @@ impl Zfs {
         lzc::zfs_list()
     }
 
+    pub fn list_from(name: impl AsRef<str>) -> DatasetCollectorBuilder {
+        lzc::zfs_list_from(name)
+    }
+
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {
         Filesystem::get_filesystem(name)
     }

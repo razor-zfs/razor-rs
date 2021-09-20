@@ -17,9 +17,9 @@ use razor_nvpair as nvpair;
 
 use nvpair::NvListError;
 
-pub use crate::dataset::ZfsDatasetHandle;
-pub use crate::dataset_collector::DatasetCollectorBuilder;
 pub use crate::lzc::zfs_prop_t;
+pub use dataset::DatasetCollectorBuilder;
+pub use dataset::ZfsDatasetHandle;
 pub use razor_zfscore_sys::zfs_error_t;
 
 pub mod error;

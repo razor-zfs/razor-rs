@@ -64,7 +64,24 @@ fn create_volume_dataset() {
 
 #[test]
 fn list_filesystems() {
-    let datasets = Zfs::list().filesystems().recursive().get_collection();
+    let datasets = Zfs::list()
+        .filesystems()
+        .recursive()
+        .get_collection()
+        .unwrap();
+
+    for dataset in datasets {
+        dbg!(dataset.name());
+    }
+}
+
+#[test]
+fn list_filesystems_from() {
+    let datasets = Zfs::list_from("dpool/export")
+        .filesystems()
+        .recursive()
+        .get_collection()
+        .unwrap();
 
     for dataset in datasets {
         dbg!(dataset.name());
@@ -73,7 +90,7 @@ fn list_filesystems() {
 
 #[test]
 fn list_volumes() {
-    let datasets = Zfs::list().volumes().recursive().get_collection();
+    let datasets = Zfs::list().volumes().recursive().get_collection().unwrap();
 
     for dataset in datasets {
         dbg!(dataset.name());
@@ -86,7 +103,8 @@ fn list_all() {
         .filesystems()
         .volumes()
         .recursive()
-        .get_collection();
+        .get_collection()
+        .unwrap();
 
     for dataset in datasets {
         dbg!(dataset.name());
@@ -95,7 +113,11 @@ fn list_all() {
 
 #[test]
 fn list_all_non_recursive() {
-    let datasets = Zfs::list().filesystems().volumes().get_collection();
+    let datasets = Zfs::list()
+        .filesystems()
+        .volumes()
+        .get_collection()
+        .unwrap();
 
     for dataset in datasets {
         dbg!(dataset.name());

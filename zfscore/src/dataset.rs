@@ -7,14 +7,18 @@ use nvpair::NvListAccess;
 
 use crate::libzfs;
 use crate::lzc;
+pub use collector::DatasetCollectorBuilder;
+pub use zfs_dataset_handle::ZfsDatasetHandle;
 
 use super::error::CoreError;
 use super::Result;
 
-#[derive(Debug)]
-pub struct ZfsDatasetHandle {
-    handle: *mut lzc::zfs_handle_t,
-}
+// #[derive(Debug)]
+// pub struct ZfsDatasetHandle {
+//     pub(super) handle: *mut lzc::zfs_handle_t,
+// }
+mod collector;
+mod zfs_dataset_handle;
 
 impl ZfsDatasetHandle {
     pub fn new(name: ffi::CString) -> Result<Self> {

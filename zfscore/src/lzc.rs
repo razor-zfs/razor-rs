@@ -12,8 +12,8 @@ pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
 pub use sys::zfs_type_t;
 
-//use crate::dataset;
-use crate::dataset_collector;
+use crate::dataset;
+//use crate::dataset_collector;
 use crate::libzfs;
 
 use super::error::value_or_err;
@@ -86,8 +86,12 @@ pub fn zfs_prop_default_numeric(property: zfs_prop_t) -> u64 {
     unsafe { libzfs::zfs_prop_default_numeric(property) }
 }
 
-pub fn zfs_list() -> dataset_collector::DatasetCollectorBuilder {
-    dataset_collector::DatasetCollectorBuilder::new()
+pub fn zfs_list() -> dataset::DatasetCollectorBuilder {
+    dataset::DatasetCollectorBuilder::new()
+}
+
+pub fn zfs_list_from(name: impl AsRef<str>) -> dataset::DatasetCollectorBuilder {
+    dataset::DatasetCollectorBuilder::from(name)
 }
 
 pub fn zfs_prop_to_name(property: zfs_prop_t) -> Cow<'static, str> {
