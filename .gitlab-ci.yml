@@ -1,4 +1,5 @@
 .test:cargo:
+  image: ubuntu:focal
   stage: test
   #tags:
   #  - arm64_focal
