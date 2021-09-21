@@ -105,21 +105,11 @@ impl DatasetCollectorBuilder {
     pub fn get_children(
         parent: Option<&ZfsDatasetHandle>,
     ) -> impl Iterator<Item = ZfsDatasetHandle> {
-        let mut children = Vec::<*mut sys::zfs_handle_t>::new();
-        if let Some(parent) = parent {
-            unsafe {
-                libzfs::zfs_iter_filesystems(
-                    parent.handle,
-                    zfs_list_cb,
-                    &mut children as *mut _ as *mut libc::c_void,
-                );
-            }
-        } else {
-            unsafe {
-                libzfs::zfs_iter_root(zfs_list_cb, &mut children as *mut _ as *mut libc::c_void)
-            };
-        }
-        children.into_iter().map(ZfsDatasetHandle::from)
+        parent
+            .map(|parent| parent.handle)
+            .map_or_else(iter_root, iter_filesystem)
+            .into_iter()
+            .map(ZfsDatasetHandle::from)
     }
 }
 
@@ -141,6 +131,20 @@ impl IntoIterator for DatasetCollector {
     fn into_iter(self) -> Self::IntoIter {
         self.datasets.into_iter()
     }
+}
+
+fn iter_root() -> Vec<*mut sys::zfs_handle_t> {
+    let mut datasets: Vec<*mut sys::zfs_handle_t> = vec![];
+    let ptr = &mut datasets as *mut _ as *mut libc::c_void;
+    unsafe { libzfs::zfs_iter_root(zfs_list_cb, ptr) }
+    datasets
+}
+
+fn iter_filesystem(parent: *mut sys::zfs_handle_t) -> Vec<*mut sys::zfs_handle_t> {
+    let mut datasets: Vec<*mut sys::zfs_handle_t> = vec![];
+    let ptr = &mut datasets as *mut _ as *mut libc::c_void;
+    unsafe { libzfs::zfs_iter_filesystems(parent, zfs_list_cb, ptr) }
+    datasets
 }
 
 #[no_mangle]
