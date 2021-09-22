@@ -76,17 +76,13 @@ impl DatasetCollectorBuilder {
     }
 
     pub fn get_collection(mut self) -> Result<DatasetCollector> {
-        let zfs_handle;
+        let handle = self
+            .from_dataset
+            .as_ref()
+            .and_then(|name| CString::new(name.as_bytes()).ok())
+            .and_then(|cname| ZfsDatasetHandle::new(cname).ok());
 
-        let handle = if let Some(ref name) = self.from_dataset {
-            let cname = CString::new(name.as_bytes())?;
-            zfs_handle = super::ZfsDatasetHandle::new(cname)?;
-            Some(&zfs_handle)
-        } else {
-            None
-        };
-
-        let children = Self::get_children(handle);
+        let children = Self::get_children(handle.as_ref());
 
         for child in children {
             if self.recursive {
