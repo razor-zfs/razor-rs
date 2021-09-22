@@ -13,6 +13,7 @@ pub use sys::zfs_prop_t;
 pub use sys::zfs_type_t;
 
 use crate::dataset;
+use crate::error::CoreError;
 //use crate::dataset_collector;
 use crate::libzfs;
 
@@ -43,6 +44,10 @@ impl Lzc {
     unsafe fn lzc_destroy(&self, name: *const libc::c_char) -> libc::c_int {
         sys::lzc_destroy(name)
     }
+
+    unsafe fn lzc_exists(&self, name: *const libc::c_char) -> sys::boolean_t {
+        sys::lzc_exists(name)
+    }
 }
 
 pub fn create_filesystem(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<()> {
@@ -65,6 +70,18 @@ fn create_dataset(
     let rc = unsafe { LIBZFS_CORE.lzc_create(name, dataset_type, nvl) };
 
     value_or_err((), rc)
+}
+
+pub fn dataset_exists(name: impl AsRef<str>) -> Result<()> {
+    let cname = ffi::CString::new(name.as_ref())?;
+    let name = cname.as_ptr();
+    let rc = unsafe { LIBZFS_CORE.lzc_exists(name) };
+
+    if rc == sys::boolean_t::B_TRUE {
+        return Ok(());
+    } else {
+        return Err(CoreError::DatasetNotExist);
+    }
 }
 
 pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
