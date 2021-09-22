@@ -6,15 +6,9 @@ use std::process::Command;
 
 use nanoid::nanoid;
 use rand::prelude::*;
-//use once_cell::sync::Lazy;
 
 use razor_zfs::zfs::*;
 use razor_zfscore_sys::zfs_type_t;
-
-// static TEST: Lazy<TestNamespace> = Lazy::new(|| {
-//     let test_namespace = TestNamespace::new();
-//     test_namespace
-//});
 
 #[derive(Debug)]
 struct TestNamespace {
@@ -215,44 +209,24 @@ fn list_all_non_recursive() {
 
 #[test]
 fn create_delete_volume() {
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace.name(), "volume_to_delete");
     let volume = Zfs::volume()
-        .create("dpool/vol_to_delete", 128 * 1024)
+        .volmode(property::VolModeId::None)
+        .create(name, 128 * 1024)
         .unwrap();
-    dbg!(&volume);
-    Zfs::destroy_dataset("dpool/vol_to_delete").unwrap();
+    Zfs::destroy_dataset(volume.name()).unwrap();
+    let res = Zfs::dataset_exists(volume.name());
+    assert_eq!(true, res.is_err());
 }
 
 #[test]
 fn create_delete_filesystem() {
-    let filesystem = Zfs::filesystem().create("dpool/fs_to_delete").unwrap();
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace.name(), "filesystem_to_delete");
+    let filesystem = Zfs::filesystem().create(&name).unwrap();
+    Zfs::destroy_dataset(filesystem.name()).unwrap();
+    let res = Zfs::dataset_exists(filesystem.name());
 
-    dbg!(&filesystem);
-    Zfs::destroy_dataset("dpool/fs_to_delete").unwrap();
+    assert_eq!(true, res.is_err());
 }
-
-/*
-#[test]
-fn create_snapshot_dataset() {
-    let snapshot = Dataset::new("snapshot")
-        .unwrap()
-        .atime(zfs_property::OnOff::On)
-        .unwrap()
-        .canmount(zfs_property::OnOffNoAuto::NoAuto)
-        .unwrap()
-        .create_snapshot()
-        .unwrap();
-    dbg!(snapshot);
-}
-
-#[test]
-fn create_bookmark_dataset() {
-    let bookmark = Dataset::new("bookmark")
-        .unwrap()
-        .atime(zfs_property::OnOff::On)
-        .unwrap()
-        .canmount(zfs_property::OnOffNoAuto::NoAuto)
-        .unwrap()
-        .create_bookmark()
-        .unwrap();
-    dbg!(bookmark);
-} */
