@@ -128,5 +128,6 @@ pub(crate) unsafe fn zfs_iter_filesystems(
     f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
     ptr: *mut libc::c_void,
 ) {
+    Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_iter_filesystems(handle, Some(f), ptr);
 }
