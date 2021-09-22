@@ -2,11 +2,11 @@
 // echo 3 | sudo tee /sys/module/zfs/parameters/zvol_volmode
 // before running this test.
 
-use rand::Rng;
+use std::sync::Once;
+
+use nanoid::nanoid;
 
 use razor_zfs::zfs::*;
-
-use std::sync::Once;
 
 static INIT: Once = Once::new();
 
@@ -14,10 +14,9 @@ pub fn initialize() -> String {
     let mut namespace = String::new();
 
     INIT.call_once(|| {
-        let mut rng = rand::thread_rng();
-        let identifier: u8 = rng.gen();
-        namespace.push_str("dpool/test");
-        namespace.push_str(identifier.to_string().as_str());
+        let identifier = nanoid!();
+        let test_namespace = format!("dpool/{}", identifier);
+        namespace = test_namespace;
         dbg!("trying to create dataset: ", &namespace);
         Zfs::filesystem().create(&namespace).unwrap();
         dbg!("created test namespace");
