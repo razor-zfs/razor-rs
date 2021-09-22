@@ -2,7 +2,7 @@
 // echo 3 | sudo tee /sys/module/zfs/parameters/zvol_volmode
 // before running this test.
 
-use std::{borrow::BorrowMut, process::Command};
+use std::process::Command;
 
 use nanoid::nanoid;
 use rand::prelude::*;
