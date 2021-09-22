@@ -2,9 +2,10 @@
 // echo 3 | sudo tee /sys/module/zfs/parameters/zvol_volmode
 // before running this test.
 
-use once_cell::sync::Lazy;
+use std::process::Command;
 
 use nanoid::nanoid;
+use once_cell::sync::Lazy;
 
 use razor_zfs::zfs::*;
 
@@ -19,6 +20,16 @@ struct TestNamespace {
 
 impl TestNamespace {
     fn new() -> Self {
+        Command::new("echo")
+            .args([
+                "3",
+                "|",
+                "sudo",
+                "tee",
+                "/sys/module/zfs/parameters/zvol_volmode",
+            ])
+            .output()
+            .expect("failed to execute process");
         let namespace = String::from(format!("dpool/{}", nanoid!()));
         Zfs::filesystem().create(&namespace).unwrap();
         Self { namespace }
@@ -52,14 +63,35 @@ fn create_basic_filesystem() {
 }
 
 #[test]
-fn create_volume_dataset() {
+fn create_basic_volume() {
+    let name = format!("{}/{}", TEST.namespace, "volume");
     let volume = Zfs::volume()
         .volmode(property::VolModeId::None)
-        .create("dpool/volume", 128 * 1024)
+        .create(name, 128 * 1024)
         .unwrap();
-    dbg!(&volume);
+    let res = Zfs::dataset_exists(volume.name());
+    assert_eq!((), res.unwrap());
 
     volume.destroy().unwrap();
+}
+
+#[test]
+fn get_volume() {
+    let name = format!("{}/{}", TEST.namespace, "get_vol");
+    let volume = Zfs::volume()
+        .volmode(property::VolModeId::None)
+        .create(name, 128 * 1024)
+        .unwrap();
+    let res_vol = Zfs::get_volume(volume.name());
+    assert_eq!(true, res_vol.is_ok());
+}
+
+#[test]
+fn get_filesystem() {
+    let name = format!("{}/{}", TEST.namespace, "get_fs");
+    let filesystem = Zfs::filesystem().create(&name).unwrap();
+    let res_filesystem = Zfs::get_filesystem(filesystem.name());
+    assert_eq!(true, res_filesystem.is_ok());
 }
 
 #[test]
@@ -127,18 +159,6 @@ fn list_all_non_recursive() {
     for dataset in datasets {
         dbg!(dataset.name());
     }
-}
-
-#[test]
-fn get_volume() {
-    let volume = Zfs::get_volume("dpool/vol").unwrap();
-    dbg!(&volume);
-}
-
-#[test]
-fn get_filesystem() {
-    let volume = Zfs::get_filesystem("dpool/test").unwrap();
-    dbg!(&volume);
 }
 
 #[test]
