@@ -5,15 +5,16 @@
 use std::process::Command;
 
 use nanoid::nanoid;
-use once_cell::sync::Lazy;
+//use once_cell::sync::Lazy;
 
 use razor_zfs::zfs::*;
 
-static TEST: Lazy<TestNamespace> = Lazy::new(|| {
-    let test_namespace = TestNamespace::new();
-    test_namespace
-});
+// static TEST: Lazy<TestNamespace> = Lazy::new(|| {
+//     let test_namespace = TestNamespace::new();
+//     test_namespace
+//});
 
+#[derive(Debug)]
 struct TestNamespace {
     namespace: String,
 }
@@ -38,13 +39,15 @@ impl TestNamespace {
 
 impl Drop for TestNamespace {
     fn drop(&mut self) {
+        dbg!("destroying dataset: ", &self.namespace);
         Zfs::destroy_dataset(&self.namespace).unwrap();
     }
 }
 
 #[test]
 fn create_basic_filesystem() {
-    let name = format!("{}/{}", TEST.namespace, "filesystem");
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace, "filesystem");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
     let res = Zfs::dataset_exists(filesystem.name());
     assert_eq!((), res.unwrap());
@@ -64,7 +67,8 @@ fn create_basic_filesystem() {
 
 #[test]
 fn create_basic_volume() {
-    let name = format!("{}/{}", TEST.namespace, "volume");
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace, "volume");
     let volume = Zfs::volume()
         .volmode(property::VolModeId::None)
         .create(name, 128 * 1024)
@@ -77,21 +81,41 @@ fn create_basic_volume() {
 
 #[test]
 fn get_volume() {
-    let name = format!("{}/{}", TEST.namespace, "get_vol");
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace, "get_vol");
     let volume = Zfs::volume()
         .volmode(property::VolModeId::None)
         .create(name, 128 * 1024)
         .unwrap();
     let res_vol = Zfs::get_volume(volume.name());
     assert_eq!(true, res_vol.is_ok());
+    volume.destroy().unwrap();
 }
 
 #[test]
 fn get_filesystem() {
-    let name = format!("{}/{}", TEST.namespace, "get_fs");
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace, "get_fs");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
     let res_filesystem = Zfs::get_filesystem(filesystem.name());
     assert_eq!(true, res_filesystem.is_ok());
+    filesystem.destroy().unwrap();
+}
+
+#[test]
+fn get_invalid_volume() {
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace, nanoid!());
+    let res_vol = Zfs::get_volume(name);
+    assert_eq!(true, res_vol.is_err());
+}
+
+#[test]
+fn get_invalid_filesystem() {
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace, "get_fs");
+    let res_filesystem = Zfs::get_filesystem(name);
+    assert_eq!(true, res_filesystem.is_err());
 }
 
 #[test]
