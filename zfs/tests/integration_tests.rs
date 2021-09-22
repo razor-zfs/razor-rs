@@ -2,9 +2,16 @@
 // echo 3 | sudo tee /sys/module/zfs/parameters/zvol_volmode
 // before running this test.
 
+use once_cell::sync::Lazy;
+
 use nanoid::nanoid;
 
 use razor_zfs::zfs::*;
+
+static TEST: Lazy<TestNamespace> = Lazy::new(|| {
+    let test_namespace = TestNamespace::new();
+    test_namespace
+});
 
 struct TestNamespace {
     namespace: String,
@@ -26,11 +33,10 @@ impl Drop for TestNamespace {
 
 #[test]
 fn create_basic_filesystem() {
-    let test = TestNamespace::new();
-    dbg!("starting create filesystem test");
-    let filesystem_name = format!("{}/{}", test.namespace, "filesystem");
-    dbg!("name: ", &filesystem_name);
-    let filesystem = Zfs::filesystem().create(&filesystem_name).unwrap();
+    let name = format!("{}/{}", TEST.namespace, "filesystem");
+    let filesystem = Zfs::filesystem().create(&name).unwrap();
+    let res = Zfs::dataset_exists(filesystem.name());
+    assert_eq!((), res.unwrap());
     // dbg!(serde_json::to_string(&filesystem).unwrap());
     // filesystem
     //     .set()

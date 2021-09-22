@@ -32,8 +32,8 @@ impl Zfs {
         lzc::destroy_dataset(name).map_err(|err| err.into())
     }
 
-    pub fn dataset_exists(name: impl AsRef<str>) -> Result<()> {
-        lzc::dataset_exists(name).map_err(|err| err.into())
+    pub fn dataset_exists(dataset: impl AsRef<str>) -> Result<()> {
+        lzc::dataset_exists(dataset).map_err(|err| err.into())
     }
 
     pub fn list() -> DatasetCollectorBuilder {
