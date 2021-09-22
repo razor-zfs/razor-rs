@@ -2,12 +2,14 @@
 // echo 3 | sudo tee /sys/module/zfs/parameters/zvol_volmode
 // before running this test.
 
-use std::process::Command;
+use std::{borrow::BorrowMut, process::Command};
 
 use nanoid::nanoid;
+use rand::prelude::*;
 //use once_cell::sync::Lazy;
 
 use razor_zfs::zfs::*;
+use razor_zfscore_sys::zfs_type_t;
 
 // static TEST: Lazy<TestNamespace> = Lazy::new(|| {
 //     let test_namespace = TestNamespace::new();
@@ -16,7 +18,7 @@ use razor_zfs::zfs::*;
 
 #[derive(Debug)]
 struct TestNamespace {
-    namespace: String,
+    namespace: Filesystem,
 }
 
 impl TestNamespace {
@@ -32,22 +34,21 @@ impl TestNamespace {
             .output()
             .expect("failed to execute process");
         let namespace = String::from(format!("dpool/{}", nanoid!()));
-        Zfs::filesystem().create(&namespace).unwrap();
+        let namespace = Zfs::filesystem().create(&namespace).unwrap();
         Self { namespace }
     }
 }
 
 impl Drop for TestNamespace {
     fn drop(&mut self) {
-        dbg!("destroying dataset: ", &self.namespace);
-        Zfs::destroy_dataset(&self.namespace).unwrap();
+        self.namespace.destroy_recursive().unwrap()
     }
 }
 
 #[test]
 fn create_basic_filesystem() {
     let test = TestNamespace::new();
-    let name = format!("{}/{}", test.namespace, "filesystem");
+    let name = format!("{}/{}", test.namespace.name(), "filesystem");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
     let res = Zfs::dataset_exists(filesystem.name());
     assert_eq!((), res.unwrap());
@@ -61,51 +62,45 @@ fn create_basic_filesystem() {
     // dbg!(serde_json::to_string(&filesystem).unwrap());
     // assert_eq!(filesystem.name(), filesystem_name);
     // assert_eq!(filesystem.mounted(), property::YesNo::No);
-
-    filesystem.destroy().unwrap();
 }
 
 #[test]
 fn create_basic_volume() {
     let test = TestNamespace::new();
-    let name = format!("{}/{}", test.namespace, "volume");
+    let name = format!("{}/{}", test.namespace.name(), "volume");
     let volume = Zfs::volume()
         .volmode(property::VolModeId::None)
         .create(name, 128 * 1024)
         .unwrap();
     let res = Zfs::dataset_exists(volume.name());
     assert_eq!((), res.unwrap());
-
-    volume.destroy().unwrap();
 }
 
 #[test]
 fn get_volume() {
     let test = TestNamespace::new();
-    let name = format!("{}/{}", test.namespace, "get_vol");
+    let name = format!("{}/{}", test.namespace.name(), "get_vol");
     let volume = Zfs::volume()
         .volmode(property::VolModeId::None)
         .create(name, 128 * 1024)
         .unwrap();
     let res_vol = Zfs::get_volume(volume.name());
     assert_eq!(true, res_vol.is_ok());
-    volume.destroy().unwrap();
 }
 
 #[test]
 fn get_filesystem() {
     let test = TestNamespace::new();
-    let name = format!("{}/{}", test.namespace, "get_fs");
+    let name = format!("{}/{}", test.namespace.name(), "get_fs");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
     let res_filesystem = Zfs::get_filesystem(filesystem.name());
     assert_eq!(true, res_filesystem.is_ok());
-    filesystem.destroy().unwrap();
 }
 
 #[test]
 fn get_invalid_volume() {
     let test = TestNamespace::new();
-    let name = format!("{}/{}", test.namespace, nanoid!());
+    let name = format!("{}/{}", test.namespace.name(), nanoid!());
     let res_vol = Zfs::get_volume(name);
     assert_eq!(true, res_vol.is_err());
 }
@@ -113,7 +108,7 @@ fn get_invalid_volume() {
 #[test]
 fn get_invalid_filesystem() {
     let test = TestNamespace::new();
-    let name = format!("{}/{}", test.namespace, "get_fs");
+    let name = format!("{}/{}", test.namespace.name(), "get_fs");
     let res_filesystem = Zfs::get_filesystem(name);
     assert_eq!(true, res_filesystem.is_err());
 }
@@ -129,21 +124,63 @@ fn list_filesystems() {
 
     for dataset in datasets {
         dbg!(dataset.name());
+        assert_eq!(zfs_type_t::ZFS_TYPE_FILESYSTEM, dataset.r#type());
     }
 }
 
 #[test]
 fn list_filesystems_from() {
-    dbg!("starting list_filesystem_from test");
-    let datasets = Zfs::list_from("dpool/export")
+    let test = TestNamespace::new();
+    let mut names = Vec::new();
+
+    for i in 1..rand::thread_rng().gen_range(5..10) {
+        names.push(format!(
+            "{}/{}{}",
+            test.namespace.name(),
+            "from_filesystem",
+            i.to_string()
+        ));
+
+        Zfs::filesystem().create(names.last().unwrap()).unwrap();
+    }
+
+    let mut accamulator = Vec::new();
+
+    for name in names.iter() {
+        let mut children_names = Vec::new();
+        let rnd = rand::thread_rng().gen_range(1..10);
+
+        for _i in 0..rnd {
+            children_names.push(format!("{}/{}", name, nanoid!()));
+            Zfs::filesystem()
+                .create(children_names.last().unwrap())
+                .unwrap();
+        }
+
+        accamulator.append(&mut children_names);
+    }
+
+    names.append(&mut accamulator);
+
+    let datasets = Zfs::list_from(test.namespace.name())
         .filesystems()
         .recursive()
         .get_collection()
         .unwrap();
 
-    for dataset in datasets {
+    dbg!("names i created: ", &names);
+
+    dbg!("wanted lenght: ", names.len());
+    dbg!("got lenght: ", datasets.len());
+    assert_eq!(names.len(), datasets.len());
+
+    for dataset in datasets.into_iter() {
         dbg!(dataset.name());
+        assert_eq!(true, names.contains(&dataset.name().to_string()));
+        assert_eq!(zfs_type_t::ZFS_TYPE_FILESYSTEM, dataset.r#type());
     }
+
+    dbg!("finished asserting: all good");
 }
 
 #[test]
@@ -153,6 +190,7 @@ fn list_volumes() {
 
     for dataset in datasets {
         dbg!(dataset.name());
+        assert_eq!(zfs_type_t::ZFS_TYPE_VOLUME, dataset.r#type());
     }
 }
 

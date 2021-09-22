@@ -118,6 +118,10 @@ impl DatasetCollector {
     pub(crate) fn new(datasets: Vec<ZfsDatasetHandle>) -> Self {
         Self { datasets }
     }
+
+    pub fn len(&self) -> usize {
+        self.datasets.len()
+    }
 }
 
 impl IntoIterator for DatasetCollector {

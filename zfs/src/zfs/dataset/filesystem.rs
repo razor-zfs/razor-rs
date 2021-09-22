@@ -212,7 +212,26 @@ impl Filesystem {
         FilesytemSetter::new(&self.dataset, self)
     }
 
-    pub fn destroy(self) -> Result<()> {
+    pub fn destroy(&self) -> Result<()> {
+        lzc::destroy_dataset(self.name()).map_err(|err| err.into())
+    }
+
+    pub fn destroy_recursive(&self) -> Result<()> {
+        let ns_datasets = lzc::zfs_list_from(self.name())
+            .filesystems()
+            .volumes()
+            .recursive()
+            .get_collection()?;
+
+        // for dataset in ns_datasets.into_iter() {
+        //     dbg!("i will delete: ", dataset.name());
+        // }
+
+        for dataset in ns_datasets.into_iter() {
+            dbg!("trying to destroy: ", dataset.name());
+            lzc::destroy_dataset(dataset.name())?;
+        }
+
         lzc::destroy_dataset(self.name()).map_err(|err| err.into())
     }
 
