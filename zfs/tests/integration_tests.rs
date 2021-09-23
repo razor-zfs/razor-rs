@@ -45,11 +45,14 @@ fn create_basic_filesystem() {
     dbg!("starting create basic filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem");
+    dbg!("requested to create filesystem");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
+    dbg!("filesystem created");
     assert!(
         Zfs::dataset_exists(filesystem.name()).is_ok(),
         "couldnt find filesystem"
-    )
+    );
+    dbg!("create_basic_filesystem finished");
 }
 
 #[test]
