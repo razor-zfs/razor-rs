@@ -299,3 +299,25 @@ fn create_delete_filesystem() {
     assert!(res.is_err(), "couldnt delete filesystem");
     dbg!("create_delete_filesystem finished");
 }
+
+#[test]
+fn delete_invalid_filesystem() {
+    let test = TestNamespace::new();
+    let name = format!(
+        "{}/{}",
+        test.namespace.name(),
+        "invalid_filesystem_to_delete"
+    );
+    let res = Zfs::destroy_dataset(name).unwrap_err();
+    let expected = DatasetError::CoreErr(CoreError::NoSuchFileOrDirectory);
+    assert_eq!(expected, res);
+}
+
+#[test]
+fn delete_invalid_volume() {
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace.name(), "invalid_volume_to_delete");
+    let res = Zfs::destroy_dataset(name).unwrap_err();
+    let expected = DatasetError::CoreErr(CoreError::NoSuchFileOrDirectory);
+    assert_eq!(expected, res);
+}
