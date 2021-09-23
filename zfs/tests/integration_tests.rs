@@ -42,6 +42,7 @@ impl Drop for TestNamespace {
 
 #[test]
 fn create_basic_filesystem() {
+    dbg!("starting create basic filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
@@ -53,6 +54,7 @@ fn create_basic_filesystem() {
 
 #[test]
 fn create_basic_volume() {
+    dbg!("starting create basic volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "volume");
     let volume = Zfs::volume()
@@ -67,6 +69,7 @@ fn create_basic_volume() {
 
 #[test]
 fn get_volume() {
+    dbg!("starting get volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "get_vol");
     let volume = Zfs::volume()
@@ -79,6 +82,7 @@ fn get_volume() {
 
 #[test]
 fn get_filesystem() {
+    dbg!("starting get filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "get_fs");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
@@ -88,6 +92,7 @@ fn get_filesystem() {
 
 #[test]
 fn get_invalid_volume() {
+    dbg!("starting get invalid volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), nanoid!());
     let res_vol = Zfs::get_volume(name).unwrap_err();
@@ -97,6 +102,7 @@ fn get_invalid_volume() {
 
 #[test]
 fn get_invalid_filesystem() {
+    dbg!("starting get invalid filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "get_fs");
     let res_filesystem = Zfs::get_filesystem(name).unwrap_err();
@@ -121,6 +127,7 @@ fn list_filesystems() {
 
 #[test]
 fn list_filesystems_from() {
+    dbg!("starting list filesystems from");
     let test = TestNamespace::new();
     let mut names = Vec::new();
 
@@ -219,6 +226,7 @@ fn list_all_non_recursive() {
 
 #[test]
 fn create_delete_volume() {
+    dbg!("starting delete volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "volume_to_delete");
     let volume = Zfs::volume()
@@ -232,6 +240,7 @@ fn create_delete_volume() {
 
 #[test]
 fn create_delete_filesystem() {
+    dbg!("starting delete filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem_to_delete");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
