@@ -36,7 +36,7 @@ stages:
   extends: .test:cargo
   #image: rustdocker/rust:stable
 
-beta:test:
+.beta:test:
   variables:
     RUST_TOOLCHAIN: beta
   #tags:
