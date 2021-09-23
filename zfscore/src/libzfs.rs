@@ -1,3 +1,4 @@
+use std::ffi;
 use std::mem;
 use std::ptr;
 
@@ -11,6 +12,7 @@ static LIBZFS_HANDLE: Lazy<LibZfsHandle> = Lazy::new(LibZfsHandle::init);
 #[derive(Debug)]
 struct LibZfsHandle {
     libzfs_handle: *mut sys::libzfs_handle_t,
+    version: Version,
 }
 
 unsafe impl Send for LibZfsHandle {}
@@ -18,18 +20,21 @@ unsafe impl Sync for LibZfsHandle {}
 
 impl LibZfsHandle {
     fn init() -> Self {
-        Self {
-            libzfs_handle: unsafe { Self::init_impl() },
-        }
+        unsafe { Self::init_impl() }
     }
 
-    unsafe fn init_impl() -> *mut sys::libzfs_handle_t {
-        let handle = sys::libzfs_init();
-        if handle.is_null() {
+    unsafe fn init_impl() -> Self {
+        let libzfs_handle = sys::libzfs_init();
+        if libzfs_handle.is_null() {
             panic!("libzfs_init failed");
         }
-        sys::libzfs_print_on_error(handle, sys::boolean_t::B_FALSE);
-        handle
+        sys::libzfs_print_on_error(libzfs_handle, sys::boolean_t::B_FALSE);
+        let version = Version::new();
+
+        Self {
+            libzfs_handle,
+            version,
+        }
     }
 }
 
@@ -146,4 +151,59 @@ pub(crate) unsafe fn zfs_iter_snapshots(
         true => sys::boolean_t::B_FALSE,
     };
     sys::zfs_iter_snapshots(handle, simple, Some(f), data, min_txg, max_txg);
+}
+
+const MAX_VERSION_LEN: usize = 128;
+unsafe fn zfs_version_kernel() -> String {
+    let mut version = [0; MAX_VERSION_LEN];
+    sys::zfs_version_kernel(version.as_mut_ptr(), MAX_VERSION_LEN as libc::c_int);
+    ffi::CStr::from_ptr(version.as_ptr())
+        .to_string_lossy()
+        .into_owned()
+}
+
+unsafe fn zfs_version_userland() -> String {
+    let mut version = [0; MAX_VERSION_LEN];
+    sys::zfs_version_userland(version.as_mut_ptr(), MAX_VERSION_LEN as libc::c_int);
+    ffi::CStr::from_ptr(version.as_ptr())
+        .to_string_lossy()
+        .into_owned()
+}
+
+pub(crate) fn zfs_version() -> Version {
+    LIBZFS_HANDLE.version.clone()
+}
+
+#[derive(Clone, Debug)]
+pub struct Version {
+    kernel: String,
+    userland: String,
+}
+
+impl Version {
+    const ZFS_VERSION: &'static str = "zfs-0.8";
+
+    unsafe fn new() -> Self {
+        let kernel = zfs_version_kernel();
+        let userland = zfs_version_userland();
+        Self { kernel, userland }
+    }
+
+    pub fn ensure_compatible(&self) {
+        if !self.userland.starts_with(Self::ZFS_VERSION) {
+            panic!(
+                "libzfs version is not compatible (I was compiled against {}, but {} is found",
+                Self::ZFS_VERSION,
+                self.userland
+            );
+        }
+    }
+
+    pub fn kernel(&self) -> &str {
+        &self.kernel
+    }
+
+    pub fn userland(&self) -> &str {
+        &self.userland
+    }
 }

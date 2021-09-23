@@ -31,6 +31,8 @@ fn main() {
         .allowlist_function(r#"zfs_get_\w*"#)
         .allowlist_function(r#"zfs_set_\w*"#)
         .allowlist_function(r#"zfs_prop_\w*"#)
+        .allowlist_function("zfs_version_kernel")
+        .allowlist_function("zfs_version_userland")
         .allowlist_function(r#"lzc\w*"#)
         .allowlist_function(r#"libzfs\w*"#)
         .blocklist_item(r#"\w*nvlist\w*"#)

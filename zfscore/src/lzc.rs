@@ -28,6 +28,7 @@ struct Lzc;
 impl Lzc {
     fn init() -> Self {
         let _rc = unsafe { sys::libzfs_core_init() };
+        libzfs::zfs_version().ensure_compatible();
         Self
     }
 
@@ -58,6 +59,10 @@ impl Lzc {
     ) -> libc::c_int {
         sys::lzc_snapshot(snaps, props, errlist)
     }
+}
+
+pub fn version() -> libzfs::Version {
+    libzfs::zfs_version()
 }
 
 pub fn create_filesystem(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<()> {
