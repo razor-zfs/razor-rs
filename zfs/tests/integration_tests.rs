@@ -279,8 +279,9 @@ fn create_delete_volume() {
     dbg!("requesting to delete volume in create_delete_volume");
     Zfs::destroy_dataset(volume.name()).unwrap();
     dbg!("volume deleted in create_delete_volume");
-    let res = Zfs::dataset_exists(volume.name());
-    assert!(res.is_err(), "couldnt delete volume");
+    let res = Zfs::dataset_exists(volume.name()).unwrap_err();
+    let expected = DatasetError::CoreErr(CoreError::DatasetNotExist);
+    assert_eq!(expected, res);
     dbg!("create_delete_volume finished");
 }
 
@@ -295,8 +296,9 @@ fn create_delete_filesystem() {
     dbg!("requesting to delete filesystem in create_delete_filesystem");
     Zfs::destroy_dataset(filesystem.name()).unwrap();
     dbg!("filesystem deleted in create_delete_filesystem");
-    let res = Zfs::dataset_exists(filesystem.name());
-    assert!(res.is_err(), "couldnt delete filesystem");
+    let res = Zfs::dataset_exists(filesystem.name()).unwrap_err();
+    let expected = DatasetError::CoreErr(CoreError::DatasetNotExist);
+    assert_eq!(expected, res);
     dbg!("create_delete_filesystem finished");
 }
 
