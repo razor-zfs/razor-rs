@@ -23,7 +23,7 @@
     #- apt-get install -y clang-3.9 lldb-3.9
     - cargo fmt -- --check
     - cargo clippy --all-targets
-    - cargo test
+    - cargo test -- --nocapture
 
 stages:
   - test
