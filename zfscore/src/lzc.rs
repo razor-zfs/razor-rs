@@ -78,9 +78,9 @@ pub fn dataset_exists(name: impl AsRef<str>) -> Result<()> {
     let rc = unsafe { LIBZFS_CORE.lzc_exists(name) };
 
     if rc == sys::boolean_t::B_TRUE {
-        return Ok(());
+        Ok(())
     } else {
-        return Err(CoreError::DatasetNotExist);
+        Err(CoreError::DatasetNotExist)
     }
 }
 

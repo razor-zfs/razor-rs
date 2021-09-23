@@ -3,7 +3,7 @@ use thiserror::Error;
 
 use super::NvListError;
 
-#[derive(Error, Debug, Clone)]
+#[derive(Error, Debug, Clone, PartialEq)]
 pub enum CoreError {
     #[error("operation not permited")]
     OperationNotPermited,

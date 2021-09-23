@@ -7,7 +7,8 @@ use std::process::Command;
 use nanoid::nanoid;
 use rand::prelude::*;
 
-use razor_zfs::zfs::*;
+use razor_zfs::{error::DatasetError, zfs::*};
+use razor_zfscore::error::CoreError;
 use razor_zfscore_sys::zfs_type_t;
 
 #[derive(Debug)]
@@ -27,7 +28,7 @@ impl TestNamespace {
             ])
             .output()
             .expect("failed to execute process");
-        let namespace = String::from(format!("dpool/{}", nanoid!()));
+        let namespace = format!("dpool/{}", nanoid!());
         let namespace = Zfs::filesystem().create(&namespace).unwrap();
         Self { namespace }
     }
@@ -44,8 +45,10 @@ fn create_basic_filesystem() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
-    let res = Zfs::dataset_exists(filesystem.name());
-    assert_eq!((), res.unwrap());
+    assert!(
+        Zfs::dataset_exists(filesystem.name()).is_ok(),
+        "couldnt find filesystem"
+    )
 }
 
 #[test]
@@ -56,8 +59,10 @@ fn create_basic_volume() {
         .volmode(property::VolModeId::None)
         .create(name, 128 * 1024)
         .unwrap();
-    let res = Zfs::dataset_exists(volume.name());
-    assert_eq!((), res.unwrap());
+    assert!(
+        Zfs::dataset_exists(volume.name()).is_ok(),
+        "couldnt find volume"
+    )
 }
 
 #[test]
@@ -69,7 +74,7 @@ fn get_volume() {
         .create(name, 128 * 1024)
         .unwrap();
     let res_vol = Zfs::get_volume(volume.name());
-    assert_eq!(true, res_vol.is_ok());
+    assert!(res_vol.is_ok(), "couldnt get volume");
 }
 
 #[test]
@@ -78,23 +83,25 @@ fn get_filesystem() {
     let name = format!("{}/{}", test.namespace.name(), "get_fs");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
     let res_filesystem = Zfs::get_filesystem(filesystem.name());
-    assert_eq!(true, res_filesystem.is_ok());
+    assert!(res_filesystem.is_ok(), "couldnt get filesystem");
 }
 
 #[test]
 fn get_invalid_volume() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), nanoid!());
-    let res_vol = Zfs::get_volume(name);
-    assert_eq!(true, res_vol.is_err());
+    let res_vol = Zfs::get_volume(name).unwrap_err();
+    let expected = DatasetError::CoreErr(CoreError::DatasetNotExist);
+    assert_eq!(expected, res_vol);
 }
 
 #[test]
 fn get_invalid_filesystem() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "get_fs");
-    let res_filesystem = Zfs::get_filesystem(name);
-    assert_eq!(true, res_filesystem.is_err());
+    let res_filesystem = Zfs::get_filesystem(name).unwrap_err();
+    let expected = DatasetError::CoreErr(CoreError::DatasetNotExist);
+    assert_eq!(expected, res_filesystem);
 }
 
 #[test]
@@ -160,7 +167,10 @@ fn list_filesystems_from() {
 
     for dataset in datasets.into_iter() {
         dbg!(dataset.name());
-        assert_eq!(true, names.contains(&dataset.name().to_string()));
+        assert!(
+            names.contains(&dataset.name().to_string()),
+            "received dataset dont exist in names vector"
+        );
         assert_eq!(zfs_type_t::ZFS_TYPE_FILESYSTEM, dataset.r#type());
     }
 
@@ -217,7 +227,7 @@ fn create_delete_volume() {
         .unwrap();
     Zfs::destroy_dataset(volume.name()).unwrap();
     let res = Zfs::dataset_exists(volume.name());
-    assert_eq!(true, res.is_err());
+    assert!(res.is_err(), "couldnt delete volume");
 }
 
 #[test]
@@ -228,5 +238,5 @@ fn create_delete_filesystem() {
     Zfs::destroy_dataset(filesystem.name()).unwrap();
     let res = Zfs::dataset_exists(filesystem.name());
 
-    assert_eq!(true, res.is_err());
+    assert!(res.is_err(), "couldnt delete filesystem");
 }

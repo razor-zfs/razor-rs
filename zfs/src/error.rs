@@ -5,7 +5,7 @@ use thiserror::Error;
 
 use super::NvListError;
 
-#[derive(Debug, Error, Clone)]
+#[derive(Debug, Error, Clone, PartialEq)]
 pub enum InvalidProperty {
     #[error("No such property ({0})")]
     NoSuchProperty(String),
@@ -25,7 +25,7 @@ impl InvalidProperty {
     }
 }
 
-#[derive(Error, Debug, Clone)]
+#[derive(Error, Debug, Clone, PartialEq)]
 pub enum DatasetError {
     #[error("operation not permited")]
     OperationNotPermited,
