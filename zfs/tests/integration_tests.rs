@@ -18,6 +18,7 @@ struct TestNamespace {
 
 impl TestNamespace {
     fn new() -> Self {
+        dbg!("initializing TestNamespace");
         Command::new("echo")
             .args([
                 "3",
