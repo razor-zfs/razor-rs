@@ -57,6 +57,20 @@ fn create_basic_filesystem() {
 }
 
 #[test]
+fn create_dup_filesystem() {
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace.name(), "dup_filesystem");
+    let filesystem = Zfs::filesystem().create(&name).unwrap();
+    assert!(
+        Zfs::dataset_exists(filesystem.name()).is_ok(),
+        "couldnt find filesystem"
+    );
+    let res = Zfs::filesystem().create(&name).unwrap_err();
+    let expected = DatasetError::CoreErr(CoreError::FileExists);
+    assert_eq!(expected, res);
+}
+
+#[test]
 fn create_basic_volume() {
     dbg!("starting create basic volume");
     let test = TestNamespace::new();
@@ -72,6 +86,26 @@ fn create_basic_volume() {
         "couldnt find volume"
     );
     dbg!("create_basic_volume finished");
+}
+
+#[test]
+fn create_dup_volume() {
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace.name(), "dup_volume");
+    let volume = Zfs::volume()
+        .volmode(property::VolModeId::None)
+        .create(&name, 128 * 1024)
+        .unwrap();
+    assert!(
+        Zfs::dataset_exists(volume.name()).is_ok(),
+        "couldnt find filesystem"
+    );
+    let res = Zfs::volume()
+        .volmode(property::VolModeId::None)
+        .create(&name, 128 * 1024)
+        .unwrap_err();
+    let expected = DatasetError::CoreErr(CoreError::FileExists);
+    assert_eq!(expected, res);
 }
 
 #[test]
