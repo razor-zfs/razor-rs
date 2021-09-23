@@ -45,7 +45,7 @@ fn create_basic_filesystem() {
     dbg!("starting create basic filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem");
-    dbg!("requested to create filesystem");
+    dbg!("requesting to create filesystem");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
     dbg!("filesystem created");
     assert!(
@@ -60,14 +60,17 @@ fn create_basic_volume() {
     dbg!("starting create basic volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "volume");
+    dbg!("requesting to create volume");
     let volume = Zfs::volume()
         .volmode(property::VolModeId::None)
         .create(name, 128 * 1024)
         .unwrap();
+    dbg!("volume created");
     assert!(
         Zfs::dataset_exists(volume.name()).is_ok(),
         "couldnt find volume"
-    )
+    );
+    dbg!("create_basic_volume finished");
 }
 
 #[test]
@@ -232,13 +235,18 @@ fn create_delete_volume() {
     dbg!("starting delete volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "volume_to_delete");
+    dbg!("requesting to create volume in create_delete_volume");
     let volume = Zfs::volume()
         .volmode(property::VolModeId::None)
         .create(name, 128 * 1024)
         .unwrap();
+    dbg!("volume created in create_delete_volume");
+    dbg!("requesting to delete volume in create_delete_volume");
     Zfs::destroy_dataset(volume.name()).unwrap();
+    dbg!("volume deleted in create_delete_volume");
     let res = Zfs::dataset_exists(volume.name());
     assert!(res.is_err(), "couldnt delete volume");
+    dbg!("create_delete_volume finished");
 }
 
 #[test]
@@ -246,9 +254,13 @@ fn create_delete_filesystem() {
     dbg!("starting delete filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem_to_delete");
+    dbg!("requesting to create filesystem in create_delete_filesystem");
     let filesystem = Zfs::filesystem().create(&name).unwrap();
+    dbg!("filesystem created in create_delete_filesystem");
+    dbg!("requesting to delete filesystem in create_delete_filesystem");
     Zfs::destroy_dataset(filesystem.name()).unwrap();
+    dbg!("filesystem deleted in create_delete_filesystem");
     let res = Zfs::dataset_exists(filesystem.name());
-
     assert!(res.is_err(), "couldnt delete filesystem");
+    dbg!("create_delete_filesystem finished");
 }
