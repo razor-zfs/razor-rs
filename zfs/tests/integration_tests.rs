@@ -126,6 +126,32 @@ fn set_properties_filesystem() {
 }
 
 #[test]
+fn set_properties_volume() {
+    dbg!("starting set_properties_volume");
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace.name(), "set_volume");
+    dbg!("requesting to create volume");
+    let filesystem = Zfs::volume()
+        .checksum(property::CheckSumAlgo::Off)
+        .compression(property::CompressionAlgo::Off)
+        .volmode(property::VolModeId::None)
+        .create(&name, 128 * 1024)
+        .unwrap();
+    dbg!("filesystem created");
+    assert_eq!(property::CheckSumAlgo::Off, filesystem.checksum());
+    assert_eq!(property::CompressionAlgo::Off, filesystem.compression());
+    dbg!("passed creation test");
+    filesystem
+        .set()
+        .checksum(property::CheckSumAlgo::On)
+        .compression(property::CompressionAlgo::On)
+        .add()
+        .unwrap();
+    assert_eq!(property::CheckSumAlgo::On, filesystem.checksum());
+    assert_eq!(property::CompressionAlgo::On, filesystem.compression());
+}
+
+#[test]
 fn create_dup_filesystem() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "dup_filesystem");

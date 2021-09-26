@@ -286,7 +286,7 @@ impl VolumeBuilder {
     pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(CHECKSUM.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(CHECKSUM.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -296,7 +296,10 @@ impl VolumeBuilder {
     pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(COMPRESSION.as_ref(), value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_uint64(COMPRESSION.as_ref(), u64::from(value))
+        {
             self.err = Some(err.into());
         }
 
