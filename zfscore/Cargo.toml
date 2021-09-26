@@ -11,3 +11,4 @@ razor-libnvpair = { version = "0.1", path = "../libnvpair" }
 razor-nvpair = { version = "0.1", path = "../nvpair" }
 razor-zfscore-sys = { version = "0.1", path = "../zfscore-sys" }
 thiserror = "1.0"
+parking_lot = "0.11"

@@ -18,7 +18,6 @@ struct TestNamespace {
 
 impl TestNamespace {
     fn new() -> Self {
-        dbg!("initializing TestNamespace");
         Command::new("echo")
             .args([
                 "3",
@@ -113,10 +112,12 @@ fn get_volume() {
     dbg!("starting get volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "get_vol");
+    dbg!("inside get_volume starting to create volume");
     let volume = Zfs::volume()
         .volmode(property::VolModeId::None)
         .create(name, 128 * 1024)
         .unwrap();
+    dbg!("inside get_volume finished to create volume");
     let res_vol = Zfs::get_volume(volume.name());
     assert!(res_vol.is_ok(), "couldnt get volume");
 }

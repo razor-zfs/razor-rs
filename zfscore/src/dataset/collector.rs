@@ -2,10 +2,40 @@
 
 use std::ffi::CString;
 
+use once_cell::sync::Lazy;
+use parking_lot::Mutex;
+
 use super::Result;
 use crate::libzfs;
 use crate::ZfsDatasetHandle;
 use razor_zfscore_sys as sys;
+
+static DATASET_ITERATOR: Lazy<Mutex<DatasetIterator>> = Lazy::new(|| {
+    let iterator = DatasetIterator::new();
+    Mutex::new(iterator)
+});
+
+struct DatasetIterator {}
+
+impl DatasetIterator {
+    fn new() -> Self {
+        Self {}
+    }
+
+    fn iter_root(&self) -> Vec<*mut sys::zfs_handle_t> {
+        let mut datasets: Vec<*mut sys::zfs_handle_t> = vec![];
+        let ptr = &mut datasets as *mut _ as *mut libc::c_void;
+        unsafe { libzfs::zfs_iter_root(zfs_list_cb, ptr) }
+        datasets
+    }
+
+    fn iter_filesystem(&self, parent: *mut sys::zfs_handle_t) -> Vec<*mut sys::zfs_handle_t> {
+        let mut datasets: Vec<*mut sys::zfs_handle_t> = vec![];
+        let ptr = &mut datasets as *mut _ as *mut libc::c_void;
+        unsafe { libzfs::zfs_iter_filesystems(parent, zfs_list_cb, ptr) }
+        datasets
+    }
+}
 
 #[derive(Debug)]
 pub struct DatasetCollectorBuilder {
@@ -103,7 +133,10 @@ impl DatasetCollectorBuilder {
     ) -> impl Iterator<Item = ZfsDatasetHandle> {
         parent
             .map(|parent| parent.handle)
-            .map_or_else(iter_root, iter_filesystem)
+            .map_or_else(
+                || DATASET_ITERATOR.lock().iter_root(),
+                |parent| DATASET_ITERATOR.lock().iter_filesystem(parent),
+            )
             .into_iter()
             .map(ZfsDatasetHandle::from)
     }
@@ -131,20 +164,6 @@ impl IntoIterator for DatasetCollector {
     fn into_iter(self) -> Self::IntoIter {
         self.datasets.into_iter()
     }
-}
-
-fn iter_root() -> Vec<*mut sys::zfs_handle_t> {
-    let mut datasets: Vec<*mut sys::zfs_handle_t> = vec![];
-    let ptr = &mut datasets as *mut _ as *mut libc::c_void;
-    unsafe { libzfs::zfs_iter_root(zfs_list_cb, ptr) }
-    datasets
-}
-
-fn iter_filesystem(parent: *mut sys::zfs_handle_t) -> Vec<*mut sys::zfs_handle_t> {
-    let mut datasets: Vec<*mut sys::zfs_handle_t> = vec![];
-    let ptr = &mut datasets as *mut _ as *mut libc::c_void;
-    unsafe { libzfs::zfs_iter_filesystems(parent, zfs_list_cb, ptr) }
-    datasets
 }
 
 #[no_mangle]

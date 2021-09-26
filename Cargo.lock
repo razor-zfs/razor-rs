@@ -993,6 +993,7 @@ dependencies = [
  "chrono",
  "libc",
  "once_cell",
+ "parking_lot",
  "razor-libnvpair",
  "razor-nvpair",
  "razor-zfscore-sys",
