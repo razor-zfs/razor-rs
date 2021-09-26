@@ -5,7 +5,6 @@
 use std::process::Command;
 
 use nanoid::nanoid;
-use rand::prelude::*;
 
 use razor_zfs::zfs::property;
 use razor_zfs::{error::DatasetError, zfs::*};
@@ -263,13 +262,77 @@ fn list_filesystems() {
     }
 }
 
-#[test]
-fn list_filesystems_from() {
-    dbg!("starting list filesystems from");
+// #[test]
+// fn list_filesystems_from() {
+//     dbg!("starting list filesystems from");
+//     let test = TestNamespace::new();
+//     let mut names = Vec::new();
+
+//     for i in 1..rand::thread_rng().gen_range(5..10) {
+//         names.push(format!(
+//             "{}/{}{}",
+//             test.namespace.name(),
+//             "from_filesystem",
+//             i.to_string()
+//         ));
+
+//         Zfs::filesystem().create(names.last().unwrap()).unwrap();
+//     }
+
+//     let mut accamulator = Vec::new();
+
+//     for name in names.iter() {
+//         let mut children_names = Vec::new();
+//         let rnd = rand::thread_rng().gen_range(1..10);
+
+//         for _i in 0..rnd {
+//             children_names.push(format!("{}/{}", name, nanoid!()));
+//             Zfs::filesystem()
+//                 .create(children_names.last().unwrap())
+//                 .unwrap();
+//         }
+
+//         accamulator.append(&mut children_names);
+//     }
+
+//     names.append(&mut accamulator);
+
+//     let datasets = Zfs::list_from(test.namespace.name())
+//         .filesystems()
+//         .recursive()
+//         .get_collection()
+//         .unwrap();
+
+//     dbg!("names i created: ", &names);
+
+//     dbg!("wanted lenght: ", names.len());
+//     dbg!("got lenght: ", datasets.len());
+//     assert_eq!(names.len(), datasets.len());
+
+//     for dataset in datasets.into_iter() {
+//         dbg!(dataset.name());
+//         assert!(
+//             names.contains(&dataset.name().to_string()),
+//             "received dataset dont exist in names vector"
+//         );
+//         assert_eq!(zfs_type_t::ZFS_TYPE_FILESYSTEM, dataset.r#type());
+//     }
+
+//     dbg!("finished asserting: all good");
+// }
+
+macro_rules! list_filesystems_from_dup {
+    ($($name:ident: $num_of_parents:expr, $vec_of_childrens:expr,)*) => {
+    $(
+        #[test]
+        fn $name() {
+            dbg!("starting list filesystems from");
     let test = TestNamespace::new();
+    let num_of_parents: u64 = $num_of_parents;
+    let vec_of_childrens: Vec<u64> = $vec_of_childrens;
     let mut names = Vec::new();
 
-    for i in 1..rand::thread_rng().gen_range(5..10) {
+    for i in 1..num_of_parents {
         names.push(format!(
             "{}/{}{}",
             test.namespace.name(),
@@ -281,12 +344,14 @@ fn list_filesystems_from() {
     }
 
     let mut accamulator = Vec::new();
+    let mut childs_iter = vec_of_childrens.into_iter();
 
     for name in names.iter() {
         let mut children_names = Vec::new();
-        let rnd = rand::thread_rng().gen_range(1..10);
-
-        for _i in 0..rnd {
+        let num_of_childrens = childs_iter.next();
+        //let rnd = rand::thread_rng().gen_range(1..10);
+        if let Some(childrens) = num_of_childrens {
+            for _i in 0..childrens {
             children_names.push(format!("{}/{}", name, nanoid!()));
             Zfs::filesystem()
                 .create(children_names.last().unwrap())
@@ -294,6 +359,7 @@ fn list_filesystems_from() {
         }
 
         accamulator.append(&mut children_names);
+        }
     }
 
     names.append(&mut accamulator);
@@ -320,6 +386,18 @@ fn list_filesystems_from() {
     }
 
     dbg!("finished asserting: all good");
+        }
+    )*
+    }
+}
+
+list_filesystems_from_dup! {
+    fs_from_test_1: 5, vec![2,4,6,8,10],
+    fs_from_test_2: 6, vec![1,3,5,7,9,11],
+    fs_from_test_3: 7, vec![1,2,3,4,5,6,7],
+    fs_from_test_4: 8, vec![6,7,8,9,10,11,12,13],
+    fs_from_test_5: 2, vec![1,4],
+    fs_from_test_6: 1, vec![1],
 }
 
 #[test]
