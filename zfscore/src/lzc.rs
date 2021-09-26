@@ -14,7 +14,6 @@ pub use sys::zfs_type_t;
 
 use crate::dataset;
 use crate::error::CoreError;
-//use crate::dataset_collector;
 use crate::libzfs;
 
 use super::error::value_or_err;

@@ -114,3 +114,28 @@ impl From<u64> for Compression {
         }
     }
 }
+
+// TODO: on new version of ZFS check numerics for Gzip and ZstdFast
+impl From<Compression> for u64 {
+    fn from(value: Compression) -> Self {
+        match value {
+            Compression::On => 1,
+            Compression::Off => 2,
+            Compression::Lzjb => 3,
+            Compression::Gzip6 => 4,
+            Compression::Gzip1 => 5,
+            Compression::Gzip2 => 6,
+            Compression::Gzip3 => 7,
+            Compression::Gzip4 => 8,
+            Compression::Gzip5 => 9,
+            Compression::Gzip7 => 11,
+            Compression::Gzip8 => 12,
+            Compression::Gzip9 => 13,
+            Compression::Zle => 14,
+            Compression::Lz4 => 15,
+            Compression::Zstd => 16,
+            Compression::Gzip => todo!(),
+            Compression::ZstdFast => todo!(),
+        }
+    }
+}

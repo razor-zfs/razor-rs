@@ -77,7 +77,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_uint64(ATIME.as_ref(), value.into()) {
+        if let Err(err) = self.nvl.add_string(ATIME.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
@@ -87,7 +87,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_uint64(CANMOUNT.as_ref(), value.into()) {
+        if let Err(err) = self.nvl.add_string(CANMOUNT.as_ref(), value.as_str()) {
             self.err = Some(err.into());
         }
 
@@ -203,7 +203,8 @@ impl<'a, T> FilesytemSetter<'a, T> {
     }
 
     pub fn add(self) -> Result<()> {
-        value_or_err((), self.dataset_handler.set_properties(self.nvl))
+        let rc = self.dataset_handler.set_properties(self.nvl);
+        value_or_err((), rc)
     }
 }
 
@@ -444,7 +445,7 @@ impl FileSystemBuilder {
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_uint64(ATIME.as_ref(), value.into()) {
+        if let Err(err) = self.nvlist.add_uint64(ATIME.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -454,7 +455,7 @@ impl FileSystemBuilder {
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_uint64(CANMOUNT.as_ref(), value.into()) {
+        if let Err(err) = self.nvlist.add_uint64(CANMOUNT.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -463,7 +464,7 @@ impl FileSystemBuilder {
 
     pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
         let value = v.into();
-        if let Err(err) = self.nvlist.add_string(CHECKSUM.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(CHECKSUM.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -473,7 +474,7 @@ impl FileSystemBuilder {
     pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(DEVICES.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(DEVICES.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -482,7 +483,7 @@ impl FileSystemBuilder {
 
     pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Err(err) = self.nvlist.add_string(NBMAND.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(NBMAND.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -492,7 +493,7 @@ impl FileSystemBuilder {
     pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(OVERLAY.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(OVERLAY.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -502,7 +503,7 @@ impl FileSystemBuilder {
     pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(READONLY.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(READONLY.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -512,7 +513,7 @@ impl FileSystemBuilder {
     pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(RELATIME.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(RELATIME.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -522,7 +523,7 @@ impl FileSystemBuilder {
     pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(SETUID.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(SETUID.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -532,7 +533,7 @@ impl FileSystemBuilder {
     pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(VSCAN.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(VSCAN.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -542,7 +543,7 @@ impl FileSystemBuilder {
     pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(ZONED.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(ZONED.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -552,7 +553,10 @@ impl FileSystemBuilder {
     pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(COMPRESSION.as_ref(), value.as_str()) {
+        if let Err(err) = self
+            .nvlist
+            .add_uint64(COMPRESSION.as_ref(), u64::from(value))
+        {
             self.err = Some(err.into());
         }
 
@@ -562,7 +566,7 @@ impl FileSystemBuilder {
     pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_string(EXEC.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvlist.add_uint64(EXEC.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 

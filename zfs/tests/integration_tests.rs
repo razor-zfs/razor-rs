@@ -7,6 +7,7 @@ use std::process::Command;
 use nanoid::nanoid;
 use rand::prelude::*;
 
+use razor_zfs::zfs::property;
 use razor_zfs::{error::DatasetError, zfs::*};
 use razor_zfscore::error::CoreError;
 use razor_zfscore_sys::zfs_type_t;
@@ -53,6 +54,75 @@ fn create_basic_filesystem() {
         "couldnt find filesystem"
     );
     dbg!("create_basic_filesystem finished");
+}
+
+#[test]
+fn set_properties_filesystem() {
+    dbg!("starting set_properties_filesystem");
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace.name(), "set_filesystem");
+    dbg!("requesting to create filesystem");
+    let filesystem = Zfs::filesystem()
+        .canmount(property::OnOffNoAuto::Off)
+        .checksum(property::CheckSumAlgo::Off)
+        .readonly(property::OnOff::Off)
+        .compression(property::CompressionAlgo::Off)
+        .vscan(property::OnOff::Off)
+        .atime(property::OnOff::Off)
+        .devices(property::OnOff::Off)
+        .exec(property::OnOff::Off)
+        .nbmand(property::OnOff::Off)
+        .overlay(property::OnOff::Off)
+        .relatime(property::OnOff::Off)
+        .setuid(property::OnOff::Off)
+        .zoned(property::OnOff::Off)
+        .create(&name)
+        .unwrap();
+    dbg!("filesystem created");
+    assert_eq!(property::OnOffNoAuto::Off, filesystem.canmount());
+    assert_eq!(property::CheckSumAlgo::Off, filesystem.checksum());
+    assert_eq!(property::OnOff::Off, filesystem.readonly());
+    assert_eq!(property::CompressionAlgo::Off, filesystem.compression());
+    assert_eq!(property::OnOff::Off, filesystem.vscan());
+    assert_eq!(property::OnOff::Off, filesystem.atime());
+    assert_eq!(property::OnOff::Off, filesystem.devices());
+    assert_eq!(property::OnOff::Off, filesystem.exec());
+    assert_eq!(property::OnOff::Off, filesystem.nbmand());
+    assert_eq!(property::OnOff::Off, filesystem.overlay());
+    assert_eq!(property::OnOff::Off, filesystem.relatime());
+    assert_eq!(property::OnOff::Off, filesystem.setuid());
+    assert_eq!(property::OnOff::Off, filesystem.zoned());
+    dbg!("passed creation test");
+    filesystem
+        .set()
+        .canmount(property::OnOffNoAuto::On)
+        .checksum(property::CheckSumAlgo::On)
+        .readonly(property::OnOff::On)
+        .compression(property::CompressionAlgo::On)
+        .vscan(property::OnOff::On)
+        .atime(property::OnOff::On)
+        .devices(property::OnOff::On)
+        .exec(property::OnOff::On)
+        .nbmand(property::OnOff::On)
+        .overlay(property::OnOff::On)
+        .relatime(property::OnOff::On)
+        .setuid(property::OnOff::On)
+        .zoned(property::OnOff::On)
+        .add()
+        .unwrap();
+    assert_eq!(property::OnOffNoAuto::On, filesystem.canmount());
+    assert_eq!(property::CheckSumAlgo::On, filesystem.checksum());
+    assert_eq!(property::OnOff::On, filesystem.readonly());
+    assert_eq!(property::CompressionAlgo::On, filesystem.compression());
+    assert_eq!(property::OnOff::On, filesystem.vscan());
+    assert_eq!(property::OnOff::On, filesystem.atime());
+    assert_eq!(property::OnOff::On, filesystem.devices());
+    assert_eq!(property::OnOff::On, filesystem.exec());
+    assert_eq!(property::OnOff::On, filesystem.nbmand());
+    assert_eq!(property::OnOff::On, filesystem.overlay());
+    assert_eq!(property::OnOff::On, filesystem.relatime());
+    assert_eq!(property::OnOff::On, filesystem.setuid());
+    assert_eq!(property::OnOff::On, filesystem.zoned());
 }
 
 #[test]

@@ -85,3 +85,19 @@ impl From<u64> for CheckSum {
         }
     }
 }
+
+impl From<CheckSum> for u64 {
+    fn from(value: CheckSum) -> Self {
+        match value {
+            CheckSum::On => 1,
+            CheckSum::Off => 2,
+            CheckSum::Fletcher2 => 6,
+            CheckSum::Fletcher4 => 7,
+            CheckSum::Sha256 => 8,
+            CheckSum::NoParity => 10,
+            CheckSum::Sha512 => 11,
+            CheckSum::Skein => 12,
+            CheckSum::Edonr => 13,
+        }
+    }
+}
