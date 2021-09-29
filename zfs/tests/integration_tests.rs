@@ -227,6 +227,19 @@ fn get_filesystem() {
     assert!(res_filesystem.is_ok(), "couldnt get filesystem");
 }
 
+// TODO: unfinished test
+#[test]
+fn filesystem_snapshot() {
+    dbg!("starting filesystem_snapshot");
+    let test = TestNamespace::new();
+    let name = format!("{}/{}", test.namespace.name(), "fs_snapshot");
+    let filesystem = Zfs::filesystem()
+        .canmount(property::OnOffNoAuto::On)
+        .create(&name)
+        .unwrap();
+    filesystem.snapshot("curr_snap").unwrap();
+}
+
 #[test]
 fn get_invalid_volume() {
     dbg!("starting get invalid volume");

@@ -2,6 +2,8 @@ use std::borrow::Cow;
 use std::ffi;
 use std::ptr;
 
+use nvpair::NvFlag;
+use nvpair::NvList;
 use once_cell::sync::Lazy;
 use razor_nvpair as nvpair;
 use razor_zfscore_sys as sys;
@@ -47,6 +49,15 @@ impl Lzc {
     unsafe fn lzc_exists(&self, name: *const libc::c_char) -> sys::boolean_t {
         sys::lzc_exists(name)
     }
+
+    unsafe fn lzc_snapshot(
+        &self,
+        snaps: *mut sys::nvlist_t,
+        props: *mut sys::nvlist_t,
+        errlist: *mut *mut sys::nvlist_t,
+    ) -> libc::c_int {
+        sys::lzc_snapshot(snaps, props, errlist)
+    }
 }
 
 pub fn create_filesystem(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<()> {
@@ -69,6 +80,23 @@ fn create_dataset(
     let rc = unsafe { LIBZFS_CORE.lzc_create(name, dataset_type, nvl) };
 
     value_or_err((), rc)
+}
+
+pub fn create_snapshot(dataset: impl AsRef<str>) -> Result<()> {
+    let mut snaps = NvList::new(NvFlag::UniqueName);
+    let nvl_res = NvList::new(NvFlag::UniqueName);
+
+    dbg!("adding boolean");
+    snaps.add_boolean(dataset.as_ref())?;
+    dbg!("after boolean addition");
+
+    let mut nvl_res = nvl_res.nvl();
+
+    let rc = unsafe { LIBZFS_CORE.lzc_snapshot(snaps.nvl(), std::ptr::null_mut(), &mut nvl_res) };
+
+    value_or_err((), rc)
+    //LIBZFS_CORE.lzc_snapshot(snaps, props, errlist)
+    //create_dataset(name, sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL, nvl)
 }
 
 pub fn dataset_exists(name: impl AsRef<str>) -> Result<()> {

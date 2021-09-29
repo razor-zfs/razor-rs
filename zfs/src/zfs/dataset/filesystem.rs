@@ -217,6 +217,10 @@ impl Filesystem {
         lzc::destroy_dataset(self.name()).map_err(|err| err.into())
     }
 
+    pub fn snapshot(&self, name: impl AsRef<str>) -> Result<()> {
+        lzc::create_snapshot(format!("{}@{}", self.name(), name.as_ref())).map_err(|err| err.into())
+    }
+
     pub fn destroy_recursive(&self) -> Result<()> {
         let ns_datasets = lzc::zfs_list_from(self.name())
             .filesystems()
