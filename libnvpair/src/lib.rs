@@ -18,6 +18,7 @@ use razor_libnvpair_sys as sys;
 
 pub use sys::boolean_t;
 pub use sys::data_type_t;
+pub use sys::nvlist_add_boolean;
 pub use sys::nvlist_add_boolean_array;
 pub use sys::nvlist_add_boolean_value;
 pub use sys::nvlist_add_byte;

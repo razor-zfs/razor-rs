@@ -5,13 +5,19 @@ use ::std::result::Result as StdResult;
 pub trait NvListAccess {
     fn nvl(&self) -> *mut libnvpair::nvlist_t;
 
-    fn add_boolean(&mut self, name: impl AsRef<str>, v: bool) -> Result<()> {
+    fn add_boolean_value(&mut self, name: impl AsRef<str>, v: bool) -> Result<()> {
         let name = CString::new(name.as_ref())?;
         let v = match v {
             false => libnvpair::boolean_t::B_TRUE,
             true => libnvpair::boolean_t::B_FALSE,
         };
         let rc = unsafe { libnvpair::nvlist_add_boolean_value(self.nvl(), name.as_ptr(), v) };
+        value_or_err((), rc)
+    }
+
+    fn add_boolean(&mut self, name: impl AsRef<str>) -> Result<()> {
+        let name = CString::new(name.as_ref())?;
+        let rc = unsafe { libnvpair::nvlist_add_boolean(self.nvl(), name.as_ptr()) };
         value_or_err((), rc)
     }
 
