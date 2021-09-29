@@ -432,6 +432,7 @@ impl FileSystemBuilder {
         Self { nvlist, err: None }
     }
 
+    // TODO: should check mount options and mount the FS if needed
     pub fn create(self, name: impl AsRef<str>) -> Result<Filesystem> {
         let cname = CString::new(name.as_ref())?;
         if let Some(err) = self.err {
