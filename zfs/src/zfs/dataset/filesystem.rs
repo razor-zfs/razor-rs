@@ -218,19 +218,16 @@ impl Filesystem {
     }
 
     pub fn snapshot(&self, name: impl AsRef<str>) -> Result<()> {
-        lzc::create_snapshot(format!("{}@{}", self.name(), name.as_ref())).map_err(|err| err.into())
+        lzc::snapshot(format!("{}@{}", self.name(), name.as_ref())).map_err(|err| err.into())
     }
 
     pub fn destroy_recursive(&self) -> Result<()> {
         let ns_datasets = lzc::zfs_list_from(self.name())
             .filesystems()
             .volumes()
+            .snapshots()
             .recursive()
             .get_collection()?;
-
-        // for dataset in ns_datasets.into_iter() {
-        //     dbg!("i will delete: ", dataset.name());
-        // }
 
         for dataset in ns_datasets.into_iter() {
             dbg!("trying to destroy: ", dataset.name());

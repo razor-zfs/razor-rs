@@ -1,5 +1,3 @@
-//use chrono::prelude::*;
-
 use std::ffi::CString;
 
 use once_cell::sync::Lazy;
@@ -33,6 +31,13 @@ impl DatasetIterator {
         let mut datasets: Vec<*mut sys::zfs_handle_t> = vec![];
         let ptr = &mut datasets as *mut _ as *mut libc::c_void;
         unsafe { libzfs::zfs_iter_filesystems(parent, zfs_list_cb, ptr) }
+        datasets
+    }
+
+    fn iter_snapshots(&self, parent: *mut sys::zfs_handle_t) -> Vec<*mut sys::zfs_handle_t> {
+        let mut datasets: Vec<*mut sys::zfs_handle_t> = vec![];
+        let ptr = &mut datasets as *mut _ as *mut libc::c_void;
+        unsafe { libzfs::zfs_iter_snapshots(parent, false, zfs_list_cb, ptr, 0, 0) }
         datasets
     }
 }
@@ -76,7 +81,7 @@ impl DatasetCollectorBuilder {
         self
     }
 
-    pub fn _snapshots(mut self) -> Self {
+    pub fn snapshots(mut self) -> Self {
         self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_SNAPSHOT;
 
         self
@@ -95,7 +100,7 @@ impl DatasetCollectorBuilder {
     }
 
     fn recursive_children(&mut self, handle: Option<&ZfsDatasetHandle>) {
-        let childrens = Self::get_children(handle);
+        let childrens = Self::get_children(handle, self.r#type);
 
         for child in childrens {
             self.recursive_children(Some(&child));
@@ -112,7 +117,7 @@ impl DatasetCollectorBuilder {
             .and_then(|name| CString::new(name.as_bytes()).ok())
             .and_then(|cname| ZfsDatasetHandle::new(cname).ok());
 
-        let children = Self::get_children(handle.as_ref());
+        let children = Self::get_children(handle.as_ref(), self.r#type);
 
         for child in children {
             if self.recursive {
@@ -130,12 +135,28 @@ impl DatasetCollectorBuilder {
 
     pub fn get_children(
         parent: Option<&ZfsDatasetHandle>,
+        r#type: libzfs::zfs_type_t,
     ) -> impl Iterator<Item = ZfsDatasetHandle> {
         parent
             .map(|parent| parent.handle)
             .map_or_else(
                 || DATASET_ITERATOR.lock().iter_root(),
-                |parent| DATASET_ITERATOR.lock().iter_filesystem(parent),
+                |parent| {
+                    let mut fs = Vec::new();
+                    let mut snapshots = Vec::new();
+                    if r#type & libzfs::zfs_type_t::ZFS_TYPE_FILESYSTEM != libzfs::zfs_type_t(0)
+                        || r#type & libzfs::zfs_type_t::ZFS_TYPE_VOLUME != libzfs::zfs_type_t(0)
+                    {
+                        fs = DATASET_ITERATOR.lock().iter_filesystem(parent);
+                    }
+
+                    if r#type & libzfs::zfs_type_t::ZFS_TYPE_SNAPSHOT != libzfs::zfs_type_t(0) {
+                        snapshots = DATASET_ITERATOR.lock().iter_snapshots(parent);
+                    }
+
+                    fs.append(&mut snapshots);
+                    fs
+                },
             )
             .into_iter()
             .map(ZfsDatasetHandle::from)

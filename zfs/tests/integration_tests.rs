@@ -237,7 +237,26 @@ fn filesystem_snapshot() {
         .canmount(property::OnOffNoAuto::On)
         .create(&name)
         .unwrap();
-    filesystem.snapshot("curr_snap").unwrap();
+    let name = format!("{}/{}", filesystem.name(), "another_fs_snapshot");
+    let _another_filesystem = Zfs::filesystem()
+        .canmount(property::OnOffNoAuto::On)
+        .create(&name)
+        .unwrap();
+    filesystem.snapshot("snap1").unwrap();
+    filesystem.snapshot("snap2").unwrap();
+    filesystem.snapshot("snap3").unwrap();
+    filesystem.snapshot("snap4").unwrap();
+
+    let snapshots = Zfs::list_from(filesystem.name())
+        .snapshots()
+        .recursive()
+        .get_collection()
+        .unwrap();
+
+    for snapshot in snapshots {
+        dbg!(snapshot.name());
+        assert_eq!(zfs_type_t::ZFS_TYPE_SNAPSHOT, snapshot.r#type());
+    }
 }
 
 #[test]

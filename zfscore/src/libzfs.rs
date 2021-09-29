@@ -131,3 +131,19 @@ pub(crate) unsafe fn zfs_iter_filesystems(
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_iter_filesystems(handle, Some(f), ptr);
 }
+
+pub(crate) unsafe fn zfs_iter_snapshots(
+    handle: *mut sys::zfs_handle_t,
+    simple: bool,
+    f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
+    data: *mut libc::c_void,
+    min_txg: u64,
+    max_txg: u64,
+) {
+    Lazy::force(&LIBZFS_HANDLE);
+    let simple = match simple {
+        false => sys::boolean_t::B_TRUE,
+        true => sys::boolean_t::B_FALSE,
+    };
+    sys::zfs_iter_snapshots(handle, simple, Some(f), data, min_txg, max_txg);
+}

@@ -82,7 +82,7 @@ fn create_dataset(
     value_or_err((), rc)
 }
 
-pub fn create_snapshot(dataset: impl AsRef<str>) -> Result<()> {
+pub fn snapshot(dataset: impl AsRef<str>) -> Result<()> {
     let mut snaps = NvList::new(NvFlag::UniqueName);
     let nvl_res = NvList::new(NvFlag::UniqueName);
 
