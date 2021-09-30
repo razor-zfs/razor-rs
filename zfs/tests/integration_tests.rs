@@ -227,7 +227,6 @@ fn get_filesystem() {
     assert!(res_filesystem.is_ok(), "couldnt get filesystem");
 }
 
-// TODO: unfinished test
 #[test]
 fn filesystem_snapshot() {
     dbg!("starting filesystem_snapshot");
