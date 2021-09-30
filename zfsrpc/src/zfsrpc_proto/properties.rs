@@ -187,7 +187,7 @@ impl_property!(relatime for filesystem_property and OnOff => On,Off);
 impl_property!(setuid for filesystem_property and OnOff => On,Off);
 impl_property!(vscan for filesystem_property and OnOff => On,Off);
 impl_property!(zoned for filesystem_property and OnOff => On,Off);
-impl_property!(checksum for filesystem_property,volume_property and CheckSumAlgo =>
+impl_property!(checksum for filesystem_property,volume_property and CheckSum =>
     On,
     Off,
     Fletcher2,
@@ -199,7 +199,7 @@ impl_property!(checksum for filesystem_property,volume_property and CheckSumAlgo
     Edonr
 );
 impl_property!(devices for filesystem_property and OnOff => On,Off);
-impl_property!(compression for filesystem_property,volume_property and CompressionAlgo =>
+impl_property!(compression for filesystem_property,volume_property and Compression =>
     On,
     Off,
     Lzjb,
@@ -218,7 +218,7 @@ impl_property!(compression for filesystem_property,volume_property and Compressi
     Zstd,
     ZstdFast
 );
-impl_property!(vol_mode for volume_property and VolModeId =>
+impl_property!(vol_mode for volume_property and VolMode =>
     Default,
     Full,
     Geom,
