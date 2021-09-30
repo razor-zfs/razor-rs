@@ -63,9 +63,9 @@ fn set_properties_filesystem() {
     dbg!("requesting to create filesystem");
     let filesystem = Zfs::filesystem()
         .canmount(property::OnOffNoAuto::Off)
-        .checksum(property::CheckSumAlgo::Off)
+        .checksum(property::CheckSum::Off)
         .readonly(property::OnOff::Off)
-        .compression(property::CompressionAlgo::Off)
+        .compression(property::Compression::Off)
         .vscan(property::OnOff::Off)
         .atime(property::OnOff::Off)
         .devices(property::OnOff::Off)
@@ -79,9 +79,9 @@ fn set_properties_filesystem() {
         .unwrap();
     dbg!("filesystem created");
     assert_eq!(property::OnOffNoAuto::Off, filesystem.canmount());
-    assert_eq!(property::CheckSumAlgo::Off, filesystem.checksum());
+    assert_eq!(property::CheckSum::Off, filesystem.checksum());
     assert_eq!(property::OnOff::Off, filesystem.readonly());
-    assert_eq!(property::CompressionAlgo::Off, filesystem.compression());
+    assert_eq!(property::Compression::Off, filesystem.compression());
     assert_eq!(property::OnOff::Off, filesystem.vscan());
     assert_eq!(property::OnOff::Off, filesystem.atime());
     assert_eq!(property::OnOff::Off, filesystem.devices());
@@ -95,9 +95,9 @@ fn set_properties_filesystem() {
     filesystem
         .set()
         .canmount(property::OnOffNoAuto::On)
-        .checksum(property::CheckSumAlgo::On)
+        .checksum(property::CheckSum::On)
         .readonly(property::OnOff::On)
-        .compression(property::CompressionAlgo::On)
+        .compression(property::Compression::On)
         .vscan(property::OnOff::On)
         .atime(property::OnOff::On)
         .devices(property::OnOff::On)
@@ -110,9 +110,9 @@ fn set_properties_filesystem() {
         .add()
         .unwrap();
     assert_eq!(property::OnOffNoAuto::On, filesystem.canmount());
-    assert_eq!(property::CheckSumAlgo::On, filesystem.checksum());
+    assert_eq!(property::CheckSum::On, filesystem.checksum());
     assert_eq!(property::OnOff::On, filesystem.readonly());
-    assert_eq!(property::CompressionAlgo::On, filesystem.compression());
+    assert_eq!(property::Compression::On, filesystem.compression());
     assert_eq!(property::OnOff::On, filesystem.vscan());
     assert_eq!(property::OnOff::On, filesystem.atime());
     assert_eq!(property::OnOff::On, filesystem.devices());
@@ -131,23 +131,23 @@ fn set_properties_volume() {
     let name = format!("{}/{}", test.namespace.name(), "set_volume");
     dbg!("requesting to create volume");
     let filesystem = Zfs::volume()
-        .checksum(property::CheckSumAlgo::Off)
-        .compression(property::CompressionAlgo::Off)
-        .volmode(property::VolModeId::None)
+        .checksum(property::CheckSum::Off)
+        .compression(property::Compression::Off)
+        .volmode(property::VolMode::None)
         .create(&name, 128 * 1024)
         .unwrap();
     dbg!("filesystem created");
-    assert_eq!(property::CheckSumAlgo::Off, filesystem.checksum());
-    assert_eq!(property::CompressionAlgo::Off, filesystem.compression());
+    assert_eq!(property::CheckSum::Off, filesystem.checksum());
+    assert_eq!(property::Compression::Off, filesystem.compression());
     dbg!("passed creation test");
     filesystem
         .set()
-        .checksum(property::CheckSumAlgo::On)
-        .compression(property::CompressionAlgo::On)
+        .checksum(property::CheckSum::On)
+        .compression(property::Compression::On)
         .add()
         .unwrap();
-    assert_eq!(property::CheckSumAlgo::On, filesystem.checksum());
-    assert_eq!(property::CompressionAlgo::On, filesystem.compression());
+    assert_eq!(property::CheckSum::On, filesystem.checksum());
+    assert_eq!(property::Compression::On, filesystem.compression());
 }
 
 #[test]
@@ -171,7 +171,7 @@ fn create_basic_volume() {
     let name = format!("{}/{}", test.namespace.name(), "volume");
     dbg!("requesting to create volume");
     let volume = Zfs::volume()
-        .volmode(property::VolModeId::None)
+        .volmode(property::VolMode::None)
         .create(name, 128 * 1024)
         .unwrap();
     dbg!("volume created");
@@ -187,7 +187,7 @@ fn create_dup_volume() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "dup_volume");
     let volume = Zfs::volume()
-        .volmode(property::VolModeId::None)
+        .volmode(property::VolMode::None)
         .create(&name, 128 * 1024)
         .unwrap();
     assert!(
@@ -195,7 +195,7 @@ fn create_dup_volume() {
         "couldnt find filesystem"
     );
     let res = Zfs::volume()
-        .volmode(property::VolModeId::None)
+        .volmode(property::VolMode::None)
         .create(&name, 128 * 1024)
         .unwrap_err();
     let expected = DatasetError::CoreErr(CoreError::FileExists);
@@ -209,7 +209,7 @@ fn get_volume() {
     let name = format!("{}/{}", test.namespace.name(), "get_vol");
     dbg!("inside get_volume starting to create volume");
     let volume = Zfs::volume()
-        .volmode(property::VolModeId::None)
+        .volmode(property::VolMode::None)
         .create(name, 128 * 1024)
         .unwrap();
     dbg!("inside get_volume finished to create volume");
@@ -478,7 +478,7 @@ fn create_delete_volume() {
     let name = format!("{}/{}", test.namespace.name(), "volume_to_delete");
     dbg!("requesting to create volume in create_delete_volume");
     let volume = Zfs::volume()
-        .volmode(property::VolModeId::None)
+        .volmode(property::VolMode::None)
         .create(name, 128 * 1024)
         .unwrap();
     dbg!("volume created in create_delete_volume");

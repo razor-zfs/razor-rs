@@ -66,7 +66,7 @@ impl<'a, T> VolumeSetter<'a, T> {
         }
     }
 
-    pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
+    pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
 
         if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value.as_str()) {
@@ -76,7 +76,7 @@ impl<'a, T> VolumeSetter<'a, T> {
         self
     }
 
-    pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
+    pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
         let value = v.into();
 
         if let Err(err) = self.nvl.add_string(COMPRESSION.as_ref(), value.as_str()) {
@@ -96,7 +96,7 @@ impl<'a, T> VolumeSetter<'a, T> {
         self
     }
 
-    pub fn volmode(mut self, v: impl Into<property::VolModeId>) -> Self {
+    pub fn volmode(mut self, v: impl Into<property::VolMode>) -> Self {
         let value = v.into();
 
         if let Err(err) = self.nvl.add_uint64(VOLMODE.as_ref(), value.into()) {
@@ -152,17 +152,17 @@ impl Volume {
     }
 
     #[inline]
-    pub fn checksum(&self) -> property::CheckSumAlgo {
+    pub fn checksum(&self) -> property::CheckSum {
         self.dataset.numeric_property(ZFS_PROP_CHECKSUM).into()
     }
 
     #[inline]
-    pub fn compression(&self) -> property::CompressionAlgo {
+    pub fn compression(&self) -> property::Compression {
         self.dataset.numeric_property(ZFS_PROP_COMPRESSION).into()
     }
 
     #[inline]
-    pub fn volmode(&self) -> property::VolModeId {
+    pub fn volmode(&self) -> property::VolMode {
         self.dataset.numeric_property(ZFS_PROP_COMPRESSION).into()
     }
 
@@ -283,7 +283,7 @@ impl VolumeBuilder {
         Ok(volume)
     }
 
-    pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
+    pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
 
         if let Err(err) = self.nvlist.add_uint64(CHECKSUM.as_ref(), u64::from(value)) {
@@ -293,7 +293,7 @@ impl VolumeBuilder {
         self
     }
 
-    pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
+    pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
         let value = v.into();
 
         if let Err(err) = self
@@ -316,7 +316,7 @@ impl VolumeBuilder {
         8192
     }
 
-    pub fn volmode(mut self, v: impl Into<property::VolModeId>) -> Self {
+    pub fn volmode(mut self, v: impl Into<property::VolMode>) -> Self {
         let value = v.into();
 
         if let Err(err) = self.nvlist.add_uint64(VOLMODE.as_ref(), value.into()) {

@@ -94,7 +94,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
-    pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
+    pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
         if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value.as_str()) {
             self.err = Some(err.into());
@@ -182,7 +182,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
-    pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
+    pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
         let value = v.into();
 
         if let Err(err) = self.nvl.add_string(COMPRESSION.as_ref(), value.as_str()) {
@@ -322,12 +322,12 @@ impl Filesystem {
     }
 
     #[inline]
-    pub fn checksum(&self) -> property::CheckSumAlgo {
+    pub fn checksum(&self) -> property::CheckSum {
         self.dataset.numeric_property(ZFS_PROP_CHECKSUM).into()
     }
 
     #[inline]
-    pub fn compression(&self) -> property::CompressionAlgo {
+    pub fn compression(&self) -> property::Compression {
         self.dataset.numeric_property(ZFS_PROP_COMPRESSION).into()
     }
 
@@ -464,7 +464,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn checksum(mut self, v: impl Into<property::CheckSumAlgo>) -> Self {
+    pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
         if let Err(err) = self.nvlist.add_uint64(CHECKSUM.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
@@ -552,7 +552,7 @@ impl FileSystemBuilder {
         self
     }
 
-    pub fn compression(mut self, v: impl Into<property::CompressionAlgo>) -> Self {
+    pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
         let value = v.into();
 
         if let Err(err) = self
