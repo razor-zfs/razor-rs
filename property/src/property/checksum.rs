@@ -1,3 +1,5 @@
+use super::error;
+
 use std::fmt;
 use std::str::FromStr;
 
@@ -40,7 +42,7 @@ impl fmt::Display for CheckSum {
 }
 
 impl FromStr for CheckSum {
-    type Err = super::DatasetError;
+    type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
@@ -53,7 +55,7 @@ impl FromStr for CheckSum {
             "sha512" => Ok(Self::Sha512),
             "skein" => Ok(Self::Skein),
             "edonr" => Ok(Self::Edonr),
-            other => Err(super::InvalidProperty::invalid_value(other).into()),
+            other => Err(error::InvalidProperty::invalid_value(other)),
         }
     }
 }

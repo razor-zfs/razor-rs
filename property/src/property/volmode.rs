@@ -1,3 +1,5 @@
+use super::error;
+
 use std::fmt;
 use std::str::FromStr;
 
@@ -34,7 +36,7 @@ impl fmt::Display for VolMode {
 }
 
 impl FromStr for VolMode {
-    type Err = super::InvalidProperty;
+    type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -43,7 +45,7 @@ impl FromStr for VolMode {
             "geom" => Ok(Self::Geom),
             "dev" => Ok(Self::Dev),
             "none" => Ok(Self::None),
-            other => Err(super::InvalidProperty::invalid_value(other)),
+            other => Err(error::InvalidProperty::invalid_value(other)),
         }
     }
 }

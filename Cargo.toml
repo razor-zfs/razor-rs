@@ -9,6 +9,7 @@ members = [
     "zfscore",
     "zfs",
     "zfsrpc",
+    "property",
     "rpc-client",
     "rpc-server",
     "tracing"

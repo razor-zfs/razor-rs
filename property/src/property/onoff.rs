@@ -1,3 +1,4 @@
+use super::error;
 use std::fmt;
 use std::str::FromStr;
 
@@ -25,13 +26,13 @@ impl fmt::Display for OnOff {
 }
 
 impl FromStr for OnOff {
-    type Err = super::InvalidProperty;
+    type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "off" => Ok(Self::Off),
             "on" => Ok(Self::On),
-            other => Err(super::InvalidProperty::invalid_value(other)),
+            other => Err(error::InvalidProperty::invalid_value(other)),
         }
     }
 }

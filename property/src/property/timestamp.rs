@@ -1,3 +1,5 @@
+use super::error;
+
 use std::fmt;
 use std::ops;
 use std::str::FromStr;
@@ -15,13 +17,13 @@ impl fmt::Display for TimeStamp {
 }
 
 impl FromStr for TimeStamp {
-    type Err = super::InvalidProperty;
+    type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         s.parse::<i64>()
             .map(|seconds| Utc.timestamp(seconds, 0))
             .map(TimeStamp)
-            .map_err(|_| super::InvalidProperty::invalid_value(s))
+            .map_err(|_| error::InvalidProperty::invalid_value(s))
     }
 }
 

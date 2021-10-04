@@ -1,3 +1,5 @@
+use super::error;
+
 use std::fmt;
 use std::str::FromStr;
 
@@ -55,7 +57,7 @@ impl fmt::Display for Compression {
 }
 
 impl FromStr for Compression {
-    type Err = super::InvalidProperty;
+    type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -76,7 +78,7 @@ impl FromStr for Compression {
             "lz4" => Ok(Self::Lz4),
             "zstd" => Ok(Self::Zstd),
             "zstd-fast" => Ok(Self::ZstdFast),
-            other => Err(super::InvalidProperty::invalid_value(other)),
+            other => Err(error::InvalidProperty::invalid_value(other)),
         }
     }
 }

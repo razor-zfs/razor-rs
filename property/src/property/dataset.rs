@@ -1,3 +1,5 @@
+use super::error;
+
 use std::fmt;
 use std::str::FromStr;
 
@@ -34,7 +36,7 @@ impl fmt::Display for Type {
 }
 
 impl FromStr for Type {
-    type Err = super::InvalidProperty;
+    type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -44,7 +46,7 @@ impl FromStr for Type {
             "bookmark" => Ok(Self::Bookmark),
             "pool" => Ok(Self::Pool),
             "unknown" => Ok(Self::Unknown),
-            other => Err(super::InvalidProperty::invalid_value(other)),
+            other => Err(error::InvalidProperty::invalid_value(other)),
         }
     }
 }

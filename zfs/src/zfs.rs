@@ -12,7 +12,7 @@ use super::ZfsDatasetHandle;
 pub use dataset::FileSystemBuilder;
 pub use dataset::VolumeBuilder;
 
-pub mod property;
+use razor_property as property;
 
 mod dataset;
 

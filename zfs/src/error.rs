@@ -20,7 +20,7 @@ impl InvalidProperty {
         Self::NoSuchProperty(prop.to_string())
     }
 
-    pub(crate) fn invalid_value(value: impl ToString) -> Self {
+    pub(crate) fn _invalid_value(value: impl ToString) -> Self {
         Self::InvalidValue(value.to_string())
     }
 }

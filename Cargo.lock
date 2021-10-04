@@ -930,6 +930,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "razor-property"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "razor-rpc-client"
 version = "0.1.0"
 dependencies = [
@@ -971,13 +980,13 @@ dependencies = [
 name = "razor-zfs"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "libc",
  "log",
  "nanoid",
  "once_cell",
  "rand",
  "razor-nvpair",
+ "razor-property",
  "razor-zfscore",
  "razor-zfscore-sys",
  "serde",
@@ -1016,6 +1025,7 @@ dependencies = [
  "paste",
  "prop-macro",
  "prost",
+ "razor-property",
  "razor-tracing",
  "razor-zfs",
  "tokio",

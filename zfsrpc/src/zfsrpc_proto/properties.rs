@@ -3,7 +3,7 @@ use crate::zfsrpc_proto::tonic_zfsrpc::{
     VolumeProperty,
 };
 use prop_macro::{classcase, classcase_path_end, snakecase_fn};
-use razor_zfs::zfs::property;
+use razor_property as property;
 
 impl dataset_properties::BlockSize {
     pub(crate) fn check(&self) -> std::io::Result<Self> {
