@@ -28,6 +28,16 @@ impl ZfsRpcService {
     const DEFAULT_ZPOOL: &'static str = "dpool";
 
     pub async fn init() -> Self {
+        enum HostType {
+            Relay,
+            Edge,
+        }
+
+        enum Vendor {
+            Azure,
+            Aws(HostType),
+        }
+
         let zspan = tracing::debug_span!("zpool");
         let _entered = zspan.entered();
 
@@ -52,20 +62,59 @@ impl ZfsRpcService {
                 debug!("{} was imported", Self::DEFAULT_ZPOOL);
             } else {
                 debug!("Creating zpool {}", Self::DEFAULT_ZPOOL);
+                let vendor = if Command::new("ls")
+                    .arg("/replixio/dev/disk/azure")
+                    .output()
+                    .await
+                    .unwrap()
+                    .status
+                    .success()
+                {
+                    Vendor::Azure
+                } else if Command::new("ls")
+                    .arg("/replixio/dev/disk/nvme1n1")
+                    .output()
+                    .await
+                    .unwrap()
+                    .status
+                    .success()
+                {
+                    Vendor::Aws(HostType::Relay)
+                } else {
+                    Vendor::Aws(HostType::Edge)
+                };
+
+                let disks = match vendor {
+                    Vendor::Azure => &[
+                        "/replixio/dev/disk/azure/scsi1/lun2",
+                        "/replixio/dev/disk/azure/scsi1/lun3",
+                        "/replixio/dev/disk/azure/scsi1/lun4",
+                        "/replixio/dev/disk/azure/scsi1/lun5",
+                        "/replixio/dev/disk/azure/scsi1/lun6",
+                    ],
+                    Vendor::Aws(HostType::Relay) => &[
+                        "/replix/dev/disk/nvme2n1",
+                        "/replix/dev/disk/nvme3n1",
+                        "/replix/dev/disk/nvme4n1",
+                        "/replix/dev/disk/nvme5n1",
+                        "/replix/dev/disk/nvme6n1",
+                    ],
+                    Vendor::Aws(HostType::Edge) => &[
+                        "/replix/dev/disk/nvme1n1",
+                        "/replix/dev/disk/nvme2n1",
+                        "/replix/dev/disk/nvme3n1",
+                        "/replix/dev/disk/nvme4n1",
+                        "/replix/dev/disk/nvme5n1",
+                    ],
+                };
 
                 let output = Command::new("zpool")
                     .arg("create")
                     .arg(Self::DEFAULT_ZPOOL)
                     .args(&["-o", "ashift=12"])
                     .args(&["-O", "mountpoint=none"])
-                    .args(&[
-                        "raidz",
-                        "/replixio/dev/disk/azure/scsi1/lun2",
-                        "/replixio/dev/disk/azure/scsi1/lun3",
-                        "/replixio/dev/disk/azure/scsi1/lun4",
-                        "/replixio/dev/disk/azure/scsi1/lun5",
-                        "/replixio/dev/disk/azure/scsi1/lun6",
-                    ])
+                    .arg("raidz")
+                    .args(disks)
                     .output()
                     .await
                     .unwrap_or_else(|_| panic!("zpool create {} failed", Self::DEFAULT_ZPOOL));
