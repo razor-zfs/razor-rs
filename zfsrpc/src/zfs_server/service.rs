@@ -1,12 +1,15 @@
+use anyhow::Result;
+use tokio::process::Command;
+
+use razor_zfs::{zfs::FileSystemBuilder, zfs::VolumeBuilder, zfs::Zfs};
+use razor_zfs::{zfs_type_t, ZfsDatasetHandle};
+
 use crate::zfsrpc_proto::tonic_zfsrpc::{dataset, filesystem_property, volume_property};
 use crate::zfsrpc_proto::tonic_zfsrpc::{
     Dataset as DatasetProto, Datasets as DatasetsProto, Filesystem as ProtoFilesystem,
     FilesystemProperty, Volume as ProtoVolume, VolumeProperty,
 };
 use crate::zfsrpc_proto::PropErr;
-use razor_zfs::{zfs::FileSystemBuilder, zfs::VolumeBuilder, zfs::Zfs, Result};
-
-use tokio::process::Command;
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
@@ -21,9 +24,9 @@ const BOOKMARK: &str = "bookmark";
 pub struct ZfsRpcService {}
 
 impl ZfsRpcService {
+    pub const DEFAULT_TIMEOUT: u64 = 1;
     pub const DEFAULT_BLOCKSIZE: u64 = 8192;
     pub const DEFAULT_CAPACITY: u64 = 100 * 1024 * 1024 * 1024;
-    pub const DEFAULT_TIMEOUT: u64 = 1;
 
     const DEFAULT_ZPOOL: &'static str = "dpool";
 
@@ -132,7 +135,7 @@ impl ZfsRpcService {
     }
 }
 
-pub fn list() -> Result<DatasetsProto> {
+pub(crate) fn list() -> Result<DatasetsProto> {
     let datasets = Zfs::list()
         .volumes()
         .filesystems()
@@ -146,25 +149,10 @@ pub fn list() -> Result<DatasetsProto> {
     Ok(datasets)
 }
 
-pub trait Dataset {
-    type U;
-    type I;
+pub(crate) fn destroy(name: String) -> Result<()> {
+    Zfs::destroy_dataset(name)?;
 
-    fn create(
-        name: String,
-        arg: Self::U,
-        properties: impl IntoIterator<Item = Self::I>,
-    ) -> std::result::Result<(), PropErr> {
-
-    fn get(name: String) -> Result<Self>
-    where
-        Self: Sized;
-
-    fn destroy(name: String) -> Result<()> {
-        Zfs::destroy_dataset(name)?;
-
-        Ok(())
-    }
+    Ok(())
 }
 
 impl From<ZfsDatasetHandle> for DatasetProto {
@@ -208,7 +196,7 @@ impl ProtoVolume {
     fn add_property(
         vol: VolumeBuilder,
         property: volume_property::Property,
-    ) -> std::result::Result<VolumeBuilder, PropErr> {
+    ) -> Result<VolumeBuilder, PropErr> {
         let vol = match property {
             volume_property::Property::Checksum(property) => {
                 vol.checksum(property.value.ok_or(PropErr::InvalidArgument)?)
@@ -231,11 +219,8 @@ impl ProtoVolume {
     }
 }
 
-impl Dataset for ProtoVolume {
-    type U = u64;
-    type I = VolumeProperty;
-
-    fn get(name: String) -> Result<Self> {
+impl ProtoVolume {
+    pub(crate) fn get(name: String) -> Result<Self> {
         let volume = Zfs::get_volume(&name)?;
 
         let vol = Self {
@@ -260,11 +245,11 @@ impl Dataset for ProtoVolume {
         Ok(vol)
     }
 
-    fn create(
+    pub(crate) fn create(
         name: String,
         capacity: u64,
         properties: impl IntoIterator<Item = VolumeProperty>,
-    ) -> std::result::Result<(), PropErr> {
+    ) -> Result<(), PropErr> {
         let builder = Zfs::volume();
 
         let _volume = properties
@@ -278,10 +263,10 @@ impl Dataset for ProtoVolume {
 }
 
 impl ProtoFilesystem {
-    pub fn add_property(
+    pub(crate) fn add_property(
         fs: FileSystemBuilder,
         property: filesystem_property::Property,
-    ) -> std::result::Result<FileSystemBuilder, PropErr> {
+    ) -> Result<FileSystemBuilder, PropErr> {
         let fs = match property {
             filesystem_property::Property::ATime(atime) => {
                 fs.atime(atime.value.ok_or(PropErr::InvalidArgument)?)
@@ -328,15 +313,12 @@ impl ProtoFilesystem {
     }
 }
 
-impl Dataset for ProtoFilesystem {
-    type U = u64;
-    type I = FilesystemProperty;
-
-    fn create(
+impl ProtoFilesystem {
+    pub(crate) fn create(
         name: String,
         _unused: u64,
         properties: impl IntoIterator<Item = FilesystemProperty>,
-    ) -> Result<()> {
+    ) -> Result<(), PropErr> {
         let builder = Zfs::filesystem();
 
         let _fs = properties
@@ -348,7 +330,7 @@ impl Dataset for ProtoFilesystem {
         Ok(())
     }
 
-    fn get(name: String) -> Result<Self> {
+    pub(crate) fn get(name: String) -> Result<Self> {
         let fs = Zfs::get_filesystem(&name)?;
 
         let fs = Self {

@@ -1,0 +1,26 @@
+syntax = "proto3";
+package zpoolrpc;
+
+service ZpoolRpc {
+    rpc Create(CreateRequest) returns (Empty);
+    rpc Destroy(DestroyRequest) returns (Empty);
+}
+
+message DestroyRequest {
+    string name = 1;
+}
+
+message CreateRequest {
+    string name = 1;
+    repeated string disks = 2;
+    repeated Property properties = 3;
+}
+
+message Property{
+    oneof property {
+        uint32 ashoft = 2;
+        string mountpoint = 3;
+    }
+}
+
+message Empty {}

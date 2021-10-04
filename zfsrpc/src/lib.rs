@@ -13,8 +13,12 @@
 #![warn(unused)]
 #![deny(warnings)]
 
+pub use zfs_server::service::ZfsRpcService;
+
+pub mod client;
 pub mod tracing_server;
 pub mod zfs_server;
+pub mod zpool_server;
 
 #[allow(unreachable_pub, clippy::use_self)]
 pub mod zfsrpc_proto;

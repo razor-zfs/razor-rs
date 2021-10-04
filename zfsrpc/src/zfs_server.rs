@@ -3,8 +3,6 @@ use tonic::{Code, Request, Response, Status};
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
 
-use crate::zfs_server::service::Dataset;
-
 use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 use super::zfsrpc_proto::tonic_zfsrpc::{
     BasicDatasetRequest, CreateFilesystemRequest, CreateVolumeRequest,
@@ -73,7 +71,7 @@ impl ZfsRpc for service::ZfsRpcService {
         let request = request.into_inner();
         debug!(?request);
 
-        Volume::destroy(request.name).map_err(|e| Status::new(Code::Internal, e.to_string()))?;
+        service::destroy(request.name).map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         Ok(Response::new(Empty {}))
     }
@@ -85,8 +83,7 @@ impl ZfsRpc for service::ZfsRpcService {
         let request = request.into_inner();
         debug!(?request);
 
-        Filesystem::destroy(request.name)
-            .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
+        service::destroy(request.name).map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         Ok(Response::new(Empty {}))
     }
