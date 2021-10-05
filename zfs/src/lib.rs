@@ -14,6 +14,7 @@
 #![deny(warnings)]
 
 use razor_nvpair::NvListError;
+use razor_property::InvalidProperty;
 use razor_zfscore::DatasetCollectorBuilder;
 use razor_zfscore::ZfsDatasetHandle;
 

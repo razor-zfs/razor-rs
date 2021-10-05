@@ -1,3 +1,4 @@
+pub use error::InvalidProperty;
 pub use property::CheckSum;
 pub use property::Compression;
 pub use property::OnOff;
