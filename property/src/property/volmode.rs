@@ -1,9 +1,9 @@
-use super::error;
-
 use std::fmt;
-use std::str::FromStr;
+use std::str;
 
 use serde::{Deserialize, Serialize};
+
+use crate::error;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
@@ -35,7 +35,7 @@ impl fmt::Display for VolMode {
     }
 }
 
-impl FromStr for VolMode {
+impl str::FromStr for VolMode {
     type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {

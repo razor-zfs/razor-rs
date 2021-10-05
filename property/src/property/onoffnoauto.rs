@@ -1,9 +1,9 @@
-use super::error;
-
 use std::fmt;
-use std::str::FromStr;
+use std::str;
 
 use serde::{Deserialize, Serialize};
+
+use crate::error;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub enum OnOffNoAuto {
@@ -28,7 +28,7 @@ impl fmt::Display for OnOffNoAuto {
     }
 }
 
-impl FromStr for OnOffNoAuto {
+impl str::FromStr for OnOffNoAuto {
     type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {

@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-#[derive(Debug, Error, Clone, PartialEq)]
+#[derive(Clone, Debug, Error, PartialEq)]
 pub enum InvalidProperty {
     #[error("No such property ({0})")]
     NoSuchProperty(String),

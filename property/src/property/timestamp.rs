@@ -1,11 +1,11 @@
-use super::error;
-
 use std::fmt;
 use std::ops;
-use std::str::FromStr;
+use std::str;
 
 use chrono::{DateTime, TimeZone, Utc};
 use serde::{Deserialize, Serialize};
+
+use crate::error;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct TimeStamp(DateTime<Utc>);
@@ -16,7 +16,7 @@ impl fmt::Display for TimeStamp {
     }
 }
 
-impl FromStr for TimeStamp {
+impl str::FromStr for TimeStamp {
     type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {

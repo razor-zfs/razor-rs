@@ -1,9 +1,9 @@
-use super::error;
-
 use std::fmt;
-use std::str::FromStr;
+use std::str;
 
 use serde::{Deserialize, Serialize};
+
+use crate::error;
 
 // checksum=on|off|fletcher2|fletcher4|sha256|noparity|sha512|skein|edonr
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
@@ -41,10 +41,10 @@ impl fmt::Display for CheckSum {
     }
 }
 
-impl FromStr for CheckSum {
+impl str::FromStr for CheckSum {
     type Err = error::InvalidProperty;
 
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "on" => Ok(Self::On),
             "off" => Ok(Self::Off),

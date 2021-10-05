@@ -1,10 +1,17 @@
-use super::error;
+pub use checksum::CheckSum;
+pub use compression::Compression;
+pub use dataset::Type;
+pub use onoff::OnOff;
+pub use onoffnoauto::OnOffNoAuto;
+pub use timestamp::TimeStamp;
+pub use volmode::VolMode;
+pub use yesno::YesNo;
 
-pub(crate) mod checksum;
-pub(crate) mod compression;
-pub(crate) mod dataset;
-pub(crate) mod onoff;
-pub(crate) mod onoffnoauto;
-pub(crate) mod timestamp;
-pub(crate) mod volmode;
-pub(crate) mod yesno;
+mod checksum;
+mod compression;
+mod dataset;
+mod onoff;
+mod onoffnoauto;
+mod timestamp;
+mod volmode;
+mod yesno;

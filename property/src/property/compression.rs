@@ -1,9 +1,9 @@
-use super::error;
-
 use std::fmt;
-use std::str::FromStr;
+use std::str;
 
 use serde::{Deserialize, Serialize};
+
+use crate::error;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
 pub enum Compression {
@@ -56,7 +56,7 @@ impl fmt::Display for Compression {
     }
 }
 
-impl FromStr for Compression {
+impl str::FromStr for Compression {
     type Err = error::InvalidProperty;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
