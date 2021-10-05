@@ -5,6 +5,7 @@ use razor_nvpair as nvpair;
 
 use nvpair::NvListAccess;
 
+use crate::error::value_or_err;
 use crate::libzfs;
 use crate::lzc;
 pub use collector::DatasetCollectorBuilder;
@@ -72,9 +73,9 @@ impl ZfsDatasetHandle {
         }
     }
 
-    pub fn set_properties(&self, nvl: nvpair::NvList) -> libc::c_int {
+    pub fn set_properties(&self, nvl: nvpair::NvList) -> Result<()> {
         let nvl = nvl.nvl();
-        unsafe { libzfs::zfs_prop_set_list(self.handle, nvl) }
+        value_or_err((), unsafe { libzfs::zfs_prop_set_list(self.handle, nvl) })
     }
 }
 

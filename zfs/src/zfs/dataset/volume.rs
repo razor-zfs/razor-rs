@@ -10,7 +10,6 @@ use razor_zfscore::lzc;
 
 use nvpair::NvListAccess;
 
-use crate::error::value_or_err;
 use crate::error::DatasetError;
 
 use super::property;
@@ -107,7 +106,8 @@ impl<'a, T> VolumeSetter<'a, T> {
     }
 
     pub fn add(self) -> Result<()> {
-        value_or_err((), self.dataset_handler.set_properties(self.nvl))
+        self.dataset_handler.set_properties(self.nvl)?;
+        Ok(())
     }
 }
 

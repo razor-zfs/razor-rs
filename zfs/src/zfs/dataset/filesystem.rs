@@ -10,7 +10,6 @@ use razor_zfscore::lzc;
 
 use nvpair::NvListAccess;
 
-use crate::error::value_or_err;
 use crate::error::DatasetError;
 
 use super::property;
@@ -203,8 +202,8 @@ impl<'a, T> FilesytemSetter<'a, T> {
     }
 
     pub fn add(self) -> Result<()> {
-        let rc = self.dataset_handler.set_properties(self.nvl);
-        value_or_err((), rc)
+        self.dataset_handler.set_properties(self.nvl)?;
+        Ok(())
     }
 }
 
@@ -230,7 +229,6 @@ impl Filesystem {
             .get_collection()?;
 
         for dataset in ns_datasets.into_iter() {
-            dbg!("trying to destroy: ", dataset.name());
             lzc::destroy_dataset(dataset.name())?;
         }
 
@@ -249,16 +247,6 @@ impl Filesystem {
     #[inline]
     pub fn atime(&self) -> property::OnOff {
         self.dataset.numeric_property(ZFS_PROP_ATIME).into()
-
-        // let default = self.dataset_handler.get_prop_default_numeric();
-
-        // if self.dataset_handler.check_mnt_option("atime") && default == 0 {
-        //     property::OnOff::On
-        // } else if self.dataset_handler.check_mnt_option("noatime") && default != 0 {
-        //     property::OnOff::Off
-        // } else {
-        //     default.into()
-        // }
     }
 
     #[inline]
