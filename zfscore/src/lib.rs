@@ -20,7 +20,7 @@ use nvpair::NvListError;
 pub use crate::lzc::zfs_prop_t;
 pub use dataset::DatasetCollectorBuilder;
 pub use dataset::ZfsDatasetHandle;
-pub use razor_zfscore_sys::zfs_error_t;
+//pub use razor_zfscore_sys::zfs_error_t;
 pub use razor_zfscore_sys::zfs_type_t;
 
 pub mod error;

@@ -21,7 +21,6 @@ fn main() {
         .ctypes_prefix("libc")
         .allowlist_type("libzfs_handle_t")
         .allowlist_type("zfs_handle_t")
-        .allowlist_type("zfs_error_t")
         .allowlist_type("zfs_prop_t")
         .allowlist_type("zfs_type_t")
         .bitfield_enum("zfs_type_t")
@@ -38,6 +37,8 @@ fn main() {
         .blocklist_item(r#"\w*nvlist\w*"#)
         .clang_args(vec!["-I/usr/include/libzfs", "-I/usr/include/libspl"])
         .default_enum_style(default_enum_style)
+        .allowlist_type("zfs_error")
+        .constified_enum_module("zfs_error")
         .generate()
         .expect("Unable to generate bindings");
 

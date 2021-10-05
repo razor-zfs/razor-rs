@@ -160,7 +160,10 @@ fn create_dup_filesystem() {
         "couldnt find filesystem"
     );
     let res = Zfs::filesystem().create(&name).unwrap_err();
-    let expected = DatasetError::CoreErr(CoreError::FileExists);
+    let expected = DatasetError::CoreErr(CoreError::LibcError(
+        libc::EEXIST,
+        "file exists".to_string(),
+    ));
     assert_eq!(expected, res);
 }
 
@@ -198,7 +201,10 @@ fn create_dup_volume() {
         .volmode(property::VolMode::None)
         .create(&name, 128 * 1024)
         .unwrap_err();
-    let expected = DatasetError::CoreErr(CoreError::FileExists);
+    let expected = DatasetError::CoreErr(CoreError::LibcError(
+        libc::EEXIST,
+        "file exists".to_string(),
+    ));
     assert_eq!(expected, res);
 }
 
@@ -517,7 +523,10 @@ fn delete_invalid_filesystem() {
         "invalid_filesystem_to_delete"
     );
     let res = Zfs::destroy_dataset(name).unwrap_err();
-    let expected = DatasetError::CoreErr(CoreError::NoSuchFileOrDirectory);
+    let expected = DatasetError::CoreErr(CoreError::LibcError(
+        libc::ENOENT,
+        "no such file or directory".to_string(),
+    ));
     assert_eq!(expected, res);
 }
 
@@ -526,6 +535,9 @@ fn delete_invalid_volume() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "invalid_volume_to_delete");
     let res = Zfs::destroy_dataset(name).unwrap_err();
-    let expected = DatasetError::CoreErr(CoreError::NoSuchFileOrDirectory);
+    let expected = DatasetError::CoreErr(CoreError::LibcError(
+        libc::ENOENT,
+        "no such file or directory".to_string(),
+    ));
     assert_eq!(expected, res);
 }
