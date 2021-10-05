@@ -1,5 +1,5 @@
-use thiserror::Error;
 use razor_zfs::error::DatasetError;
+use thiserror::Error;
 
 mod properties;
 

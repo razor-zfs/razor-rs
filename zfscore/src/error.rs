@@ -86,10 +86,7 @@ pub(crate) fn value_or_err<T>(val: T, rc: i32) -> Result<T, CoreError> {
             rc,
             "math result not representable".to_string(),
         )),
-        MOUNT_FAILED => Err(CoreError::ZfsInternalError(
-            rc,
-            "mount failed".to_string(),
-        )),
+        MOUNT_FAILED => Err(CoreError::ZfsInternalError(rc, "mount failed".to_string())),
         SHARE_FAILED => Err(CoreError::ZfsInternalError(
             rc,
             "share nfs failed".to_string(),
