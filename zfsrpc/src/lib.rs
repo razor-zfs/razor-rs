@@ -15,7 +15,9 @@
 
 pub use zfs_server::service::ZfsRpcService;
 
-pub mod client;
+pub mod zfs_client;
+pub mod zpool_client;
+
 pub mod tracing_server;
 pub mod zfs_server;
 pub mod zpool_server;

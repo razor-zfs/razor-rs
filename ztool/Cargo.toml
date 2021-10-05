@@ -1,12 +1,16 @@
 [package]
-name = "razor-rpc-client"
+name = "ztool"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
-tokio = { version = "1.9", features = ["full"] }
+tokio = { version = "1.9", features = ["macros", "rt-multi-thread"] }
 razor-zfsrpc = { version = "0.1", path = "../zfsrpc" }
-tracing = "0.1"
 tracing-subscriber = "0.2"
 structopt = "0.3"
+walkdir = "2.3"
+tracing = "0.1"
 anyhow = "1.0"
+
+[features]
+dirty = []

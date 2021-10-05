@@ -21,6 +21,8 @@ use razor_zfsrpc as zfsrpc;
 use zfsrpc::zfs_server::service;
 use zfsrpc::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpcServer;
 use zfsrpc::zfsrpc_proto::tonic_zfstracer::zfs_tracer_server::ZfsTracerServer;
+use zfsrpc::zfsrpc_proto::tonic_zpoolrpc::zpool_rpc_server::ZpoolRpcServer;
+use zfsrpc::zpool_server;
 
 use razor_tracing as tracing;
 
@@ -28,13 +30,15 @@ use razor_tracing as tracing;
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let addr = "0.0.0.0:50051".parse()?;
     let tracer = tracing::init()?;
-    let rpc = service::ZfsRpcService::init().await;
+    let rpc = service::ZfsRpcService::default();
+    let zpool_rpc = zpool_server::ZpoolRpcService::default();
     Server::builder()
         .timeout(time::Duration::from_secs(
             service::ZfsRpcService::DEFAULT_TIMEOUT,
         ))
         .add_service(ZfsRpcServer::new(rpc))
         .add_service(ZfsTracerServer::new(tracer))
+        .add_service(ZpoolRpcServer::new(zpool_rpc))
         .serve(addr)
         .await?;
 

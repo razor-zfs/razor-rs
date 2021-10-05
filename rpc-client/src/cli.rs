@@ -1,4 +1,4 @@
-use razor_zfsrpc::client::Client;
+use razor_zfsrpc::zfs_client::Client;
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};

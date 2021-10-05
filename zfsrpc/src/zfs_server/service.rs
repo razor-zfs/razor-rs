@@ -1,8 +1,8 @@
 use anyhow::Result;
-use tokio::process::Command;
 
-use razor_zfs::{zfs::FileSystemBuilder, zfs::VolumeBuilder, zfs::Zfs};
-use razor_zfs::{zfs_type_t, ZfsDatasetHandle};
+use razor_zfs::{
+    zfs::FileSystemBuilder, zfs::VolumeBuilder, zfs::Zfs, zfs_type_t, ZfsDatasetHandle,
+};
 
 use crate::zfsrpc_proto::tonic_zfsrpc::{dataset, filesystem_property, volume_property};
 use crate::zfsrpc_proto::tonic_zfsrpc::{
@@ -27,112 +27,6 @@ impl ZfsRpcService {
     pub const DEFAULT_TIMEOUT: u64 = 1;
     pub const DEFAULT_BLOCKSIZE: u64 = 8192;
     pub const DEFAULT_CAPACITY: u64 = 100 * 1024 * 1024 * 1024;
-
-    const DEFAULT_ZPOOL: &'static str = "dpool";
-
-    pub async fn init() -> Self {
-        enum HostType {
-            Relay,
-            Edge,
-        }
-
-        enum Vendor {
-            Azure,
-            Aws(HostType),
-        }
-
-        let zspan = tracing::debug_span!("zpool");
-        let _entered = zspan.entered();
-
-        let output = Command::new("zpool")
-            .arg("list")
-            .output()
-            .await
-            .expect("failed to get zpool list");
-
-        let out = std::str::from_utf8(output.stdout.as_slice()).expect("failed to get output");
-        if out.contains(Self::DEFAULT_ZPOOL) {
-            debug!("{} already exists", Self::DEFAULT_ZPOOL);
-        } else {
-            let output = Command::new("zpool")
-                .arg("import")
-                .arg(Self::DEFAULT_ZPOOL)
-                .output()
-                .await
-                .expect("failed to exec zpool import command");
-
-            if output.status.success() {
-                debug!("{} was imported", Self::DEFAULT_ZPOOL);
-            } else {
-                debug!("Creating zpool {}", Self::DEFAULT_ZPOOL);
-                let vendor = if Command::new("ls")
-                    .arg("/replixio/dev/disk/azure")
-                    .output()
-                    .await
-                    .unwrap()
-                    .status
-                    .success()
-                {
-                    Vendor::Azure
-                } else if Command::new("ls")
-                    .arg("/replixio/dev/disk/nvme1n1")
-                    .output()
-                    .await
-                    .unwrap()
-                    .status
-                    .success()
-                {
-                    Vendor::Aws(HostType::Relay)
-                } else {
-                    Vendor::Aws(HostType::Edge)
-                };
-
-                let disks = match vendor {
-                    Vendor::Azure => &[
-                        "/replixio/dev/disk/azure/scsi1/lun2",
-                        "/replixio/dev/disk/azure/scsi1/lun3",
-                        "/replixio/dev/disk/azure/scsi1/lun4",
-                        "/replixio/dev/disk/azure/scsi1/lun5",
-                        "/replixio/dev/disk/azure/scsi1/lun6",
-                    ],
-                    Vendor::Aws(HostType::Relay) => &[
-                        "/replix/dev/disk/nvme2n1",
-                        "/replix/dev/disk/nvme3n1",
-                        "/replix/dev/disk/nvme4n1",
-                        "/replix/dev/disk/nvme5n1",
-                        "/replix/dev/disk/nvme6n1",
-                    ],
-                    Vendor::Aws(HostType::Edge) => &[
-                        "/replix/dev/disk/nvme1n1",
-                        "/replix/dev/disk/nvme2n1",
-                        "/replix/dev/disk/nvme3n1",
-                        "/replix/dev/disk/nvme4n1",
-                        "/replix/dev/disk/nvme5n1",
-                    ],
-                };
-
-                let output = Command::new("zpool")
-                    .arg("create")
-                    .arg(Self::DEFAULT_ZPOOL)
-                    .args(&["-o", "ashift=12"])
-                    .args(&["-O", "mountpoint=none"])
-                    .arg("raidz")
-                    .args(disks)
-                    .output()
-                    .await
-                    .unwrap_or_else(|_| panic!("zpool create {} failed", Self::DEFAULT_ZPOOL));
-
-                if !output.status.success() {
-                    error!("{}", std::str::from_utf8(output.stderr.as_slice()).unwrap());
-                    panic!("failed to create zpool {} ", Self::DEFAULT_ZPOOL);
-                }
-
-                debug!("zpool {} was created", Self::DEFAULT_ZPOOL);
-            }
-        }
-
-        Self::default()
-    }
 }
 
 pub(crate) fn list() -> Result<DatasetsProto> {
