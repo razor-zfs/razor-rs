@@ -1,4 +1,5 @@
 use razor_zfscore::error;
+
 use thiserror::Error;
 
 use super::InvalidProperty;
@@ -8,12 +9,14 @@ use super::NvListError;
 pub enum DatasetError {
     #[error("failed to convert string to C string")]
     StringConversionError(#[from] std::ffi::NulError),
+    #[error("failed to load zfs module")]
+    ZfsInitFailure,
     #[error(transparent)]
     InvalidProperty(#[from] InvalidProperty),
     #[error(transparent)]
     NvListError(#[from] NvListError),
     #[error(transparent)]
     CoreErr(#[from] error::CoreError),
-    #[error("unknown error, error code: ({0})")]
+    #[error("unknown builder error, error code: ({0})")]
     Unknown(i32),
 }

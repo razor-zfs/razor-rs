@@ -2,9 +2,8 @@ use crate::zfsrpc_proto::tonic_zfsrpc::{filesystem_property, volume_property};
 use crate::zfsrpc_proto::tonic_zfsrpc::{
     Filesystem as ProtoFilesystem, FilesystemProperty, Volume as ProtoVolume, VolumeProperty,
 };
-use razor_zfs::{
-    error::DatasetError, zfs::FileSystemBuilder, zfs::VolumeBuilder, zfs::Zfs, Result,
-};
+use crate::zfsrpc_proto::PropErr;
+use razor_zfs::{zfs::FileSystemBuilder, zfs::VolumeBuilder, zfs::Zfs, Result};
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
@@ -28,7 +27,7 @@ impl Volume {
         name: String,
         capacity: u64,
         properties: impl IntoIterator<Item = VolumeProperty>,
-    ) -> Result<()> {
+    ) -> std::result::Result<(), PropErr> {
         let builder = Zfs::volume();
 
         let _volume = properties
@@ -68,21 +67,21 @@ impl Volume {
     fn add_property(
         vol: VolumeBuilder,
         property: volume_property::Property,
-    ) -> razor_zfs::Result<VolumeBuilder> {
+    ) -> std::result::Result<VolumeBuilder, PropErr> {
         let vol = match property {
             volume_property::Property::Checksum(property) => {
-                vol.checksum(property.value.ok_or(DatasetError::InvalidArgument)?)
+                vol.checksum(property.value.ok_or(PropErr::InvalidArgument)?)
             }
             volume_property::Property::Compression(property) => {
-                vol.compression(property.value.ok_or(DatasetError::InvalidArgument)?)
+                vol.compression(property.value.ok_or(PropErr::InvalidArgument)?)
             }
             volume_property::Property::VolMode(property) => {
-                vol.volmode(property.value.ok_or(DatasetError::InvalidArgument)?)
+                vol.volmode(property.value.ok_or(PropErr::InvalidArgument)?)
             }
             volume_property::Property::BlockSize(property) => vol.blocksize(
                 property
                     .check()
-                    .map_err(|_| DatasetError::InvalidArgument)?
+                    .map_err(|_| PropErr::InvalidArgument)?
                     .value,
             ),
         };
@@ -116,7 +115,7 @@ impl Filesystem {
     pub fn create(
         name: String,
         properties: impl IntoIterator<Item = FilesystemProperty>,
-    ) -> Result<()> {
+    ) -> std::result::Result<(), PropErr> {
         let builder = Zfs::filesystem();
 
         let _fs = properties
@@ -165,46 +164,46 @@ impl Filesystem {
     pub fn add_property(
         fs: FileSystemBuilder,
         property: filesystem_property::Property,
-    ) -> razor_zfs::Result<FileSystemBuilder> {
+    ) -> std::result::Result<FileSystemBuilder, PropErr> {
         let fs = match property {
             filesystem_property::Property::ATime(atime) => {
-                fs.atime(atime.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.atime(atime.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::CanMount(canmount) => {
-                fs.canmount(canmount.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.canmount(canmount.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Checksum(checksum) => {
-                fs.checksum(checksum.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.checksum(checksum.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Compression(compression) => {
-                fs.compression(compression.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.compression(compression.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Devices(devices) => {
-                fs.devices(devices.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.devices(devices.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Exec(exec) => {
-                fs.exec(exec.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.exec(exec.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Nbmand(nbmand) => {
-                fs.nbmand(nbmand.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.nbmand(nbmand.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Overlay(overlay) => {
-                fs.overlay(overlay.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.overlay(overlay.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Readonly(readonly) => {
-                fs.readonly(readonly.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.readonly(readonly.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Relatime(relatime) => {
-                fs.relatime(relatime.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.relatime(relatime.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Setuid(setuid) => {
-                fs.setuid(setuid.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.setuid(setuid.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Vscan(vscan) => {
-                fs.vscan(vscan.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.vscan(vscan.value.ok_or(PropErr::InvalidArgument)?)
             }
             filesystem_property::Property::Zoned(zoned) => {
-                fs.zoned(zoned.value.ok_or(DatasetError::InvalidArgument)?)
+                fs.zoned(zoned.value.ok_or(PropErr::InvalidArgument)?)
             }
         };
 

@@ -1028,6 +1028,7 @@ dependencies = [
  "razor-property",
  "razor-tracing",
  "razor-zfs",
+ "thiserror",
  "tokio",
  "tonic",
  "tonic-build",
