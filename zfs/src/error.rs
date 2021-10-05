@@ -9,8 +9,6 @@ use super::NvListError;
 pub enum DatasetError {
     #[error("failed to convert string to C string")]
     StringConversionError(#[from] std::ffi::NulError),
-    #[error("failed to load zfs module")]
-    ZfsInitFailure,
     #[error(transparent)]
     InvalidProperty(#[from] InvalidProperty),
     #[error(transparent)]
