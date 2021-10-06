@@ -13,6 +13,8 @@
 #![warn(unused)]
 #![deny(warnings)]
 
+pub use razor_property as property;
+pub use razor_property::InvalidProperty as PropertyError;
 pub use zfs_server::service::ZfsRpcService;
 
 pub mod zfs_client;
@@ -24,3 +26,15 @@ pub mod zpool_server;
 
 #[allow(unreachable_pub, clippy::use_self)]
 pub mod zfsrpc_proto;
+
+#[derive(Debug)]
+pub enum Property {
+    CheckSum(property::CheckSum),
+    Compression(property::Compression),
+    OnOff(property::OnOff),
+    OnOffNoAuto(property::OnOffNoAuto),
+    TimeStamp(property::TimeStamp),
+    Type(property::Type),
+    VolMode(property::VolMode),
+    YesNo(property::YesNo),
+}

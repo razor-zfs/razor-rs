@@ -246,3 +246,50 @@ impl_property!(vol_mode for volume_property and VolMode =>
 
 // Only Getter property, thus doesn't exists at filesystem_property mod
 impl_zfs_for_property!(mounted, YesNo, Yes, No);
+
+impl From<property::CheckSum> for VolumeProperty {
+    fn from(p: property::CheckSum) -> Self {
+        match p {
+            // property: Some(classcase_path_end!($type::Property::$prop)(var)),
+            property::CheckSum::On => Self {
+                property: Some(volume_property::Property::Checksum(
+                    dataset_properties::Checksum {
+                        value: Some(dataset_properties::checksum::Value::On(Variant {})),
+                    },
+                )),
+            },
+            property::CheckSum::Off => todo!(),
+            property::CheckSum::Fletcher2 => todo!(),
+            property::CheckSum::Fletcher4 => todo!(),
+            property::CheckSum::Sha256 => todo!(),
+            property::CheckSum::NoParity => todo!(),
+            property::CheckSum::Sha512 => todo!(),
+            property::CheckSum::Skein => todo!(),
+            property::CheckSum::Edonr => todo!(),
+        }
+    }
+}
+
+impl From<property::Compression> for VolumeProperty {
+    fn from(p: property::Compression) -> Self {
+        match p {
+            property::Compression::On => todo!(),
+            property::Compression::Off => todo!(),
+            property::Compression::Lzjb => todo!(),
+            property::Compression::Gzip => todo!(),
+            property::Compression::Gzip1 => todo!(),
+            property::Compression::Gzip2 => todo!(),
+            property::Compression::Gzip3 => todo!(),
+            property::Compression::Gzip4 => todo!(),
+            property::Compression::Gzip5 => todo!(),
+            property::Compression::Gzip6 => todo!(),
+            property::Compression::Gzip7 => todo!(),
+            property::Compression::Gzip8 => todo!(),
+            property::Compression::Gzip9 => todo!(),
+            property::Compression::Zle => todo!(),
+            property::Compression::Lz4 => todo!(),
+            property::Compression::Zstd => todo!(),
+            property::Compression::ZstdFast => todo!(),
+        }
+    }
+}

@@ -1,17 +1,38 @@
+use tonic::transport::Channel;
+
 use super::zfsrpc_proto::tonic_zfsrpc::{
     zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateVolumeRequest, Empty, VolumeProperty,
 };
 
-#[allow(unused)]
 use super::zfsrpc_proto::tonic_zfstracer::{
     trace_level::Level, zfs_tracer_client::ZfsTracerClient, TraceLevel, Variant,
 };
 
-use tonic::transport::Channel;
+use super::Property;
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
 
+impl From<Property> for VolumeProperty {
+    fn from(p: Property) -> Self {
+        match p {
+            Property::CheckSum(val) => val.into(),
+            Property::Compression(val) => val.into(),
+            Property::OnOff(_) => todo!(),
+            Property::OnOffNoAuto(_) => todo!(),
+            Property::TimeStamp(_) => todo!(),
+            Property::Type(_) => todo!(),
+            Property::VolMode(_) => todo!(),
+            Property::YesNo(_) => todo!(),
+            // Property::OnOff(val) => val.into(),
+            // Property::OnOffNoAuto(val) => val.into(),
+            // Property::TimeStamp(val) => val.into(),
+            // Property::Type(val) => val.into(),
+            // Property::VolMode(val) => val.into(),
+            // Property::YesNo(val) => val.into(),
+        }
+    }
+}
 #[derive(Debug)]
 pub struct Client {
     client: ZfsRpcClient<Channel>,
@@ -42,7 +63,8 @@ impl Client {
         Ok(resp)
     }
 
-    pub async fn get_filesystem(&mut self, name: String) -> anyhow::Result<String> {
+    pub async fn get_filesystem(&mut self, name: impl ToString) -> anyhow::Result<String> {
+        let name = name.to_string();
         let request = BasicDatasetRequest { name };
         let request = tonic::Request::new(request);
 
@@ -53,7 +75,8 @@ impl Client {
         Ok(resp)
     }
 
-    pub async fn destroy_filesystem(&mut self, name: String) -> anyhow::Result<()> {
+    pub async fn destroy_filesystem(&mut self, name: impl ToString) -> anyhow::Result<()> {
+        let name = name.to_string();
         let request = BasicDatasetRequest { name };
         let request = tonic::Request::new(request);
 
@@ -64,10 +87,12 @@ impl Client {
 
     pub async fn create_volume(
         &mut self,
-        name: String,
+        name: impl ToString,
         capacity: u64,
-        properties: Vec<VolumeProperty>,
+        properties: Vec<Property>,
     ) -> anyhow::Result<()> {
+        let name = name.to_string();
+        let properties = properties.into_iter().map(From::from).collect();
         let request = CreateVolumeRequest {
             name,
             capacity,
@@ -80,7 +105,8 @@ impl Client {
         Ok(())
     }
 
-    pub async fn get_volume(&mut self, name: String) -> anyhow::Result<String> {
+    pub async fn get_volume(&mut self, name: impl ToString) -> anyhow::Result<String> {
+        let name = name.to_string();
         let request = BasicDatasetRequest { name };
         let request = tonic::Request::new(request);
 
@@ -91,7 +117,8 @@ impl Client {
         Ok(resp)
     }
 
-    pub async fn destroy_volume(&mut self, name: String) -> anyhow::Result<()> {
+    pub async fn destroy_volume(&mut self, name: impl ToString) -> anyhow::Result<()> {
+        let name = name.to_string();
         let request = BasicDatasetRequest { name };
         let request = tonic::Request::new(request);
 

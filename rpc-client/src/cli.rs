@@ -1,9 +1,13 @@
-use razor_zfsrpc::zfs_client::Client;
-
+//
+// Copyright (c) 2021 RepliXio Ltd. All rights reserved.
+// Use is subject to license terms.
+//
 #[allow(unused)]
-use tracing::{debug, error, info, trace, warn};
+use razor_zfsrpc::{property, zfs_client::Client, Property, PropertyError};
 
 use structopt::StructOpt;
+#[allow(unused)]
+use tracing::{debug, error, info, trace, warn};
 
 const ABOUT: &str = "zfs rpc CLI tool";
 
@@ -25,13 +29,13 @@ enum Command {
 
     #[structopt(about = "Get filesystem properties", aliases = &["gfs", "get-fs"], display_order(30))]
     GetFilesystem {
-        #[structopt(help = "Filesystem name", long, short)]
+        #[structopt(help = "Filesystem name")]
         name: String,
     },
 
     #[structopt(about = "Destroy filesystem", aliases = &["dfs", "destroy-fs"], display_order(31))]
     DestroyFilesystem {
-        #[structopt(help = "Filesystem name", long, short)]
+        #[structopt(help = "Filesystem name")]
         name: String,
     },
 
@@ -40,15 +44,57 @@ enum Command {
         aliases = &["cv"],
         display_order = 20)]
     CreateVolume {
-        #[structopt(long, short, help = "Volume name")]
+        #[structopt(help = "Volume name")]
         name: String,
-        #[structopt(long, short, help = "Volume capacity")]
+        #[structopt(long, help = "Volume capacity must aligh 128KB")]
         capacity: u64,
-        // #[structopt(short, long, multiple = false, help = "")]
-        // properties: Vec<>,
+        #[structopt(
+            long,
+            help = "Volume checksum capability",
+            possible_values = &[
+                "On",
+                "Off",
+                "Fletcher2",
+                "Fletcher4",
+                "Sha256",
+                "NoParity",
+                "Sha512",
+                "Skein",
+                "Edonr",
+            ]
+        )]
+        checksum: Option<property::CheckSum>,
+        #[structopt(long,
+            help = "Volume compression capability",
+            possible_values = &[
+                "On",
+                "Off",
+                "Lzjb",
+                "Gzip",
+                "Gzip1",
+                "Gzip2",
+                "Gzip3",
+                "Gzip4",
+                "Gzip5",
+                "Gzip6",
+                "Gzip7",
+                "Gzip8",
+                "Gzip9",
+                "Zle",
+                "Lz4",
+                "Zstd",
+                "ZstdFast",
+            ]
+        )]
+        compression: Option<property::Compression>,
+        //#[structopt(long, help = "Volume volmode")]
+        // VolMode(super::dataset_properties::VolMode),
+        // #[prost(message, tag = "4")]
+        // BlockSize(super::dataset_properties::BlockSize),
     },
 
-    #[structopt(about = "Get volume properties", aliases = &["gv", "get-vol"], display_order(21))]
+    #[structopt(
+        about = "Get volume properties", aliases = &["gv", "get-vol"], display_order(21))]
     GetVolume {
         #[structopt(help = "Volume name", long, short)]
         name: String,
@@ -62,7 +108,7 @@ enum Command {
 
     #[structopt(about = "Set server trace level", aliases = &["tl", "trace-level"], display_order(90))]
     SetTraceLevel {
-        #[structopt(long, short, help = "Trace level", env = "RUST_LOG")]
+        #[structopt(long, short, help = "Trace level", possible_values = &["trace, debug, info, warn, error"], env = "RUST_LOG")]
         level: Option<String>,
     },
 }
@@ -81,25 +127,35 @@ impl Cli {
             Command::CreateVolume {
                 name,
                 capacity,
-                //properties,
+                checksum,
+                compression,
             } => {
-                client.create_volume(name, capacity, vec![]).await?;
-                String::default()
+                let mut properties: Vec<Property> = vec![];
+                if let Some(checksum) = checksum {
+                    properties.push(Property::CheckSum(checksum))
+                }
+                if let Some(compression) = compression {
+                    properties.push(Property::Compression(compression))
+                }
+
+                client.create_volume(&name, capacity, vec![]).await?;
+                format!("Volume {} created", name)
             }
             Command::DestroyFilesystem { name } => {
-                client.destroy_filesystem(name).await?;
-                String::default()
+                client.destroy_filesystem(&name).await?;
+                format!("Filesystem {} destroyed", name)
             }
             Command::DestroyVolume { name } => {
-                client.destroy_volume(name).await?;
-                String::default()
+                client.destroy_volume(&name).await?;
+                format!("Volume {} destroyed", name)
             }
             Command::SetTraceLevel { level } => {
                 if let Some(trace_level) = level {
-                    client.set_trace_level(trace_level).await?;
+                    client.set_trace_level(&trace_level).await?;
+                    format!("Trace level was set to {}", trace_level)
+                } else {
+                    String::from("level is missing")
                 }
-
-                String::default()
             }
         };
 
