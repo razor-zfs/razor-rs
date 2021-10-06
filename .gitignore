@@ -1,3 +1,5 @@
 /target
 zfsclient
 zfsserver
+razor-rpc-client*
+razor-rpc-server*

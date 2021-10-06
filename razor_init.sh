@@ -1,4 +1,4 @@
 #!/bin/bash
 
 ./razor-rpc-server &
-./ztool create -n dpool -m raidz
+./ztool create dpool raidz --ashift=12 --mountpoint=none

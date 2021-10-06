@@ -62,13 +62,18 @@ pub(crate) async fn create(
 
             cmd.arg(method).args(disks);
 
+            debug!(?cmd);
+
             let output = cmd
                 .output()
                 .await
                 .unwrap_or_else(|_| panic!("zpool create {} failed", name));
 
-            assert!(output.status.success(), "failed to create zpool {} ", name);
-
+            if !output.status.success() {
+                let msg = std::str::from_utf8(&output.stderr)?.to_string();
+                error!(?msg);
+                return Err(anyhow::anyhow!(msg));
+            }
             debug!("zpool {} was created", name);
         }
     }

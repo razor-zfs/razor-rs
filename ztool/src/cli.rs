@@ -21,11 +21,11 @@ pub(crate) struct Cli {
 enum Command {
     #[structopt(about = "Create new zpool")]
     Create {
-        #[structopt(short, long, help = "zpool name")]
+        #[structopt(help = "zpool name")]
         name: String,
-        #[structopt(short, long, help = "Creation method", possible_values = &["raidz", "mirror"])]
+        #[structopt(help = "Creation method", possible_values = &["raidz", "mirror"])]
         method: client::Method,
-        #[structopt(short, long, help = "Available disks")]
+        #[structopt(help = "Available disks")]
         disks: Vec<String>,
         #[structopt(short, long, help = "ashift", default_value = "12")]
         ashift: u32,
@@ -34,7 +34,7 @@ enum Command {
     },
     #[structopt(about = "Create new zpool")]
     Destroy {
-        #[structopt(short, long, help = "zpool name")]
+        #[structopt(help = "zpool name")]
         name: String,
     },
 }
