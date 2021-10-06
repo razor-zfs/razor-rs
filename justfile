@@ -53,3 +53,6 @@ server:
 client:
     cargo build -p razor-rpc-client
     cp ./target/debug/razor-rpc-client ./zfsclient
+
+docker:
+    docker build -t statehub_razor:local --build-arg RUST_TOOLCHAIN=nightly .

@@ -63,6 +63,8 @@ image:build:
   rules:
       - if: '$BUILD_DOCKER == "true"'
         when: always
+      - if: '$CI_COMMIT_REF_NAME == "develop"'
+        when: always
   before_script:
     - git config --global credential.helper store
     - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com" > ~/.git-credentials
