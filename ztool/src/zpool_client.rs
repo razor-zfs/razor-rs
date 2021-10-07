@@ -1,7 +1,8 @@
 pub(crate) use client::{Method, Property};
 use razor_zfsrpc::zpool_client as client;
 
-use tokio::process::Command;
+use std::path::Path;
+
 use walkdir::{DirEntry, WalkDir};
 
 #[allow(unused)]
@@ -22,11 +23,19 @@ impl Client {
     const DEVICES_PATH: &'static str = "/replixio/dev/disk/by-id";
     const EBS_PREFIX: &'static str = "nvme-Amazon_Elastic_Block_Store";
     const ROOT_DEV_PREFIX: &'static str = "nvme0";
+    const AZURE_PATH: &'static str = "/replixio/dev/disk/azure";
 
     fn is_ebs_device(dev: &DirEntry) -> bool {
         dev.file_name()
             .to_str()
             .map_or(false, |s| s.starts_with(Self::EBS_PREFIX))
+    }
+
+    fn is_hidden(entry: &DirEntry) -> bool {
+        entry
+            .file_name()
+            .to_str()
+            .map_or(false, |s| s.starts_with('.'))
     }
 
     fn is_root_device(dev: &DirEntry) -> bool {
@@ -55,24 +64,15 @@ impl Client {
         method: Method,
         _disks: Vec<String>,
         properties: Vec<Property>,
-    ) -> anyhow::Result<()> {
+    ) -> anyhow::Result<String> {
         let zspan = tracing::debug_span!("ztool-client");
         let _entered = zspan.entered();
 
-        let vendor = if Command::new("ls")
-            .arg("/replixio/dev/disk/azure")
-            .output()
-            .await
-            .unwrap()
-            .status
-            .success()
-        {
+        let vendor = if Path::new(Self::AZURE_PATH).exists() {
             Vendor::Azure
         } else {
             Vendor::Aws
         };
-
-        debug!(?vendor);
 
         let disks = match vendor {
             Vendor::Azure => {
@@ -86,27 +86,49 @@ impl Client {
             }
 
             Vendor::Aws => {
-                // disks.push("/dev/nvme1n1".into());
-                // disks
+                for entry in WalkDir::new(Self::DEVICES_PATH) {
+                    debug!(?entry);
+                }
+
                 WalkDir::new(Self::DEVICES_PATH)
                     .into_iter()
                     .filter_entry(|entry| {
-                        Self::is_ebs_device(entry) && !Self::is_root_device(entry)
+                        debug!(?entry);
+                        if entry.path_is_symlink()
+                            && Self::is_ebs_device(entry)
+                            && !Self::is_root_device(entry)
+                            && !Self::is_hidden(entry)
+                        {
+                            info!("Pasing entry {:?}", entry);
+                            entry.path().to_str().is_some()
+                        } else {
+                            warn!("Entry {:?} was filtered out!", entry);
+                            false
+                        }
                     })
+                    .inspect(|entry| debug!(?entry))
                     .filter_map(|entry| {
-                        entry
-                            .ok()
-                            .and_then(|entry| entry.path().to_str().map(|entry| entry.to_string()))
+                        if let Ok(entry) = entry {
+                            let entry = entry.path().to_str()?.to_string();
+                            info!("Entry {:?} will be collected", entry);
+                            Some(entry)
+                        } else {
+                            error!("Not able to stringify entry {:?}", entry);
+                            None
+                        }
                     })
+                    .inspect(|entry| debug!(?entry))
                     .collect()
             }
         };
 
         debug!(?disks);
 
-        self.inner.create(name, method, disks, properties).await?;
-
-        Ok(())
+        if !disks.is_empty() {
+            self.inner.create(name, method, disks, properties).await
+        } else {
+            Err(anyhow::anyhow!("failed to find disks!"))
+        }
     }
 
     pub(crate) async fn destroy(&mut self, name: &str) -> anyhow::Result<()> {

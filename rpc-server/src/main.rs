@@ -13,8 +13,6 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use std::time;
-
 use tonic::transport::Server;
 
 use razor_zfsrpc as zfsrpc;
@@ -33,9 +31,6 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let rpc = service::ZfsRpcService::default();
     let zpool_rpc = zpool_server::ZpoolRpcService::default();
     Server::builder()
-        .timeout(time::Duration::from_secs(
-            service::ZfsRpcService::DEFAULT_TIMEOUT,
-        ))
         .add_service(ZfsRpcServer::new(rpc))
         .add_service(ZfsTracerServer::new(tracer))
         .add_service(ZpoolRpcServer::new(zpool_rpc))

@@ -1,35 +1,25 @@
 use tonic::transport::Channel;
 
+use super::zfsrpc_proto::tonic_zfsrpc as proto;
 use super::zfsrpc_proto::tonic_zfsrpc::{
-    zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateVolumeRequest, Empty, VolumeProperty,
+    zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateVolumeRequest, Empty,
 };
 
 use super::zfsrpc_proto::tonic_zfstracer::{
     trace_level::Level, zfs_tracer_client::ZfsTracerClient, TraceLevel, Variant,
 };
 
-use super::Property;
+use super::VolumeProperty;
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
 
-impl From<Property> for VolumeProperty {
-    fn from(p: Property) -> Self {
+impl From<VolumeProperty> for proto::VolumeProperty {
+    fn from(p: VolumeProperty) -> Self {
         match p {
-            Property::CheckSum(val) => val.into(),
-            Property::Compression(val) => val.into(),
-            Property::OnOff(_) => todo!(),
-            Property::OnOffNoAuto(_) => todo!(),
-            Property::TimeStamp(_) => todo!(),
-            Property::Type(_) => todo!(),
-            Property::VolMode(_) => todo!(),
-            Property::YesNo(_) => todo!(),
-            // Property::OnOff(val) => val.into(),
-            // Property::OnOffNoAuto(val) => val.into(),
-            // Property::TimeStamp(val) => val.into(),
-            // Property::Type(val) => val.into(),
-            // Property::VolMode(val) => val.into(),
-            // Property::YesNo(val) => val.into(),
+            VolumeProperty::CheckSum(val) => val.into(),
+            VolumeProperty::Compression(val) => val.into(),
+            VolumeProperty::VolMode(val) => val.into(),
         }
     }
 }
@@ -89,7 +79,7 @@ impl Client {
         &mut self,
         name: impl ToString,
         capacity: u64,
-        properties: Vec<Property>,
+        properties: Vec<VolumeProperty>,
     ) -> anyhow::Result<()> {
         let name = name.to_string();
         let properties = properties.into_iter().map(From::from).collect();

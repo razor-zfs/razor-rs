@@ -36,7 +36,7 @@ RUN apt update \
 	zfsutils-linux
 
 EXPOSE 50051
-ENV RUST_LOG="error"
+ENV RUST_LOG="debug"
 
 WORKDIR ${BIN_DIR}
 CMD ./razor_init.sh

@@ -3,7 +3,7 @@
 // Use is subject to license terms.
 //
 #[allow(unused)]
-use razor_zfsrpc::{property, zfs_client::Client, Property, PropertyError};
+use razor_zfsrpc::{property, zfs_client::Client, PropertyError, VolumeProperty};
 
 use structopt::StructOpt;
 #[allow(unused)]
@@ -46,7 +46,10 @@ enum Command {
     CreateVolume {
         #[structopt(help = "Volume name")]
         name: String,
-        #[structopt(long, help = "Volume capacity must aligh 128KB")]
+        #[structopt(
+            long,
+            help = "The volsize can only be set to a multiple of volblocksize"
+        )]
         capacity: u64,
         #[structopt(
             long,
@@ -87,10 +90,23 @@ enum Command {
             ]
         )]
         compression: Option<property::Compression>,
-        //#[structopt(long, help = "Volume volmode")]
-        // VolMode(super::dataset_properties::VolMode),
-        // #[prost(message, tag = "4")]
-        // BlockSize(super::dataset_properties::BlockSize),
+        #[structopt(long,
+            help = "Volume volmode",
+            possible_values = &[
+                "Default",
+                "Full",
+                "Geom",
+                "Dev",
+                "None",
+                "Unknown", 
+            ]
+        )]
+        volmode: Option<property::VolMode>,
+        #[structopt(long,
+            help = "Any power of 2 from 512 bytes to 128 Kbytes is valid",
+            aliases = &["bs"],
+        )]
+        blocksize: u32,
     },
 
     #[structopt(
@@ -108,7 +124,19 @@ enum Command {
 
     #[structopt(about = "Set server trace level", aliases = &["tl", "trace-level"], display_order(90))]
     SetTraceLevel {
-        #[structopt(long, short, help = "Trace level", possible_values = &["trace, debug, info, warn, error"], env = "RUST_LOG")]
+        #[structopt(
+            long,
+            short,
+            env = "RUST_LOG",
+            help = "Trace level",
+            possible_values = &[
+                "trace",
+                "debug",
+                "info",
+                "warn",
+                "error"
+                ]
+            )]
         level: Option<String>,
     },
 }
@@ -129,13 +157,19 @@ impl Cli {
                 capacity,
                 checksum,
                 compression,
+                volmode,
+                blocksize: _blocksize,
             } => {
-                let mut properties: Vec<Property> = vec![];
+                let mut properties: Vec<VolumeProperty> = vec![];
                 if let Some(checksum) = checksum {
-                    properties.push(Property::CheckSum(checksum))
+                    properties.push(VolumeProperty::CheckSum(checksum))
                 }
                 if let Some(compression) = compression {
-                    properties.push(Property::Compression(compression))
+                    properties.push(VolumeProperty::Compression(compression))
+                }
+
+                if let Some(volmode) = volmode {
+                    properties.push(VolumeProperty::VolMode(volmode))
                 }
 
                 client.create_volume(&name, capacity, vec![]).await?;

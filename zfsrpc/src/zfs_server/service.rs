@@ -24,7 +24,6 @@ const BOOKMARK: &str = "bookmark";
 pub struct ZfsRpcService {}
 
 impl ZfsRpcService {
-    pub const DEFAULT_TIMEOUT: u64 = 1;
     pub const DEFAULT_BLOCKSIZE: u64 = 8192;
     pub const DEFAULT_CAPACITY: u64 = 100 * 1024 * 1024 * 1024;
 }

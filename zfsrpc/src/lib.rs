@@ -28,13 +28,8 @@ pub mod zpool_server;
 pub mod zfsrpc_proto;
 
 #[derive(Debug)]
-pub enum Property {
+pub enum VolumeProperty {
     CheckSum(property::CheckSum),
     Compression(property::Compression),
-    OnOff(property::OnOff),
-    OnOffNoAuto(property::OnOffNoAuto),
-    TimeStamp(property::TimeStamp),
-    Type(property::Type),
     VolMode(property::VolMode),
-    YesNo(property::YesNo),
 }

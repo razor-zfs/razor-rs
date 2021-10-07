@@ -56,8 +56,7 @@ impl Cli {
                 mountpoint,
             } => {
                 let properties = vec![];
-                client.create(&name, method, disks, properties).await?;
-                String::from("Ok")
+                client.create(&name, method, disks, properties).await?
             }
 
             Command::Destroy { name } => {

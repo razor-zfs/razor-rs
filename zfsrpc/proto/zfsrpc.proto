@@ -118,6 +118,29 @@ message FilesystemProperty {
 }
 
 message DatasetProperties {
+
+    message OnOff {
+        oneof value {
+            Variant on = 1;
+            Variant off = 2;
+        }
+    }
+
+    message OnOffAuto {
+        oneof value {
+            Variant on = 1;
+            Variant off = 2;
+            Variant no_auto = 3;
+        }
+    }
+
+    message YesNo {
+        oneof value {
+            Variant yes = 1;
+            Variant no = 2;
+        }
+    }
+
     message CanMount {
         oneof value {
             Variant on = 1;
