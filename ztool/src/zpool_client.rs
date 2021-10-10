@@ -90,7 +90,7 @@ impl Client {
                     debug!(?entry);
                 }
 
-                WalkDir::new(Self::DEVICES_PATH)
+                WalkDir::new(Self::DEVICES_PATH).contents_first(true)
                     .into_iter()
                     .filter_entry(|entry| {
                         debug!(?entry);

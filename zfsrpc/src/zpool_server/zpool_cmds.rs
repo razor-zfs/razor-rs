@@ -7,7 +7,7 @@ use tracing::{debug, error, info, trace, warn};
 
 pub(crate) async fn create(
     name: &str,
-    method: Method,
+    method: Option<Method>,
     disks: Vec<String>,
     properties: Vec<Property>,
 ) -> anyhow::Result<()> {
@@ -37,14 +37,23 @@ pub(crate) async fn create(
             debug!("{} was imported", name);
         } else {
             debug!("Creating zpool {}", name);
-            let method = match method.method {
-                Some(method::Method::Raidz(_)) => "raidz",
-                Some(method::Method::Mirror(_)) => "mirror",
-                None => unreachable!(),
-            };
 
             let mut cmd = Command::new("zpool");
             cmd.arg("create").arg(name);
+
+            if let Some(method) = method {
+                match method.method {
+                    Some(method::Method::Raidz(_)) => {
+                        cmd.arg("raidz");
+                    }
+                    Some(method::Method::Mirror(_)) => {
+                        cmd.arg("mirror");
+                    }
+                    None => unreachable!(),
+                }
+            };
+
+            cmd.args(disks);
 
             properties
                 .into_iter()
@@ -59,8 +68,6 @@ pub(crate) async fn create(
                         cmd.args(&["-o", &arg]);
                     }
                 });
-
-            cmd.arg(method).args(disks);
 
             debug!(?cmd);
 

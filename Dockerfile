@@ -22,14 +22,14 @@ WORKDIR ${BUILD_DIR}
 RUN . ${HOME}/.cargo/env && cargo build --workspace
 
 RUN mkdir -pv ${ARTIFACTS} \
-	&& cp ./target/debug/razor-rpc-server ./target/debug/razor-rpc-client ./target/debug/ztool ./razor_init.sh ${ARTIFACTS}/
+	&& cp ./target/debug/razor-rpc-server ./target/debug/razor-rpc-client ./target/debug/ztool ${ARTIFACTS}/
 
 
 FROM ubuntu:focal
 ARG BIN_DIR=/bin/zfsrpc
 ARG ARTIFACTS=/artifacts
 
-COPY --from=builder ${ARTIFACTS}/razor-rpc-server ${ARTIFACTS}/razor-rpc-client ${ARTIFACTS}/ztool ${ARTIFACTS}/razor_init.sh ${BIN_DIR}/
+COPY --from=builder ${ARTIFACTS}/razor-rpc-server ${ARTIFACTS}/razor-rpc-client ${ARTIFACTS}/ztool ${BIN_DIR}/
 
 RUN apt update \
 	&& apt install -y \
@@ -39,5 +39,5 @@ EXPOSE 50051
 ENV RUST_LOG="debug"
 
 WORKDIR ${BIN_DIR}
-CMD ./razor_init.sh
+CMD ./razor-rpc-server
 

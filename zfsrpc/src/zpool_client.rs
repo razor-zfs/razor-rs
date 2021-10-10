@@ -1,6 +1,5 @@
 use super::zfsrpc_proto::tonic_zpoolrpc as proto;
 use super::zfsrpc_proto::tonic_zpoolrpc::zpool_rpc_client::ZpoolRpcClient;
-// ::{CreateRequest, DestroyRequest, Method, Property};
 
 use tonic::transport::Channel;
 
@@ -74,12 +73,12 @@ impl Client {
     pub async fn create(
         &mut self,
         name: &str,
-        method: Method,
+        method: Option<Method>,
         disks: Vec<String>,
         properties: Vec<Property>,
     ) -> anyhow::Result<String> {
         let name = name.to_string();
-        let method = Some(method.into());
+        let method = method.map(From::from);
         let properties = properties.into_iter().map(From::from).collect();
 
         let request = proto::CreateRequest {

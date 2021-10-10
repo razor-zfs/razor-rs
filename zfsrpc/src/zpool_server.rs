@@ -20,14 +20,13 @@ impl ZpoolRpc for ZpoolRpcService {
         let request = request.into_inner();
         debug!(?request);
 
-        let method = request.method.unwrap();
         let properties = request
             .properties
             .into_iter()
             .filter(|p| p.property.is_some())
             .collect();
 
-        zpool::create(&request.name, method, request.disks, properties)
+        zpool::create(&request.name, request.method, request.disks, properties)
             .await
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 

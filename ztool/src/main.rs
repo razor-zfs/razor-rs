@@ -15,8 +15,6 @@
 
 use tracing_subscriber::{fmt, EnvFilter};
 
-pub(crate) mod zpool_client;
-
 pub mod cli;
 
 const DEFAULT_TRACE_LEVEL: &str = "info";
