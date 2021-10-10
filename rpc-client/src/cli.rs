@@ -48,7 +48,7 @@ enum Command {
         name: String,
         #[structopt(
             long,
-            help = "The volsize can only be set to a multiple of volblocksize"
+            help = "The capacity can only be set to a multiple of volblocksize"
         )]
         capacity: u64,
         #[structopt(
@@ -104,9 +104,10 @@ enum Command {
         volmode: Option<property::VolMode>,
         #[structopt(long,
             help = "Any power of 2 from 512 bytes to 128 Kbytes is valid",
+            default_value = "8192",
             aliases = &["bs"],
         )]
-        blocksize: u32,
+        blocksize: u64,
     },
 
     #[structopt(
@@ -158,7 +159,7 @@ impl Cli {
                 checksum,
                 compression,
                 volmode,
-                blocksize: _blocksize,
+                blocksize,
             } => {
                 let mut properties: Vec<VolumeProperty> = vec![];
                 if let Some(checksum) = checksum {
@@ -172,7 +173,9 @@ impl Cli {
                     properties.push(VolumeProperty::VolMode(volmode))
                 }
 
-                client.create_volume(&name, capacity, vec![]).await?;
+                client
+                    .create_volume(&name, capacity, blocksize, properties)
+                    .await?;
                 format!("Volume {} created", name)
             }
             Command::DestroyFilesystem { name } => {

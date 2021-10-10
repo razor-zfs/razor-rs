@@ -18,7 +18,8 @@ message Datasets {
 message CreateVolumeRequest {
     string name = 1;
     uint64 capacity = 2;
-    repeated VolumeProperty properties = 3;
+    uint64 blocksize = 3;
+    repeated VolumeProperty properties = 4;
 }
 
 message CreateFilesystemRequest {
@@ -95,7 +96,6 @@ message VolumeProperty {
         DatasetProperties.Checksum checksum = 1;
         DatasetProperties.Compression compression = 2;
         DatasetProperties.VolMode vol_mode = 3;
-        DatasetProperties.BlockSize block_size = 4;
     }
 }
 

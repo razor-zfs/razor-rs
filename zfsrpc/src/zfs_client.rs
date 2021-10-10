@@ -79,6 +79,7 @@ impl Client {
         &mut self,
         name: impl ToString,
         capacity: u64,
+        blocksize: u64,
         properties: Vec<VolumeProperty>,
     ) -> anyhow::Result<()> {
         let name = name.to_string();
@@ -87,6 +88,7 @@ impl Client {
             name,
             capacity,
             properties,
+            blocksize,
         };
         let request = tonic::Request::new(request);
 

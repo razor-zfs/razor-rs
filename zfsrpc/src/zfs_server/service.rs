@@ -100,12 +100,6 @@ impl ProtoVolume {
             volume_property::Property::VolMode(property) => {
                 vol.volmode(property.value.ok_or(PropErr::InvalidArgument)?)
             }
-            volume_property::Property::BlockSize(property) => vol.blocksize(
-                property
-                    .check()
-                    .map_err(|_| PropErr::InvalidArgument)?
-                    .value,
-            ),
         };
 
         Ok(vol)
@@ -141,6 +135,7 @@ impl ProtoVolume {
     pub(crate) fn create(
         name: String,
         capacity: u64,
+        blocksize: u64,
         properties: impl IntoIterator<Item = VolumeProperty>,
     ) -> Result<(), PropErr> {
         let builder = Zfs::volume();
@@ -149,6 +144,7 @@ impl ProtoVolume {
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
+            .blocksize(blocksize)
             .create(name, capacity)?;
 
         Ok(())

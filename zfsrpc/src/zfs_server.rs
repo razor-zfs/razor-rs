@@ -20,8 +20,13 @@ impl ZfsRpc for service::ZfsRpcService {
         let request = request.into_inner();
         debug!(?request);
 
-        Volume::create(request.name, request.capacity, request.properties)
-            .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
+        Volume::create(
+            request.name,
+            request.capacity,
+            request.blocksize,
+            request.properties,
+        )
+        .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         Ok(Response::new(Empty {}))
     }

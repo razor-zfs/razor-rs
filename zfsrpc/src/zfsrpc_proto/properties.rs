@@ -5,12 +5,6 @@ use crate::zfsrpc_proto::tonic_zfsrpc::{
 use prop_macro::{classcase, classcase_path_end, snakecase_fn};
 use razor_property as property;
 
-impl dataset_properties::BlockSize {
-    pub(crate) fn check(&self) -> std::io::Result<Self> {
-        todo!("implement blocksize restrictions")
-    }
-}
-
 /// Macros used by client code:
 
 /// Defining functions for creating property variant
