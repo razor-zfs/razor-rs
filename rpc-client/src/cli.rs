@@ -3,7 +3,9 @@
 // Use is subject to license terms.
 //
 #[allow(unused)]
-use razor_zfsrpc::{property, zfs_client::Client, PropertyError, VolumeProperty};
+use razor_zfsrpc::{
+    property, zfs_client::Client, FilesystemProperty, PropertyError, VolumeProperty,
+};
 
 use structopt::StructOpt;
 #[allow(unused)]
@@ -26,6 +28,120 @@ enum Command {
         about = "List of all datasets",
         aliases = &["list"])]
     ZfsList,
+
+    #[structopt(
+        about = "Create new filesystem",
+        aliases = &["cfs"],
+        display_order = 20)]
+    CreateFilesystem {
+        #[structopt(help = "Filesystem name")]
+        name: String,
+        #[structopt(
+            long,
+            help = "Controls whether the access time for files is updated when they are read",
+            possible_values = &["on", "off"]
+        )]
+        atime: Option<property::OnOff>,
+        #[structopt(
+            long,
+            help = "If this property is set to off, the file system cannot be mounted, and is ignored by zfs mount -a",
+            possible_values = &["on", "off", "noauto"]
+        )]
+        canmount: Option<property::OnOffNoAuto>,
+        #[structopt(
+            long,
+            help = "Controls the checksum used to verify data integrity",
+            possible_values = &[
+                "on",
+                "off",
+                "fletcher2",
+                "fletcher4",
+                "sha256",
+                "noparity",
+                "sha512",
+                "skein",
+                "edonr",
+            ]
+        )]
+        checksum: Option<property::CheckSum>,
+        #[structopt(long,
+            help = "Controls the compression algorithm used for this dataset",
+            possible_values = &[
+                "on",
+                "off",
+                "lzjb",
+                "gzip",
+                "gzip1",
+                "gzip2",
+                "gzip3",
+                "gzip4",
+                "gzip5",
+                "gzip6",
+                "gzip7",
+                "gzip8",
+                "gzip9",
+                "zle",
+                "lz4",
+                "zstd",
+                "zstdfast",
+            ]
+        )]
+        compression: Option<property::Compression>,
+        #[structopt(
+            long,
+            help = "Controls whether device nodes can be opened on this file system",
+            possible_values = &["on", "off"]
+        )]
+        devices: Option<property::OnOff>,
+        #[structopt(
+            long,
+            help = "Controls whether processes can be executed from within this file system",
+            possible_values = &["on", "off"]
+        )]
+        exec: Option<property::OnOff>,
+        #[structopt(
+            long,
+            help = "Controls whether the file system should be mounted with nbmand (Non Blocking mandatory locks)",
+            possible_values = &["on", "off"]
+        )]
+        nbmand: Option<property::OnOff>,
+        #[structopt(
+            long,
+            help = "Allow mounting on a busy directory or a directory which already contains files or directories",
+            possible_values = &["on", "off"]
+        )]
+        overlay: Option<property::OnOff>,
+        #[structopt(
+            long,
+            help = "Controls whether this dataset can be modified",
+            possible_values = &["on", "off"]
+        )]
+        readonly: Option<property::OnOff>,
+        #[structopt(
+            long,
+            help = "Controls the manner in which the access time is updated when atime=on is set",
+            possible_values = &["on", "off"]
+        )]
+        relatime: Option<property::OnOff>,
+        #[structopt(
+            long,
+            help = "Controls whether the setuid bit is respected for the file system",
+            possible_values = &["on", "off"]
+        )]
+        setuid: Option<property::OnOff>,
+        #[structopt(
+            long,
+            help = "Controls whether regular files should be scanned for viruses when a file is opened and closed",
+            possible_values = &["on", "off"]
+        )]
+        vscan: Option<property::OnOff>,
+        #[structopt(
+            long,
+            help = "Controls whether the dataset is managed from a non-global zone",
+            possible_values = &["on", "off"]
+        )]
+        zoned: Option<property::OnOff>,
+    },
 
     #[structopt(about = "Get filesystem properties", aliases = &["gfs", "get-fs"], display_order(30))]
     GetFilesystem {
@@ -53,52 +169,52 @@ enum Command {
         capacity: u64,
         #[structopt(
             long,
-            help = "Volume checksum capability",
+            help = "Controls the checksum used to verify data integrity",
             possible_values = &[
-                "On",
-                "Off",
-                "Fletcher2",
-                "Fletcher4",
-                "Sha256",
-                "NoParity",
-                "Sha512",
-                "Skein",
-                "Edonr",
-            ]
+                "on",
+                "off",
+                "fletcher2",
+                "fletcher4",
+                "sha256",
+                "noparity",
+                "sha512",
+                "skein",
+                "edonr",
+            ],
         )]
         checksum: Option<property::CheckSum>,
         #[structopt(long,
-            help = "Volume compression capability",
+            help = "Controls the compression algorithm used for this dataset",
             possible_values = &[
-                "On",
-                "Off",
-                "Lzjb",
-                "Gzip",
-                "Gzip1",
-                "Gzip2",
-                "Gzip3",
-                "Gzip4",
-                "Gzip5",
-                "Gzip6",
-                "Gzip7",
-                "Gzip8",
-                "Gzip9",
-                "Zle",
-                "Lz4",
-                "Zstd",
-                "ZstdFast",
+                "on",
+                "off",
+                "lzjb",
+                "gzip",
+                "gzip1",
+                "gzip2",
+                "gzip3",
+                "gzip4",
+                "gzip5",
+                "gzip6",
+                "gzip7",
+                "gzip8",
+                "gzip9",
+                "zle",
+                "lz4",
+                "zstd",
+                "zstdfast",
             ]
         )]
         compression: Option<property::Compression>,
         #[structopt(long,
-            help = "Volume volmode",
+            help = "This property specifies how volumes should be exposed to the OS",
             possible_values = &[
-                "Default",
-                "Full",
-                "Geom",
-                "Dev",
-                "None",
-                "Unknown", 
+                "default",
+                "full",
+                "geom",
+                "dev",
+                "none",
+                "unknown", 
             ]
         )]
         volmode: Option<property::VolMode>,
@@ -119,7 +235,7 @@ enum Command {
 
     #[structopt(about = "Destroy volume", aliases = &["dv", "destroy-vol"], display_order(22))]
     DestroyVolume {
-        #[structopt(help = "Volume name", long, short)]
+        #[structopt(help = "Volume name")]
         name: String,
     },
 
@@ -161,17 +277,11 @@ impl Cli {
                 volmode,
                 blocksize,
             } => {
-                let mut properties: Vec<VolumeProperty> = vec![];
-                if let Some(checksum) = checksum {
-                    properties.push(VolumeProperty::CheckSum(checksum))
-                }
-                if let Some(compression) = compression {
-                    properties.push(VolumeProperty::Compression(compression))
-                }
-
-                if let Some(volmode) = volmode {
-                    properties.push(VolumeProperty::VolMode(volmode))
-                }
+                let properties = vec![
+                    checksum.map(VolumeProperty::CheckSum),
+                    compression.map(VolumeProperty::Compression),
+                    volmode.map(VolumeProperty::VolMode),
+                ];
 
                 client
                     .create_volume(&name, capacity, blocksize, properties)
@@ -193,6 +303,42 @@ impl Cli {
                 } else {
                     String::from("level is missing")
                 }
+            }
+            Command::CreateFilesystem {
+                name,
+                atime,
+                canmount,
+                checksum,
+                compression,
+                devices,
+                exec,
+                nbmand,
+                overlay,
+                readonly,
+                relatime,
+                setuid,
+                vscan,
+                zoned,
+            } => {
+                let properties = vec![
+                    atime.map(FilesystemProperty::OnOff),
+                    canmount.map(FilesystemProperty::OnOffNoAuto),
+                    checksum.map(FilesystemProperty::CheckSum),
+                    compression.map(FilesystemProperty::Compression),
+                    devices.map(FilesystemProperty::OnOff),
+                    exec.map(FilesystemProperty::OnOff),
+                    nbmand.map(FilesystemProperty::OnOff),
+                    overlay.map(FilesystemProperty::OnOff),
+                    readonly.map(FilesystemProperty::OnOff),
+                    readonly.map(FilesystemProperty::OnOff),
+                    relatime.map(FilesystemProperty::OnOff),
+                    setuid.map(FilesystemProperty::OnOff),
+                    vscan.map(FilesystemProperty::OnOff),
+                    zoned.map(FilesystemProperty::OnOff),
+                ];
+
+                client.create_filesystem(&name, properties).await?;
+                format!("Filesystem {} created", name)
             }
         };
 

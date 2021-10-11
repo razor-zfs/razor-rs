@@ -196,6 +196,9 @@ impl ProtoFilesystem {
             filesystem_property::Property::Zoned(zoned) => {
                 fs.zoned(zoned.value.ok_or(PropErr::InvalidArgument)?)
             }
+            // Dummy for now
+            filesystem_property::Property::OnOff(_) => fs,
+            filesystem_property::Property::OnOffNoAuto(_) => fs,
         };
 
         Ok(fs)

@@ -2,14 +2,15 @@ use tonic::transport::Channel;
 
 use super::zfsrpc_proto::tonic_zfsrpc as proto;
 use super::zfsrpc_proto::tonic_zfsrpc::{
-    zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateVolumeRequest, Empty,
+    zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateFilesystemRequest,
+    CreateVolumeRequest, Empty,
 };
 
 use super::zfsrpc_proto::tonic_zfstracer::{
     trace_level::Level, zfs_tracer_client::ZfsTracerClient, TraceLevel, Variant,
 };
 
-use super::VolumeProperty;
+use super::{FilesystemProperty, VolumeProperty};
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
@@ -23,6 +24,17 @@ impl From<VolumeProperty> for proto::VolumeProperty {
         }
     }
 }
+impl From<FilesystemProperty> for proto::FilesystemProperty {
+    fn from(p: FilesystemProperty) -> Self {
+        match p {
+            FilesystemProperty::CheckSum(val) => val.into(),
+            FilesystemProperty::Compression(val) => val.into(),
+            FilesystemProperty::OnOff(val) => val.into(),
+            FilesystemProperty::OnOffNoAuto(val) => val.into(),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Client {
     client: ZfsRpcClient<Channel>,
@@ -53,6 +65,24 @@ impl Client {
         Ok(resp)
     }
 
+    pub async fn create_filesystem(
+        &mut self,
+        name: impl ToString,
+        properties: Vec<Option<FilesystemProperty>>,
+    ) -> anyhow::Result<()> {
+        let name = name.to_string();
+        let properties = properties
+            .into_iter()
+            .filter_map(|item| item.map(From::from))
+            .collect();
+        let request = CreateFilesystemRequest { name, properties };
+        let request = tonic::Request::new(request);
+
+        self.client.create_filesystem(request).await?;
+
+        Ok(())
+    }
+
     pub async fn get_filesystem(&mut self, name: impl ToString) -> anyhow::Result<String> {
         let name = name.to_string();
         let request = BasicDatasetRequest { name };
@@ -80,10 +110,13 @@ impl Client {
         name: impl ToString,
         capacity: u64,
         blocksize: u64,
-        properties: Vec<VolumeProperty>,
+        properties: Vec<Option<VolumeProperty>>,
     ) -> anyhow::Result<()> {
         let name = name.to_string();
-        let properties = properties.into_iter().map(From::from).collect();
+        let properties = properties
+            .into_iter()
+            .filter_map(|item| item.map(From::from))
+            .collect();
         let request = CreateVolumeRequest {
             name,
             capacity,

@@ -33,3 +33,11 @@ pub enum VolumeProperty {
     Compression(property::Compression),
     VolMode(property::VolMode),
 }
+
+#[derive(Debug)]
+pub enum FilesystemProperty {
+    OnOff(property::OnOff),
+    OnOffNoAuto(property::OnOffNoAuto),
+    CheckSum(property::CheckSum),
+    Compression(property::Compression),
+}

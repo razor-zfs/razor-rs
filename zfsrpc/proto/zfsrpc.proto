@@ -114,6 +114,8 @@ message FilesystemProperty {
         DatasetProperties.Setuid setuid = 11;
         DatasetProperties.Vscan vscan = 12;
         DatasetProperties.Zoned zoned = 13;
+        DatasetProperties.OnOff on_off = 14;
+        DatasetProperties.OnOffNoAuto On_Off_NoAuto = 15;
     }
 }
 
@@ -126,7 +128,7 @@ message DatasetProperties {
         }
     }
 
-    message OnOffAuto {
+    message OnOffNoAuto {
         oneof value {
             Variant on = 1;
             Variant off = 2;
