@@ -1,7 +1,3 @@
-//
-// Copyright (c) 2021 RepliXio Ltd. All rights reserved.
-// Use is subject to license terms.
-//
 #[allow(unused)]
 use razor_zfsrpc::{
     property, zfs_client::Client, FilesystemProperty, PropertyError, VolumeProperty,
@@ -214,7 +210,7 @@ enum Command {
                 "geom",
                 "dev",
                 "none",
-                "unknown", 
+                "unknown",
             ]
         )]
         volmode: Option<property::VolMode>,
