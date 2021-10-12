@@ -17,15 +17,12 @@ pub use razor_property as property;
 pub use razor_property::InvalidProperty as PropertyError;
 pub use zfs_server::service::ZfsRpcService;
 
-pub mod zfs_client;
-pub mod zpool_client;
-
 pub mod tracing_server;
+pub mod zfs_client;
 pub mod zfs_server;
-pub mod zpool_server;
-
-#[allow(unreachable_pub, clippy::use_self)]
 pub mod zfsrpc_proto;
+pub mod zpool_client;
+pub mod zpool_server;
 
 #[derive(Debug)]
 pub enum VolumeProperty {
