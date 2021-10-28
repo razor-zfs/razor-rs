@@ -21,7 +21,6 @@ pub mod tracing_server;
 pub mod zfs_client;
 pub mod zfs_server;
 pub mod zfsrpc_proto;
-pub mod zpool_client;
 pub mod zpool_server;
 
 #[derive(Debug)]

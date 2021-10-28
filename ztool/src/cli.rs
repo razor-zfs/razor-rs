@@ -1,5 +1,4 @@
-use client::Client;
-use razor_zfsrpc::zpool_client as client;
+use razor_zpool_client::Client;
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
@@ -24,7 +23,7 @@ enum Command {
         #[structopt(help = "zpool name")]
         name: String,
         #[structopt(help = "Creation method", possible_values = &["raidz", "mirror"])]
-        method: Option<client::Method>,
+        method: Option<razor_zpool_client::Method>,
         #[structopt(long, help = "Available disks")]
         disks: Vec<String>,
         #[structopt(short, long, help = "ashift", default_value = "12")]

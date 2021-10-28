@@ -12,6 +12,7 @@ members = [
     "property",
     "rpc-client",
     "rpc-server",
+    "zpool-client",
     "tracing",
     "ztool"
 ]

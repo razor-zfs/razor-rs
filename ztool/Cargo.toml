@@ -1,11 +1,11 @@
 [package]
 name = "ztool"
 version = "0.1.0"
-edition = "2021"
+edition = "2018"
 
 [dependencies]
 tokio = { version = "1.9", features = ["macros", "rt-multi-thread"] }
-razor-zfsrpc = { version = "0.1", path = "../zfsrpc" }
+razor-zpool-client = { version = "0.1", path = "../zpool-client" }
 tracing-subscriber = "0.2"
 structopt = "0.3"
 walkdir = "2.3"

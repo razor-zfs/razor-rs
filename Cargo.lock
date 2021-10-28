@@ -1062,6 +1062,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "razor-zpool-client"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "prost",
+ "tonic",
+ "tonic-build",
+ "tracing",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1715,7 +1726,7 @@ name = "ztool"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "razor-zfsrpc",
+ "razor-zpool-client",
  "structopt",
  "tokio",
  "tracing",
