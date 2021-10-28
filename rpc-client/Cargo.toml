@@ -5,7 +5,7 @@ edition = "2018"
 
 [dependencies]
 tokio = { version = "1.9", features = ["full"] }
-razor-zfsrpc = { version = "0.1", path = "../zfsrpc" }
+razor-zfsrpc-client = { version = "0.1", path = "../zfsrpc-client" }
 tracing = "0.1"
 tracing-subscriber = "0.2"
 structopt = "0.3"

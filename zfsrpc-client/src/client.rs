@@ -1,16 +1,9 @@
-use tonic::transport::Channel;
-
-use super::zfsrpc_proto::tonic_zfsrpc as proto;
-use super::zfsrpc_proto::tonic_zfsrpc::{
-    zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateFilesystemRequest,
+use super::proto::{
+    self, zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateFilesystemRequest,
     CreateVolumeRequest, Empty,
 };
-
-use super::zfsrpc_proto::tonic_zfstracer::{
-    trace_level::Level, zfs_tracer_client::ZfsTracerClient, TraceLevel, Variant,
-};
-
 use super::{FilesystemProperty, VolumeProperty};
+use tonic::transport::Channel;
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
@@ -38,21 +31,14 @@ impl From<FilesystemProperty> for proto::FilesystemProperty {
 #[derive(Debug)]
 pub struct Client {
     client: ZfsRpcClient<Channel>,
-    tracer_client: ZfsTracerClient<Channel>,
 }
 
 impl Client {
     pub async fn new(port: String) -> Self {
-        let tracer_client = ZfsTracerClient::connect(format!("http://0.0.0.0:{}", port))
-            .await
-            .unwrap();
         let client = ZfsRpcClient::connect(format!("http://0.0.0.0:{}", port))
             .await
             .unwrap();
-        Self {
-            client,
-            tracer_client,
-        }
+        Self { client }
     }
 
     pub async fn list(&mut self) -> anyhow::Result<String> {
@@ -148,23 +134,6 @@ impl Client {
         let request = tonic::Request::new(request);
 
         self.client.destroy_volume(request).await?;
-
-        Ok(())
-    }
-
-    pub async fn set_trace_level(&mut self, level: impl ToString) -> anyhow::Result<()> {
-        let level = match level.to_string().to_lowercase().as_ref() {
-            "trace" => Level::Trace(Variant {}),
-            "debug" => Level::Debug(Variant {}),
-            "info" => Level::Info(Variant {}),
-            "warn" => Level::Warn(Variant {}),
-            "error" => Level::Error(Variant {}),
-            _ => unreachable!(),
-        };
-        let request = TraceLevel { level: Some(level) };
-        let request = tonic::Request::new(request);
-
-        self.tracer_client.set_tracing_level(request).await?;
 
         Ok(())
     }

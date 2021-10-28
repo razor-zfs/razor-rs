@@ -1,6 +1,6 @@
 #[allow(unused)]
-use razor_zfsrpc::{
-    property, zfs_client::Client, FilesystemProperty, PropertyError, VolumeProperty,
+use razor_zfsrpc_client::{
+    client::Client as ZfsClient, property, FilesystemProperty, VolumeProperty,
 };
 
 use structopt::StructOpt;
@@ -234,24 +234,6 @@ enum Command {
         #[structopt(help = "Volume name")]
         name: String,
     },
-
-    #[structopt(about = "Set server trace level", aliases = &["tl", "trace-level"], display_order(90))]
-    SetTraceLevel {
-        #[structopt(
-            long,
-            short,
-            env = "RUST_LOG",
-            help = "Trace level",
-            possible_values = &[
-                "trace",
-                "debug",
-                "info",
-                "warn",
-                "error"
-                ]
-            )]
-        level: Option<String>,
-    },
 }
 
 impl Cli {
@@ -259,7 +241,7 @@ impl Cli {
         let this = Self::from_args();
         trace!("{:?}", this);
 
-        let mut client = Client::new(this.port).await;
+        let mut client = ZfsClient::new(this.port).await;
 
         let resp: String = match this.command {
             Command::ZfsList => client.list().await?,
@@ -291,14 +273,6 @@ impl Cli {
             Command::DestroyVolume { name } => {
                 client.destroy_volume(&name).await?;
                 format!("Volume {} destroyed", name)
-            }
-            Command::SetTraceLevel { level } => {
-                if let Some(trace_level) = level {
-                    client.set_trace_level(&trace_level).await?;
-                    format!("Trace level was set to {}", trace_level)
-                } else {
-                    String::from("level is missing")
-                }
             }
             Command::CreateFilesystem {
                 name,

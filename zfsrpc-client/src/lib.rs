@@ -13,12 +13,25 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-pub use razor_property as property;
-pub use razor_property::InvalidProperty as PropertyError;
-pub use zfs_server::service::ZfsRpcService;
+pub mod client;
+mod traits;
+mod zfsrpc_proto;
 
-pub mod tracing_client;
-pub mod tracing_server;
-pub mod zfs_server;
-pub mod zfsrpc_proto;
-pub mod zpool_server;
+pub use razor_property as property;
+
+pub(crate) use zfsrpc_proto::tonic_zfsrpc as proto;
+
+#[derive(Debug)]
+pub enum VolumeProperty {
+    CheckSum(property::CheckSum),
+    Compression(property::Compression),
+    VolMode(property::VolMode),
+}
+
+#[derive(Debug)]
+pub enum FilesystemProperty {
+    OnOff(property::OnOff),
+    OnOffNoAuto(property::OnOffNoAuto),
+    CheckSum(property::CheckSum),
+    Compression(property::Compression),
+}

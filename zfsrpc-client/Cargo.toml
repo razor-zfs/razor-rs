@@ -1,0 +1,14 @@
+[package]
+name = "razor-zfsrpc-client"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+razor-property = { version = "0.1", path = "../property" }
+tonic = "0.5"
+tracing = "0.1"
+anyhow = "1.0"
+prost = "0.8"
+
+[build-dependencies]
+tonic-build = "0.5"
