@@ -44,7 +44,7 @@ impl Cli {
         let this = Self::from_args();
         trace!("{:?}", this);
 
-        let mut client = Client::new(this.port).await;
+        let mut client = Client::new("localhost".into(), this.port).await;
 
         let resp: String = match this.command {
             Command::Create {

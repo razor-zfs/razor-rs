@@ -80,8 +80,8 @@ pub struct Client {
 }
 
 impl Client {
-    pub async fn new(port: String) -> Self {
-        let client = ZpoolRpcClient::connect(format!("http://0.0.0.0:{}", port))
+    pub async fn new(host: String, port: String) -> Self {
+        let client = ZpoolRpcClient::connect(format!("http://{}:{}", host, port))
             .await
             .unwrap();
         Self { client }
