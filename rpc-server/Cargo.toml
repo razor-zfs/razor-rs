@@ -9,3 +9,6 @@ razor-zfsrpc = { version = "0.1", path = "../zfsrpc", features = ["dirty"] }
 razor-tracing = {version = "0.1", path = "../tracing"}
 tokio = { version = "1.9", features = ["full"] }
 tonic = "0.5"
+
+# [[bin]]
+# name = "razor-rpc-server"

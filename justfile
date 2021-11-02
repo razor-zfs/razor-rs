@@ -40,19 +40,18 @@ merge_request:
     git push -o merge_request.create -o merge_request.target={{branch}}
 alias mr := merge_request
 
-gpfb:
-    git push -o ci.variable="BUILD_DOCKER=true" --force-with-lease
-
 gpf:
     git push --force-with-lease
 
 server:
     cargo build -p razor-rpc-server
-    cp ./target/debug/razor-rpc-server ./zfsserver
 
 client:
     cargo build -p razor-rpc-client
-    cp ./target/debug/razor-rpc-client ./zfsclient
+
+ztool:
+    cargo build -p razor-ztool
 
 docker:
-    docker build -t statehub_razor:local --build-arg RUST_TOOLCHAIN=nightly .
+    docker build -t statehub_razor:local --build-arg .
+
