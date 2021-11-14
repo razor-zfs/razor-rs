@@ -1,3 +1,5 @@
+// FIXME: This file is a temporary hack to get zpool basic commands to work
+
 use crate::zfsrpc_proto::tonic_zpoolrpc::{method, property, Method, Property};
 
 use tokio::process::Command;
@@ -59,12 +61,16 @@ pub(crate) async fn create(
                 .into_iter()
                 .filter_map(|p| p.property)
                 .for_each(|p| match p {
+                    property::Property::Ashift(ashift) => {
+                        let arg = format!("ashift={}", ashift);
+                        cmd.args(&["-o", &arg]);
+                    }
                     property::Property::Mountpoint(mp) => {
                         let arg = format!("mountpoint={}", mp);
                         cmd.args(&["-O", &arg]);
                     }
-                    property::Property::Ashift(ashift) => {
-                        let arg = format!("ashift={}", ashift);
+                    property::Property::Cachefile(cachefile) => {
+                        let arg = format!("cachefile={}", cachefile);
                         cmd.args(&["-o", &arg]);
                     }
                 });

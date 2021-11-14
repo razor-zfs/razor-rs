@@ -28,6 +28,7 @@ message Property{
     oneof property {
         uint32 ashift = 2;
         string mountpoint = 3;
+        string cachefile = 4;
     }
 }
 

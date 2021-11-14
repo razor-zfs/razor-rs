@@ -27,6 +27,7 @@ use tracing::{debug, error, info, trace, warn};
 pub enum Property {
     Mountpoint(String),
     Ashift(u32),
+    Cachefile(String),
 }
 
 impl From<Property> for proto::Property {
@@ -37,6 +38,9 @@ impl From<Property> for proto::Property {
             },
             Property::Ashift(ashift) => Self {
                 property: Some(proto::property::Property::Ashift(ashift)),
+            },
+            Property::Cachefile(cachefile) => Self {
+                property: Some(proto::property::Property::Cachefile(cachefile)),
             },
         }
     }

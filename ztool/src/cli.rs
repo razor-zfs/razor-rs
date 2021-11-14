@@ -1,4 +1,4 @@
-use razor_zpool_client::Client;
+use razor_zpool_client::{Client, Property};
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
@@ -28,8 +28,10 @@ enum Command {
         disks: Vec<String>,
         #[structopt(short, long, help = "ashift", default_value = "12")]
         ashift: u32,
-        #[structopt(long, aliases = &["mp"], help = "mountpoint", default_value = "none")]
+        #[structopt(short, long, help = "mountpoint", default_value = "none")]
         mountpoint: String,
+        #[structopt(short, long, help = "cachefile", default_value = "none")]
+        cachefile: String,
     },
     #[structopt(about = "Create new zpool")]
     Destroy {
@@ -53,8 +55,13 @@ impl Cli {
                 disks,
                 ashift,
                 mountpoint,
+                cachefile,
             } => {
-                let properties = vec![];
+                let properties = vec![
+                    Property::Ashift(ashift),
+                    Property::Mountpoint(mountpoint),
+                    Property::Cachefile(cachefile),
+                ];
                 client.create(&name, method, disks, properties).await?
             }
 

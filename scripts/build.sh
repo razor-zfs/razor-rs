@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#FIXME: update once there is a runner at build server
+#	note build linkage (dynamic/static - cargo deb --no-build?)
+
 set -e
 
 usage() {

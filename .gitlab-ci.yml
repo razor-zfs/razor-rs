@@ -68,8 +68,6 @@ image:build:
     - export PATH="/root/.cargo/bin:${PATH}"
   script:
     - ./scripts/build.sh release deb
-    - strip target/debian/razor-rpc-server
-    - sha512sum target/debian/razor-rpc-server | tee target/debian/SHA512SUM
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "target/debian/{razor-rpc-server,SHA512SUM}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_COMMIT_TAG}/"'
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "target/debian/razor-rpc-server" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_COMMIT_TAG}/"'
     - 'echo $CI_COMMIT_TAG | curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file - "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/latest/version"'
 
