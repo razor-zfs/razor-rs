@@ -987,6 +987,7 @@ dependencies = [
  "razor-zfsrpc",
  "tokio",
  "tonic",
+ "tracing",
 ]
 
 [[package]]

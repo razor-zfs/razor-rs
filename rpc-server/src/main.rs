@@ -22,14 +22,17 @@ use zfsrpc::zfsrpc_proto::tonic_zfstracer::zfs_tracer_server::ZfsTracerServer;
 use zfsrpc::zfsrpc_proto::tonic_zpoolrpc::zpool_rpc_server::ZpoolRpcServer;
 use zfsrpc::zpool_server;
 
-use razor_tracing as tracing;
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let addr = "0.0.0.0:50051".parse()?;
-    let tracer = tracing::init()?;
+    let tracer = razor_tracing::init()?;
     let rpc = service::ZfsRpcService::default();
     let zpool_rpc = zpool_server::ZpoolRpcService::default();
+
+    tracing::info!("Razor Server start version: {}", VERSION);
+
     Server::builder()
         .add_service(ZfsRpcServer::new(rpc))
         .add_service(ZfsTracerServer::new(tracer))

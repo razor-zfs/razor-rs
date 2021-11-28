@@ -20,7 +20,7 @@
 
 use tracing_subscriber::{fmt, reload::Handle, EnvFilter};
 
-const DEFAULT_TRACE_LEVEL: &str = "warn";
+const DEFAULT_TRACE_LEVEL: &str = "info";
 
 pub fn init() -> anyhow::Result<Tracer<impl tracing::Subscriber>> {
     let filter =
