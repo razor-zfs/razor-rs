@@ -963,18 +963,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "razor-rpc-client"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "razor-zfsrpc-client",
- "structopt",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "razor-rpc-server"
 version = "0.1.0"
 dependencies = [
@@ -1060,6 +1048,18 @@ dependencies = [
  "tonic",
  "tonic-build",
  "tracing",
+]
+
+[[package]]
+name = "razor-zfsrpc-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "razor-zfsrpc-client",
+ "structopt",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

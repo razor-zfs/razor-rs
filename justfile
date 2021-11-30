@@ -51,8 +51,10 @@ server:
     cp ./target/debug/razor-rpc-server ./zfsserver
 
 client:
-    cargo build -p razor-rpc-client
-    cp ./target/debug/razor-rpc-client ./zfsclient
+    cargo build -p razor-zfsrpc-cli
+
+ztool:
+    cargo build -p razor-ztool
 
 docker:
-    docker build -t statehub_razor:local .
+    docker build -t statehub_razor:local --build-arg RUST_TOOLCHAIN=stable .

@@ -1,5 +1,5 @@
 [package]
-name = "razor-rpc-client"
+name = "razor-zfsrpc-cli"
 version = "0.1.0"
 edition = "2018"
 

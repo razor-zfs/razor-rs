@@ -9,11 +9,11 @@ members = [
     "zfscore",
     "zfs",
     "zfsrpc",
+    "zfsrpc-cli",
+    "zfsrpc-client",
     "property",
-    "rpc-client",
     "rpc-server",
     "zpool-client",
-    "zfsrpc-client",
     "tracing",
     "ztool"
 ]
