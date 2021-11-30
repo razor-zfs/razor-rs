@@ -55,19 +55,24 @@ nightly:test:
 
 image:build:
   stage: build
-  tags:
-    -  "ondemand"
-  only:
-    - tags
+  image: docker:git
+  tags: 
+    - "ondemand"
+  services:
+    - docker:dind
+  rules:
+      - if: '$BUILD_DOCKER == "true"'
+        when: always
+      - if: '$CI_COMMIT_REF_NAME == "main"'
+        when: always
   before_script:
-    - apt update
-    - apt install -y build-essential curl
-    - apt install -y libzfslinux-dev
-    - apt install -y llvm-dev libclang-dev clang
-    - curl https://sh.rustup.rs -sSf | bash -s -- -y
-    - export PATH="/root/.cargo/bin:${PATH}"
+    - git config --global credential.helper store
+    - echo "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com" > ~/.git-credentials
+    - chmod 0600 ~/.git-credentials
   script:
-    - ./scripts/build.sh release deb
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "target/debian/razor-rpc-server" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_COMMIT_TAG}/"'
-    - 'echo $CI_COMMIT_TAG | curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file - "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/latest/version"'
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker build --secret id=git,src=$HOME/.git-credentials -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  after_script:
+    - rm ~/.git-credentials
 

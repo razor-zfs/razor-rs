@@ -927,10 +927,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "razor"
-version = "0.1.0"
-
-[[package]]
 name = "razor-libnvpair"
 version = "0.1.0"
 dependencies = [
