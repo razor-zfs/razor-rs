@@ -1,3 +1,5 @@
+use crate::error::ZfsError;
+
 use super::proto::{
     self, zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateFilesystemRequest,
     CreateVolumeRequest, Empty,
@@ -55,7 +57,7 @@ impl Client {
         &mut self,
         name: impl ToString,
         properties: Vec<Option<FilesystemProperty>>,
-    ) -> anyhow::Result<()> {
+    ) -> anyhow::Result<(), ZfsError> {
         let name = name.to_string();
         let properties = properties
             .into_iter()
@@ -97,7 +99,7 @@ impl Client {
         capacity: u64,
         blocksize: u64,
         properties: Vec<Option<VolumeProperty>>,
-    ) -> anyhow::Result<()> {
+    ) -> anyhow::Result<(), ZfsError> {
         let name = name.to_string();
         let properties = properties
             .into_iter()

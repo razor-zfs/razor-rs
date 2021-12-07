@@ -307,6 +307,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fed34cd105917e91daa4da6b3728c47b068749d6a62c59811f06ed2ac71d9da7"
 
 [[package]]
+name = "futures"
+version = "0.1.31"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3a471a38ef8ed83cd6e40aa59c1ffe17db6855c18e3604d9c4ed8c08ebc28678"
+
+[[package]]
 name = "futures-channel"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -496,6 +502,15 @@ checksum = "bc633605454125dec4b66843673f01c7df2b89479b32e0ed634e43a91cff62a5"
 dependencies = [
  "autocfg",
  "hashbrown",
+]
+
+[[package]]
+name = "inspector"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "486a17a1cc44ceee64ae5485dbfd87f56723fc7c105906b3a312082119587ee1"
+dependencies = [
+ "futures",
 ]
 
 [[package]]
@@ -1037,12 +1052,14 @@ name = "razor-zfsrpc"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "inspector",
  "paste",
  "prop-macro",
  "prost",
  "razor-property",
  "razor-tracing",
  "razor-zfs",
+ "razor-zfscore",
  "thiserror",
  "tokio",
  "tonic",
@@ -1069,6 +1086,7 @@ dependencies = [
  "anyhow",
  "prost",
  "razor-property",
+ "thiserror",
  "tonic",
  "tonic-build",
  "tracing",

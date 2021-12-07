@@ -9,6 +9,7 @@ tonic = "0.5"
 tracing = "0.1"
 anyhow = "1.0"
 prost = "0.8"
+thiserror = "1.0"
 
 [build-dependencies]
 tonic-build = "0.5"

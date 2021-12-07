@@ -14,6 +14,8 @@ use crate::zfsrpc_proto::PropErr;
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
 
+use super::error::ZfsError;
+
 const FILESYSTEM: &str = "filesystem";
 const SNAPSHOT: &str = "snapshot";
 const VOLUME: &str = "volume";
@@ -28,7 +30,7 @@ impl ZfsRpcService {
     pub const DEFAULT_CAPACITY: u64 = 100 * 1024 * 1024 * 1024;
 }
 
-pub(crate) fn list() -> Result<DatasetsProto> {
+pub(crate) fn list() -> Result<DatasetsProto, ZfsError> {
     let datasets = Zfs::list()
         .volumes()
         .filesystems()
@@ -42,7 +44,7 @@ pub(crate) fn list() -> Result<DatasetsProto> {
     Ok(datasets)
 }
 
-pub(crate) fn destroy(name: String) -> Result<()> {
+pub(crate) fn destroy(name: String) -> Result<(), ZfsError> {
     Zfs::destroy_dataset(name)?;
 
     Ok(())
@@ -107,7 +109,7 @@ impl ProtoVolume {
 }
 
 impl ProtoVolume {
-    pub(crate) fn get(name: String) -> Result<Self> {
+    pub(crate) fn get(name: String) -> Result<Self, ZfsError> {
         let volume = Zfs::get_volume(&name)?;
 
         let vol = Self {
@@ -137,7 +139,7 @@ impl ProtoVolume {
         capacity: u64,
         blocksize: u64,
         properties: impl IntoIterator<Item = VolumeProperty>,
-    ) -> Result<(), PropErr> {
+    ) -> Result<(), ZfsError> {
         let builder = Zfs::volume();
 
         let _volume = properties
@@ -210,7 +212,7 @@ impl ProtoFilesystem {
         name: String,
         _unused: u64,
         properties: impl IntoIterator<Item = FilesystemProperty>,
-    ) -> Result<(), PropErr> {
+    ) -> Result<(), ZfsError> {
         let builder = Zfs::filesystem();
 
         let _fs = properties
@@ -222,7 +224,7 @@ impl ProtoFilesystem {
         Ok(())
     }
 
-    pub(crate) fn get(name: String) -> Result<Self> {
+    pub(crate) fn get(name: String) -> Result<Self, ZfsError> {
         let fs = Zfs::get_filesystem(&name)?;
 
         let fs = Self {

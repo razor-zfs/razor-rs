@@ -14,6 +14,8 @@
 #![deny(warnings)]
 
 pub mod client;
+pub mod error;
+
 mod traits;
 mod zfsrpc_proto;
 
