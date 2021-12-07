@@ -9,7 +9,6 @@ use super::zfsrpc_proto::tonic_zfsrpc::{
 };
 use super::zfsrpc_proto::tonic_zfsrpc::{Datasets, Empty, Filesystem, Volume};
 
-// pub mod error;
 mod error;
 pub mod service;
 

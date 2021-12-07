@@ -9,7 +9,7 @@ use crate::zfsrpc_proto::tonic_zfsrpc::{
     Dataset as DatasetProto, Datasets as DatasetsProto, Filesystem as ProtoFilesystem,
     FilesystemProperty, Volume as ProtoVolume, VolumeProperty,
 };
-use crate::zfsrpc_proto::PropErr;
+use razor_zfs::error::DatasetError;
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
@@ -91,16 +91,16 @@ impl ProtoVolume {
     fn add_property(
         vol: VolumeBuilder,
         property: volume_property::Property,
-    ) -> Result<VolumeBuilder, PropErr> {
+    ) -> Result<VolumeBuilder, DatasetError> {
         let vol = match property {
             volume_property::Property::Checksum(property) => {
-                vol.checksum(property.value.ok_or(PropErr::InvalidArgument)?)
+                vol.checksum(property.value.ok_or_else(DatasetError::missing_value)?)
             }
             volume_property::Property::Compression(property) => {
-                vol.compression(property.value.ok_or(PropErr::InvalidArgument)?)
+                vol.compression(property.value.ok_or_else(DatasetError::missing_value)?)
             }
             volume_property::Property::VolMode(property) => {
-                vol.volmode(property.value.ok_or(PropErr::InvalidArgument)?)
+                vol.volmode(property.value.ok_or_else(DatasetError::missing_value)?)
             }
         };
 
@@ -157,46 +157,46 @@ impl ProtoFilesystem {
     pub(crate) fn add_property(
         fs: FileSystemBuilder,
         property: filesystem_property::Property,
-    ) -> Result<FileSystemBuilder, PropErr> {
+    ) -> Result<FileSystemBuilder, DatasetError> {
         let fs = match property {
             filesystem_property::Property::ATime(atime) => {
-                fs.atime(atime.value.ok_or(PropErr::InvalidArgument)?)
+                fs.atime(atime.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::CanMount(canmount) => {
-                fs.canmount(canmount.value.ok_or(PropErr::InvalidArgument)?)
+                fs.canmount(canmount.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Checksum(checksum) => {
-                fs.checksum(checksum.value.ok_or(PropErr::InvalidArgument)?)
+                fs.checksum(checksum.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Compression(compression) => {
-                fs.compression(compression.value.ok_or(PropErr::InvalidArgument)?)
+                fs.compression(compression.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Devices(devices) => {
-                fs.devices(devices.value.ok_or(PropErr::InvalidArgument)?)
+                fs.devices(devices.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Exec(exec) => {
-                fs.exec(exec.value.ok_or(PropErr::InvalidArgument)?)
+                fs.exec(exec.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Nbmand(nbmand) => {
-                fs.nbmand(nbmand.value.ok_or(PropErr::InvalidArgument)?)
+                fs.nbmand(nbmand.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Overlay(overlay) => {
-                fs.overlay(overlay.value.ok_or(PropErr::InvalidArgument)?)
+                fs.overlay(overlay.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Readonly(readonly) => {
-                fs.readonly(readonly.value.ok_or(PropErr::InvalidArgument)?)
+                fs.readonly(readonly.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Relatime(relatime) => {
-                fs.relatime(relatime.value.ok_or(PropErr::InvalidArgument)?)
+                fs.relatime(relatime.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Setuid(setuid) => {
-                fs.setuid(setuid.value.ok_or(PropErr::InvalidArgument)?)
+                fs.setuid(setuid.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Vscan(vscan) => {
-                fs.vscan(vscan.value.ok_or(PropErr::InvalidArgument)?)
+                fs.vscan(vscan.value.ok_or_else(DatasetError::missing_value)?)
             }
             filesystem_property::Property::Zoned(zoned) => {
-                fs.zoned(zoned.value.ok_or(PropErr::InvalidArgument)?)
+                fs.zoned(zoned.value.ok_or_else(DatasetError::missing_value)?)
             }
             // Dummy for now
             filesystem_property::Property::OnOff(_) => fs,

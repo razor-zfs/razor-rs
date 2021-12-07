@@ -18,3 +18,11 @@ pub enum DatasetError {
     #[error("unknown builder error, error code: ({0})")]
     Unknown(i32),
 }
+
+impl DatasetError {
+    pub fn missing_value() -> Self {
+        Self::InvalidProperty(InvalidProperty::InvalidValue(
+            "Value is missing".to_string(),
+        ))
+    }
+}

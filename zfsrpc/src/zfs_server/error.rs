@@ -1,5 +1,3 @@
-use crate::zfsrpc_proto::PropErr;
-
 use razor_zfs::error::DatasetError;
 use razor_zfscore::error::CoreError;
 
@@ -9,21 +7,12 @@ use tonic::{Code, Status};
 #[derive(Error, Debug)]
 pub(crate) enum ZfsError {
     #[error("({0})")]
-    Internal(PropErr),
+    Internal(DatasetError),
     #[error("({0})")]
-    AlreadyExists(PropErr),
+    AlreadyExists(DatasetError),
 }
 
 const C_EEXIST: i32 = 17;
-
-impl From<PropErr> for ZfsError {
-    fn from(err: PropErr) -> Self {
-        match err {
-            PropErr::ZfsError(err) => err.into(),
-            _ => Self::Internal(err),
-        }
-    }
-}
 
 impl From<DatasetError> for ZfsError {
     fn from(err: DatasetError) -> Self {
@@ -31,14 +20,14 @@ impl From<DatasetError> for ZfsError {
             DatasetError::CoreErr(CoreError::LibcError(rc, _)) if rc == C_EEXIST => {
                 Self::AlreadyExists(err)
             }
-            _ => Self::Internal(PropErr::ZfsError(err)),
+            _ => Self::Internal(err),
         }
     }
 }
 
 impl From<CoreError> for ZfsError {
     fn from(err: CoreError) -> Self {
-        Self::Internal(PropErr::ZfsError(err.into()))
+        Self::Internal(DatasetError::CoreErr(err))
     }
 }
 
