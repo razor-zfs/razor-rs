@@ -227,7 +227,7 @@ enum Command {
     #[structopt(
         about = "Get volume properties", aliases = &["gv", "get-vol"], display_order(21))]
     GetVolume {
-        #[structopt(help = "Volume name", long, short)]
+        #[structopt(help = "Volume name")]
         name: String,
     },
 
