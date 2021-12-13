@@ -10,6 +10,8 @@ pub(crate) enum ZfsError {
     Internal(DatasetError),
     #[error("({0})")]
     AlreadyExists(DatasetError),
+    #[error("({0})")]
+    MountFs(std::io::Error),
 }
 
 const C_EEXIST: i32 = 17;
@@ -36,6 +38,7 @@ impl From<ZfsError> for Status {
         match err {
             ZfsError::Internal(err) => Self::new(Code::Internal, err.to_string()),
             ZfsError::AlreadyExists(err) => Self::new(Code::AlreadyExists, err.to_string()),
+            ZfsError::MountFs(err) => Self::new(Code::Internal, err.to_string()),
         }
     }
 }

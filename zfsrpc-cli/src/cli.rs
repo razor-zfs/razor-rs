@@ -152,7 +152,11 @@ enum Command {
         #[structopt(help = "Filesystem name")]
         name: String,
     },
-
+    #[structopt(about = "Mounting filesystem", aliases = &["mfs", "mount-fs"], display_order(32))]
+    MountFilesystem {
+        #[structopt(help = "Filesystem name")]
+        name: String,
+    },
     #[structopt(
         about = "Create new volume",
         aliases = &["cv"],
@@ -333,6 +337,10 @@ impl Cli {
                     })?;
 
                 format!("Filesystem {} created", name)
+            }
+            Command::MountFilesystem { name } => {
+                client.mount_filesystem(&name).await?;
+                format!("Filesystem {} is mounted", name)
             }
         };
 

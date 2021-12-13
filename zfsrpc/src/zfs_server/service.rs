@@ -257,4 +257,21 @@ impl ProtoFilesystem {
 
         Ok(fs)
     }
+
+    pub(crate) async fn mount(name: String) -> Result<(), ZfsError> {
+        use tokio::process::Command;
+
+        if let Err(out) = Command::new("zfs")
+            .arg("mount")
+            .arg(name.clone())
+            .status()
+            .await
+        {
+            return Err(ZfsError::MountFs(out));
+        };
+
+        debug!("Filesystem {} was mounted", name);
+
+        Ok(())
+    }
 }

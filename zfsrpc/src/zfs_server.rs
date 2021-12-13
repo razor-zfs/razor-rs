@@ -114,4 +114,16 @@ impl ZfsRpc for service::ZfsRpcService {
 
         Ok(Response::new(datasets))
     }
+
+    async fn mount_filesystem(
+        &self,
+        request: Request<BasicDatasetRequest>,
+    ) -> Result<Response<Empty>, Status> {
+        let request = request.into_inner();
+        debug!(?request);
+
+        Filesystem::mount(request.name).await?;
+
+        Ok(Response::new(Empty {}))
+    }
 }

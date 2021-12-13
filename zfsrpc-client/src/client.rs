@@ -93,6 +93,15 @@ impl Client {
         Ok(())
     }
 
+    pub async fn mount_filesystem(&mut self, name: impl ToString) -> anyhow::Result<()> {
+        let name = name.to_string();
+        let request = BasicDatasetRequest { name };
+        let request = tonic::Request::new(request);
+
+        self.client.mount_filesystem(request).await?;
+
+        Ok(())
+    }
     pub async fn create_volume(
         &mut self,
         name: impl ToString,
