@@ -7,9 +7,6 @@ use super::proto::{
 use super::{FilesystemProperty, VolumeProperty};
 use tonic::transport::Channel;
 
-#[allow(unused)]
-use tracing::{debug, error, info, trace, warn};
-
 impl From<VolumeProperty> for proto::VolumeProperty {
     fn from(p: VolumeProperty) -> Self {
         match p {

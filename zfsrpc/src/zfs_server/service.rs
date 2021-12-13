@@ -11,8 +11,7 @@ use crate::zfsrpc_proto::tonic_zfsrpc::{
 };
 use razor_zfs::error::DatasetError;
 
-#[allow(unused)]
-use tracing::{debug, error, info, trace, warn};
+use tracing::debug;
 
 use super::error::ZfsError;
 

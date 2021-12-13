@@ -1,7 +1,6 @@
 use tonic::{Request, Response, Status};
 
-#[allow(unused)]
-use tracing::{debug, debug_span, error, info, trace, warn};
+use tracing::{debug, debug_span, error, info};
 
 use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 use super::zfsrpc_proto::tonic_zfsrpc::{

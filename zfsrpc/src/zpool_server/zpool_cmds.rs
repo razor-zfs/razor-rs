@@ -4,8 +4,7 @@ use crate::zfsrpc_proto::tonic_zpoolrpc::{method, property, Method, Property};
 
 use tokio::process::Command;
 
-#[allow(unused)]
-use tracing::{debug, error, info, trace, warn};
+use tracing::{debug, error};
 
 pub(crate) async fn create(
     name: &str,

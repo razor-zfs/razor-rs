@@ -4,9 +4,6 @@ use super::zfsrpc_proto::tonic_zfstracer::{
     trace_level::Level, zfs_tracer_client::ZfsTracerClient, TraceLevel, Variant,
 };
 
-#[allow(unused)]
-use tracing::{debug, error, info, trace, warn};
-
 #[derive(Debug)]
 pub struct Client {
     tracer_client: ZfsTracerClient<Channel>,

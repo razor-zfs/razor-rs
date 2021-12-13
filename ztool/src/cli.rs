@@ -1,7 +1,6 @@
 use razor_zpool_client::{Client, Property};
 
-#[allow(unused)]
-use tracing::{debug, error, info, trace, warn};
+use tracing::{info, trace};
 
 use structopt::StructOpt;
 
@@ -40,7 +39,6 @@ enum Command {
     },
 }
 
-#[allow(unused)]
 impl Cli {
     pub(crate) async fn execute() -> anyhow::Result<()> {
         let this = Self::from_args();

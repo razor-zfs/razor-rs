@@ -1,7 +1,6 @@
 use tonic::{Code, Request, Response, Status};
 
-#[allow(unused)]
-use tracing::{debug, error, info, trace, warn};
+use tracing::debug;
 
 pub(crate) mod zpool_cmds;
 

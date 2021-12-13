@@ -1,13 +1,11 @@
 use razor_zfsrpc_client::error::ZfsError;
 
-#[allow(unused)]
 use razor_zfsrpc_client::{
     client::Client as ZfsClient, property, FilesystemProperty, VolumeProperty,
 };
 
 use structopt::StructOpt;
-#[allow(unused)]
-use tracing::{debug, error, info, trace, warn};
+use tracing::{error, info, trace, warn};
 
 const ABOUT: &str = "zfs rpc CLI tool";
 

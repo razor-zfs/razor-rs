@@ -5,7 +5,6 @@ use std::path::Path;
 
 use walkdir::{DirEntry, WalkDir};
 
-#[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
 
 #[derive(Debug)]

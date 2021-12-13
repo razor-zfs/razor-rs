@@ -20,9 +20,6 @@ use zpool_proto::tonic_zpoolrpc::zpool_rpc_client::ZpoolRpcClient;
 
 use tonic::transport::Channel;
 
-#[allow(unused)]
-use tracing::{debug, error, info, trace, warn};
-
 #[derive(Debug)]
 pub enum Property {
     Mountpoint(String),
