@@ -274,4 +274,21 @@ impl ProtoFilesystem {
 
         Ok(())
     }
+
+    pub(crate) async fn unmount(name: String) -> Result<(), ZfsError> {
+        use tokio::process::Command;
+
+        if let Err(out) = Command::new("zfs")
+            .arg("unmount")
+            .arg(name.clone())
+            .status()
+            .await
+        {
+            return Err(ZfsError::MountFs(out));
+        };
+
+        debug!("Filesystem {} was unmounted", name);
+
+        Ok(())
+    }
 }

@@ -126,4 +126,16 @@ impl ZfsRpc for service::ZfsRpcService {
 
         Ok(Response::new(Empty {}))
     }
+
+    async fn unmount_filesystem(
+        &self,
+        request: Request<BasicDatasetRequest>,
+    ) -> Result<Response<Empty>, Status> {
+        let request = request.into_inner();
+        debug!(?request);
+
+        Filesystem::unmount(request.name).await?;
+
+        Ok(Response::new(Empty {}))
+    }
 }

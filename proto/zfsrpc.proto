@@ -10,6 +10,7 @@ service ZfsRpc {
     rpc GetFilesystem (BasicDatasetRequest) returns (Filesystem);
     rpc DestroyFilesystem (BasicDatasetRequest) returns (Empty);
     rpc MountFilesystem (BasicDatasetRequest) returns (Empty);
+    rpc UnmountFilesystem (BasicDatasetRequest) returns (Empty);
 }
 
 message Datasets {

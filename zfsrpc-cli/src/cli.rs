@@ -157,6 +157,11 @@ enum Command {
         #[structopt(help = "Filesystem name")]
         name: String,
     },
+    #[structopt(about = "Unmounting filesystem", aliases = &["umfs", "unmount-fs"], display_order(32))]
+    UnmountFilesystem {
+        #[structopt(help = "Filesystem name")]
+        name: String,
+    },
     #[structopt(
         about = "Create new volume",
         aliases = &["cv"],
@@ -341,6 +346,10 @@ impl Cli {
             Command::MountFilesystem { name } => {
                 client.mount_filesystem(&name).await?;
                 format!("Filesystem {} is mounted", name)
+            }
+            Command::UnmountFilesystem { name } => {
+                client.unmount_filesystem(&name).await?;
+                format!("Filesystem {} is unmounted", name)
             }
         };
 
