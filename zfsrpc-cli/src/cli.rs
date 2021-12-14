@@ -154,6 +154,8 @@ enum Command {
     MountFilesystem {
         #[structopt(help = "Filesystem name")]
         name: String,
+        #[structopt(help = "filesystem mountpoint")]
+        mountpoint: String,
     },
     #[structopt(about = "Unmounting filesystem", aliases = &["umfs", "unmount-fs"], display_order(32))]
     UnmountFilesystem {
@@ -341,8 +343,8 @@ impl Cli {
 
                 format!("Filesystem {} created", name)
             }
-            Command::MountFilesystem { name } => {
-                client.mount_filesystem(&name).await?;
+            Command::MountFilesystem { name, mountpoint } => {
+                client.mount_filesystem(&name, &mountpoint).await?;
                 format!("Filesystem {} is mounted", name)
             }
             Command::UnmountFilesystem { name } => {

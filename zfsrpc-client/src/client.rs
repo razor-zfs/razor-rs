@@ -2,7 +2,7 @@ use crate::error::ZfsError;
 
 use super::proto::{
     self, zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateFilesystemRequest,
-    CreateVolumeRequest, Empty,
+    CreateVolumeRequest, Empty, MountFilesystemRequest,
 };
 use super::{FilesystemProperty, VolumeProperty};
 use tonic::transport::Channel;
@@ -90,9 +90,14 @@ impl Client {
         Ok(())
     }
 
-    pub async fn mount_filesystem(&mut self, name: impl ToString) -> anyhow::Result<()> {
+    pub async fn mount_filesystem(
+        &mut self,
+        name: impl ToString,
+        mountpoint: impl ToString,
+    ) -> anyhow::Result<()> {
         let name = name.to_string();
-        let request = BasicDatasetRequest { name };
+        let mountpoint = mountpoint.to_string();
+        let request = MountFilesystemRequest { name, mountpoint };
         let request = tonic::Request::new(request);
 
         self.client.mount_filesystem(request).await?;

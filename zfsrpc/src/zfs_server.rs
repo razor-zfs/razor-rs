@@ -4,7 +4,7 @@ use tracing::{debug, debug_span, error, info};
 
 use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 use super::zfsrpc_proto::tonic_zfsrpc::{
-    BasicDatasetRequest, CreateFilesystemRequest, CreateVolumeRequest,
+    BasicDatasetRequest, CreateFilesystemRequest, CreateVolumeRequest, MountFilesystemRequest,
 };
 use super::zfsrpc_proto::tonic_zfsrpc::{Datasets, Empty, Filesystem, Volume};
 
@@ -116,12 +116,12 @@ impl ZfsRpc for service::ZfsRpcService {
 
     async fn mount_filesystem(
         &self,
-        request: Request<BasicDatasetRequest>,
+        request: Request<MountFilesystemRequest>,
     ) -> Result<Response<Empty>, Status> {
         let request = request.into_inner();
         debug!(?request);
 
-        Filesystem::mount(request.name).await?;
+        Filesystem::mount(request.name, request.mountpoint).await?;
 
         Ok(Response::new(Empty {}))
     }
