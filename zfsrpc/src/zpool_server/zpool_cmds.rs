@@ -2,6 +2,7 @@
 
 use crate::zfsrpc_proto::tonic_zpoolrpc::{method, property, Method, Property};
 
+use anyhow::Context;
 use tokio::process::Command;
 
 use tracing::{debug, error};
@@ -21,9 +22,10 @@ pub(crate) async fn create(
         .arg("list")
         .output()
         .await
-        .expect("failed to get zpool list");
+        .with_context(|| "failed to get zpool list")?;
 
-    let out = std::str::from_utf8(output.stdout.as_slice()).expect("failed to get output");
+    let out = std::str::from_utf8(output.stdout.as_slice())
+        .with_context(|| "failed to get output of zpool list")?;
     if out.contains(name) {
         debug!("{} already exists", name);
     } else {
@@ -32,7 +34,7 @@ pub(crate) async fn create(
             .arg(name)
             .output()
             .await
-            .expect("failed to exec zpool import command");
+            .with_context(|| "failed to exec zpool import command")?;
 
         if output.status.success() {
             debug!("{} was imported", name);
@@ -79,7 +81,7 @@ pub(crate) async fn create(
             let output = cmd
                 .output()
                 .await
-                .unwrap_or_else(|_| panic!("zpool create {} failed", name));
+                .with_context(|| format!("failed to create zpool {}", name))?;
 
             if !output.status.success() {
                 let msg = std::str::from_utf8(&output.stderr)?.to_string();
@@ -99,7 +101,7 @@ pub(crate) async fn destroy(name: &str) -> anyhow::Result<()> {
         .arg(name)
         .output()
         .await
-        .unwrap_or_else(|_| panic!("failed to destroy zpool {}", name));
+        .with_context(|| format!("Failed to destroy zpool {}", name))?;
 
     debug!(?output.status);
 

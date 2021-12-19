@@ -13,7 +13,7 @@ impl Client {
     pub async fn new(port: String) -> Self {
         let tracer_client = ZfsTracerClient::connect(format!("http://0.0.0.0:{}", port))
             .await
-            .unwrap();
+            .expect("Failed to connect to tracer server");
         Self { tracer_client }
     }
 

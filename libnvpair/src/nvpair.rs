@@ -68,6 +68,13 @@ pub unsafe fn nvpair_value_uint64(nvp: *mut nvpair_t) -> u64 {
 }
 
 #[inline]
+pub unsafe fn nvpair_value_double(nvp: *mut nvpair_t) -> f64 {
+    let mut value = mem::MaybeUninit::uninit();
+    sys::nvpair_value_double(nvp, value.as_mut_ptr());
+    value.assume_init()
+}
+
+#[inline]
 pub unsafe fn nvpair_value_string(nvp: *mut nvpair_t) -> *mut c_char {
     let mut value = mem::MaybeUninit::uninit();
     sys::nvpair_value_string(nvp, value.as_mut_ptr());
@@ -86,6 +93,14 @@ pub unsafe fn nvpair_value_byte(nvp: *mut nvpair_t) -> c_uchar {
     let mut value = mem::MaybeUninit::uninit();
     sys::nvpair_value_byte(nvp, value.as_mut_ptr());
     value.assume_init()
+}
+
+#[inline]
+pub unsafe fn nvpair_value_byte_array(nvp: *mut nvpair_t) -> (*mut c_uchar, u32) {
+    let mut len = 0;
+    let mut value = mem::MaybeUninit::uninit();
+    sys::nvpair_value_byte_array(nvp, value.as_mut_ptr(), &mut len);
+    (value.assume_init(), len)
 }
 
 #[inline]

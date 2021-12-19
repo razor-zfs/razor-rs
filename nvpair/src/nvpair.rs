@@ -37,11 +37,8 @@ impl NvPair {
     }
 
     #[inline]
-    pub fn byte(&self) -> char {
-        unsafe {
-            let value = libnvpair::nvpair_value_byte(self.nvp).into();
-            char::from_u32_unchecked(value)
-        }
+    pub fn byte(&self) -> u8 {
+        unsafe { libnvpair::nvpair_value_byte(self.nvp) as u8 }
     }
 
     #[inline]
@@ -85,6 +82,11 @@ impl NvPair {
     }
 
     #[inline]
+    pub fn double(&self) -> f64 {
+        unsafe { libnvpair::nvpair_value_double(self.nvp) }
+    }
+
+    #[inline]
     pub fn string(&self) -> Cow<'_, str> {
         unsafe {
             let cstr = libnvpair::nvpair_value_string(self.nvp);
@@ -97,6 +99,16 @@ impl NvPair {
     pub fn nvlist(&self) -> NvListRef<'_, Self> {
         let nvl = unsafe { libnvpair::nvpair_value_nvlist(self.nvp) };
         NvListRef::from_raw(nvl, self)
+    }
+
+    #[inline]
+    pub fn byte_array(&self) -> &[u8] {
+        unsafe {
+            let (data, len) = libnvpair::nvpair_value_byte_array(self.nvp);
+            debug_assert!(!data.is_null());
+            let len = len as usize;
+            slice::from_raw_parts(data, len)
+        }
     }
 
     #[inline]

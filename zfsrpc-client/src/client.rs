@@ -36,7 +36,7 @@ impl Client {
     pub async fn new(port: String) -> Self {
         let client = ZfsRpcClient::connect(format!("http://0.0.0.0:{}", port))
             .await
-            .unwrap();
+            .expect("Failed to connect to zfs server");
         Self { client }
     }
 

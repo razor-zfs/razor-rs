@@ -84,7 +84,7 @@ impl Client {
     pub async fn new(host: String, port: String) -> Self {
         let client = ZpoolRpcClient::connect(format!("http://{}:{}", host, port))
             .await
-            .unwrap();
+            .expect("failed to connect to zpool server");
         Self { client }
     }
 

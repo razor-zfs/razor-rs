@@ -1,8 +1,7 @@
 use std::ffi;
-use std::fmt;
 use std::str;
 
-use serde::{de, ser};
+use thiserror::Error;
 
 #[derive(Clone, Debug, PartialEq)]
 enum NvListErrorInternal {
@@ -11,20 +10,32 @@ enum NvListErrorInternal {
     InsufficientMemory,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Error, Clone, Debug, PartialEq)]
 pub enum NvListError {
+    #[error("({0})")]
     Message(String),
+    #[error("Invalid argument")]
     InvalidArgument,
+    #[error("Insufficient memory")]
     InsufficientMemory,
+    #[error("Unmatching variables")]
     UnmatchingVariables,
+    #[error("Restricted Operation")]
     RestrictedOperation,
+    #[error("Name type error")]
     NameTypeError,
+    #[error("Conversion error")]
     ConversionError,
+    #[error("NvPair type error")]
     NvPairTypeError,
+    #[error("Null pointer")]
     NullPointer,
+    #[error("NvList Null pointer")]
     NvListNullPointer,
-    NvPairDontExist,
-    NvListDontExist,
+    #[error("NvPair doesn't exist")]
+    NvPairDoesntExist,
+    #[error("NvList doesn't exist")]
+    NvListDoesntExist,
 }
 
 impl From<ffi::NulError> for NvListError {
@@ -38,53 +49,6 @@ impl From<str::Utf8Error> for NvListError {
         Self::ConversionError
     }
 }
-
-impl ser::Error for NvListError {
-    fn custom<T: fmt::Display>(msg: T) -> Self {
-        Self::Message(msg.to_string())
-    }
-}
-
-impl de::Error for NvListError {
-    fn custom<T: fmt::Display>(msg: T) -> Self {
-        Self::Message(msg.to_string())
-    }
-}
-
-impl fmt::Display for NvListError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Message(msg) => formatter.write_str(msg),
-            Self::InvalidArgument => todo!(),
-            Self::InsufficientMemory => todo!(),
-            Self::UnmatchingVariables => todo!(),
-            Self::RestrictedOperation => todo!(),
-            Self::NameTypeError => todo!(),
-            Self::ConversionError => todo!(),
-            Self::NvPairTypeError => todo!(),
-            Self::NullPointer => todo!(),
-            Self::NvListNullPointer => todo!(),
-            Self::NvPairDontExist => todo!(),
-            Self::NvListDontExist => todo!(),
-            /* and so forth */
-        }
-    }
-}
-
-impl std::error::Error for NvListError {}
-
-/*impl TryFrom<i32> for () {
-    type Error = NvListError;
-
-    fn try_from(rc: i32) -> Result<Self, Self::Error> {
-        match rc {
-            0 => Ok(()),
-            libc::EINVAL => Err(Self::InvalidArgument),
-            libc::ENOMEM => Err(Self::InsufficientMemory),
-            _ => unreachable!("invalid return code"),
-        }
-    }
-}*/
 
 impl From<i32> for NvListErrorInternal {
     fn from(rc: i32) -> Self {

@@ -18,7 +18,7 @@ pub struct NvList {
     nvl: *mut libnvpair::nvlist_t,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct NvListRef<'a, T> {
     nvl: *mut libnvpair::nvlist_t,
     anchor: PhantomData<&'a T>,

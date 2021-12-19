@@ -29,16 +29,17 @@ pub enum Value {
     StringArray(Vec<String>),
     DoubleArray(Vec<f64>),
     NvListArray(Vec<NvList>),
+    Unsupported,
+    Unknown,
 }
 
 pub fn to_value(nvpair: &NvPair) -> Value {
     use libnvpair::data_type_t::*;
     match nvpair.r#type() {
-        DATA_TYPE_DONTCARE => todo!(),
-        DATA_TYPE_UNKNOWN => todo!(),
+        DATA_TYPE_UNKNOWN => Value::Unknown,
 
-        // DATA_TYPE_BOOLEAN => Value::Boolean(nvpair.boolean()),
-        DATA_TYPE_BYTE => todo!(),
+        DATA_TYPE_BOOLEAN => Value::Boolean(nvpair.boolean() == libnvpair::boolean_t::B_TRUE),
+        DATA_TYPE_BYTE => Value::U8(nvpair.byte()),
 
         DATA_TYPE_INT16 => Value::I16(nvpair.int16()),
         DATA_TYPE_UINT16 => Value::U16(nvpair.uint16()),
@@ -48,7 +49,7 @@ pub fn to_value(nvpair: &NvPair) -> Value {
         DATA_TYPE_UINT64 => Value::U64(nvpair.uint64()),
         DATA_TYPE_STRING => Value::String(nvpair.string().into_owned()),
 
-        DATA_TYPE_BYTE_ARRAY => todo!(),
+        DATA_TYPE_BYTE_ARRAY => Value::U8Array(nvpair.byte_array().to_vec()),
 
         DATA_TYPE_INT16_ARRAY => Value::I16Array(nvpair.int16_array().to_vec()),
         DATA_TYPE_UINT16_ARRAY => Value::U16Array(nvpair.uint16_array().to_vec()),
@@ -64,10 +65,6 @@ pub fn to_value(nvpair: &NvPair) -> Value {
                 .collect(),
         ),
 
-        DATA_TYPE_HRTIME => todo!(),
-        DATA_TYPE_NVLIST => todo!(),
-        DATA_TYPE_NVLIST_ARRAY => todo!(),
-
         DATA_TYPE_BOOLEAN_VALUE => Value::Boolean(nvpair.boolean() == libnvpair::boolean_t::B_TRUE),
         DATA_TYPE_INT8 => Value::I8(nvpair.int8()),
         DATA_TYPE_UINT8 => Value::U8(nvpair.uint8()),
@@ -81,7 +78,7 @@ pub fn to_value(nvpair: &NvPair) -> Value {
         DATA_TYPE_INT8_ARRAY => Value::I8Array(nvpair.int8_array().to_vec()),
         DATA_TYPE_UINT8_ARRAY => Value::U8Array(nvpair.uint8_array().to_vec()),
 
-        DATA_TYPE_DOUBLE => todo!(),
-        _ => unreachable!(),
+        DATA_TYPE_DOUBLE => Value::Double(nvpair.double()),
+        _ => Value::Unsupported,
     }
 }
