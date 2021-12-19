@@ -4,7 +4,6 @@ members = [
     "libnvpair",
     "nvpair",
     "uutil-sys",
-    #"serde-nvpair",
     "zfscore-sys",
     "zfscore",
     "zfs",
