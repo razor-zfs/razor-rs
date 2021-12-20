@@ -73,6 +73,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         }
     }
 
+    #[must_use]
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -83,6 +84,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
 
@@ -93,6 +95,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
         if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value.as_str()) {
@@ -102,6 +105,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -112,6 +116,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
         if let Err(err) = self.nvl.add_string(NBMAND.as_ref(), value.as_str()) {
@@ -121,6 +126,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -131,6 +137,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -141,6 +148,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -151,6 +159,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -161,6 +170,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -171,6 +181,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -181,6 +192,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
         let value = v.into();
 
@@ -191,6 +203,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -432,6 +445,7 @@ impl FileSystemBuilder {
         Ok(filesystem)
     }
 
+    #[must_use]
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -442,6 +456,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
 
@@ -452,6 +467,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
         if let Err(err) = self.nvlist.add_uint64(CHECKSUM.as_ref(), u64::from(value)) {
@@ -461,6 +477,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -471,6 +488,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
         if let Err(err) = self.nvlist.add_uint64(NBMAND.as_ref(), u64::from(value)) {
@@ -480,6 +498,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -490,6 +509,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -500,6 +520,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -510,6 +531,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -520,6 +542,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -530,6 +553,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
@@ -540,6 +564,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
         let value = v.into();
 
@@ -553,6 +578,7 @@ impl FileSystemBuilder {
         self
     }
 
+    #[must_use]
     pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 

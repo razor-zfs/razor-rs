@@ -69,30 +69,35 @@ impl DatasetCollectorBuilder {
         }
     }
 
+    #[must_use]
     pub fn filesystems(mut self) -> Self {
         self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_FILESYSTEM;
 
         self
     }
 
+    #[must_use]
     pub fn volumes(mut self) -> Self {
         self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_VOLUME;
 
         self
     }
 
+    #[must_use]
     pub fn snapshots(mut self) -> Self {
         self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_SNAPSHOT;
 
         self
     }
 
+    #[must_use]
     pub fn _bookmarks(mut self) -> Self {
         self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_BOOKMARK;
 
         self
     }
 
+    #[must_use]
     pub fn recursive(mut self) -> Self {
         self.recursive = true;
 

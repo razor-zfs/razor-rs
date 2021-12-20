@@ -65,6 +65,7 @@ impl<'a, T> VolumeSetter<'a, T> {
         }
     }
 
+    #[must_use]
     pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
 
@@ -75,6 +76,7 @@ impl<'a, T> VolumeSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
         let value = v.into();
 
@@ -85,6 +87,7 @@ impl<'a, T> VolumeSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn blocksize(mut self, v: u64) -> Self {
         let value = v;
 
@@ -95,6 +98,7 @@ impl<'a, T> VolumeSetter<'a, T> {
         self
     }
 
+    #[must_use]
     pub fn volmode(mut self, v: impl Into<property::VolMode>) -> Self {
         let value = v.into();
 
@@ -283,6 +287,7 @@ impl VolumeBuilder {
         Ok(volume)
     }
 
+    #[must_use]
     pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
 
@@ -293,6 +298,7 @@ impl VolumeBuilder {
         self
     }
 
+    #[must_use]
     pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
         let value = v.into();
 
@@ -306,6 +312,7 @@ impl VolumeBuilder {
         self
     }
 
+    #[must_use]
     pub fn blocksize(mut self, v: u64) -> Self {
         self.volblocksize = v;
         self
@@ -316,6 +323,7 @@ impl VolumeBuilder {
         8192
     }
 
+    #[must_use]
     pub fn volmode(mut self, v: impl Into<property::VolMode>) -> Self {
         let value = v.into();
 
