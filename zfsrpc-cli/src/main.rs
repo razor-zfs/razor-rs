@@ -13,6 +13,7 @@
 #![warn(unused)]
 #![deny(warnings)]
 
+use tracing::error;
 use tracing_subscriber::{fmt, EnvFilter};
 
 pub mod cli;
@@ -29,5 +30,9 @@ async fn main() -> anyhow::Result<()> {
         .with_timer(fmt::time::ChronoUtc::default())
         .init();
 
-    cli::Cli::execute().await
+    if let Err(e) = cli::Cli::execute().await {
+        error!(?e);
+    }
+
+    Ok(())
 }

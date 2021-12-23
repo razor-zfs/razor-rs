@@ -1,8 +1,11 @@
+use thiserror::Error;
 use tonic::{Code, Status};
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub enum ZfsError {
+    #[error("{0:?}")]
     InternalError(Status),
+    #[error("{0:?}")]
     AlreadyExists(Status),
 }
 
@@ -12,11 +15,5 @@ impl From<Status> for ZfsError {
             Code::AlreadyExists => Self::AlreadyExists(status),
             _ => Self::InternalError(status),
         }
-    }
-}
-
-impl From<ZfsError> for anyhow::Error {
-    fn from(error: ZfsError) -> Self {
-        anyhow::anyhow!(error)
     }
 }

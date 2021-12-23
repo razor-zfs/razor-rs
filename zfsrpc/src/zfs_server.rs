@@ -1,6 +1,10 @@
+use std::path::{Path, PathBuf};
+
 use tonic::{Request, Response, Status};
 
-use tracing::{debug, debug_span, error, info};
+use tracing::{debug, debug_span, error, info, warn};
+
+use crate::zfs_server::error::ZfsError;
 
 use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 use super::zfsrpc_proto::tonic_zfsrpc::{
@@ -29,10 +33,14 @@ impl ZfsRpc for service::ZfsRpcService {
             request.blocksize,
             request.properties,
         );
-        let res = inspector::ResultInspector::inspect(res, |_| {
-            info!("Volume {} Created successfully", name)
-        });
-        inspector::ResultInspector::inspect_err(res, |err| error!("{:?}", err))?;
+
+        match res {
+            Ok(_) => info!("Created volume {}", name),
+            Err(ZfsError::AlreadyExists(e)) => {
+                warn!("Volume {} already exists : {:?}", name, e);
+            }
+            Err(_) => return Err(Status::internal("Internal error")),
+        };
 
         Ok(Response::new(Empty {}))
     }
@@ -42,16 +50,51 @@ impl ZfsRpc for service::ZfsRpcService {
         request: Request<CreateFilesystemRequest>,
     ) -> Result<Response<Empty>, Status> {
         let request = request.into_inner();
-        let name = request.name.clone();
+        let path = request.name.clone();
         let span = debug_span!("create_filesystem");
         let _guard = span.entered();
         debug!(?request);
 
-        let res = Filesystem::create(request.name, 0, request.properties);
-        let res = inspector::ResultInspector::inspect(res, |_| {
-            info!("fileystem {} Created successfully", name)
-        });
-        inspector::ResultInspector::inspect_err(res, |err| error!("{:?}", err))?;
+        let mut path_iter = Path::new(&path).iter();
+        if path_iter.clone().count() <= 1 {
+            error!("No dataset found in path {}", path);
+            return Err(Status::not_found("No dataset found in path"));
+        };
+
+        // The first element in the path is the pool name
+        // e.g.: pool/dataset/subdataset
+        let pool = path_iter
+            .next()
+            .map(PathBuf::from)
+            .ok_or_else(|| Status::not_found("No zpool found in path"))?;
+
+        let results: Vec<_> = path_iter
+            .scan(pool, |path, dir| {
+                path.push(dir);
+                Some(path.clone())
+            })
+            .map(|path| {
+                debug!("Creating filesystem at {:?}", path);
+                Filesystem::create(
+                    path.to_string_lossy().to_string(),
+                    0,
+                    request.properties.clone(),
+                )
+            })
+            .collect();
+
+        for result in results {
+            match result {
+                Ok(_) => info!("Filesystem {} Created successfully", path),
+                Err(ZfsError::AlreadyExists(err)) => {
+                    warn!("filesystem {} already exists : {:?}", path, err)
+                }
+                Err(err) => {
+                    error!("{:?}", err);
+                    return Err(err.into());
+                }
+            }
+        }
 
         Ok(Response::new(Empty {}))
     }

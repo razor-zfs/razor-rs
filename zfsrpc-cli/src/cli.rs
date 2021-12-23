@@ -1,10 +1,9 @@
-use razor_zfsrpc_client::error::ZfsError;
-
 use razor_zfsrpc_client::{
     client::Client as ZfsClient, property, FilesystemProperty, VolumeProperty,
 };
 
 use structopt::StructOpt;
+#[allow(unused)]
 use tracing::{error, info, trace, warn};
 
 const ABOUT: &str = "zfs rpc CLI tool";
@@ -274,17 +273,7 @@ impl Cli {
 
                 client
                     .create_volume(&name, capacity, blocksize, properties)
-                    .await
-                    .or_else(|e| {
-                        if let ZfsError::AlreadyExists(err) = e {
-                            warn!(?err);
-                            Ok(())
-                        } else {
-                            error!(?e);
-                            Err(e)
-                        }
-                    })?;
-
+                    .await?;
                 format!("Volume {} created", name)
             }
             Command::DestroyFilesystem { name } => {
@@ -328,19 +317,7 @@ impl Cli {
                     zoned.map(FilesystemProperty::OnOff),
                 ];
 
-                client
-                    .create_filesystem(&name, properties)
-                    .await
-                    .or_else(|e| {
-                        if let ZfsError::AlreadyExists(err) = e {
-                            warn!(?err);
-                            Ok(())
-                        } else {
-                            error!(?e);
-                            Err(e)
-                        }
-                    })?;
-
+                client.create_filesystem(&name, properties).await?;
                 format!("Filesystem {} created", name)
             }
             Command::MountFilesystem { name, mountpoint } => {

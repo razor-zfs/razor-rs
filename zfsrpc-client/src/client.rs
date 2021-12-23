@@ -52,15 +52,18 @@ impl Client {
 
     pub async fn create_filesystem(
         &mut self,
-        name: impl ToString,
+        path: impl ToString,
         properties: Vec<Option<FilesystemProperty>>,
     ) -> anyhow::Result<(), ZfsError> {
-        let name = name.to_string();
+        let path = path.to_string();
         let properties = properties
             .into_iter()
             .filter_map(|item| item.map(From::from))
             .collect();
-        let request = CreateFilesystemRequest { name, properties };
+        let request = CreateFilesystemRequest {
+            name: path,
+            properties,
+        };
         let request = tonic::Request::new(request);
 
         self.client.create_filesystem(request).await?;
