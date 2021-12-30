@@ -132,7 +132,18 @@ impl ZfsRpc for service::ZfsRpcService {
         let _guard = span.entered();
         debug!(?request);
 
-        service::destroy(request.name)?;
+        let path = request.name;
+        let res = service::destroy(path.clone());
+        match res {
+            Ok(_) => info!("Volume {} successfully deleted", path),
+            Err(ZfsError::NotFound(err)) => {
+                warn!("Volume {} not found (already deleted?) : {:?}", path, err)
+            }
+            Err(err) => {
+                error!("{:?}", err);
+                return Err(err.into());
+            }
+        }
 
         Ok(Response::new(Empty {}))
     }
@@ -146,7 +157,21 @@ impl ZfsRpc for service::ZfsRpcService {
         let _guard = span.entered();
         debug!(?request);
 
-        service::destroy(request.name)?;
+        let path = request.name;
+        let res = service::destroy(path.clone());
+        match res {
+            Ok(_) => info!("Filesystem {} successfully deleted", path),
+            Err(ZfsError::NotFound(err)) => {
+                warn!(
+                    "Filesystem {} not found (already deleted?) : {:?}",
+                    path, err
+                )
+            }
+            Err(err) => {
+                error!("{:?}", err);
+                return Err(err.into());
+            }
+        }
 
         Ok(Response::new(Empty {}))
     }
