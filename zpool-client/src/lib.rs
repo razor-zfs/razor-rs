@@ -15,6 +15,8 @@
 
 mod zpool_proto;
 
+use std::path::PathBuf;
+
 use zpool_proto::tonic_zpoolrpc as proto;
 use zpool_proto::tonic_zpoolrpc::zpool_rpc_client::ZpoolRpcClient;
 
@@ -124,5 +126,17 @@ impl Client {
 
         let resp = format!("{:?}", resp);
         Ok(resp)
+    }
+
+    pub async fn get_ebs_path(&mut self, ebs_id: &str) -> anyhow::Result<PathBuf> {
+        let ebs_id = ebs_id.to_string();
+
+        let request = proto::GetEbsPathRequest { ebs_id };
+        let request = tonic::Request::new(request);
+
+        let resp = self.client.get_ebs_path(request).await?;
+        let path = resp.into_inner().path;
+
+        Ok(PathBuf::from(path))
     }
 }

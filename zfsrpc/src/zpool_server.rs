@@ -1,5 +1,4 @@
 use tonic::{Code, Request, Response, Status};
-
 use tracing::debug;
 
 pub(crate) mod zpool_cmds;
@@ -8,7 +7,9 @@ pub(crate) mod zpool_cmds;
 use zpool_cmds as zpool;
 
 use super::zfsrpc_proto::tonic_zpoolrpc::zpool_rpc_server::ZpoolRpc;
-use super::zfsrpc_proto::tonic_zpoolrpc::{CreateRequest, DestroyRequest, Empty};
+use super::zfsrpc_proto::tonic_zpoolrpc::{
+    CreateRequest, DestroyRequest, Empty, GetEbsPathRequest, GetEbsPathResponse,
+};
 
 #[derive(Debug, Default)]
 pub struct ZpoolRpcService {}
@@ -41,5 +42,18 @@ impl ZpoolRpc for ZpoolRpcService {
             .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
 
         Ok(Response::new(Empty {}))
+    }
+
+    async fn get_ebs_path(
+        &self,
+        request: Request<GetEbsPathRequest>,
+    ) -> Result<Response<GetEbsPathResponse>, Status> {
+        let request = request.into_inner();
+        debug!(?request);
+
+        let path = zpool::get_ebs_path(request.ebs_id)
+            .map_err(|e| Status::new(Code::Internal, format!("{:?}", e)))?;
+
+        Ok(Response::new(GetEbsPathResponse { path }))
     }
 }

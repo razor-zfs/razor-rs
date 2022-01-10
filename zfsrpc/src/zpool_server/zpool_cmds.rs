@@ -1,11 +1,15 @@
 // FIXME: This file is a temporary hack to get zpool basic commands to work
 
+use std::path::PathBuf;
+
 use crate::zfsrpc_proto::tonic_zpoolrpc::{method, property, Method, Property};
 
 use anyhow::Context;
 use tokio::process::Command;
 
-use tracing::{debug, error};
+use tracing::{debug, error, trace};
+
+const DISK_BY_ID_PATH: &str = "/dev/disk/by-id";
 
 pub(crate) async fn create(
     name: &str,
@@ -110,4 +114,27 @@ pub(crate) async fn destroy(name: &str) -> anyhow::Result<()> {
     debug!("zpool {} was destroyed", name);
 
     Ok(())
+}
+
+pub(crate) fn get_ebs_path(ebs_id: String) -> anyhow::Result<String> {
+    let ebs = PathBuf::from(ebs_id.clone());
+
+    let path = enumerate()
+        .context("Failed to enumerate")?
+        .find(|dev| *dev == ebs)
+        .with_context(|| format!("Device not found for EBS {}", ebs_id))?;
+
+    let path = path.to_string_lossy().to_string();
+
+    Ok(path)
+}
+
+fn enumerate() -> anyhow::Result<impl Iterator<Item = PathBuf>> {
+    let devices = std::path::Path::new(DISK_BY_ID_PATH)
+        .read_dir()?
+        .inspect(|e| trace!("scanning entry {:?}", e))
+        .filter_map(Result::ok)
+        .map(|entry| entry.path());
+
+    Ok(devices)
 }

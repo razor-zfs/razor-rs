@@ -37,6 +37,11 @@ enum Command {
         #[structopt(help = "zpool name")]
         name: String,
     },
+    #[structopt(about = "Get Ebs path by id")]
+    GetEbsPath {
+        #[structopt(help = "EBS ID (e.g. nvme-Amazon_Elastic_Block_Store_volxxxxxxxxxxxxxxxxx)")]
+        ebs_id: String,
+    },
 }
 
 impl Cli {
@@ -66,6 +71,11 @@ impl Cli {
             Command::Destroy { name } => {
                 client.destroy(&name).await?;
                 String::from("Ok")
+            }
+
+            Command::GetEbsPath { ebs_id } => {
+                let path = client.get_ebs_path(&ebs_id).await?;
+                format!("{:?}", path)
             }
         };
 

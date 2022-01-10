@@ -4,6 +4,15 @@ package zpoolrpc;
 service ZpoolRpc {
     rpc Create(CreateRequest) returns (Empty);
     rpc Destroy(DestroyRequest) returns (Empty);
+    rpc GetEbsPath(GetEbsPathRequest) returns (GetEbsPathResponse);
+}
+
+message GetEbsPathRequest {
+    string EbsId = 1;
+}
+
+message GetEbsPathResponse {
+    string path = 1;
 }
 
 message DestroyRequest {

@@ -1,7 +1,9 @@
 use std::io;
 
 fn main() -> io::Result<()> {
-    tonic_build::compile_protos("../proto/zpool.proto")?;
+    tonic_build::configure()
+        .format(false)
+        .compile(&["zpool.proto"], &["../proto"])?;
 
     Ok(())
 }
