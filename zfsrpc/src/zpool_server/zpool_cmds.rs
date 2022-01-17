@@ -121,7 +121,7 @@ pub(crate) fn get_ebs_path(ebs_id: String) -> anyhow::Result<String> {
 
     let path = enumerate()
         .context("Failed to enumerate")?
-        .find(|dev| *dev == ebs)
+        .find(|dev| dev.file_name().map_or(false, |dev| *dev == ebs))
         .with_context(|| format!("Device not found for EBS {}", ebs_id))?;
 
     let path = path.to_string_lossy().to_string();
