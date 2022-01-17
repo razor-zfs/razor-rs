@@ -18,10 +18,10 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 COPY . ${BUILD_DIR}
 WORKDIR ${BUILD_DIR}
 
-RUN . ${HOME}/.cargo/env && cargo build --workspace
+RUN . ${HOME}/.cargo/env && cargo build --workspace --release
 
 RUN mkdir -pv ${ARTIFACTS} \
-	&& cp ./target/debug/razor-rpc-server ./target/debug/razor-zfsrpc-cli ./target/debug/razor-ztool ${ARTIFACTS}/
+	&& cp ./target/release/razor-rpc-server ./target/release/razor-zfsrpc-cli ./target/release/razor-ztool ${ARTIFACTS}/
 
 
 FROM ubuntu:focal
