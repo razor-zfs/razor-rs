@@ -39,7 +39,10 @@ impl ZfsRpc for service::ZfsRpcService {
             Err(ZfsError::AlreadyExists(e)) => {
                 warn!("Volume {} already exists : {:?}", name, e);
             }
-            Err(_) => return Err(Status::internal("Internal error")),
+            Err(err) => {
+                error!("{:?}", err);
+                return Err(err.into());
+            }
         };
 
         Ok(Response::new(Empty {}))

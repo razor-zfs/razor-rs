@@ -1,3 +1,5 @@
+use std::net::IpAddr;
+
 use crate::error::ZfsError;
 
 use super::proto::{
@@ -35,6 +37,13 @@ pub struct Client {
 impl Client {
     pub async fn new(port: String) -> Self {
         let client = ZfsRpcClient::connect(format!("http://0.0.0.0:{}", port))
+            .await
+            .expect("Failed to connect to zfs server");
+        Self { client }
+    }
+
+    pub async fn with_ip(host: IpAddr, port: String) -> Self {
+        let client = ZfsRpcClient::connect(format!("http://{}:{}", host, port))
             .await
             .expect("Failed to connect to zfs server");
         Self { client }
