@@ -917,7 +917,7 @@ dependencies = [
 
 [[package]]
 name = "prop-macro"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "Inflector",
  "proc-macro2",
@@ -1028,7 +1028,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libnvpair"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "libc",
  "razor-libnvpair-sys",
@@ -1036,7 +1036,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libnvpair-sys"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "bindgen 0.59.2",
  "libc",
@@ -1044,7 +1044,7 @@ dependencies = [
 
 [[package]]
 name = "razor-nvpair"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "libc",
  "razor-libnvpair",
@@ -1054,7 +1054,7 @@ dependencies = [
 
 [[package]]
 name = "razor-property"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "serde",
@@ -1063,7 +1063,7 @@ dependencies = [
 
 [[package]]
 name = "razor-rpc-server"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "razor-tracing",
@@ -1076,7 +1076,7 @@ dependencies = [
 
 [[package]]
 name = "razor-tracing"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "tracing",
@@ -1085,14 +1085,14 @@ dependencies = [
 
 [[package]]
 name = "razor-uutil-sys"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "bindgen 0.58.1",
 ]
 
 [[package]]
 name = "razor-zfs"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "libc",
  "log",
@@ -1111,7 +1111,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zfscore"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "libc",
@@ -1125,7 +1125,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zfscore-sys"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "bindgen 0.59.2",
  "libc",
@@ -1134,7 +1134,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zfsrpc"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "inspector",
@@ -1154,7 +1154,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zfsrpc-cli"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "razor-zfsrpc-client",
@@ -1166,7 +1166,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zfsrpc-client"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "prost",
@@ -1179,7 +1179,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zpool-client"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "prost",
@@ -1190,7 +1190,7 @@ dependencies = [
 
 [[package]]
 name = "razor-ztool"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "razor-zpool-client",
