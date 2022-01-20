@@ -7,6 +7,8 @@ pub enum ZfsError {
     InternalError(Status),
     #[error("{0:?}")]
     AlreadyExists(Status),
+    #[error("{0}")]
+    NotImplemented(String),
 }
 
 impl From<Status> for ZfsError {

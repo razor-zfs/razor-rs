@@ -62,13 +62,15 @@ impl Client {
     pub async fn create_filesystem(
         &mut self,
         path: impl ToString,
-        properties: Vec<Option<FilesystemProperty>>,
+        // FIXME: MANGO-2456
+        _properties: Vec<Option<FilesystemProperty>>,
     ) -> anyhow::Result<(), ZfsError> {
         let path = path.to_string();
-        let properties = properties
-            .into_iter()
-            .filter_map(|item| item.map(From::from))
-            .collect();
+        // let properties = properties
+        //     .into_iter()
+        //     .filter_map(|item| item.map(From::from))
+        //     .collect();
+        let properties = vec![];
         let request = CreateFilesystemRequest {
             name: path,
             properties,
@@ -132,13 +134,15 @@ impl Client {
         name: impl ToString,
         capacity: u64,
         blocksize: u64,
-        properties: Vec<Option<VolumeProperty>>,
+        //FIXME: MANGO-2456
+        _properties: Vec<Option<VolumeProperty>>,
     ) -> anyhow::Result<(), ZfsError> {
         let name = name.to_string();
-        let properties = properties
-            .into_iter()
-            .filter_map(|item| item.map(From::from))
-            .collect();
+        // let properties = properties
+        //     .into_iter()
+        //     .filter_map(|item| item.map(From::from))
+        //     .collect();
+        let properties = vec![];
         let request = CreateVolumeRequest {
             name,
             capacity,
