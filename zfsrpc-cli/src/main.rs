@@ -27,6 +27,7 @@ async fn main() -> anyhow::Result<()> {
 
     fmt()
         .with_env_filter(filter)
+        .pretty()
         .with_timer(fmt::time::ChronoUtc::default())
         .init();
 
