@@ -9,7 +9,7 @@ githook hook:
 setup: (githook "pre-commit") (githook "prepare-commit-msg")
 
 build:
-    cargo build --workspace --all-targets
+    cargo build --workspace --release --all-targets
 clean:
     cargo clean
 test:
