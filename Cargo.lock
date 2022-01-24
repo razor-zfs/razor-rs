@@ -1138,6 +1138,7 @@ version = "0.1.2"
 dependencies = [
  "anyhow",
  "inspector",
+ "itertools",
  "paste",
  "prop-macro",
  "prost",

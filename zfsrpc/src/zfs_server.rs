@@ -1,7 +1,6 @@
+use itertools::Itertools;
 use std::path::{Path, PathBuf};
-
 use tonic::{Request, Response, Status};
-
 use tracing::{debug, debug_span, error, info, warn};
 
 use crate::zfs_server::error::ZfsError;
@@ -20,38 +19,35 @@ impl ZfsRpc for service::ZfsRpcService {
     async fn create_volume(
         &self,
         request: Request<CreateVolumeRequest>,
-    ) -> Result<Response<Empty>, Status> {
+    ) -> Result<Response<Volume>, Status> {
         let request = request.into_inner();
         let name = request.name.clone();
         let span = debug_span!("create_volume");
         let _guard = span.entered();
         debug!(?request);
 
-        let res = Volume::create(
+        let vol = Volume::create(
             request.name,
             request.capacity,
             request.blocksize,
             request.properties,
-        );
-
-        match res {
-            Ok(_) => info!("Created volume {}", name),
-            Err(ZfsError::AlreadyExists(e)) => {
-                warn!("Volume {} already exists : {:?}", name, e);
+        )
+        .or_else(|err| {
+            if let ZfsError::AlreadyExists(err) = err {
+                warn!("Volume {} already exists: {:?}", name, err);
+                Ok(Volume::get(name)?)
+            } else {
+                Err(err)
             }
-            Err(err) => {
-                error!("{:?}", err);
-                return Err(err.into());
-            }
-        };
+        })?;
 
-        Ok(Response::new(Empty {}))
+        Ok(Response::new(vol))
     }
 
     async fn create_filesystem(
         &self,
         request: Request<CreateFilesystemRequest>,
-    ) -> Result<Response<Empty>, Status> {
+    ) -> Result<Response<Filesystem>, Status> {
         let request = request.into_inner();
         let path = request.name.clone();
         let span = debug_span!("create_filesystem");
@@ -71,7 +67,7 @@ impl ZfsRpc for service::ZfsRpcService {
             .map(PathBuf::from)
             .ok_or_else(|| Status::not_found("No zpool found in path"))?;
 
-        let results: Vec<_> = path_iter
+        path_iter
             .scan(pool, |path, dir| {
                 path.push(dir);
                 Some(path.clone())
@@ -80,26 +76,22 @@ impl ZfsRpc for service::ZfsRpcService {
                 debug!("Creating filesystem at {:?}", path);
                 Filesystem::create(
                     path.to_string_lossy().to_string(),
-                    0,
                     request.properties.clone(),
                 )
+                .map(|_| ())
+                .or_else(|e| {
+                    warn!("{:?}", e);
+                    if let ZfsError::AlreadyExists(e) = e {
+                        warn!("Filesystem {:?} already exists : {:?}", path, e);
+                        Ok(())
+                    } else {
+                        Err(e)
+                    }
+                })
             })
-            .collect();
+            .try_collect()?;
 
-        for result in results {
-            match result {
-                Ok(_) => info!("Filesystem {} Created successfully", path),
-                Err(ZfsError::AlreadyExists(err)) => {
-                    warn!("filesystem {} already exists : {:?}", path, err)
-                }
-                Err(err) => {
-                    error!("{:?}", err);
-                    return Err(err.into());
-                }
-            }
-        }
-
-        Ok(Response::new(Empty {}))
+        Ok(Response::new(Filesystem::get(request.name)?))
     }
 
     async fn get_volume(

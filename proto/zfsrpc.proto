@@ -3,10 +3,10 @@ package zfsrpc;
 
 service ZfsRpc {
     rpc DatasetList (Empty) returns (Datasets);
-    rpc CreateVolume (CreateVolumeRequest) returns (Empty);
+    rpc CreateVolume (CreateVolumeRequest) returns (Volume);
     rpc GetVolume (BasicDatasetRequest) returns (Volume);
     rpc DestroyVolume (BasicDatasetRequest) returns (Empty);
-    rpc CreateFilesystem (CreateFilesystemRequest) returns (Empty);
+    rpc CreateFilesystem (CreateFilesystemRequest) returns (Filesystem);
     rpc GetFilesystem (BasicDatasetRequest) returns (Filesystem);
     rpc DestroyFilesystem (BasicDatasetRequest) returns (Empty);
     rpc MountFilesystem (MountFilesystemRequest) returns (Empty);

@@ -4,7 +4,7 @@ use crate::error::ZfsError;
 
 use super::proto::{
     self, zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateFilesystemRequest,
-    CreateVolumeRequest, Empty, MountFilesystemRequest,
+    CreateVolumeRequest, Empty, Filesystem, MountFilesystemRequest, Volume,
 };
 use super::{FilesystemProperty, VolumeProperty};
 use tonic::transport::Channel;
@@ -64,7 +64,7 @@ impl Client {
         path: impl ToString,
         // FIXME: MANGO-2456
         _properties: Vec<Option<FilesystemProperty>>,
-    ) -> anyhow::Result<(), ZfsError> {
+    ) -> anyhow::Result<Filesystem, ZfsError> {
         let path = path.to_string();
         // let properties = properties
         //     .into_iter()
@@ -77,9 +77,10 @@ impl Client {
         };
         let request = tonic::Request::new(request);
 
-        self.client.create_filesystem(request).await?;
+        let fs = self.client.create_filesystem(request).await?;
+        let fs = fs.into_inner();
 
-        Ok(())
+        Ok(fs)
     }
 
     pub async fn get_filesystem(&mut self, name: impl ToString) -> anyhow::Result<String> {
@@ -136,7 +137,7 @@ impl Client {
         blocksize: u64,
         //FIXME: MANGO-2456
         _properties: Vec<Option<VolumeProperty>>,
-    ) -> anyhow::Result<(), ZfsError> {
+    ) -> anyhow::Result<Volume, ZfsError> {
         let name = name.to_string();
         // let properties = properties
         //     .into_iter()
@@ -151,9 +152,10 @@ impl Client {
         };
         let request = tonic::Request::new(request);
 
-        self.client.create_volume(request).await?;
+        let vol = self.client.create_volume(request).await?;
+        let vol = vol.into_inner();
 
-        Ok(())
+        Ok(vol)
     }
 
     pub async fn get_volume(&mut self, name: impl ToString) -> anyhow::Result<String> {

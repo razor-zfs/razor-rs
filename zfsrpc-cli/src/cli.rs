@@ -271,10 +271,10 @@ impl Cli {
                     volmode.map(VolumeProperty::VolMode),
                 ];
 
-                client
+                let vol = client
                     .create_volume(&name, capacity, blocksize, properties)
                     .await?;
-                format!("Volume {} created", name)
+                format!("Volume {} created: \n{:?}", name, vol)
             }
             Command::DestroyFilesystem { name } => {
                 client.destroy_filesystem(&name).await?;
@@ -317,8 +317,8 @@ impl Cli {
                     zoned.map(FilesystemProperty::OnOff),
                 ];
 
-                client.create_filesystem(&name, properties).await?;
-                format!("Filesystem {} created", name)
+                let fs = client.create_filesystem(&name, properties).await?;
+                format!("Filesystem {} created\n{:?}", name, fs)
             }
             Command::MountFilesystem { name, mountpoint } => {
                 client.mount_filesystem(&name, &mountpoint).await?;

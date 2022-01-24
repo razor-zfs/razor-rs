@@ -1,7 +1,8 @@
 use anyhow::Result;
 
 use razor_zfs::{
-    zfs::FileSystemBuilder, zfs::VolumeBuilder, zfs::Zfs, zfs_type_t, ZfsDatasetHandle,
+    zfs::FileSystemBuilder, zfs::Filesystem, zfs::Volume, zfs::VolumeBuilder, zfs::Zfs, zfs_type_t,
+    ZfsDatasetHandle,
 };
 
 use crate::zfsrpc_proto::tonic_zfsrpc::{dataset, filesystem_property, volume_property};
@@ -105,13 +106,35 @@ impl ProtoVolume {
 
         Ok(vol)
     }
-}
 
-impl ProtoVolume {
     pub(crate) fn get(name: String) -> Result<Self, ZfsError> {
         let volume = Zfs::get_volume(&name)?;
 
-        let vol = Self {
+        Ok(volume.into())
+    }
+
+    pub(crate) fn create(
+        name: String,
+        capacity: u64,
+        blocksize: u64,
+        properties: impl IntoIterator<Item = VolumeProperty>,
+    ) -> Result<Self, ZfsError> {
+        let builder = Zfs::volume();
+
+        let volume = properties
+            .into_iter()
+            .filter_map(|property| property.property)
+            .try_fold(builder, Self::add_property)?
+            .blocksize(blocksize)
+            .create(name, capacity)?;
+
+        Ok(volume.into())
+    }
+}
+
+impl From<Volume> for ProtoVolume {
+    fn from(volume: Volume) -> Self {
+        Self {
             name: Some(volume.name().into()),
             available: Some(volume.available().into()),
             volsize: Some(volume.volsize().into()),
@@ -128,27 +151,7 @@ impl ProtoVolume {
             logicalreferenced: Some(volume.logicalreferenced().into()),
             objsetid: Some(volume.objsetid().into()),
             volmode: Some(volume.volmode().into()),
-        };
-
-        Ok(vol)
-    }
-
-    pub(crate) fn create(
-        name: String,
-        capacity: u64,
-        blocksize: u64,
-        properties: impl IntoIterator<Item = VolumeProperty>,
-    ) -> Result<(), ZfsError> {
-        let builder = Zfs::volume();
-
-        let _volume = properties
-            .into_iter()
-            .filter_map(|property| property.property)
-            .try_fold(builder, Self::add_property)?
-            .blocksize(blocksize)
-            .create(name, capacity)?;
-
-        Ok(())
+        }
     }
 }
 
@@ -204,57 +207,26 @@ impl ProtoFilesystem {
 
         Ok(fs)
     }
-}
 
-impl ProtoFilesystem {
     pub(crate) fn create(
         name: String,
-        _unused: u64,
         properties: impl IntoIterator<Item = FilesystemProperty>,
-    ) -> Result<(), ZfsError> {
+    ) -> Result<Self, ZfsError> {
         let builder = Zfs::filesystem();
 
-        let _fs = properties
+        let fs = properties
             .into_iter()
             .filter_map(|property| property.property)
             .try_fold(builder, Self::add_property)?
             .create(name)?;
 
-        Ok(())
+        Ok(fs.into())
     }
 
     pub(crate) fn get(name: String) -> Result<Self, ZfsError> {
         let fs = Zfs::get_filesystem(&name)?;
 
-        let fs = Self {
-            name: Some(fs.name().into()),
-            available: Some(fs.available().into()),
-            atime: Some(fs.atime().into()),
-            devices: Some(fs.devices().into()),
-            nbmand: Some(fs.nbmand().into()),
-            overlay: Some(fs.overlay().into()),
-            readonly: Some(fs.readonly().into()),
-            relatime: Some(fs.relatime().into()),
-            setuid: Some(fs.setuid().into()),
-            vscan: Some(fs.vscan().into()),
-            zoned: Some(fs.zoned().into()),
-            exec: Some(fs.exec().into()),
-            canmount: Some(fs.canmount().into()),
-            mounted: Some(fs.mounted().into()),
-            checksum: Some(fs.checksum().into()),
-            compression: Some(fs.compression().into()),
-            guid: Some(fs.guid().into()),
-            creation: Some(fs.creation().into()),
-            createtxg: Some(fs.createtxg().into()),
-            compressratio: Some(fs.compressratio().into()),
-            used: Some(fs.used().into()),
-            logicalused: Some(fs.logicalused().into()),
-            referenced: Some(fs.referenced().into()),
-            logicalreferenced: Some(fs.logicalreferenced().into()),
-            objsetid: Some(fs.objsetid().into()),
-        };
-
-        Ok(fs)
+        Ok(fs.into())
     }
 
     pub(crate) async fn mount(name: String, mountpoint: String) -> Result<(), ZfsError> {
@@ -299,5 +271,37 @@ impl ProtoFilesystem {
         debug!("Filesystem {} was unmounted", name);
 
         Ok(())
+    }
+}
+
+impl From<Filesystem> for ProtoFilesystem {
+    fn from(fs: Filesystem) -> Self {
+        Self {
+            name: Some(fs.name().into()),
+            available: Some(fs.available().into()),
+            atime: Some(fs.atime().into()),
+            devices: Some(fs.devices().into()),
+            nbmand: Some(fs.nbmand().into()),
+            overlay: Some(fs.overlay().into()),
+            readonly: Some(fs.readonly().into()),
+            relatime: Some(fs.relatime().into()),
+            setuid: Some(fs.setuid().into()),
+            vscan: Some(fs.vscan().into()),
+            zoned: Some(fs.zoned().into()),
+            exec: Some(fs.exec().into()),
+            canmount: Some(fs.canmount().into()),
+            mounted: Some(fs.mounted().into()),
+            checksum: Some(fs.checksum().into()),
+            compression: Some(fs.compression().into()),
+            guid: Some(fs.guid().into()),
+            creation: Some(fs.creation().into()),
+            createtxg: Some(fs.createtxg().into()),
+            compressratio: Some(fs.compressratio().into()),
+            used: Some(fs.used().into()),
+            logicalused: Some(fs.logicalused().into()),
+            referenced: Some(fs.referenced().into()),
+            logicalreferenced: Some(fs.logicalreferenced().into()),
+            objsetid: Some(fs.objsetid().into()),
+        }
     }
 }
