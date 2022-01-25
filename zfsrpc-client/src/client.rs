@@ -1,6 +1,6 @@
 use std::net::IpAddr;
 
-use crate::error::ZfsError;
+use crate::error::{Fixme, ZfsError};
 
 use super::proto::{
     self, zfs_rpc_client::ZfsRpcClient, BasicDatasetRequest, CreateFilesystemRequest,
@@ -62,15 +62,17 @@ impl Client {
     pub async fn create_filesystem(
         &mut self,
         path: impl ToString,
-        // FIXME: MANGO-2456
-        _properties: Vec<Option<FilesystemProperty>>,
+        properties: Vec<Option<FilesystemProperty>>,
     ) -> anyhow::Result<Filesystem, ZfsError> {
         let path = path.to_string();
-        // let properties = properties
-        //     .into_iter()
-        //     .filter_map(|item| item.map(From::from))
-        //     .collect();
-        let properties = vec![];
+        let properties: Vec<_> = properties
+            .into_iter()
+            .filter_map(|item| item.map(From::from))
+            .collect();
+
+        if !properties.is_empty() {
+            return Err(ZfsError::NotImplemented(Fixme::Mango2456));
+        }
         let request = CreateFilesystemRequest {
             name: path,
             properties,
@@ -135,20 +137,23 @@ impl Client {
         name: impl ToString,
         capacity: u64,
         blocksize: u64,
-        //FIXME: MANGO-2456
-        _properties: Vec<Option<VolumeProperty>>,
+        properties: Vec<Option<VolumeProperty>>,
     ) -> anyhow::Result<Volume, ZfsError> {
         let name = name.to_string();
-        // let properties = properties
-        //     .into_iter()
-        //     .filter_map(|item| item.map(From::from))
-        //     .collect();
-        let properties = vec![];
+        let properties: Vec<_> = properties
+            .into_iter()
+            .filter_map(|item| item.map(From::from))
+            .collect();
+
+        if !properties.is_empty() {
+            return Err(ZfsError::NotImplemented(Fixme::Mango2456));
+        }
+
         let request = CreateVolumeRequest {
             name,
             capacity,
-            properties,
             blocksize,
+            properties,
         };
         let request = tonic::Request::new(request);
 

@@ -2,13 +2,19 @@ use thiserror::Error;
 use tonic::{Code, Status};
 
 #[derive(Debug, Error)]
+pub enum Fixme {
+    #[error("dataset properties is not supported yet")]
+    Mango2456,
+}
+
+#[derive(Debug, Error)]
 pub enum ZfsError {
     #[error("{0:?}")]
     InternalError(Status),
     #[error("{0:?}")]
     AlreadyExists(Status),
     #[error("{0}")]
-    NotImplemented(String),
+    NotImplemented(Fixme),
 }
 
 impl From<Status> for ZfsError {
