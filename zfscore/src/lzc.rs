@@ -87,21 +87,13 @@ fn create_dataset(
     value_or_err((), rc)
 }
 
-pub fn snapshot(dataset: impl AsRef<str>) -> Result<()> {
+pub fn snapshot(snapshot: impl AsRef<str>) -> Result<()> {
     let mut snaps = NvList::new(NvFlag::UniqueName);
-    let nvl_res = NvList::new(NvFlag::UniqueName);
-
-    dbg!("adding boolean");
-    snaps.add_boolean(dataset.as_ref())?;
-    dbg!("after boolean addition");
-
-    let mut nvl_res = nvl_res.nvl();
-
-    let rc = unsafe { LIBZFS_CORE.lzc_snapshot(snaps.nvl(), std::ptr::null_mut(), &mut nvl_res) };
-
+    snaps.add_boolean(snapshot)?;
+    let props = ptr::null_mut();
+    let errlist = NvList::new(NvFlag::UniqueName);
+    let rc = unsafe { LIBZFS_CORE.lzc_snapshot(snaps.nvl(), props, &mut errlist.nvl()) };
     value_or_err((), rc)
-    //LIBZFS_CORE.lzc_snapshot(snaps, props, errlist)
-    //create_dataset(name, sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL, nvl)
 }
 
 pub fn dataset_exists(name: impl AsRef<str>) -> Result<()> {
