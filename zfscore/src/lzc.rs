@@ -59,6 +59,14 @@ impl Lzc {
     ) -> libc::c_int {
         sys::lzc_snapshot(snaps, props, errlist)
     }
+
+    unsafe fn lzc_bookmark(
+        &self,
+        bookmarks: *mut sys::nvlist_t,
+        errlist: *mut *mut sys::nvlist_t,
+    ) -> libc::c_int {
+        sys::lzc_bookmark(bookmarks, errlist)
+    }
 }
 
 pub fn version() -> libzfs::Version {
@@ -113,6 +121,13 @@ pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
     let name = cname.as_ptr();
     let rc = unsafe { LIBZFS_CORE.lzc_destroy(name) };
 
+    value_or_err((), rc)
+}
+
+pub fn bookmark(snapshot: impl AsRef<str>, bookmark: impl AsRef<str>) -> Result<()> {
+    let mut bookmarks = NvList::new(NvFlag::UniqueName);
+    bookmarks.add_string(bookmark, snapshot)?;
+    let rc = unsafe { LIBZFS_CORE.lzc_bookmark(bookmarks.nvl(), &mut ptr::null_mut()) };
     value_or_err((), rc)
 }
 
