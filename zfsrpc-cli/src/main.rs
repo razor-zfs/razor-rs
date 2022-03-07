@@ -28,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
     fmt()
         .with_env_filter(filter)
         .pretty()
-        .with_timer(fmt::time::ChronoUtc::default())
+        .with_timer(fmt::time::UtcTime::rfc_3339())
         .init();
 
     if let Err(e) = cli::Cli::execute().await {

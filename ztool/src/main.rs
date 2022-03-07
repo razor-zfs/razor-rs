@@ -26,7 +26,7 @@ async fn main() -> anyhow::Result<()> {
 
     fmt()
         .with_env_filter(filter)
-        .with_timer(fmt::time::ChronoUtc::default())
+        .with_timer(fmt::time::UtcTime::rfc_3339())
         .init();
 
     cli::Cli::execute().await

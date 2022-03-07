@@ -12,15 +12,15 @@ razor-property = {version = "0.1", path = "../property"}
 razor-zfscore = {version = "0.1", path = "../zfscore"}
 itertools = "0.10"
 thiserror = "1.0"
-tonic = "0.5"
+tonic = "0.6"
 paste = "1.0"
-prost = "0.8"
+prost = "0.9"
 tracing = "0.1"
 anyhow = "1.0"
 inspector = "0.1"
 
 [build-dependencies]
-tonic-build = "0.5"
+tonic-build = "0.6"
 
 [features]
 dirty = []

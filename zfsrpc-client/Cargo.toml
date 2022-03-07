@@ -5,11 +5,11 @@ edition = "2018"
 
 [dependencies]
 razor-property = { version = "0.1", path = "../property" }
-tonic = "0.5"
+tonic = "0.6"
 tracing = "0.1"
 anyhow = "1.0"
-prost = "0.8"
+prost = "0.9"
 thiserror = "1.0"
 
 [build-dependencies]
-tonic-build = "0.5"
+tonic-build = "0.6"

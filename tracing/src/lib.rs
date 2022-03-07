@@ -1,8 +1,3 @@
-// Copyright (c) 2021 RepliXio Ltd. All rights reserved.
-//
-// Use is subject to license terms.
-//
-
 #![cfg_attr(feature = "pedantic", warn(clippy::pedantic))]
 #![warn(clippy::use_self)]
 #![warn(clippy::map_flatten)]
@@ -28,7 +23,7 @@ pub fn init() -> anyhow::Result<Tracer<impl tracing::Subscriber>> {
 
     let builder = fmt()
         .with_env_filter(filter)
-        .with_timer(fmt::time::ChronoUtc::default())
+        .with_timer(fmt::time::UtcTime::rfc_3339())
         .with_filter_reloading();
 
     let handler = builder.reload_handle();

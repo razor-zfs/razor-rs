@@ -6,7 +6,7 @@ edition = "2018"
 [dependencies]
 tokio = { version = "1.9", features = ["macros", "rt-multi-thread"] }
 razor-zpool-client = { version = "0.1", path = "../zpool-client" }
-tracing-subscriber = "0.2"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "time"] }
 structopt = "0.3"
 walkdir = "2.3"
 tracing = "0.1"
