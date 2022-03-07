@@ -12,8 +12,7 @@ razor-tracing = {version = "0.1", path = "../tracing"}
 tokio = { version = "1.9", features = ["full"] }
 tonic = "0.5"
 tracing = "0.1"
-shadow-rs = "0.8"
+shadow-rs = "0.9"
 
 [build-dependencies]
-shadow-rs = "0.8"
-
+shadow-rs = "0.9"
