@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 use std::ffi;
+use std::os::unix::io::AsRawFd;
 use std::ptr;
 
 use nvpair::NvFlag;
@@ -67,6 +68,52 @@ impl Lzc {
     ) -> libc::c_int {
         sys::lzc_bookmark(bookmarks, errlist)
     }
+
+    unsafe fn lzc_send(
+        &self,
+        snapname: *const libc::c_char,
+        from: *const libc::c_char,
+        fd: libc::c_int,
+        flags: sys::lzc_send_flags,
+    ) -> libc::c_int {
+        sys::lzc_send(snapname, from, fd, flags)
+    }
+
+    unsafe fn lzc_send_resume(
+        &self,
+        snapname: *const libc::c_char,
+        from: *const libc::c_char,
+        fd: libc::c_int,
+        flags: sys::lzc_send_flags,
+        resumeobj: u64,
+        resumeoff: u64,
+    ) -> libc::c_int {
+        sys::lzc_send_resume(snapname, from, fd, flags, resumeobj, resumeoff)
+    }
+
+    unsafe fn lzc_receive(
+        &self,
+        snapname: *const libc::c_char,
+        props: *mut sys::nvlist_t,
+        origin: *const libc::c_char,
+        force: sys::boolean_t,
+        raw: sys::boolean_t,
+        fd: libc::c_int,
+    ) -> libc::c_int {
+        sys::lzc_receive(snapname, props, origin, force, raw, fd)
+    }
+
+    unsafe fn lzc_receive_resumable(
+        &self,
+        snapname: *const libc::c_char,
+        props: *mut sys::nvlist_t,
+        origin: *const libc::c_char,
+        force: sys::boolean_t,
+        raw: sys::boolean_t,
+        fd: libc::c_int,
+    ) -> libc::c_int {
+        sys::lzc_receive_resumable(snapname, props, origin, force, raw, fd)
+    }
 }
 
 pub fn version() -> libzfs::Version {
@@ -128,6 +175,118 @@ pub fn bookmark(snapshot: impl AsRef<str>, bookmark: impl AsRef<str>) -> Result<
     let mut bookmarks = NvList::new(NvFlag::UniqueName);
     bookmarks.add_string(bookmark, snapshot)?;
     let rc = unsafe { LIBZFS_CORE.lzc_bookmark(bookmarks.nvl(), &mut ptr::null_mut()) };
+    value_or_err((), rc)
+}
+
+pub fn send<S, F, T>(source: impl AsRef<str>, from: F, file: impl AsRawFd) -> Result<()>
+where
+    S: AsRef<str>,
+    F: Into<Option<T>>,
+    T: AsRef<str>,
+{
+    let source = ffi::CString::new(source.as_ref())?;
+    let from = match from.into() {
+        Some(from) => Some(ffi::CString::new(from.as_ref())?),
+        None => None,
+    };
+    let fd = file.as_raw_fd();
+    let flags = sys::lzc_send_flags::LZC_SEND_FLAG_EMBED_DATA
+        | sys::lzc_send_flags::LZC_SEND_FLAG_LARGE_BLOCK
+        | sys::lzc_send_flags::LZC_SEND_FLAG_COMPRESS;
+    let rc = unsafe {
+        let source = source.as_ptr();
+        let from = from.map_or(ptr::null(), |from| from.as_ptr());
+        LIBZFS_CORE.lzc_send(source, from, fd, flags)
+    };
+    value_or_err((), rc)
+}
+
+pub fn send_resume<S, F, T>(
+    source: impl AsRef<str>,
+    from: F,
+    file: impl AsRawFd,
+    resumeobj: u64,
+    resumeoff: u64,
+) -> Result<()>
+where
+    S: AsRef<str>,
+    F: Into<Option<T>>,
+    T: AsRef<str>,
+{
+    let source = ffi::CString::new(source.as_ref())?;
+    let from = match from.into() {
+        Some(from) => Some(ffi::CString::new(from.as_ref())?),
+        None => None,
+    };
+    let fd = file.as_raw_fd();
+    let flags = sys::lzc_send_flags::LZC_SEND_FLAG_EMBED_DATA
+        | sys::lzc_send_flags::LZC_SEND_FLAG_LARGE_BLOCK
+        | sys::lzc_send_flags::LZC_SEND_FLAG_COMPRESS;
+    let rc = unsafe {
+        let source = source.as_ptr();
+        let from = from.map_or(ptr::null(), |from| from.as_ptr());
+        LIBZFS_CORE.lzc_send_resume(source, from, fd, flags, resumeobj, resumeoff)
+    };
+    value_or_err((), rc)
+}
+
+pub fn receive<S, D>(
+    snapname: impl AsRef<str>,
+    origin: impl AsRef<str>,
+    force: bool,
+    raw: bool,
+    file: impl AsRawFd,
+) -> Result<()> {
+    let snapname = ffi::CString::new(snapname.as_ref())?;
+    let props = NvList::new(NvFlag::UniqueName);
+    let origin = ffi::CString::new(origin.as_ref())?;
+    let force = if force {
+        sys::boolean_t::B_TRUE
+    } else {
+        sys::boolean_t::B_FALSE
+    };
+    let raw = if raw {
+        sys::boolean_t::B_TRUE
+    } else {
+        sys::boolean_t::B_FALSE
+    };
+    let fd = file.as_raw_fd();
+    let rc = unsafe {
+        let snapname = snapname.as_ptr();
+        let origin = origin.as_ptr();
+        let props = props.nvl();
+        LIBZFS_CORE.lzc_receive(snapname, props, origin, force, raw, fd)
+    };
+    value_or_err((), rc)
+}
+
+pub fn receive_resumable(
+    snapname: impl AsRef<str>,
+    origin: impl AsRef<str>,
+    force: bool,
+    raw: bool,
+    file: impl AsRawFd,
+) -> Result<()> {
+    let snapname = ffi::CString::new(snapname.as_ref())?;
+    let props = NvList::new(NvFlag::UniqueName);
+    let origin = ffi::CString::new(origin.as_ref())?;
+    let force = if force {
+        sys::boolean_t::B_TRUE
+    } else {
+        sys::boolean_t::B_FALSE
+    };
+    let raw = if raw {
+        sys::boolean_t::B_TRUE
+    } else {
+        sys::boolean_t::B_FALSE
+    };
+    let fd = file.as_raw_fd();
+    let rc = unsafe {
+        let snapname = snapname.as_ptr();
+        let origin = origin.as_ptr();
+        let props = props.nvl();
+        LIBZFS_CORE.lzc_receive_resumable(snapname, props, origin, force, raw, fd)
+    };
     value_or_err((), rc)
 }
 

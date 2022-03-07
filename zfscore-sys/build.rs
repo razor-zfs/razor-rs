@@ -24,6 +24,7 @@ fn main() {
         .allowlist_type("zfs_prop_t")
         .allowlist_type("zfs_type_t")
         .bitfield_enum("zfs_type_t")
+        .bitfield_enum("lzc_send_flags")
         .allowlist_function("zfs_close")
         .allowlist_function("zfs_open")
         .allowlist_function(r#"zfs_iter_\w*"#)
