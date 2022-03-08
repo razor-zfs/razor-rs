@@ -5,7 +5,7 @@ edition = "2018"
 
 [dependencies]
 tokio = { version = "1.9", features = ["macros", "rt-multi-thread"] }
-razor-zfs= { version = "0.1.0", path = "../zfs" }
+razor-zfs = { version = "0.1.0", path = "../zfs" }
 prop-macro = {version = "0.1", path = "../prop-macro"}
 razor-tracing = {version = "0.1", path = "../tracing"}
 razor-property = {version = "0.1", path = "../property"}

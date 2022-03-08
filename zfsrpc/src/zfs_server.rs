@@ -7,15 +7,30 @@ use crate::zfs_server::error::ZfsError;
 
 use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 use super::zfsrpc_proto::tonic_zfsrpc::{
-    BasicDatasetRequest, CreateFilesystemRequest, CreateVolumeRequest, MountFilesystemRequest,
+    BasicDatasetRequest, CreateFilesystemRequest, CreateSnapshotRequest, CreateVolumeRequest,
+    ListDatasetsRequest, MountFilesystemRequest,
 };
-use super::zfsrpc_proto::tonic_zfsrpc::{Datasets, Empty, Filesystem, Volume};
+use super::zfsrpc_proto::tonic_zfsrpc::{Datasets, Empty, Filesystem, Snapshot, Volume};
 
 mod error;
 pub mod service;
 
+type ZfsRpcResult<T, E = ::tonic::Status> = ::std::result::Result<::tonic::Response<T>, E>;
+
 #[tonic::async_trait]
 impl ZfsRpc for service::ZfsRpcService {
+    async fn dataset_list(&self, _request: Request<Empty>) -> Result<Response<Datasets>, Status> {
+        let datasets = service::list()?;
+
+        Ok(Response::new(datasets))
+    }
+
+    async fn list_datasets(&self, request: Request<ListDatasetsRequest>) -> ZfsRpcResult<Datasets> {
+        let _request = request.into_inner();
+        let response = service::list().map(Response::new)?;
+        Ok(response)
+    }
+
     async fn create_volume(
         &self,
         request: Request<CreateVolumeRequest>,
@@ -42,6 +57,43 @@ impl ZfsRpc for service::ZfsRpcService {
         })?;
 
         Ok(Response::new(vol))
+    }
+
+    async fn get_volume(
+        &self,
+        request: Request<BasicDatasetRequest>,
+    ) -> Result<Response<Volume>, Status> {
+        let request = request.into_inner();
+        let span = debug_span!("get_volume");
+        let _guard = span.entered();
+        debug!(?request);
+
+        Ok(Response::new(Volume::get(request.name)?))
+    }
+
+    async fn destroy_volume(
+        &self,
+        request: Request<BasicDatasetRequest>,
+    ) -> Result<Response<Empty>, Status> {
+        let request = request.into_inner();
+        let span = debug_span!("destroy_volume");
+        let _guard = span.entered();
+        debug!(?request);
+
+        let path = request.name;
+        let res = service::destroy(path.clone());
+        match res {
+            Ok(_) => info!("Volume {} successfully deleted", path),
+            Err(ZfsError::NotFound(err)) => {
+                warn!("Volume {} not found (already deleted?) : {:?}", path, err)
+            }
+            Err(err) => {
+                error!("{:?}", err);
+                return Err(err.into());
+            }
+        }
+
+        Ok(Response::new(Empty {}))
     }
 
     async fn create_filesystem(
@@ -94,18 +146,6 @@ impl ZfsRpc for service::ZfsRpcService {
         Ok(Response::new(Filesystem::get(request.name)?))
     }
 
-    async fn get_volume(
-        &self,
-        request: Request<BasicDatasetRequest>,
-    ) -> Result<Response<Volume>, Status> {
-        let request = request.into_inner();
-        let span = debug_span!("get_volume");
-        let _guard = span.entered();
-        debug!(?request);
-
-        Ok(Response::new(Volume::get(request.name)?))
-    }
-
     async fn get_filesystem(
         &self,
         request: Request<BasicDatasetRequest>,
@@ -116,31 +156,6 @@ impl ZfsRpc for service::ZfsRpcService {
         debug!(?request);
 
         Ok(Response::new(Filesystem::get(request.name)?))
-    }
-
-    async fn destroy_volume(
-        &self,
-        request: Request<BasicDatasetRequest>,
-    ) -> Result<Response<Empty>, Status> {
-        let request = request.into_inner();
-        let span = debug_span!("destroy_volume");
-        let _guard = span.entered();
-        debug!(?request);
-
-        let path = request.name;
-        let res = service::destroy(path.clone());
-        match res {
-            Ok(_) => info!("Volume {} successfully deleted", path),
-            Err(ZfsError::NotFound(err)) => {
-                warn!("Volume {} not found (already deleted?) : {:?}", path, err)
-            }
-            Err(err) => {
-                error!("{:?}", err);
-                return Err(err.into());
-            }
-        }
-
-        Ok(Response::new(Empty {}))
     }
 
     async fn destroy_filesystem(
@@ -171,12 +186,6 @@ impl ZfsRpc for service::ZfsRpcService {
         Ok(Response::new(Empty {}))
     }
 
-    async fn dataset_list(&self, _request: Request<Empty>) -> Result<Response<Datasets>, Status> {
-        let datasets = service::list()?;
-
-        Ok(Response::new(datasets))
-    }
-
     async fn mount_filesystem(
         &self,
         request: Request<MountFilesystemRequest>,
@@ -199,5 +208,22 @@ impl ZfsRpc for service::ZfsRpcService {
         Filesystem::unmount(request.name).await?;
 
         Ok(Response::new(Empty {}))
+    }
+
+    async fn create_snapshot(
+        &self,
+        request: Request<CreateSnapshotRequest>,
+    ) -> ZfsRpcResult<Snapshot> {
+        let _request = request.into_inner();
+        todo!()
+    }
+
+    async fn get_snapshot(&self, request: Request<BasicDatasetRequest>) -> ZfsRpcResult<Snapshot> {
+        let _request = request.into_inner();
+        todo!()
+    }
+    async fn destroy_snapshot(&self, request: Request<BasicDatasetRequest>) -> ZfsRpcResult<Empty> {
+        let _request = request.into_inner();
+        todo!()
     }
 }

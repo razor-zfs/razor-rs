@@ -1,20 +1,29 @@
 use anyhow::Result;
 
+use razor_zfs::zfs;
 use razor_zfs::{
     zfs::FileSystemBuilder, zfs::Filesystem, zfs::Volume, zfs::VolumeBuilder, zfs::Zfs, zfs_type_t,
     ZfsDatasetHandle,
 };
 
-use crate::zfsrpc_proto::tonic_zfsrpc::{dataset, filesystem_property, volume_property};
-use crate::zfsrpc_proto::tonic_zfsrpc::{
-    Dataset as DatasetProto, Datasets as DatasetsProto, Filesystem as ProtoFilesystem,
-    FilesystemProperty, Volume as ProtoVolume, VolumeProperty,
-};
+use crate::zfsrpc_proto::tonic_zfsrpc::Dataset as DatasetProto;
+use crate::zfsrpc_proto::tonic_zfsrpc::Datasets as DatasetsProto;
+use crate::zfsrpc_proto::tonic_zfsrpc::Filesystem as ProtoFilesystem;
+use crate::zfsrpc_proto::tonic_zfsrpc::Volume as ProtoVolume;
+use crate::zfsrpc_proto::tonic_zfsrpc::{filesystem_property, volume_property};
+use crate::zfsrpc_proto::tonic_zfsrpc::{FilesystemProperty, VolumeProperty};
+
+use crate::zfsrpc_proto::Snapshot;
+// use crate::zfsrpc_proto::Volume;
+use crate::zfsrpc_proto::ZfsType;
+
 use razor_zfs::error::DatasetError;
 
 use tracing::debug;
 
 use super::error::ZfsError;
+
+mod snapshot;
 
 const FILESYSTEM: &str = "filesystem";
 const SNAPSHOT: &str = "snapshot";
@@ -53,7 +62,7 @@ pub(crate) fn destroy(name: String) -> Result<(), ZfsError> {
 impl From<ZfsDatasetHandle> for DatasetProto {
     fn from(ds: ZfsDatasetHandle) -> Self {
         let name = ds.name().to_string();
-        let r#type: dataset::Type = ds.r#type().into();
+        let r#type: ZfsType = ds.r#type().into();
         Self {
             name,
             r#type: r#type as i32,
@@ -61,7 +70,7 @@ impl From<ZfsDatasetHandle> for DatasetProto {
     }
 }
 
-impl From<zfs_type_t> for dataset::Type {
+impl From<zfs_type_t> for ZfsType {
     fn from(t: zfs_type_t) -> Self {
         match t {
             zfs_type_t::ZFS_TYPE_FILESYSTEM => Self::Filesystem,
@@ -74,7 +83,7 @@ impl From<zfs_type_t> for dataset::Type {
     }
 }
 
-impl From<&str> for dataset::Type {
+impl From<&str> for ZfsType {
     fn from(s: &str) -> Self {
         match s {
             FILESYSTEM => Self::Filesystem,

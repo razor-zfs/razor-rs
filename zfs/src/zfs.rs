@@ -51,4 +51,8 @@ impl Zfs {
     pub fn get_volume(name: impl AsRef<str>) -> Result<Volume> {
         Volume::get_volume(name)
     }
+
+    pub fn get_snapshot(name: impl AsRef<str>) -> Result<Snapshot> {
+        Snapshot::get(name)
+    }
 }

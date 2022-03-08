@@ -3,6 +3,7 @@ package zfsrpc;
 
 service ZfsRpc {
     rpc DatasetList (Empty) returns (Datasets);
+    rpc ListDatasets (ListDatasetsRequest) returns (Datasets);
     rpc CreateVolume (CreateVolumeRequest) returns (Volume);
     rpc GetVolume (BasicDatasetRequest) returns (Volume);
     rpc DestroyVolume (BasicDatasetRequest) returns (Empty);
@@ -11,10 +12,19 @@ service ZfsRpc {
     rpc DestroyFilesystem (BasicDatasetRequest) returns (Empty);
     rpc MountFilesystem (MountFilesystemRequest) returns (Empty);
     rpc UnmountFilesystem (BasicDatasetRequest) returns (Empty);
+    rpc CreateSnapshot (CreateSnapshotRequest) returns (Snapshot);
+    rpc GetSnapshot (BasicDatasetRequest) returns (Snapshot);
+    rpc DestroySnapshot (BasicDatasetRequest) returns (Empty);
 }
 
 message Datasets {
     repeated Dataset datasets = 1;
+}
+
+message ListDatasetsRequest {
+    string parent = 1;
+    bool recursive = 2;
+    ZfsType type = 3;
 }
 
 message CreateVolumeRequest {
@@ -38,17 +48,23 @@ message MountFilesystemRequest {
     string mountpoint = 2;
 }
 
-message Dataset {
-    enum Type {
-        FILESYSTEM = 0;
-        SNAPSHOT = 1;
-        VOLUME = 2;
-        POOL = 3;
-        BOOKMARK = 4;
-    };
-
+message CreateSnapshotRequest {
     string name = 1;
-    Type type = 2;
+    bool recursive = 2;
+}
+
+enum ZfsType {
+    UNKNOWN = 0;
+    FILESYSTEM = 1;
+    SNAPSHOT = 2;
+    VOLUME = 4;
+    POOL = 8;
+    BOOKMARK = 16;
+}
+
+message Dataset {
+    string name = 1;
+    ZfsType type = 2;
 }
 
 message Volume {
@@ -95,6 +111,12 @@ message Filesystem {
     DatasetProperties.Used used = 22;
     DatasetProperties.Referenced referenced = 23;
     DatasetProperties.LogicalReferenced logicalreferenced = 24;
+    DatasetProperties.ObjSetId objsetid = 25;
+}
+
+message Snapshot {
+    DatasetProperties.Name name = 1;
+    DatasetProperties.Guid guid = 18;
     DatasetProperties.ObjSetId objsetid = 25;
 }
 
@@ -323,7 +345,7 @@ message DatasetProperties {
     }
 
     message  ObjSetId {
-        uint64 value = 1;    
+        uint64 value = 1;
     }
 
     message VolSize {
@@ -337,4 +359,3 @@ message DatasetProperties {
 
 message Empty {}
 message Variant {}
-
