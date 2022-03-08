@@ -35,7 +35,7 @@ async fn main() -> anyhow::Result<()> {
     let rpc = service::ZfsRpcService::default();
     let zpool_rpc = zpool_server::ZpoolRpcService::default();
 
-    tracing::info!("Razor Server start version: {}", VERSION);
+    info!("Razor Server start version: {}", VERSION);
     log_build_facts();
 
     Server::builder()

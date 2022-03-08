@@ -9,6 +9,7 @@ pub use tonic_zfsrpc::Filesystem;
 pub use tonic_zfsrpc::Snapshot;
 pub use tonic_zfsrpc::Volume;
 pub use tonic_zfsrpc::ZfsType;
+
 pub mod tonic_zfsrpc {
     #![allow(clippy::return_self_not_must_use)]
     #![allow(unreachable_pub, clippy::use_self)]
