@@ -4,17 +4,23 @@ impl Volume {
     fn add_property(
         vol: VolumeBuilder,
         property: volume_property::Property,
-    ) -> Result<VolumeBuilder, DatasetError> {
+    ) -> Result<VolumeBuilder, zfs::DatasetError> {
         let vol = match property {
-            volume_property::Property::Checksum(property) => {
-                vol.checksum(property.value.ok_or_else(DatasetError::missing_value)?)
-            }
-            volume_property::Property::Compression(property) => {
-                vol.compression(property.value.ok_or_else(DatasetError::missing_value)?)
-            }
-            volume_property::Property::VolMode(property) => {
-                vol.volmode(property.value.ok_or_else(DatasetError::missing_value)?)
-            }
+            volume_property::Property::Checksum(property) => vol.checksum(
+                property
+                    .value
+                    .ok_or_else(zfs::DatasetError::missing_value)?,
+            ),
+            volume_property::Property::Compression(property) => vol.compression(
+                property
+                    .value
+                    .ok_or_else(zfs::DatasetError::missing_value)?,
+            ),
+            volume_property::Property::VolMode(property) => vol.volmode(
+                property
+                    .value
+                    .ok_or_else(zfs::DatasetError::missing_value)?,
+            ),
         };
 
         Ok(vol)

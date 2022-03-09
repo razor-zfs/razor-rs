@@ -1,18 +1,18 @@
+use std::os::unix::io::AsRawFd;
+
+use razor_property as property;
 use razor_zfscore::lzc;
 
 pub use dataset::Bookmark;
+pub use dataset::FileSystemBuilder;
 pub use dataset::Filesystem;
 pub use dataset::Snapshot;
 pub use dataset::Volume;
+pub use dataset::VolumeBuilder;
 
 use super::DatasetCollectorBuilder;
 use super::Result;
 use super::ZfsDatasetHandle;
-
-pub use dataset::FileSystemBuilder;
-pub use dataset::VolumeBuilder;
-
-use razor_property as property;
 
 mod dataset;
 

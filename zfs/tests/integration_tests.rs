@@ -7,7 +7,7 @@ use std::process::Command;
 use nanoid::nanoid;
 
 use razor_property as property;
-use razor_zfs::{error::DatasetError, zfs::*};
+use razor_zfs::*;
 use razor_zfscore::error::CoreError;
 use razor_zfscore_sys::zfs_type_t;
 

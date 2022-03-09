@@ -1,4 +1,4 @@
-use razor_zfs::error::DatasetError;
+use razor_zfs as zfs;
 use razor_zfscore::error::CoreError;
 
 use thiserror::Error;
@@ -7,11 +7,11 @@ use tonic::{Code, Status};
 #[derive(Error, Debug)]
 pub(crate) enum ZfsError {
     #[error("({0})")]
-    Internal(DatasetError),
+    Internal(zfs::DatasetError),
     #[error("({0})")]
-    AlreadyExists(DatasetError),
+    AlreadyExists(zfs::DatasetError),
     #[error("({0})")]
-    NotFound(DatasetError),
+    NotFound(zfs::DatasetError),
     #[error("({0})")]
     MountFs(std::io::Error),
 }
@@ -19,13 +19,13 @@ pub(crate) enum ZfsError {
 const C_ENOENT: i32 = 2;
 const C_EEXIST: i32 = 17;
 
-impl From<DatasetError> for ZfsError {
-    fn from(err: DatasetError) -> Self {
+impl From<zfs::DatasetError> for ZfsError {
+    fn from(err: zfs::DatasetError) -> Self {
         match err {
-            DatasetError::CoreErr(CoreError::LibcError(rc, _)) if rc == C_EEXIST => {
+            zfs::DatasetError::CoreErr(CoreError::LibcError(rc, _)) if rc == C_EEXIST => {
                 Self::AlreadyExists(err)
             }
-            DatasetError::CoreErr(CoreError::LibcError(rc, _)) if rc == C_ENOENT => {
+            zfs::DatasetError::CoreErr(CoreError::LibcError(rc, _)) if rc == C_ENOENT => {
                 Self::NotFound(err)
             }
             _ => Self::Internal(err),
@@ -35,7 +35,7 @@ impl From<DatasetError> for ZfsError {
 
 impl From<CoreError> for ZfsError {
     fn from(err: CoreError) -> Self {
-        Self::Internal(DatasetError::CoreErr(err))
+        Self::Internal(zfs::DatasetError::CoreErr(err))
     }
 }
 

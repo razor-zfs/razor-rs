@@ -20,7 +20,16 @@ use razor_zfscore::DatasetCollectorBuilder;
 pub use razor_zfscore::zfs_type_t;
 pub use razor_zfscore::ZfsDatasetHandle;
 
-pub mod error;
-pub mod zfs;
+pub use error::DatasetError;
+pub use zfs::Bookmark;
+pub use zfs::FileSystemBuilder;
+pub use zfs::Filesystem;
+pub use zfs::Snapshot;
+pub use zfs::Volume;
+pub use zfs::VolumeBuilder;
+pub use zfs::Zfs;
 
-pub type Result<T> = std::result::Result<T, error::DatasetError>;
+mod error;
+mod zfs;
+
+pub type Result<T> = std::result::Result<T, DatasetError>;

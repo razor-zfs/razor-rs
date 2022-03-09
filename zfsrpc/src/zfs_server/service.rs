@@ -1,10 +1,7 @@
 use anyhow::Result;
 
-use razor_zfs::zfs;
-use razor_zfs::{
-    zfs::FileSystemBuilder, zfs::Filesystem, zfs::VolumeBuilder, zfs::Zfs, zfs_type_t,
-    ZfsDatasetHandle,
-};
+use razor_zfs as zfs;
+use zfs::{zfs_type_t, FileSystemBuilder, Filesystem, VolumeBuilder, Zfs, ZfsDatasetHandle};
 
 use crate::zfsrpc_proto::tonic_zfsrpc::Dataset as DatasetProto;
 use crate::zfsrpc_proto::tonic_zfsrpc::Datasets as DatasetsProto;
@@ -15,8 +12,6 @@ use crate::zfsrpc_proto::tonic_zfsrpc::{FilesystemProperty, VolumeProperty};
 use crate::zfsrpc_proto::Snapshot;
 use crate::zfsrpc_proto::Volume;
 use crate::zfsrpc_proto::ZfsType;
-
-use razor_zfs::error::DatasetError;
 
 use tracing::debug;
 
@@ -100,46 +95,56 @@ impl ProtoFilesystem {
     pub(crate) fn add_property(
         fs: FileSystemBuilder,
         property: filesystem_property::Property,
-    ) -> Result<FileSystemBuilder, DatasetError> {
+    ) -> Result<FileSystemBuilder, zfs::DatasetError> {
         let fs = match property {
             filesystem_property::Property::ATime(atime) => {
-                fs.atime(atime.value.ok_or_else(DatasetError::missing_value)?)
+                fs.atime(atime.value.ok_or_else(zfs::DatasetError::missing_value)?)
             }
-            filesystem_property::Property::CanMount(canmount) => {
-                fs.canmount(canmount.value.ok_or_else(DatasetError::missing_value)?)
-            }
-            filesystem_property::Property::Checksum(checksum) => {
-                fs.checksum(checksum.value.ok_or_else(DatasetError::missing_value)?)
-            }
-            filesystem_property::Property::Compression(compression) => {
-                fs.compression(compression.value.ok_or_else(DatasetError::missing_value)?)
-            }
+            filesystem_property::Property::CanMount(canmount) => fs.canmount(
+                canmount
+                    .value
+                    .ok_or_else(zfs::DatasetError::missing_value)?,
+            ),
+            filesystem_property::Property::Checksum(checksum) => fs.checksum(
+                checksum
+                    .value
+                    .ok_or_else(zfs::DatasetError::missing_value)?,
+            ),
+            filesystem_property::Property::Compression(compression) => fs.compression(
+                compression
+                    .value
+                    .ok_or_else(zfs::DatasetError::missing_value)?,
+            ),
             filesystem_property::Property::Devices(devices) => {
-                fs.devices(devices.value.ok_or_else(DatasetError::missing_value)?)
+                fs.devices(devices.value.ok_or_else(zfs::DatasetError::missing_value)?)
             }
             filesystem_property::Property::Exec(exec) => {
-                fs.exec(exec.value.ok_or_else(DatasetError::missing_value)?)
+                fs.exec(exec.value.ok_or_else(zfs::DatasetError::missing_value)?)
             }
             filesystem_property::Property::Nbmand(nbmand) => {
-                fs.nbmand(nbmand.value.ok_or_else(DatasetError::missing_value)?)
+                fs.nbmand(nbmand.value.ok_or_else(zfs::DatasetError::missing_value)?)
             }
             filesystem_property::Property::Overlay(overlay) => {
-                fs.overlay(overlay.value.ok_or_else(DatasetError::missing_value)?)
+                fs.overlay(overlay.value.ok_or_else(zfs::DatasetError::missing_value)?)
             }
-            filesystem_property::Property::Readonly(readonly) => {
-                fs.readonly(readonly.value.ok_or_else(DatasetError::missing_value)?)
-            }
-            filesystem_property::Property::Relatime(relatime) => {
-                fs.relatime(relatime.value.ok_or_else(DatasetError::missing_value)?)
-            }
+            filesystem_property::Property::Readonly(readonly) => fs.readonly(
+                readonly
+                    .value
+                    .ok_or_else(zfs::DatasetError::missing_value)?,
+            ),
+            filesystem_property::Property::Relatime(relatime) => fs.relatime(
+                relatime
+                    .value
+                    .ok_or_else(zfs::DatasetError::missing_value)?,
+            ),
             filesystem_property::Property::Setuid(setuid) => {
-                fs.setuid(setuid.value.ok_or_else(DatasetError::missing_value)?)
+                fs.setuid(setuid.value.ok_or_else(zfs::DatasetError::missing_value)?)
             }
             filesystem_property::Property::Vscan(vscan) => {
-                fs.vscan(vscan.value.ok_or_else(DatasetError::missing_value)?)
+                fs.vscan(vscan.value.ok_or_else(zfs::DatasetError::missing_value)?)
             }
             filesystem_property::Property::Zoned(zoned) => {
-                fs.zoned(zoned.value.ok_or_else(DatasetError::missing_value)?)
+                fs.zoned(zoned.value.ok_or_else(zfs::DatasetError::missing_value)?)
             }
             // Dummy for now
             filesystem_property::Property::OnOff(_) => fs,
