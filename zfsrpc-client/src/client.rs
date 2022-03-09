@@ -1,5 +1,7 @@
 use std::net::IpAddr;
 
+use anyhow::Context;
+
 use crate::error::{Fixme, ZfsError};
 
 use super::proto::{
@@ -183,5 +185,35 @@ impl Client {
         self.client.destroy_volume(request).await?;
 
         Ok(())
+    }
+
+    pub async fn create_snapshot(
+        &mut self,
+        name: String,
+        recursive: bool,
+    ) -> anyhow::Result<proto::Snapshot> {
+        let message = proto::CreateSnapshotRequest { name, recursive };
+        let request = tonic::Request::new(message);
+
+        self.client
+            .create_snapshot(request)
+            .await
+            .map(|response| response.into_inner())
+            .context("Create snapshot")
+    }
+
+    pub async fn list_snapshot(
+        &mut self,
+        _name: Option<String>,
+    ) -> anyhow::Result<proto::Snapshot> {
+        anyhow::bail!("Not implemented yet")
+    }
+
+    pub async fn show_snapshot(&mut self, _name: String) -> anyhow::Result<proto::Snapshot> {
+        anyhow::bail!("Not implemented yet")
+    }
+
+    pub async fn destroy_snapshot(&mut self, _name: String) -> anyhow::Result<proto::Snapshot> {
+        anyhow::bail!("Not implemented yet")
     }
 }

@@ -16,12 +16,10 @@
 pub mod client;
 pub mod error;
 
+mod proto;
 mod traits;
-mod zfsrpc_proto;
 
 pub use razor_property as property;
-
-pub(crate) use zfsrpc_proto::tonic_zfsrpc as proto;
 
 #[derive(Debug)]
 pub enum VolumeProperty {

@@ -244,6 +244,31 @@ enum Command {
         #[clap(help = "Volume name")]
         name: String,
     },
+
+    #[clap(about = "Create snapshot", visible_aliases = &["cs", "create-snap"])]
+    CreateSnapshot {
+        #[clap(help = "Snapshot name")]
+        name: String,
+        #[clap(help = "Recursive snapshot", long, short)]
+        recursive: bool,
+    },
+
+    #[clap(about = "Destroy snapshot", visible_aliases = &["ds", "destroy-snap"])]
+    DestroySnapshot {
+        #[clap(help = "Snapshot name")]
+        name: String,
+    },
+
+    #[clap(about = "List snapshots", visible_aliases = &["ls", "list-snap"])]
+    ListSnapshot {
+        #[clap(help = "Dataset name")]
+        name: Option<String>,
+    },
+    #[clap(about = "Show snapshot", visible_aliases = &["ss", "show-snap"])]
+    ShowSnapshot {
+        #[clap(help = "Snapshot name")]
+        name: String,
+    },
 }
 
 impl Cli {
@@ -328,6 +353,22 @@ impl Cli {
                 client.unmount_filesystem(&name).await?;
                 format!("Filesystem {} is unmounted", name)
             }
+            Command::CreateSnapshot { name, recursive } => client
+                .create_snapshot(name, recursive)
+                .await
+                .map(|snapshot| format!("{snapshot:?}"))?,
+            Command::DestroySnapshot { name } => client
+                .destroy_snapshot(name)
+                .await
+                .map(|snapshot| format!("{snapshot:?}"))?,
+            Command::ListSnapshot { name } => client
+                .list_snapshot(name)
+                .await
+                .map(|snapshot| format!("{snapshot:?}"))?,
+            Command::ShowSnapshot { name } => client
+                .show_snapshot(name)
+                .await
+                .map(|snapshot| format!("{snapshot:?}"))?,
         };
 
         info!(?resp);
