@@ -1,16 +1,22 @@
-use itertools::Itertools;
 use std::path::{Path, PathBuf};
+
+use itertools::Itertools;
 use tonic::{Request, Response, Status};
 use tracing::{debug, debug_span, error, info, warn};
 
 use crate::zfs_server::error::ZfsError;
+use crate::zfsrpc_proto::SendRequest;
+use crate::zfsrpc_proto::SendSegment;
+use crate::zfsrpc_proto::Snapshot;
+use crate::zfsrpc_proto::Volume;
+// use crate::zfsrpc_proto::ZfsType;
 
 use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 use super::zfsrpc_proto::tonic_zfsrpc::{
     BasicDatasetRequest, CreateFilesystemRequest, CreateSnapshotRequest, CreateVolumeRequest,
     ListDatasetsRequest, MountFilesystemRequest,
 };
-use super::zfsrpc_proto::tonic_zfsrpc::{Datasets, Empty, Filesystem, Snapshot, Volume};
+use super::zfsrpc_proto::tonic_zfsrpc::{Datasets, Empty, Filesystem};
 
 mod error;
 pub mod service;
@@ -19,6 +25,8 @@ type ZfsRpcResult<T, E = ::tonic::Status> = ::std::result::Result<::tonic::Respo
 
 #[tonic::async_trait]
 impl ZfsRpc for service::ZfsRpcService {
+    type SendStream = service::SendStream;
+
     async fn dataset_list(&self, _request: Request<Empty>) -> Result<Response<Datasets>, Status> {
         let datasets = service::list()?;
 
@@ -225,5 +233,9 @@ impl ZfsRpc for service::ZfsRpcService {
     async fn destroy_snapshot(&self, request: Request<BasicDatasetRequest>) -> ZfsRpcResult<Empty> {
         let _request = request.into_inner();
         todo!()
+    }
+
+    async fn send(&self, request: Request<SendRequest>) -> ZfsRpcResult<Self::SendStream> {
+        request.into_inner().exec().await
     }
 }

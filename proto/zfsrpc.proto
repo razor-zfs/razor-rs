@@ -15,6 +15,7 @@ service ZfsRpc {
     rpc CreateSnapshot (CreateSnapshotRequest) returns (Snapshot);
     rpc GetSnapshot (BasicDatasetRequest) returns (Snapshot);
     rpc DestroySnapshot (BasicDatasetRequest) returns (Empty);
+    rpc Send (SendRequest) returns (stream SendSegment);
 }
 
 message Datasets {
@@ -118,6 +119,17 @@ message Snapshot {
     DatasetProperties.Name name = 1;
     DatasetProperties.Guid guid = 18;
     DatasetProperties.ObjSetId objsetid = 25;
+}
+
+message SendRequest {
+    string from = 1;
+    string source = 2;
+}
+
+message SendSegment {
+    string name = 1;
+    fixed64 sequence = 2;
+    bytes buffer= 3;
 }
 
 message VolumeProperty {

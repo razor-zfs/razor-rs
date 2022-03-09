@@ -178,24 +178,24 @@ pub fn bookmark(snapshot: impl AsRef<str>, bookmark: impl AsRef<str>) -> Result<
     value_or_err((), rc)
 }
 
-pub fn send<S, F, T>(source: impl AsRef<str>, from: F, file: impl AsRawFd) -> Result<()>
+pub fn send<S, F, U>(source: S, from: Option<F>, file: U) -> Result<()>
 where
     S: AsRef<str>,
-    F: Into<Option<T>>,
-    T: AsRef<str>,
+    F: AsRef<str>,
+    U: AsRawFd,
 {
     let source = ffi::CString::new(source.as_ref())?;
-    let from = match from.into() {
+    let from = match from {
         Some(from) => Some(ffi::CString::new(from.as_ref())?),
         None => None,
     };
-    let fd = file.as_raw_fd();
     let flags = sys::lzc_send_flags::LZC_SEND_FLAG_EMBED_DATA
         | sys::lzc_send_flags::LZC_SEND_FLAG_LARGE_BLOCK
         | sys::lzc_send_flags::LZC_SEND_FLAG_COMPRESS;
     let rc = unsafe {
         let source = source.as_ptr();
         let from = from.map_or(ptr::null(), |from| from.as_ptr());
+        let fd = file.as_raw_fd();
         LIBZFS_CORE.lzc_send(source, from, fd, flags)
     };
     value_or_err((), rc)

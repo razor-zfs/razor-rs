@@ -55,4 +55,14 @@ impl Zfs {
     pub fn get_snapshot(name: impl AsRef<str>) -> Result<Snapshot> {
         Snapshot::get(name)
     }
+
+    pub fn send<S, F, U>(source: S, from: Option<F>, file: U) -> Result<()>
+    where
+        S: AsRef<str>,
+        F: AsRef<str>,
+        U: AsRawFd,
+    {
+        lzc::send(source, from, file)?;
+        Ok(())
+    }
 }

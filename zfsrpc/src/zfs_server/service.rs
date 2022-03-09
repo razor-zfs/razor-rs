@@ -17,6 +17,11 @@ use tracing::debug;
 
 use super::error::ZfsError;
 
+use super::*;
+
+pub use send::SendStream;
+
+mod send;
 mod snapshot;
 mod volume;
 

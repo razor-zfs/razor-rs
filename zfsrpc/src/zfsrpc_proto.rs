@@ -6,6 +6,8 @@ pub use tonic_zfsrpc::CreateSnapshotRequest;
 pub use tonic_zfsrpc::CreateVolumeRequest;
 pub use tonic_zfsrpc::Dataset;
 pub use tonic_zfsrpc::Filesystem;
+pub use tonic_zfsrpc::SendRequest;
+pub use tonic_zfsrpc::SendSegment;
 pub use tonic_zfsrpc::Snapshot;
 pub use tonic_zfsrpc::Volume;
 pub use tonic_zfsrpc::ZfsType;

@@ -1,23 +1,27 @@
 [package]
 name = "razor-zfsrpc"
 version = "0.1.3"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
+anyhow = "1.0"
+async-stream = "0.3"
+itertools = "0.10"
 tokio = { version = "1.9", features = ["macros", "rt-multi-thread"] }
+tokio-pipe = "0.2"
+tokio-stream = "0.1"
+tokio-util = { version = "0.7", features = ["io"] }
+thiserror = "1.0"
+tonic = "0.6"
+# paste = "1.0"
+prost = "0.9"
+tracing = "0.1"
+
 razor-zfs = { version = "0.1.0", path = "../zfs" }
 prop-macro = {version = "0.1", path = "../prop-macro"}
 razor-tracing = {version = "0.1", path = "../tracing"}
 razor-property = {version = "0.1", path = "../property"}
 razor-zfscore = {version = "0.1", path = "../zfscore"}
-itertools = "0.10"
-thiserror = "1.0"
-tonic = "0.6"
-paste = "1.0"
-prost = "0.9"
-tracing = "0.1"
-anyhow = "1.0"
-inspector = "0.1"
 
 [build-dependencies]
 tonic-build = "0.6"

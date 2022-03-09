@@ -276,12 +276,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "futures"
-version = "0.1.31"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a471a38ef8ed83cd6e40aa59c1ffe17db6855c18e3604d9c4ed8c08ebc28678"
-
-[[package]]
 name = "futures-channel"
 version = "0.3.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -494,15 +488,6 @@ checksum = "282a6247722caba404c065016bbfa522806e51714c34f5dfc3e4a3a46fcb4223"
 dependencies = [
  "autocfg",
  "hashbrown",
-]
-
-[[package]]
-name = "inspector"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "486a17a1cc44ceee64ae5485dbfd87f56723fc7c105906b3a312082119587ee1"
-dependencies = [
- "futures",
 ]
 
 [[package]]
@@ -764,12 +749,6 @@ dependencies = [
  "smallvec",
  "windows-sys",
 ]
-
-[[package]]
-name = "paste"
-version = "1.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0744126afe1a6dd7f394cb50a716dbe086cb06e255e53d8d0185d82828358fb5"
 
 [[package]]
 name = "peeking_take_while"
@@ -1084,9 +1063,8 @@ name = "razor-zfsrpc"
 version = "0.1.3"
 dependencies = [
  "anyhow",
- "inspector",
+ "async-stream",
  "itertools",
- "paste",
  "prop-macro",
  "prost",
  "razor-property",
@@ -1095,6 +1073,9 @@ dependencies = [
  "razor-zfscore",
  "thiserror",
  "tokio",
+ "tokio-pipe",
+ "tokio-stream",
+ "tokio-util 0.7.0",
  "tonic",
  "tonic-build",
  "tracing",
@@ -1522,6 +1503,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "tokio-pipe"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bcfba5650b64bdf040d5df44885d71fe193ec28c267477ee03217d51ffb1b30f"
+dependencies = [
+ "libc",
+ "tokio",
 ]
 
 [[package]]
