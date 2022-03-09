@@ -1,16 +1,16 @@
 [package]
 name = "razor-ztool"
 version = "0.1.3"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
+anyhow = "1.0"
+clap = { version = "3.1", features = ["derive"] }
 tokio = { version = "1.9", features = ["macros", "rt-multi-thread"] }
 razor-zpool-client = { version = "0.1", path = "../zpool-client" }
 tracing-subscriber = { version = "0.3", features = ["env-filter", "time"] }
-structopt = "0.3"
 walkdir = "2.3"
 tracing = "0.1"
-anyhow = "1.0"
 
 [features]
 dirty = []

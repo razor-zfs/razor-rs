@@ -1,49 +1,49 @@
+use clap::{Parser, Subcommand};
 use razor_zfsrpc_client::{
     client::Client as ZfsClient, property, FilesystemProperty, VolumeProperty,
 };
 
-use structopt::StructOpt;
 #[allow(unused)]
 use tracing::{error, info, trace, warn};
 
 const ABOUT: &str = "zfs rpc CLI tool";
 
-#[derive(Debug, StructOpt)]
-#[structopt(about = ABOUT)]
+#[derive(Debug, Parser)]
+#[clap(about = ABOUT)]
 pub(crate) struct Cli {
-    #[structopt(long, short, about = "Connect to server port", default_value = "50051")]
+    #[clap(long, short, help = "Connect to server port", default_value = "50051")]
     port: String,
-    #[structopt(subcommand)]
+    #[clap(subcommand)]
     command: Command,
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Debug, Subcommand)]
 enum Command {
-    #[structopt(
+    #[clap(
         about = "List of all datasets",
         aliases = &["list"])]
     ZfsList,
 
-    #[structopt(
+    #[clap(
         about = "Create new filesystem",
         aliases = &["cfs"],
         display_order = 20)]
     CreateFilesystem {
-        #[structopt(help = "Filesystem name")]
+        #[clap(help = "Filesystem name")]
         name: String,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls whether the access time for files is updated when they are read",
             possible_values = &["on", "off"]
         )]
         atime: Option<property::OnOff>,
-        #[structopt(
+        #[clap(
             long,
             help = "If this property is set to off, the file system cannot be mounted, and is ignored by zfs mount -a",
             possible_values = &["on", "off", "noauto"]
         )]
         canmount: Option<property::OnOffNoAuto>,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls the checksum used to verify data integrity",
             possible_values = &[
@@ -59,7 +59,7 @@ enum Command {
             ]
         )]
         checksum: Option<property::CheckSum>,
-        #[structopt(long,
+        #[clap(long,
             help = "Controls the compression algorithm used for this dataset",
             possible_values = &[
                 "on",
@@ -82,55 +82,55 @@ enum Command {
             ]
         )]
         compression: Option<property::Compression>,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls whether device nodes can be opened on this file system",
             possible_values = &["on", "off"]
         )]
         devices: Option<property::OnOff>,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls whether processes can be executed from within this file system",
             possible_values = &["on", "off"]
         )]
         exec: Option<property::OnOff>,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls whether the file system should be mounted with nbmand (Non Blocking mandatory locks)",
             possible_values = &["on", "off"]
         )]
         nbmand: Option<property::OnOff>,
-        #[structopt(
+        #[clap(
             long,
             help = "Allow mounting on a busy directory or a directory which already contains files or directories",
             possible_values = &["on", "off"]
         )]
         overlay: Option<property::OnOff>,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls whether this dataset can be modified",
             possible_values = &["on", "off"]
         )]
         readonly: Option<property::OnOff>,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls the manner in which the access time is updated when atime=on is set",
             possible_values = &["on", "off"]
         )]
         relatime: Option<property::OnOff>,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls whether the setuid bit is respected for the file system",
             possible_values = &["on", "off"]
         )]
         setuid: Option<property::OnOff>,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls whether regular files should be scanned for viruses when a file is opened and closed",
             possible_values = &["on", "off"]
         )]
         vscan: Option<property::OnOff>,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls whether the dataset is managed from a non-global zone",
             possible_values = &["on", "off"]
@@ -138,42 +138,42 @@ enum Command {
         zoned: Option<property::OnOff>,
     },
 
-    #[structopt(about = "Get filesystem properties", aliases = &["gfs", "get-fs"], display_order(30))]
+    #[clap(about = "Get filesystem properties", aliases = &["gfs", "get-fs"], display_order(30))]
     GetFilesystem {
-        #[structopt(help = "Filesystem name")]
+        #[clap(help = "Filesystem name")]
         name: String,
     },
 
-    #[structopt(about = "Destroy filesystem", aliases = &["dfs", "destroy-fs"], display_order(31))]
+    #[clap(about = "Destroy filesystem", aliases = &["dfs", "destroy-fs"], display_order(31))]
     DestroyFilesystem {
-        #[structopt(help = "Filesystem name")]
+        #[clap(help = "Filesystem name")]
         name: String,
     },
-    #[structopt(about = "Mounting filesystem", aliases = &["mfs", "mount-fs"], display_order(32))]
+    #[clap(about = "Mounting filesystem", aliases = &["mfs", "mount-fs"], display_order(32))]
     MountFilesystem {
-        #[structopt(help = "Filesystem name")]
+        #[clap(help = "Filesystem name")]
         name: String,
-        #[structopt(help = "filesystem mountpoint")]
+        #[clap(help = "filesystem mountpoint")]
         mountpoint: String,
     },
-    #[structopt(about = "Unmounting filesystem", aliases = &["umfs", "unmount-fs"], display_order(32))]
+    #[clap(about = "Unmounting filesystem", aliases = &["umfs", "unmount-fs"], display_order(32))]
     UnmountFilesystem {
-        #[structopt(help = "Filesystem name")]
+        #[clap(help = "Filesystem name")]
         name: String,
     },
-    #[structopt(
+    #[clap(
         about = "Create new volume",
         aliases = &["cv"],
         display_order = 20)]
     CreateVolume {
-        #[structopt(help = "Volume name")]
+        #[clap(help = "Volume name")]
         name: String,
-        #[structopt(
+        #[clap(
             long,
             help = "The capacity can only be set to a multiple of volblocksize"
         )]
         capacity: u64,
-        #[structopt(
+        #[clap(
             long,
             help = "Controls the checksum used to verify data integrity",
             possible_values = &[
@@ -189,7 +189,7 @@ enum Command {
             ],
         )]
         checksum: Option<property::CheckSum>,
-        #[structopt(long,
+        #[clap(long,
             help = "Controls the compression algorithm used for this dataset",
             possible_values = &[
                 "on",
@@ -212,7 +212,7 @@ enum Command {
             ]
         )]
         compression: Option<property::Compression>,
-        #[structopt(long,
+        #[clap(long,
             help = "This property specifies how volumes should be exposed to the OS",
             possible_values = &[
                 "default",
@@ -224,7 +224,7 @@ enum Command {
             ]
         )]
         volmode: Option<property::VolMode>,
-        #[structopt(long,
+        #[clap(long,
             help = "Any power of 2 from 512 bytes to 128 Kbytes is valid",
             default_value = "8192",
             aliases = &["bs"],
@@ -232,23 +232,23 @@ enum Command {
         blocksize: u64,
     },
 
-    #[structopt(
+    #[clap(
         about = "Get volume properties", aliases = &["gv", "get-vol"], display_order(21))]
     GetVolume {
-        #[structopt(help = "Volume name")]
+        #[clap(help = "Volume name")]
         name: String,
     },
 
-    #[structopt(about = "Destroy volume", aliases = &["dv", "destroy-vol"], display_order(22))]
+    #[clap(about = "Destroy volume", aliases = &["dv", "destroy-vol"], display_order(22))]
     DestroyVolume {
-        #[structopt(help = "Volume name")]
+        #[clap(help = "Volume name")]
         name: String,
     },
 }
 
 impl Cli {
     pub(crate) async fn execute() -> anyhow::Result<()> {
-        let this = Self::from_args();
+        let this = Self::parse();
         trace!("{:?}", this);
 
         let mut client = ZfsClient::new(this.port).await;
