@@ -216,4 +216,19 @@ impl Client {
     pub async fn destroy_snapshot(&mut self, _name: String) -> anyhow::Result<proto::Snapshot> {
         anyhow::bail!("Not implemented yet")
     }
+
+    pub async fn send_snapshot(
+        &mut self,
+        source: String,
+        from: Option<String>,
+    ) -> anyhow::Result<tonic::Streaming<proto::SendSegment>> {
+        let from = from.unwrap_or_default();
+        let message = proto::SendRequest { from, source };
+        let request = tonic::Request::new(message);
+        self.client
+            .send(request)
+            .await
+            .map(|response| response.into_inner())
+            .context("Send Snapshot")
+    }
 }

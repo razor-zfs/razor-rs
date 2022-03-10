@@ -1,10 +1,15 @@
+use std::io::Cursor;
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 use razor_zfsrpc_client::{
     client::Client as ZfsClient, property, FilesystemProperty, VolumeProperty,
 };
+use tokio::fs;
+use tokio::io;
 
 #[allow(unused)]
-use tracing::{error, info, trace, warn};
+use tracing::{debug, error, info, trace, warn};
 
 const ABOUT: &str = "zfs rpc CLI tool";
 
@@ -269,6 +274,20 @@ enum Command {
         #[clap(help = "Snapshot name")]
         name: String,
     },
+
+    #[clap(about = "Send snapshot")]
+    Send {
+        #[clap(help = "Source snapshot name")]
+        source: String,
+        #[clap(help = "Output data file")]
+        output: PathBuf,
+        #[clap(
+            help = "Incremental send starting point - can be snapshot or bookmark",
+            long,
+            short
+        )]
+        incremental: Option<String>,
+    },
 }
 
 impl Cli {
@@ -369,10 +388,38 @@ impl Cli {
                 .show_snapshot(name)
                 .await
                 .map(|snapshot| format!("{snapshot:?}"))?,
+            Command::Send {
+                source,
+                output,
+                incremental,
+            } => process_send(&mut client, source, output, incremental).await?,
         };
 
         info!(?resp);
 
         Ok(())
     }
+}
+
+async fn process_send(
+    client: &mut ZfsClient,
+    source: String,
+    output: PathBuf,
+    incremental: Option<String>,
+) -> anyhow::Result<String> {
+    let mut segments = client.send_snapshot(source, incremental).await?;
+    let mut output = fs::OpenOptions::new()
+        .create(true)
+        .write(true)
+        .open(output)
+        .await?;
+
+    while let Some(segment) = segments.message().await? {
+        let sequence = segment.sequence;
+        let mut buffer = Cursor::new(segment.buffer);
+        debug!("Processing segment {sequence}");
+        io::copy(&mut buffer, &mut output).await?;
+    }
+
+    Ok(String::from("Finished processing send"))
 }
