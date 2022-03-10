@@ -227,9 +227,11 @@ impl ZfsRpc for service::ZfsRpcService {
     }
 
     async fn get_snapshot(&self, request: Request<BasicDatasetRequest>) -> ZfsRpcResult<Snapshot> {
-        let _request = request.into_inner();
-        todo!()
+        let name = request.into_inner().name;
+        let response = Snapshot::get(&name).map(Response::new)?;
+        Ok(response)
     }
+
     async fn destroy_snapshot(&self, request: Request<BasicDatasetRequest>) -> ZfsRpcResult<Empty> {
         let _request = request.into_inner();
         todo!()

@@ -1,12 +1,12 @@
 use super::*;
 
 impl Snapshot {
-    pub fn create(name: &str) -> Result<()> {
+    pub(crate) fn _create(name: &str) -> Result<(), ZfsError> {
         debug!(name);
         Ok(())
     }
 
-    pub fn get(name: &str) -> Result<Self> {
+    pub(crate) fn get(name: &str) -> Result<Self, ZfsError> {
         let snapshot = zfs::Zfs::get_snapshot(name).map(Into::into)?;
         Ok(snapshot)
     }
