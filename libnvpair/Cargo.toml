@@ -5,4 +5,4 @@ edition = "2021"
 
 [dependencies]
 libc = "0.2"
-razor-libnvpair-sys = {version = "0.1", path = "../libnvpair-sys"}
+razor-libnvpair-sys = { version = "0.1", path = "../libnvpair-sys" }
