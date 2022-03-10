@@ -6,7 +6,8 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0"
 clap = { version = "3.1", features = ["derive"] }
-razor-zfsrpc-client = { version = "0.1", path = "../zfsrpc-client" }
+tokio = { version = "1.9", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "time"] }
-tokio = { version = "1.9", features = ["full"] }
+
+razor-zfsrpc-client = { version = "0.1", path = "../zfsrpc-client" }

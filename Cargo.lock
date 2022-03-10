@@ -1120,7 +1120,6 @@ dependencies = [
  "tokio",
  "tokio-pipe",
  "tokio-stream",
- "tokio-util 0.7.0",
  "tonic",
  "tonic-build",
  "tracing",
