@@ -133,7 +133,7 @@ fn create_dataset(
     dataset_type: sys::lzc_dataset_type,
     nvl: &nvpair::NvList,
 ) -> Result<()> {
-    let cname = ffi::CString::new(name.as_ref())?;
+    let cname = cstring(name)?;
     let name = cname.as_ptr();
     let nvl = nvl.nvl();
 
@@ -152,7 +152,7 @@ pub fn snapshot(snapshot: impl AsRef<str>) -> Result<()> {
 }
 
 pub fn dataset_exists(name: impl AsRef<str>) -> Result<()> {
-    let cname = ffi::CString::new(name.as_ref())?;
+    let cname = cstring(name)?;
     let name = cname.as_ptr();
     let rc = unsafe { LIBZFS_CORE.lzc_exists(name) };
 
@@ -164,7 +164,7 @@ pub fn dataset_exists(name: impl AsRef<str>) -> Result<()> {
 }
 
 pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
-    let cname = ffi::CString::new(name.as_ref())?;
+    let cname = cstring(name)?;
     let name = cname.as_ptr();
     let rc = unsafe { LIBZFS_CORE.lzc_destroy(name) };
 
@@ -184,11 +184,8 @@ where
     F: AsRef<str>,
     U: AsRawFd,
 {
-    let source = ffi::CString::new(source.as_ref())?;
-    let from = match from {
-        Some(from) => Some(ffi::CString::new(from.as_ref())?),
-        None => None,
-    };
+    let source = cstring(source)?;
+    let from = from.map(cstring).transpose()?;
     let flags = sys::lzc_send_flags::LZC_SEND_FLAG_EMBED_DATA
         | sys::lzc_send_flags::LZC_SEND_FLAG_LARGE_BLOCK
         | sys::lzc_send_flags::LZC_SEND_FLAG_COMPRESS;
@@ -201,23 +198,20 @@ where
     value_or_err((), rc)
 }
 
-pub fn send_resume<S, F, T>(
-    source: impl AsRef<str>,
-    from: F,
-    file: impl AsRawFd,
+pub fn send_resume<S, F, U>(
+    source: S,
+    from: Option<F>,
+    file: U,
     resumeobj: u64,
     resumeoff: u64,
 ) -> Result<()>
 where
     S: AsRef<str>,
-    F: Into<Option<T>>,
-    T: AsRef<str>,
+    F: AsRef<str>,
+    U: AsRawFd,
 {
-    let source = ffi::CString::new(source.as_ref())?;
-    let from = match from.into() {
-        Some(from) => Some(ffi::CString::new(from.as_ref())?),
-        None => None,
-    };
+    let source = cstring(source)?;
+    let from = from.map(cstring).transpose()?;
     let fd = file.as_raw_fd();
     let flags = sys::lzc_send_flags::LZC_SEND_FLAG_EMBED_DATA
         | sys::lzc_send_flags::LZC_SEND_FLAG_LARGE_BLOCK
@@ -237,9 +231,9 @@ pub fn receive<S, D>(
     raw: bool,
     file: impl AsRawFd,
 ) -> Result<()> {
-    let snapname = ffi::CString::new(snapname.as_ref())?;
+    let snapname = cstring(snapname)?;
     let props = NvList::new(NvFlag::UniqueName);
-    let origin = ffi::CString::new(origin.as_ref())?;
+    let origin = cstring(origin)?;
     let force = if force {
         sys::boolean_t::B_TRUE
     } else {
@@ -267,9 +261,9 @@ pub fn receive_resumable(
     raw: bool,
     file: impl AsRawFd,
 ) -> Result<()> {
-    let snapname = ffi::CString::new(snapname.as_ref())?;
+    let snapname = cstring(snapname)?;
     let props = NvList::new(NvFlag::UniqueName);
-    let origin = ffi::CString::new(origin.as_ref())?;
+    let origin = cstring(origin)?;
     let force = if force {
         sys::boolean_t::B_TRUE
     } else {
@@ -314,4 +308,8 @@ pub fn zfs_prop_to_name(property: zfs_prop_t) -> Cow<'static, str> {
         let cstr = libzfs::zfs_prop_to_name(property);
         ffi::CStr::from_ptr(cstr).to_string_lossy()
     }
+}
+
+fn cstring(text: impl AsRef<str>) -> Result<ffi::CString, ffi::NulError> {
+    ffi::CString::new(text.as_ref())
 }

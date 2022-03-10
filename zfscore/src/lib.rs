@@ -28,4 +28,4 @@ pub mod lzc;
 mod dataset;
 mod libzfs;
 
-pub type Result<T> = std::result::Result<T, error::CoreError>;
+pub type Result<T, E = error::CoreError> = ::std::result::Result<T, E>;
