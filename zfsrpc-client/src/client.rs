@@ -209,8 +209,14 @@ impl Client {
         anyhow::bail!("Not implemented yet")
     }
 
-    pub async fn show_snapshot(&mut self, _name: String) -> anyhow::Result<proto::Snapshot> {
-        anyhow::bail!("Not implemented yet")
+    pub async fn show_snapshot(&mut self, name: String) -> anyhow::Result<proto::Snapshot> {
+        let message = proto::BasicDatasetRequest { name };
+        let request = tonic::Request::new(message);
+        self.client
+            .get_snapshot(request)
+            .await
+            .map(|response| response.into_inner())
+            .context("Show Snapshot failed")
     }
 
     pub async fn destroy_snapshot(&mut self, _name: String) -> anyhow::Result<proto::Snapshot> {
