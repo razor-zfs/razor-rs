@@ -124,6 +124,11 @@ impl Volume {
         lzc::destroy_dataset(self.name()).map_err(|err| err.into())
     }
 
+    pub fn snapshot(&self, name: impl AsRef<str>) -> Result<()> {
+        lzc::snapshot(format!("{}@{}", self.name(), name.as_ref()))?;
+        Ok(())
+    }
+
     pub fn name(&self) -> String {
         self.dataset.name().to_string()
     }
