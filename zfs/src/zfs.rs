@@ -45,11 +45,11 @@ impl Zfs {
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {
-        Filesystem::get_filesystem(name)
+        Filesystem::get(name)
     }
 
     pub fn get_volume(name: impl AsRef<str>) -> Result<Volume> {
-        Volume::get_volume(name)
+        Volume::get(name)
     }
 
     pub fn get_snapshot(name: impl AsRef<str>) -> Result<Snapshot> {

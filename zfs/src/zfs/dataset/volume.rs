@@ -133,7 +133,7 @@ impl Volume {
         self.dataset.name().to_string()
     }
 
-    pub fn get_volume(name: impl AsRef<str>) -> Result<Self> {
+    pub fn get(name: impl AsRef<str>) -> Result<Self> {
         let cname = CString::new(name.as_ref())?;
         let dataset = ZfsDatasetHandle::new(cname)?;
 

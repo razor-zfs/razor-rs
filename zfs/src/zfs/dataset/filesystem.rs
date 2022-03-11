@@ -372,7 +372,7 @@ impl Filesystem {
         self.dataset.numeric_property(ZFS_PROP_OBJSETID)
     }
 
-    pub fn get_filesystem(name: impl AsRef<str>) -> Result<Self> {
+    pub fn get(name: impl AsRef<str>) -> Result<Self> {
         let cname = CString::new(name.as_ref())?;
         let dataset = ZfsDatasetHandle::new(cname)?;
 
