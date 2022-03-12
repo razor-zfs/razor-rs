@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use razor_zfs as zfs;
-// use tokio::task;
+use tokio::task;
 
 use zfs::{zfs_type_t, FileSystemBuilder, Filesystem, VolumeBuilder, Zfs, ZfsDatasetHandle};
 
@@ -257,4 +257,12 @@ impl From<Filesystem> for ProtoFilesystem {
             objsetid: Some(fs.objsetid().into()),
         }
     }
+}
+
+fn join_to_status(e: task::JoinError) -> Status {
+    Status::internal(e.to_string())
+}
+
+fn zfs_to_status(e: zfs::DatasetError) -> Status {
+    Status::internal(e.to_string())
 }

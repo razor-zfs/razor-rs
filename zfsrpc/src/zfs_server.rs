@@ -222,8 +222,8 @@ impl ZfsRpc for service::ZfsRpcService {
         &self,
         request: Request<CreateSnapshotRequest>,
     ) -> ZfsRpcResult<Snapshot> {
-        let _request = request.into_inner();
-        todo!()
+        let response = request.into_inner().execute().await?;
+        Ok(response)
     }
 
     async fn get_snapshot(&self, request: Request<BasicDatasetRequest>) -> ZfsRpcResult<Snapshot> {

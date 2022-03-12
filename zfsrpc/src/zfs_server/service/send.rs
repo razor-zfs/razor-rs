@@ -1,7 +1,6 @@
 use std::pin::Pin;
 
 use tokio::io::AsyncReadExt;
-use tokio::task;
 use tokio_pipe::pipe;
 use tokio_stream::Stream;
 // use tokio_util::io::ReaderStream;
@@ -43,12 +42,4 @@ impl SendRequest {
         };
         Ok(Response::new(Box::pin(send_stream)))
     }
-}
-
-fn join_to_status(e: task::JoinError) -> Status {
-    Status::internal(e.to_string())
-}
-
-fn zfs_to_status(e: zfs::DatasetError) -> Status {
-    Status::internal(e.to_string())
 }
