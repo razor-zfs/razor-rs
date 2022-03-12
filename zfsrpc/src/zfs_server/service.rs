@@ -3,7 +3,7 @@ use anyhow::Result;
 use razor_zfs as zfs;
 use tokio::task;
 
-use zfs::{zfs_type_t, VolumeBuilder, Zfs, ZfsDatasetHandle};
+use zfs::{zfs_type_t, Zfs, ZfsDatasetHandle};
 
 use crate::zfsrpc_proto::tonic_zfsrpc::Dataset as DatasetProto;
 use crate::zfsrpc_proto::tonic_zfsrpc::Datasets as DatasetsProto;
@@ -13,7 +13,6 @@ use crate::zfsrpc_proto::tonic_zfsrpc::{FilesystemProperty, VolumeProperty};
 use crate::zfsrpc_proto as proto;
 
 use crate::zfsrpc_proto::Snapshot;
-use crate::zfsrpc_proto::Volume;
 use crate::zfsrpc_proto::ZfsType;
 
 use tracing::debug;

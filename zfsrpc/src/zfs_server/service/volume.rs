@@ -1,10 +1,10 @@
 use super::*;
 
-impl Volume {
+impl proto::Volume {
     fn add_property(
-        vol: VolumeBuilder,
+        vol: zfs::VolumeBuilder,
         property: volume_property::Property,
-    ) -> Result<VolumeBuilder, zfs::DatasetError> {
+    ) -> Result<zfs::VolumeBuilder, zfs::DatasetError> {
         let vol = match property {
             volume_property::Property::Checksum(property) => vol.checksum(
                 property
@@ -51,7 +51,7 @@ impl Volume {
     }
 }
 
-impl From<zfs::Volume> for Volume {
+impl From<zfs::Volume> for proto::Volume {
     fn from(volume: zfs::Volume) -> Self {
         Self {
             name: Some(volume.name().into()),

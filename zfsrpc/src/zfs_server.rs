@@ -4,11 +4,12 @@ use itertools::Itertools;
 use tonic::{Request, Response, Status};
 use tracing::{debug, debug_span, error, info, warn};
 
+use crate::zfsrpc_proto as proto;
+
 use crate::zfs_server::error::ZfsError;
 use crate::zfsrpc_proto::SendRequest;
 use crate::zfsrpc_proto::SendSegment;
 use crate::zfsrpc_proto::Snapshot;
-use crate::zfsrpc_proto::Volume;
 // use crate::zfsrpc_proto::ZfsType;
 
 use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
@@ -42,14 +43,14 @@ impl ZfsRpc for service::ZfsRpcService {
     async fn create_volume(
         &self,
         request: Request<CreateVolumeRequest>,
-    ) -> Result<Response<Volume>, Status> {
+    ) -> Result<Response<proto::Volume>, Status> {
         let request = request.into_inner();
         let name = request.name.clone();
         let span = debug_span!("create_volume");
         let _guard = span.entered();
         debug!(?request);
 
-        let vol = Volume::create(
+        let vol = proto::Volume::create(
             request.name,
             request.capacity,
             request.blocksize,
@@ -58,7 +59,7 @@ impl ZfsRpc for service::ZfsRpcService {
         .or_else(|err| {
             if let ZfsError::AlreadyExists(err) = err {
                 warn!("Volume {} already exists: {:?}", name, err);
-                Ok(Volume::get(name)?)
+                Ok(proto::Volume::get(name)?)
             } else {
                 Err(err)
             }
@@ -70,13 +71,13 @@ impl ZfsRpc for service::ZfsRpcService {
     async fn get_volume(
         &self,
         request: Request<BasicDatasetRequest>,
-    ) -> Result<Response<Volume>, Status> {
+    ) -> Result<Response<proto::Volume>, Status> {
         let request = request.into_inner();
         let span = debug_span!("get_volume");
         let _guard = span.entered();
         debug!(?request);
 
-        Ok(Response::new(Volume::get(request.name)?))
+        Ok(Response::new(proto::Volume::get(request.name)?))
     }
 
     async fn destroy_volume(
