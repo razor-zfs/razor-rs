@@ -1,5 +1,5 @@
 use std::ffi::CString;
-use std::marker::PhantomData;
+use std::marker::{PhantomData, Send};
 use std::ops::Not;
 use std::ptr;
 
@@ -86,6 +86,8 @@ impl IntoIterator for NvList {
         }
     }
 }
+
+unsafe impl Send for NvList {}
 
 #[derive(Debug, PartialEq)]
 pub struct NvListIterator {
