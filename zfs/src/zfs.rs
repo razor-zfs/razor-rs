@@ -7,6 +7,7 @@ pub use dataset::Bookmark;
 pub use dataset::FileSystemBuilder;
 pub use dataset::Filesystem;
 pub use dataset::Snapshot;
+pub use dataset::SnapshotBuilder;
 pub use dataset::Volume;
 pub use dataset::VolumeBuilder;
 
@@ -26,6 +27,10 @@ impl Zfs {
 
     pub fn volume() -> VolumeBuilder {
         VolumeBuilder::new()
+    }
+
+    pub fn snapshot() -> SnapshotBuilder {
+        SnapshotBuilder::new()
     }
 
     pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {

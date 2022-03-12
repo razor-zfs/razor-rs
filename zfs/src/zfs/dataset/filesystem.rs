@@ -1,11 +1,9 @@
 use std::borrow::Cow;
-use std::ffi::CString;
 use std::marker::PhantomData;
 
 use once_cell::sync::Lazy;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
-use razor_nvpair as nvpair;
 use razor_zfscore::lzc;
 
 use nvpair::NvListAccess;
@@ -17,6 +15,8 @@ use super::Result;
 use super::ZfsDatasetHandle;
 
 use lzc::zfs_prop_t::*;
+
+use super::*;
 
 static AVAILABLE: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_AVAILABLE));
 static LOGICALUSED: Lazy<Cow<'static, str>> =
@@ -373,7 +373,7 @@ impl Filesystem {
     }
 
     pub fn get(name: impl AsRef<str>) -> Result<Self> {
-        let cname = CString::new(name.as_ref())?;
+        let cname = ffi::CString::new(name.as_ref())?;
         let dataset = ZfsDatasetHandle::new(cname)?;
 
         Ok(Self { dataset })
@@ -432,7 +432,7 @@ impl FileSystemBuilder {
 
     // TODO: should check mount options and mount the FS if needed
     pub fn create(self, name: impl AsRef<str>) -> Result<Filesystem> {
-        let cname = CString::new(name.as_ref())?;
+        let cname = ffi::CString::new(name.as_ref())?;
         if let Some(err) = self.err {
             return Err(err);
         }

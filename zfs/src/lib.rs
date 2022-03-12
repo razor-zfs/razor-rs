@@ -25,6 +25,7 @@ pub use zfs::Bookmark;
 pub use zfs::FileSystemBuilder;
 pub use zfs::Filesystem;
 pub use zfs::Snapshot;
+pub use zfs::SnapshotBuilder;
 pub use zfs::Volume;
 pub use zfs::VolumeBuilder;
 pub use zfs::Zfs;

@@ -1,5 +1,3 @@
-use std::ffi;
-
 use super::*;
 
 #[derive(Debug)]
@@ -96,5 +94,29 @@ impl Snapshot {
     #[inline]
     pub fn objsetid(&self) -> u64 {
         self.dataset.numeric_property(ZFS_PROP_OBJSETID)
+    }
+}
+
+#[derive(Debug)]
+pub struct SnapshotBuilder {
+    props: Result<nvpair::NvList>,
+}
+
+impl SnapshotBuilder {
+    pub fn new() -> Self {
+        let props = Ok(nvpair::NvList::new(nvpair::NvFlag::UniqueName));
+        Self { props }
+    }
+
+    pub fn create(self, name: impl AsRef<str>) -> Result<Snapshot> {
+        let _props = self.props?;
+        lzc::snapshot(name.as_ref())?;
+        Snapshot::get(name)
+    }
+}
+
+impl Default for SnapshotBuilder {
+    fn default() -> Self {
+        Self::new()
     }
 }
