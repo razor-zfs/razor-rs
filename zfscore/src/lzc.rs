@@ -142,6 +142,7 @@ fn create_dataset(
     value_or_err((), rc)
 }
 
+// TODO Pass props nvlist
 pub fn snapshot(snapshot: impl AsRef<str>) -> Result<()> {
     let mut snaps = NvList::new(NvFlag::UniqueName);
     snaps.add_boolean(snapshot)?;
