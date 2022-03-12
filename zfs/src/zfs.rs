@@ -4,8 +4,8 @@ use razor_property as property;
 use razor_zfscore::lzc;
 
 pub use dataset::Bookmark;
-pub use dataset::FileSystemBuilder;
 pub use dataset::Filesystem;
+pub use dataset::FilesystemBuilder;
 pub use dataset::Snapshot;
 pub use dataset::SnapshotBuilder;
 pub use dataset::Volume;
@@ -21,8 +21,8 @@ mod dataset;
 pub struct Zfs {}
 
 impl Zfs {
-    pub fn filesystem() -> FileSystemBuilder {
-        FileSystemBuilder::new()
+    pub fn filesystem() -> FilesystemBuilder {
+        FilesystemBuilder::new()
     }
 
     pub fn volume() -> VolumeBuilder {

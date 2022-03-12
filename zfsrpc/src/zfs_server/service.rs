@@ -3,7 +3,7 @@ use anyhow::Result;
 use razor_zfs as zfs;
 use tokio::task;
 
-use zfs::{zfs_type_t, FileSystemBuilder, Filesystem, VolumeBuilder, Zfs, ZfsDatasetHandle};
+use zfs::{zfs_type_t, Filesystem, FilesystemBuilder, VolumeBuilder, Zfs, ZfsDatasetHandle};
 
 use crate::zfsrpc_proto::tonic_zfsrpc::Dataset as DatasetProto;
 use crate::zfsrpc_proto::tonic_zfsrpc::Datasets as DatasetsProto;
@@ -100,9 +100,9 @@ impl From<&str> for ZfsType {
 
 impl ProtoFilesystem {
     pub(crate) fn add_property(
-        fs: FileSystemBuilder,
+        fs: FilesystemBuilder,
         property: filesystem_property::Property,
-    ) -> Result<FileSystemBuilder, zfs::DatasetError> {
+    ) -> Result<FilesystemBuilder, zfs::DatasetError> {
         let fs = match property {
             filesystem_property::Property::ATime(atime) => {
                 fs.atime(atime.value.ok_or_else(zfs::DatasetError::missing_value)?)

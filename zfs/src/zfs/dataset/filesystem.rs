@@ -419,12 +419,12 @@ impl Serialize for Filesystem {
 }
 
 #[derive(Debug)]
-pub struct FileSystemBuilder {
+pub struct FilesystemBuilder {
     nvlist: nvpair::NvList,
     err: Option<DatasetError>,
 }
 
-impl FileSystemBuilder {
+impl FilesystemBuilder {
     pub fn new() -> Self {
         let nvlist = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
         Self { nvlist, err: None }
@@ -590,7 +590,7 @@ impl FileSystemBuilder {
     }
 }
 
-impl Default for FileSystemBuilder {
+impl Default for FilesystemBuilder {
     fn default() -> Self {
         Self::new()
     }

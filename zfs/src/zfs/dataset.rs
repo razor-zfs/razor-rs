@@ -10,8 +10,8 @@ use super::Result;
 use super::ZfsDatasetHandle;
 
 pub use bookmark::Bookmark;
-pub use filesystem::FileSystemBuilder;
 pub use filesystem::Filesystem;
+pub use filesystem::FilesystemBuilder;
 pub use snapshot::Snapshot;
 pub use snapshot::SnapshotBuilder;
 pub use volume::Volume;
