@@ -1,23 +1,13 @@
 use std::path::{Path, PathBuf};
 
 use itertools::Itertools;
-use tonic::{Request, Response, Status};
+use tonic::{Request, Response};
 use tracing::{debug, debug_span, error, info, warn};
 
-use crate::zfsrpc_proto as proto;
+use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 
 use crate::zfs_server::error::ZfsError;
-use crate::zfsrpc_proto::SendRequest;
-use crate::zfsrpc_proto::SendSegment;
-use crate::zfsrpc_proto::Snapshot;
-// use crate::zfsrpc_proto::ZfsType;
-
-use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
-use super::zfsrpc_proto::tonic_zfsrpc::{
-    BasicDatasetRequest, CreateFilesystemRequest, CreateSnapshotRequest, CreateVolumeRequest,
-    ListDatasetsRequest, MountFilesystemRequest,
-};
-use super::zfsrpc_proto::tonic_zfsrpc::{Datasets, Empty, Filesystem};
+use crate::zfsrpc_proto as proto;
 
 mod error;
 pub mod service;
@@ -28,13 +18,16 @@ type ZfsRpcResult<T, E = ::tonic::Status> = ::std::result::Result<::tonic::Respo
 impl ZfsRpc for service::ZfsRpcService {
     type SendStream = service::SendStream;
 
-    async fn dataset_list(&self, _request: Request<Empty>) -> Result<Response<Datasets>, Status> {
+    async fn dataset_list(&self, _request: Request<proto::Empty>) -> ZfsRpcResult<proto::Datasets> {
         let datasets = service::list()?;
 
         Ok(Response::new(datasets))
     }
 
-    async fn list_datasets(&self, request: Request<ListDatasetsRequest>) -> ZfsRpcResult<Datasets> {
+    async fn list_datasets(
+        &self,
+        request: Request<proto::ListDatasetsRequest>,
+    ) -> ZfsRpcResult<proto::Datasets> {
         let _request = request.into_inner();
         let response = service::list().map(Response::new)?;
         Ok(response)
@@ -42,8 +35,8 @@ impl ZfsRpc for service::ZfsRpcService {
 
     async fn create_volume(
         &self,
-        request: Request<CreateVolumeRequest>,
-    ) -> Result<Response<proto::Volume>, Status> {
+        request: Request<proto::CreateVolumeRequest>,
+    ) -> ZfsRpcResult<proto::Volume> {
         let request = request.into_inner();
         let name = request.name.clone();
         let span = debug_span!("create_volume");
@@ -70,8 +63,8 @@ impl ZfsRpc for service::ZfsRpcService {
 
     async fn get_volume(
         &self,
-        request: Request<BasicDatasetRequest>,
-    ) -> Result<Response<proto::Volume>, Status> {
+        request: Request<proto::BasicDatasetRequest>,
+    ) -> ZfsRpcResult<proto::Volume> {
         let request = request.into_inner();
         let span = debug_span!("get_volume");
         let _guard = span.entered();
@@ -82,8 +75,8 @@ impl ZfsRpc for service::ZfsRpcService {
 
     async fn destroy_volume(
         &self,
-        request: Request<BasicDatasetRequest>,
-    ) -> Result<Response<Empty>, Status> {
+        request: Request<proto::BasicDatasetRequest>,
+    ) -> ZfsRpcResult<proto::Empty> {
         let request = request.into_inner();
         let span = debug_span!("destroy_volume");
         let _guard = span.entered();
@@ -102,13 +95,13 @@ impl ZfsRpc for service::ZfsRpcService {
             }
         }
 
-        Ok(Response::new(Empty {}))
+        Ok(Response::new(proto::Empty {}))
     }
 
     async fn create_filesystem(
         &self,
-        request: Request<CreateFilesystemRequest>,
-    ) -> Result<Response<Filesystem>, Status> {
+        request: Request<proto::CreateFilesystemRequest>,
+    ) -> ZfsRpcResult<proto::Filesystem> {
         let request = request.into_inner();
         let path = request.name.clone();
         let span = debug_span!("create_filesystem");
@@ -118,7 +111,7 @@ impl ZfsRpc for service::ZfsRpcService {
         let mut path_iter = Path::new(&path).iter();
         if path_iter.clone().count() <= 1 {
             error!("No dataset found in path {}", path);
-            return Err(Status::not_found("No dataset found in path"));
+            return Err(tonic::Status::not_found("No dataset found in path"));
         };
 
         // The first element in the path is the pool name
@@ -126,7 +119,7 @@ impl ZfsRpc for service::ZfsRpcService {
         let pool = path_iter
             .next()
             .map(PathBuf::from)
-            .ok_or_else(|| Status::not_found("No zpool found in path"))?;
+            .ok_or_else(|| tonic::Status::not_found("No zpool found in path"))?;
 
         path_iter
             .scan(pool, |path, dir| {
@@ -135,7 +128,7 @@ impl ZfsRpc for service::ZfsRpcService {
             })
             .map(|path| {
                 debug!("Creating filesystem at {:?}", path);
-                Filesystem::create(
+                proto::Filesystem::create(
                     path.to_string_lossy().to_string(),
                     request.properties.clone(),
                 )
@@ -152,25 +145,25 @@ impl ZfsRpc for service::ZfsRpcService {
             })
             .try_collect()?;
 
-        Ok(Response::new(Filesystem::get(request.name)?))
+        Ok(Response::new(proto::Filesystem::get(request.name)?))
     }
 
     async fn get_filesystem(
         &self,
-        request: Request<BasicDatasetRequest>,
-    ) -> Result<Response<Filesystem>, Status> {
+        request: Request<proto::BasicDatasetRequest>,
+    ) -> ZfsRpcResult<proto::Filesystem> {
         let request = request.into_inner();
         let span = debug_span!("get_filesystem");
         let _guard = span.entered();
         debug!(?request);
 
-        Ok(Response::new(Filesystem::get(request.name)?))
+        Ok(Response::new(proto::Filesystem::get(request.name)?))
     }
 
     async fn destroy_filesystem(
         &self,
-        request: Request<BasicDatasetRequest>,
-    ) -> Result<Response<Empty>, Status> {
+        request: Request<proto::BasicDatasetRequest>,
+    ) -> ZfsRpcResult<proto::Empty> {
         let request = request.into_inner();
         let span = debug_span!("destroy_filesystem");
         let _guard = span.entered();
@@ -192,53 +185,59 @@ impl ZfsRpc for service::ZfsRpcService {
             }
         }
 
-        Ok(Response::new(Empty {}))
+        Ok(Response::new(proto::Empty {}))
     }
 
     async fn mount_filesystem(
         &self,
-        request: Request<MountFilesystemRequest>,
-    ) -> Result<Response<Empty>, Status> {
+        request: Request<proto::MountFilesystemRequest>,
+    ) -> ZfsRpcResult<proto::Empty> {
         let request = request.into_inner();
         debug!(?request);
 
-        Filesystem::mount(request.name, request.mountpoint).await?;
+        proto::Filesystem::mount(request.name, request.mountpoint).await?;
 
-        Ok(Response::new(Empty {}))
+        Ok(Response::new(proto::Empty {}))
     }
 
     async fn unmount_filesystem(
         &self,
-        request: Request<BasicDatasetRequest>,
-    ) -> Result<Response<Empty>, Status> {
+        request: Request<proto::BasicDatasetRequest>,
+    ) -> ZfsRpcResult<proto::Empty> {
         let request = request.into_inner();
         debug!(?request);
 
-        Filesystem::unmount(request.name).await?;
+        proto::Filesystem::unmount(request.name).await?;
 
-        Ok(Response::new(Empty {}))
+        Ok(Response::new(proto::Empty {}))
     }
 
     async fn create_snapshot(
         &self,
-        request: Request<CreateSnapshotRequest>,
-    ) -> ZfsRpcResult<Snapshot> {
+        request: Request<proto::CreateSnapshotRequest>,
+    ) -> ZfsRpcResult<proto::Snapshot> {
         let response = request.into_inner().execute().await?;
         Ok(response)
     }
 
-    async fn get_snapshot(&self, request: Request<BasicDatasetRequest>) -> ZfsRpcResult<Snapshot> {
+    async fn get_snapshot(
+        &self,
+        request: Request<proto::BasicDatasetRequest>,
+    ) -> ZfsRpcResult<proto::Snapshot> {
         let name = request.into_inner().name;
-        let response = Snapshot::get(&name).map(Response::new)?;
+        let response = proto::Snapshot::get(&name).map(Response::new)?;
         Ok(response)
     }
 
-    async fn destroy_snapshot(&self, request: Request<BasicDatasetRequest>) -> ZfsRpcResult<Empty> {
+    async fn destroy_snapshot(
+        &self,
+        request: Request<proto::BasicDatasetRequest>,
+    ) -> ZfsRpcResult<proto::Empty> {
         let _request = request.into_inner();
         todo!()
     }
 
-    async fn send(&self, request: Request<SendRequest>) -> ZfsRpcResult<Self::SendStream> {
+    async fn send(&self, request: Request<proto::SendRequest>) -> ZfsRpcResult<Self::SendStream> {
         request.into_inner().exec().await
     }
 }

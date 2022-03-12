@@ -10,8 +10,6 @@ use crate::zfsrpc_proto::tonic_zfsrpc::Datasets as DatasetsProto;
 use crate::zfsrpc_proto::tonic_zfsrpc::{filesystem_property, volume_property};
 use crate::zfsrpc_proto::tonic_zfsrpc::{FilesystemProperty, VolumeProperty};
 
-use crate::zfsrpc_proto as proto;
-
 use crate::zfsrpc_proto::Snapshot;
 use crate::zfsrpc_proto::ZfsType;
 
@@ -99,10 +97,10 @@ impl From<&str> for ZfsType {
     }
 }
 
-fn join_to_status(e: task::JoinError) -> Status {
-    Status::internal(e.to_string())
+fn join_to_status(e: task::JoinError) -> tonic::Status {
+    tonic::Status::internal(e.to_string())
 }
 
-fn zfs_to_status(e: zfs::DatasetError) -> Status {
-    Status::internal(e.to_string())
+fn zfs_to_status(e: zfs::DatasetError) -> tonic::Status {
+    tonic::Status::internal(e.to_string())
 }

@@ -1,6 +1,6 @@
 use super::*;
 
-impl CreateSnapshotRequest {
+impl proto::CreateSnapshotRequest {
     pub(crate) async fn execute(self) -> ZfsRpcResult<Snapshot> {
         task::spawn_blocking(|| zfs::Zfs::snapshot().create(self.name))
             .await

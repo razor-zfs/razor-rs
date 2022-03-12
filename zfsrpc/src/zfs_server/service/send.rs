@@ -7,9 +7,9 @@ use tokio_stream::Stream;
 
 use super::*;
 
-pub type SendStream = Pin<Box<dyn Stream<Item = Result<SendSegment, Status>> + Send>>;
+pub type SendStream = Pin<Box<dyn Stream<Item = Result<proto::SendSegment, tonic::Status>> + Send>>;
 
-impl SendRequest {
+impl proto::SendRequest {
     pub async fn exec(self) -> ZfsRpcResult<SendStream> {
         let Self { from, source } = self;
         let from = if from.is_empty() { None } else { Some(from) };
@@ -24,7 +24,7 @@ impl SendRequest {
                 let mut buffer = Vec::with_capacity(128 * 1024);
                 let count = reader.read(&mut buffer).await?;
                 if count > 0 {
-                    let segment = SendSegment {
+                    let segment = proto::SendSegment {
                             name: name.clone(),
                             sequence,
                             buffer,
