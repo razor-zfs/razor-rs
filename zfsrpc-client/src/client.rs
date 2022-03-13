@@ -205,8 +205,13 @@ impl Client {
             .context("Show Snapshot failed")
     }
 
-    pub async fn destroy_snapshot(&mut self, _name: String) -> anyhow::Result<proto::Snapshot> {
-        anyhow::bail!("Not implemented yet")
+    pub async fn destroy_snapshot(&mut self, name: String) -> anyhow::Result<()> {
+        let request = proto::BasicDatasetRequest { name };
+        self.client
+            .destroy_snapshot(request)
+            .await
+            .map(|_| ())
+            .context("Destroy snapshot failed")
     }
 
     pub async fn send_snapshot(

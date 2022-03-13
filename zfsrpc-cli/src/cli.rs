@@ -387,7 +387,7 @@ impl Cli {
             Command::DestroySnapshot { name } => client
                 .destroy_snapshot(name)
                 .await
-                .map(|snapshot| format!("{snapshot:?}"))?,
+                .map(|_| "Snapshot destroyed".to_string())?,
             Command::ListSnapshot { name } => client
                 .list_snapshot(name)
                 .await
