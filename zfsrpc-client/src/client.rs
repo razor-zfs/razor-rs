@@ -54,11 +54,10 @@ impl Client {
 
     pub async fn list(&mut self) -> anyhow::Result<String> {
         let request = Empty {};
-        let request = tonic::Request::new(request);
-        let resp = self.client.dataset_list(request).await?;
-        let resp = resp.into_inner();
 
-        let resp = format!("{:?}", resp);
+        let datasets = self.client.dataset_list(request).await?.into_inner();
+
+        let resp = format!("{datasets:?}");
         Ok(resp)
     }
 
@@ -80,10 +79,8 @@ impl Client {
             name: path,
             properties,
         };
-        let request = tonic::Request::new(request);
 
-        let fs = self.client.create_filesystem(request).await?;
-        let fs = fs.into_inner();
+        let fs = self.client.create_filesystem(request).await?.into_inner();
 
         Ok(fs)
     }
@@ -91,19 +88,16 @@ impl Client {
     pub async fn get_filesystem(&mut self, name: impl ToString) -> anyhow::Result<String> {
         let name = name.to_string();
         let request = BasicDatasetRequest { name };
-        let request = tonic::Request::new(request);
 
-        let fs = self.client.get_filesystem(request).await?;
-        let fs = fs.into_inner();
+        let fs = self.client.get_filesystem(request).await?.into_inner();
 
-        let resp = format!("{:?}", fs);
+        let resp = format!("{fs:?}");
         Ok(resp)
     }
 
     pub async fn destroy_filesystem(&mut self, name: impl ToString) -> anyhow::Result<()> {
         let name = name.to_string();
         let request = BasicDatasetRequest { name };
-        let request = tonic::Request::new(request);
 
         self.client.destroy_filesystem(request).await?;
 
@@ -118,7 +112,6 @@ impl Client {
         let name = name.to_string();
         let mountpoint = mountpoint.to_string();
         let request = MountFilesystemRequest { name, mountpoint };
-        let request = tonic::Request::new(request);
 
         self.client.mount_filesystem(request).await?;
 
@@ -128,7 +121,6 @@ impl Client {
     pub async fn unmount_filesystem(&mut self, name: impl ToString) -> anyhow::Result<()> {
         let name = name.to_string();
         let request = BasicDatasetRequest { name };
-        let request = tonic::Request::new(request);
 
         self.client.unmount_filesystem(request).await?;
 
@@ -158,30 +150,25 @@ impl Client {
             blocksize,
             properties,
         };
-        let request = tonic::Request::new(request);
 
-        let vol = self.client.create_volume(request).await?;
-        let vol = vol.into_inner();
+        let volume = self.client.create_volume(request).await?.into_inner();
 
-        Ok(vol)
+        Ok(volume)
     }
 
     pub async fn get_volume(&mut self, name: impl ToString) -> anyhow::Result<String> {
         let name = name.to_string();
         let request = BasicDatasetRequest { name };
-        let request = tonic::Request::new(request);
 
-        let vol = self.client.get_volume(request).await?;
-        let vol = vol.into_inner();
+        let volume = self.client.get_volume(request).await?.into_inner();
 
-        let resp = format!("{:?}", vol);
+        let resp = format!("{volume:?}");
         Ok(resp)
     }
 
     pub async fn destroy_volume(&mut self, name: impl ToString) -> anyhow::Result<()> {
         let name = name.to_string();
         let request = BasicDatasetRequest { name };
-        let request = tonic::Request::new(request);
 
         self.client.destroy_volume(request).await?;
 
@@ -193,8 +180,7 @@ impl Client {
         name: String,
         recursive: bool,
     ) -> anyhow::Result<proto::Snapshot> {
-        let message = proto::CreateSnapshotRequest { name, recursive };
-        let request = tonic::Request::new(message);
+        let request = proto::CreateSnapshotRequest { name, recursive };
 
         self.client
             .create_snapshot(request)
@@ -211,8 +197,7 @@ impl Client {
     }
 
     pub async fn show_snapshot(&mut self, name: String) -> anyhow::Result<proto::Snapshot> {
-        let message = proto::BasicDatasetRequest { name };
-        let request = tonic::Request::new(message);
+        let request = proto::BasicDatasetRequest { name };
         self.client
             .get_snapshot(request)
             .await
@@ -230,8 +215,8 @@ impl Client {
         from: Option<String>,
     ) -> anyhow::Result<tonic::Streaming<proto::SendSegment>> {
         let from = from.unwrap_or_default();
-        let message = proto::SendRequest { from, source };
-        let request = tonic::Request::new(message);
+        let request = proto::SendRequest { from, source };
+
         self.client
             .send(request)
             .await
@@ -255,6 +240,7 @@ impl Client {
             sequence += 1;
             segment
         });
+
         self.client
             .recv(request)
             .await
