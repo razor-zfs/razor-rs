@@ -265,7 +265,7 @@ enum Command {
     },
 
     #[clap(about = "List snapshots", visible_aliases = &["ls", "list-snap"])]
-    ListSnapshot {
+    ListSnapshots {
         #[clap(help = "Dataset name")]
         name: Option<String>,
     },
@@ -388,8 +388,8 @@ impl Cli {
                 .destroy_snapshot(name)
                 .await
                 .map(|_| "Snapshot destroyed".to_string())?,
-            Command::ListSnapshot { name } => client
-                .list_snapshot(name)
+            Command::ListSnapshots { name } => client
+                .list_snapshots(name)
                 .await
                 .map(|snapshot| format!("{snapshot:?}"))?,
             Command::ShowSnapshot { name } => client

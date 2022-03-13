@@ -189,7 +189,7 @@ impl Client {
             .context("Create snapshot")
     }
 
-    pub async fn list_snapshot(
+    pub async fn list_snapshots(
         &mut self,
         _name: Option<String>,
     ) -> anyhow::Result<proto::Snapshot> {
