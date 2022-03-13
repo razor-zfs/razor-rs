@@ -6,7 +6,7 @@ use razor_zfsrpc_client::{
     client::Client as ZfsClient, property, FilesystemProperty, VolumeProperty,
 };
 use tokio::fs;
-use tokio::io;
+use tokio::io::{self, AsyncReadExt};
 
 #[allow(unused)]
 use tracing::{debug, error, info, trace, warn};
@@ -288,6 +288,14 @@ enum Command {
         )]
         incremental: Option<String>,
     },
+
+    #[clap(about = "Receive snapshot", visible_alias = "recv")]
+    Receive {
+        #[clap(help = "Target snapshot name")]
+        snapshot: String,
+        #[clap(help = "Output data file")]
+        input: PathBuf,
+    },
 }
 
 impl Cli {
@@ -393,6 +401,9 @@ impl Cli {
                 output,
                 incremental,
             } => process_send(&mut client, source, output, incremental).await?,
+            Command::Receive { snapshot, input } => {
+                process_recv(&mut client, snapshot, input).await?
+            }
         };
 
         info!(?resp);
@@ -422,4 +433,31 @@ async fn process_send(
     }
 
     Ok(String::from("Finished processing send"))
+}
+
+async fn process_recv(
+    client: &mut ZfsClient,
+    snapshot: String,
+    input: PathBuf,
+) -> anyhow::Result<String> {
+    let mut input = fs::OpenOptions::new().read(true).open(input).await?;
+
+    let segments = async_stream::stream! {
+        loop {
+            let mut buffer = Vec::with_capacity(128 * 1024);
+            if let Ok(count) = input.read_buf(&mut buffer).await {
+                if count > 0 {
+                    yield buffer;
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+    };
+
+    client.recv_snapshot(snapshot, segments).await?;
+
+    Ok(String::from("finish processin receive"))
 }

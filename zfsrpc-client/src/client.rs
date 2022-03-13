@@ -1,6 +1,7 @@
 use std::net::IpAddr;
 
 use anyhow::Context;
+use tokio_stream::StreamExt;
 
 use crate::error::{Fixme, ZfsError};
 
@@ -236,5 +237,28 @@ impl Client {
             .await
             .map(|response| response.into_inner())
             .context("Send Snapshot")
+    }
+
+    pub async fn recv_snapshot(
+        &mut self,
+        snapshot: String,
+        input: impl tokio_stream::Stream<Item = Vec<u8>> + std::marker::Send + 'static,
+        // input: impl tokio::io::AsyncReadExt,
+    ) -> anyhow::Result<()> {
+        let mut sequence = 0;
+        let request = input.map(move |buffer| {
+            let segment = proto::SendSegment {
+                name: snapshot.clone(),
+                sequence,
+                buffer,
+            };
+            sequence += 1;
+            segment
+        });
+        self.client
+            .recv(request)
+            .await
+            .map(|_response| ())
+            .context("Receive Snapshot")
     }
 }
