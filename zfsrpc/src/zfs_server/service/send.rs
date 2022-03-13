@@ -10,7 +10,7 @@ use super::*;
 pub type SendStream = Pin<Box<dyn Stream<Item = Result<proto::SendSegment, tonic::Status>> + Send>>;
 
 impl proto::SendRequest {
-    pub async fn exec(self) -> ZfsRpcResult<SendStream> {
+    pub async fn execute(self) -> ZfsRpcResult<SendStream> {
         let Self { from, source } = self;
         let from = if from.is_empty() { None } else { Some(from) };
         let name = source.clone();
@@ -22,7 +22,7 @@ impl proto::SendRequest {
             let mut _send_complete = false;
             loop {
                 let mut buffer = Vec::with_capacity(128 * 1024);
-                let count = reader.read(&mut buffer).await?;
+                let count = reader.read_buf(&mut buffer).await?;
                 if count > 0 {
                     let segment = proto::SendSegment {
                             name: name.clone(),

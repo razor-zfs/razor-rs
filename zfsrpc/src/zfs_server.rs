@@ -238,6 +238,6 @@ impl ZfsRpc for service::ZfsRpcService {
     }
 
     async fn send(&self, request: Request<proto::SendRequest>) -> ZfsRpcResult<Self::SendStream> {
-        request.into_inner().exec().await
+        request.into_inner().execute().await
     }
 }
