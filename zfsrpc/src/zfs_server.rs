@@ -240,4 +240,12 @@ impl ZfsRpc for service::ZfsRpcService {
     async fn send(&self, request: Request<proto::SendRequest>) -> ZfsRpcResult<Self::SendStream> {
         request.into_inner().execute().await
     }
+
+    async fn recv(
+        &self,
+        request: Request<tonic::Streaming<proto::SendSegment>>,
+    ) -> ZfsRpcResult<proto::Empty> {
+        let input = request.into_inner();
+        service::recv(input).await
+    }
 }

@@ -19,9 +19,11 @@ use super::error::ZfsError;
 
 use super::*;
 
+pub use recv::recv;
 pub use send::SendStream;
 
 mod filesystem;
+mod recv;
 mod send;
 mod snapshot;
 mod volume;

@@ -16,6 +16,7 @@ service ZfsRpc {
     rpc GetSnapshot (BasicDatasetRequest) returns (Snapshot);
     rpc DestroySnapshot (BasicDatasetRequest) returns (Empty);
     rpc Send (SendRequest) returns (stream SendSegment);
+    rpc Recv (stream SendSegment) returns (Empty);
 }
 
 message Datasets {
@@ -129,7 +130,7 @@ message SendRequest {
 message SendSegment {
     string name = 1;
     fixed64 sequence = 2;
-    bytes buffer= 3;
+    bytes buffer = 3;
 }
 
 message VolumeProperty {

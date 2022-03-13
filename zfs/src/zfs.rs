@@ -70,4 +70,15 @@ impl Zfs {
         lzc::send(source, from, file)?;
         Ok(())
     }
+
+    pub fn receive<S, O, U>(snapname: S, origin: Option<O>, force: bool, file: U) -> Result<()>
+    where
+        S: AsRef<str>,
+        O: AsRef<str>,
+        U: AsRawFd,
+    {
+        let raw = false;
+        lzc::receive(snapname, origin, force, raw, file)?;
+        Ok(())
+    }
 }

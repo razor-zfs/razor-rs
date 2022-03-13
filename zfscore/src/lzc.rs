@@ -225,16 +225,21 @@ where
     value_or_err((), rc)
 }
 
-pub fn receive<S, D>(
-    snapname: impl AsRef<str>,
-    origin: impl AsRef<str>,
+pub fn receive<S, O, U>(
+    snapname: S,
+    origin: Option<O>,
     force: bool,
     raw: bool,
-    file: impl AsRawFd,
-) -> Result<()> {
+    file: U,
+) -> Result<()>
+where
+    S: AsRef<str>,
+    O: AsRef<str>,
+    U: AsRawFd,
+{
     let snapname = cstring(snapname)?;
+    let origin = origin.map(cstring).transpose()?;
     let props = NvList::new(NvFlag::UniqueName);
-    let origin = cstring(origin)?;
     let force = if force {
         sys::boolean_t::B_TRUE
     } else {
@@ -248,7 +253,7 @@ pub fn receive<S, D>(
     let fd = file.as_raw_fd();
     let rc = unsafe {
         let snapname = snapname.as_ptr();
-        let origin = origin.as_ptr();
+        let origin = origin.map_or(ptr::null(), |origin| origin.as_ptr());
         let props = props.nvl();
         LIBZFS_CORE.lzc_receive(snapname, props, origin, force, raw, fd)
     };
