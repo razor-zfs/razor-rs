@@ -11,16 +11,15 @@ thiserror = "1.0"
 tokio = { version = "1.9", features = ["macros", "rt-multi-thread"] }
 tokio-pipe = "0.2"
 tokio-stream = "0.1"
-# tokio-util = { version = "0.7", features = ["io"] }
 tracing = "0.1"
 tonic = "0.6"
 prost = "0.9"
 
-prop-macro = { version = "0.1", path = "../prop-macro"}
-razor-property = {version = "0.1", path = "../property"}
-razor-tracing = {version = "0.1", path = "../tracing"}
-razor-zfs = { version = "0.1.0", path = "../zfs" }
-razor-zfscore = {version = "0.1", path = "../zfscore"}
+prop-macro = { version = "0.1", path = "../prop-macro" }
+razor-property = { version = "0.1", path = "../property" }
+razor-tracing = { version = "0.1", path = "../tracing" }
+razor-zfs = { version = "0.1", path = "../zfs" }
+razor-zfscore = { version = "0.1", path = "../zfscore"}
 
 [build-dependencies]
 tonic-build = "0.6"

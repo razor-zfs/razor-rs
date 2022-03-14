@@ -223,6 +223,21 @@ impl Client {
             .context("Destroy snapshot failed")
     }
 
+    pub async fn create_bookmark(
+        &mut self,
+        snapshot: impl ToString,
+        bookmark: impl ToString,
+    ) -> anyhow::Result<proto::Bookmark> {
+        let snapshot = snapshot.to_string();
+        let bookmark = bookmark.to_string();
+        let request = proto::CreateBookmarkRequest { snapshot, bookmark };
+        self.client
+            .create_bookmark(request)
+            .await
+            .map(|response| response.into_inner())
+            .context("Create bookmark failed")
+    }
+
     pub async fn send_snapshot(
         &mut self,
         source: String,

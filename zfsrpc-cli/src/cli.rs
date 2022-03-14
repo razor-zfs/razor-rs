@@ -275,6 +275,14 @@ enum Command {
         name: String,
     },
 
+    #[clap(about = "Create bookmark", visible_aliases = &["cb", "bookmark"])]
+    CreateBookmark {
+        #[clap(help = "Source (snapshot or bookmark) name")]
+        snapshot: String,
+        #[clap(help = "New bookmark name")]
+        bookmark: String,
+    },
+
     #[clap(about = "Send snapshot")]
     Send {
         #[clap(help = "Source snapshot name")]
@@ -396,6 +404,10 @@ impl Cli {
                 .show_snapshot(name)
                 .await
                 .map(|snapshot| format!("{snapshot:?}"))?,
+            Command::CreateBookmark { snapshot, bookmark } => client
+                .create_bookmark(snapshot, bookmark)
+                .await
+                .map(|bookmark| format!("{bookmark:#?}"))?,
             Command::Send {
                 source,
                 output,
