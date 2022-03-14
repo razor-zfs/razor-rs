@@ -12,6 +12,5 @@ fn main() -> io::Result<()> {
         .compile(
             &["zfsrpc.proto", "zfstracer.proto", "zpool.proto"],
             &[PROTO_DIR],
-        )?;
-    Ok(())
+        )
 }

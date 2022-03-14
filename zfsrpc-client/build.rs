@@ -9,7 +9,5 @@ fn main() -> io::Result<()> {
         .build_server(false)
         .build_client(true)
         .format(false)
-        .compile(&["zfsrpc.proto"], &[PROTO_DIR])?;
-
-    Ok(())
+        .compile(&["zfsrpc.proto"], &[PROTO_DIR])
 }
