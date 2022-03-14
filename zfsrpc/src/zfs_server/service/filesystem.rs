@@ -1,3 +1,5 @@
+use proto::filesystem_property;
+
 use super::*;
 
 impl proto::Filesystem {
@@ -65,7 +67,7 @@ impl proto::Filesystem {
 
     pub(crate) fn create(
         name: String,
-        properties: impl IntoIterator<Item = FilesystemProperty>,
+        properties: impl IntoIterator<Item = proto::FilesystemProperty>,
     ) -> Result<Self, ZfsError> {
         let builder = Zfs::filesystem();
 

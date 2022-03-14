@@ -19,9 +19,9 @@ use tracing::info;
 
 use razor_zfsrpc as zfsrpc;
 use zfsrpc::zfs_server::service;
-use zfsrpc::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpcServer;
 use zfsrpc::zfsrpc_proto::tonic_zfstracer::zfs_tracer_server::ZfsTracerServer;
 use zfsrpc::zfsrpc_proto::tonic_zpoolrpc::zpool_rpc_server::ZpoolRpcServer;
+use zfsrpc::zfsrpc_proto::ZfsRpcServer;
 use zfsrpc::zpool_server;
 
 shadow!(build);

@@ -2,21 +2,13 @@ use anyhow::Result;
 
 use razor_zfs as zfs;
 use tokio::task;
+use tracing::debug;
 
 use zfs::{zfs_type_t, Zfs, ZfsDatasetHandle};
 
-use crate::zfsrpc_proto::tonic_zfsrpc::Dataset as DatasetProto;
-use crate::zfsrpc_proto::tonic_zfsrpc::Datasets as DatasetsProto;
-use crate::zfsrpc_proto::tonic_zfsrpc::{filesystem_property, volume_property};
-use crate::zfsrpc_proto::tonic_zfsrpc::{FilesystemProperty, VolumeProperty};
-
-use crate::zfsrpc_proto::Snapshot;
 use crate::zfsrpc_proto::ZfsType;
 
-use tracing::debug;
-
 use super::error::ZfsError;
-
 use super::*;
 
 pub use recv::recv;
@@ -42,17 +34,17 @@ impl ZfsRpcService {
     pub const DEFAULT_CAPACITY: u64 = 100 * 1024 * 1024 * 1024;
 }
 
-pub(crate) fn list() -> Result<DatasetsProto, ZfsError> {
+pub(crate) fn list() -> Result<proto::Datasets, ZfsError> {
     let datasets = Zfs::list()
         .volumes()
         .filesystems()
         .recursive()
         .get_collection()?
         .into_iter()
-        .map(DatasetProto::from)
+        .map(proto::Dataset::from)
         .collect();
 
-    let datasets = DatasetsProto { datasets };
+    let datasets = proto::Datasets { datasets };
     Ok(datasets)
 }
 
@@ -62,7 +54,7 @@ pub(crate) fn destroy(name: String) -> Result<(), ZfsError> {
     Ok(())
 }
 
-impl From<ZfsDatasetHandle> for DatasetProto {
+impl From<ZfsDatasetHandle> for proto::Dataset {
     fn from(ds: ZfsDatasetHandle) -> Self {
         let name = ds.name().to_string();
         let r#type: ZfsType = ds.r#type().into();

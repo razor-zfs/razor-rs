@@ -1,5 +1,5 @@
-mod properties;
-
+pub use tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
+pub use tonic_zfsrpc::zfs_rpc_server::ZfsRpcServer;
 pub use tonic_zfsrpc::BasicDatasetRequest;
 pub use tonic_zfsrpc::CreateFilesystemRequest;
 pub use tonic_zfsrpc::CreateSnapshotRequest;
@@ -15,8 +15,12 @@ pub use tonic_zfsrpc::SendSegment;
 pub use tonic_zfsrpc::Snapshot;
 pub use tonic_zfsrpc::Volume;
 pub use tonic_zfsrpc::ZfsType;
+pub use tonic_zfsrpc::{filesystem_property, volume_property};
+pub use tonic_zfsrpc::{FilesystemProperty, VolumeProperty};
 
-pub mod tonic_zfsrpc {
+mod properties;
+
+mod tonic_zfsrpc {
     #![allow(clippy::return_self_not_must_use)]
     #![allow(unreachable_pub, clippy::use_self)]
     tonic::include_proto!("zfsrpc");

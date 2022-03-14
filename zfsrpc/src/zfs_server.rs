@@ -4,7 +4,7 @@ use itertools::Itertools;
 use tonic::{Request, Response};
 use tracing::{debug, debug_span, error, info, warn};
 
-use super::zfsrpc_proto::tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
+use super::zfsrpc_proto::ZfsRpc;
 
 use crate::zfs_server::error::ZfsError;
 use crate::zfsrpc_proto as proto;

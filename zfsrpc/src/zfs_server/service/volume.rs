@@ -1,3 +1,5 @@
+use proto::volume_property;
+
 use super::*;
 
 impl proto::Volume {
@@ -36,7 +38,7 @@ impl proto::Volume {
         name: String,
         capacity: u64,
         blocksize: u64,
-        properties: impl IntoIterator<Item = VolumeProperty>,
+        properties: impl IntoIterator<Item = proto::VolumeProperty>,
     ) -> Result<Self, ZfsError> {
         let builder = Zfs::volume();
 
