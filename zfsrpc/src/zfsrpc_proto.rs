@@ -1,6 +1,8 @@
 pub use tonic_zfsrpc::zfs_rpc_server::ZfsRpc;
 pub use tonic_zfsrpc::zfs_rpc_server::ZfsRpcServer;
 pub use tonic_zfsrpc::BasicDatasetRequest;
+pub use tonic_zfsrpc::Bookmark;
+pub use tonic_zfsrpc::CreateBookmarkRequest;
 pub use tonic_zfsrpc::CreateFilesystemRequest;
 pub use tonic_zfsrpc::CreateSnapshotRequest;
 pub use tonic_zfsrpc::CreateVolumeRequest;

@@ -33,6 +33,14 @@ impl Zfs {
         SnapshotBuilder::new()
     }
 
+    pub fn create_bookmark(
+        snapshot: impl AsRef<str>,
+        bookmark: impl AsRef<str>,
+    ) -> Result<Bookmark> {
+        lzc::bookmark(snapshot, &bookmark)?;
+        Bookmark::get(bookmark)
+    }
+
     pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
         lzc::destroy_dataset(name).map_err(|err| err.into())
     }
@@ -59,6 +67,10 @@ impl Zfs {
 
     pub fn get_snapshot(name: impl AsRef<str>) -> Result<Snapshot> {
         Snapshot::get(name)
+    }
+
+    pub fn get_bookmark(name: impl AsRef<str>) -> Result<Bookmark> {
+        Bookmark::get(name)
     }
 
     pub fn send<S, F, U>(source: S, from: Option<F>, file: U) -> Result<()>

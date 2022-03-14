@@ -18,6 +18,7 @@ use super::*;
 pub use recv::recv;
 pub use send::SendStream;
 
+mod bookmark;
 mod filesystem;
 mod recv;
 mod send;

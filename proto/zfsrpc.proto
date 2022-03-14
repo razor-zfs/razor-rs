@@ -15,6 +15,7 @@ service ZfsRpc {
     rpc CreateSnapshot (CreateSnapshotRequest) returns (Snapshot);
     rpc GetSnapshot (BasicDatasetRequest) returns (Snapshot);
     rpc DestroySnapshot (BasicDatasetRequest) returns (Empty);
+    rpc CreateBookmark (CreateBookmarkRequest) returns (Bookmark);
     rpc Send (SendRequest) returns (stream SendSegment);
     rpc Recv (stream SendSegment) returns (Empty);
 }
@@ -53,6 +54,11 @@ message MountFilesystemRequest {
 message CreateSnapshotRequest {
     string name = 1;
     bool recursive = 2;
+}
+
+message CreateBookmarkRequest {
+    string snapshot = 1;
+    string bookmark = 2;
 }
 
 enum ZfsType {
@@ -120,6 +126,13 @@ message Snapshot {
     DatasetProperties.Name name = 1;
     DatasetProperties.Guid guid = 18;
     DatasetProperties.ObjSetId objsetid = 25;
+}
+
+message Bookmark {
+    DatasetProperties.Name name = 1;
+    DatasetProperties.Guid guid = 18;
+    DatasetProperties.Creation creation = 19;
+    DatasetProperties.CreateTxg createtxg = 20;
 }
 
 message SendRequest {

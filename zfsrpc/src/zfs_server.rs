@@ -237,6 +237,13 @@ impl ZfsRpc for service::ZfsRpcService {
         todo!()
     }
 
+    async fn create_bookmark(
+        &self,
+        request: Request<proto::CreateBookmarkRequest>,
+    ) -> ZfsRpcResult<proto::Bookmark> {
+        request.into_inner().execute().await
+    }
+
     async fn send(&self, request: Request<proto::SendRequest>) -> ZfsRpcResult<Self::SendStream> {
         request.into_inner().execute().await
     }
