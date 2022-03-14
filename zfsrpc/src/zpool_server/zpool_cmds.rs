@@ -48,17 +48,15 @@ pub(crate) async fn create(
             let mut cmd = Command::new("zpool");
             cmd.arg("create").arg(name);
 
-            if let Some(method) = method {
-                match method.method {
-                    Some(method::Method::Raidz(_)) => {
-                        cmd.arg("raidz");
-                    }
-                    Some(method::Method::Mirror(_)) => {
-                        cmd.arg("mirror");
-                    }
-                    None => unreachable!(),
+            match method.and_then(|m| m.method) {
+                Some(method::Method::Raidz(_)) => {
+                    cmd.arg("raidz");
                 }
-            };
+                Some(method::Method::Mirror(_)) => {
+                    cmd.arg("mirror");
+                }
+                None => (),
+            }
 
             cmd.args(disks);
 
