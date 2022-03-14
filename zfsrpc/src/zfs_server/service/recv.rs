@@ -2,6 +2,8 @@
 
 use tokio::io::AsyncWriteExt;
 use tokio_pipe::pipe;
+use tonic::Code;
+use tonic::Status;
 // use tokio_stream::Stream;
 // use tokio_util::io::ReaderStream;
 
@@ -17,7 +19,7 @@ pub async fn recv(mut input: tonic::Streaming<proto::SendSegment>) -> ZfsRpcResu
     };
 
     let snapname = segment.name;
-    let sequence = segment.sequence;
+    let mut sequence = segment.sequence;
     debug!("Receiving {sequence}");
 
     let (reader, mut writer) = pipe()?;
@@ -25,8 +27,14 @@ pub async fn recv(mut input: tonic::Streaming<proto::SendSegment>) -> ZfsRpcResu
     writer.write_all(&segment.buffer).await?;
 
     while let Some(segment) = input.message().await? {
-        let sequence = segment.sequence;
-        debug!("Receiving {sequence}");
+        if sequence + 1 != segment.sequence {
+            let cur_sequence = segment.sequence;
+            let message = format!("Receiving {cur_sequence} while previous was {sequence:?}");
+            return Err(Status::new(Code::InvalidArgument, message));
+        }
+
+        sequence = segment.sequence;
+        debug!("Receiving {sequence:?}");
         writer.write_all(&segment.buffer).await?;
     }
 
