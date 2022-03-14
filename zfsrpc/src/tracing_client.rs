@@ -24,7 +24,7 @@ impl Client {
             "info" => Level::Info(Variant {}),
             "warn" => Level::Warn(Variant {}),
             "error" => Level::Error(Variant {}),
-            _ => unreachable!(),
+            level => anyhow::bail!("unknown-tracing level {}", level),
         };
         let request = TraceLevel { level: Some(level) };
         let request = tonic::Request::new(request);
