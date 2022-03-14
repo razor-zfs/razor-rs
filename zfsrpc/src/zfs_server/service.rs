@@ -108,7 +108,7 @@ impl FromStr for ZfsType {
             POOL => Self::Pool,
             BOOKMARK => Self::Bookmark,
             _ => anyhow::bail!(
-                "{} is no in {:?}",
+                "{} is not in {:?}",
                 s,
                 [FILESYSTEM, SNAPSHOT, VOLUME, POOL, BOOKMARK]
             ),
