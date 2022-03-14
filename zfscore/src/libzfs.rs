@@ -69,7 +69,7 @@ pub(crate) unsafe fn zfs_get_all_props(handle: *mut sys::zfs_handle_t) -> *mut s
 pub(crate) unsafe fn _zfs_prop_get_numeric(
     handle: *mut sys::zfs_handle_t,
     property: sys::zfs_prop_t,
-) -> u64 {
+) -> Result<u64, i32> {
     Lazy::force(&LIBZFS_HANDLE);
     let mut value = 0;
     let mut src = mem::MaybeUninit::uninit();
@@ -84,9 +84,9 @@ pub(crate) unsafe fn _zfs_prop_get_numeric(
         statlen,
     );
     if rc == 0 {
-        value
+        Ok(value)
     } else {
-        panic!("zfs_prop_get_numeric failed");
+        Err(rc)
     }
 }
 
