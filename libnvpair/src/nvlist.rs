@@ -19,13 +19,13 @@ pub unsafe fn nvlist_size(nvl: *mut nvlist_t, encoding: i32) -> size_t {
 }
 
 #[inline]
-pub unsafe fn nvlist_dup(nvl: *mut nvlist_t) -> *mut nvlist_t {
+pub unsafe fn nvlist_dup(nvl: *mut nvlist_t) -> anyhow::Result<*mut nvlist_t> {
     let mut dup = mem::MaybeUninit::uninit();
     match sys::nvlist_dup(nvl, dup.as_mut_ptr(), 0) {
-        0 => dup.assume_init(),
-        libc::EINVAL => panic!("Nvlist clone invalid argument"),
-        libc::ENOMEM => panic!("Nvlist clone insufficient memory"),
-        _ => unreachable!(),
+        0 => Ok(dup.assume_init()),
+        libc::EINVAL => anyhow::bail!("Nvlist clone invalid argument"),
+        libc::ENOMEM => anyhow::bail!("Nvlist clone insufficient memory"),
+        rc => anyhow::bail!("unknown error code {}", rc),
     }
 }
 

@@ -2,7 +2,7 @@ use razor_libnvpair as libnvpair;
 
 use super::{NvList, NvPair};
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum Value {
     Boolean(bool),
     Char(char),

@@ -62,13 +62,6 @@ impl From<*mut libnvpair::nvlist_t> for NvList {
     }
 }
 
-impl Clone for NvList {
-    fn clone(&self) -> Self {
-        let nvl = unsafe { libnvpair::nvlist_dup(self.nvl) };
-        Self::from(nvl)
-    }
-}
-
 impl Drop for NvList {
     fn drop(&mut self) {
         unsafe { libnvpair::nvlist_free(self.nvl) };
