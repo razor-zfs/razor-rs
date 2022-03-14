@@ -1,19 +1,20 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 package zfstracer;
 
 service ZfsTracer {
-    rpc SetTracingLevel(TraceLevel) returns (Empty);
+  rpc SetTracingLevel(TraceLevel) returns (google.protobuf.Empty);
 }
 
 message TraceLevel {
-    oneof level {
-        Variant trace = 1;
-        Variant debug = 2;
-        Variant info = 3;
-        Variant warn = 4;
-        Variant error = 5;
-    }
+  Level level = 1 ;
 }
 
-message Empty {}
-message Variant {}
+
+enum Level {
+  TRACE = 0;
+  DEBUG = 1;
+  INFO = 2;
+  WARN = 3;
+  ERROR = 4;
+}

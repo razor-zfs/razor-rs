@@ -21,10 +21,9 @@ pub mod pb {
 
 use tonic::transport::{Channel, Error};
 
-use pb::trace_level::Level;
 use pb::zfs_tracer_client::ZfsTracerClient;
+use pb::Level;
 use pb::TraceLevel;
-use pb::Variant;
 
 #[derive(Debug)]
 pub struct Client {
@@ -38,20 +37,9 @@ impl Client {
             .map(|client| Self { client })
     }
 
-    pub async fn set_trace_level(&mut self, level: impl ToString) -> Result<(), tonic::Status> {
-        let level = match level.to_string().to_lowercase().as_ref() {
-            "trace" => Level::Trace(Variant {}),
-            "debug" => Level::Debug(Variant {}),
-            "info" => Level::Info(Variant {}),
-            "warn" => Level::Warn(Variant {}),
-            "error" => Level::Error(Variant {}),
-            level => {
-                return Err(tonic::Status::invalid_argument(format!(
-                    "unknown tracing level {level}"
-                )))
-            }
-        };
-        let request = TraceLevel { level: Some(level) };
+    pub async fn set_trace_level(&mut self, level: Level) -> Result<(), tonic::Status> {
+        let level = level as i32;
+        let request = TraceLevel { level };
         let _empty = self.client.set_tracing_level(request).await?.into_inner();
 
         Ok(())

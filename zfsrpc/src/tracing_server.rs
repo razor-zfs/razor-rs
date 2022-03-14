@@ -1,7 +1,7 @@
-use tonic::{Code, Request, Response, Status};
+use tonic::{Request, Response, Status};
 
 use super::zfsrpc_proto::tonic_zfstracer::zfs_tracer_server::ZfsTracer;
-use super::zfsrpc_proto::tonic_zfstracer::{trace_level, Empty, TraceLevel};
+use super::zfsrpc_proto::tonic_zfstracer::{Level, TraceLevel};
 
 use razor_tracing::Tracer;
 
@@ -13,23 +13,25 @@ where
     async fn set_tracing_level(
         &self,
         request: Request<TraceLevel>,
-    ) -> Result<Response<Empty>, Status> {
-        let request = request.into_inner();
+    ) -> Result<Response<()>, Status> {
+        let level = request.into_inner().level;
+        let level = Level::from_i32(level)
+            .ok_or_else(|| Status::invalid_argument(format!("Unknown level {level}")))?
+            .as_str();
+        self.reload(level)
+            .map(Response::new)
+            .map_err(|e| Status::internal(e.to_string()))
+    }
+}
 
-        let str = match request
-            .level
-            .ok_or_else(|| Status::new(Code::Internal, "trace level is missing"))?
-        {
-            trace_level::Level::Trace(_) => "trace",
-            trace_level::Level::Debug(_) => "debug",
-            trace_level::Level::Info(_) => "info",
-            trace_level::Level::Warn(_) => "warn",
-            trace_level::Level::Error(_) => "error",
-        };
-
-        self.reload(str.to_string())
-            .map_err(|e| Status::new(Code::Internal, e.to_string()))?;
-
-        Ok(Response::new(Empty {}))
+impl Level {
+    fn as_str(&self) -> &'static str {
+        match self {
+            Level::Trace => "trace",
+            Level::Debug => "debug",
+            Level::Info => "info",
+            Level::Warn => "warn",
+            Level::Error => "error",
+        }
     }
 }

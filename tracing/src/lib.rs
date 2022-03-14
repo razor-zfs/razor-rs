@@ -13,7 +13,7 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use tracing_subscriber::{fmt, reload::Handle, EnvFilter};
+use tracing_subscriber::{fmt, reload, EnvFilter};
 
 const DEFAULT_TRACE_LEVEL: &str = "info";
 
@@ -35,16 +35,14 @@ pub fn init() -> anyhow::Result<Tracer<impl tracing::Subscriber>> {
 
 #[derive(Debug)]
 pub struct Tracer<S> {
-    handler: Handle<EnvFilter, S>,
+    handler: reload::Handle<EnvFilter, S>,
 }
 
 impl<S> Tracer<S>
 where
     S: tracing::Subscriber,
 {
-    pub fn reload(&self, dirs: String) -> anyhow::Result<()> {
-        self.handler
-            .reload(EnvFilter::new(dirs))
-            .map_err(|e| e.into())
+    pub fn reload(&self, dirs: impl AsRef<str>) -> Result<(), reload::Error> {
+        self.handler.reload(EnvFilter::new(dirs))
     }
 }
