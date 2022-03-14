@@ -16,7 +16,7 @@ tracing = "0.1"
 tonic = "0.6"
 prost = "0.9"
 
-prop-macro = {version = "0.1", path = "../prop-macro"}
+prop-macro = { version = "0.1", path = "../prop-macro"}
 razor-property = {version = "0.1", path = "../property"}
 razor-tracing = {version = "0.1", path = "../tracing"}
 razor-zfs = { version = "0.1.0", path = "../zfs" }
