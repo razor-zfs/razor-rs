@@ -31,9 +31,10 @@ async fn main() -> anyhow::Result<()> {
         .with_timer(fmt::time::UtcTime::rfc_3339())
         .init();
 
-    if let Err(e) = cli::Cli::execute().await {
+    let result = cli::Cli::execute().await;
+    if let Err(e) = &result {
         error!(?e);
     }
 
-    Ok(())
+    result
 }
