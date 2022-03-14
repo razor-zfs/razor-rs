@@ -12,7 +12,7 @@ members = [
     "property",
     "rpc-server",
     "zpool-client",
+    "ztool",
     "tracing",
-    "ztool"
+    "tracing-client",
 ]
-resolver = "2"

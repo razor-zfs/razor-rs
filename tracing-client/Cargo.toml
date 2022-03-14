@@ -1,0 +1,14 @@
+[package]
+name = "tracing-client"
+version = "0.1.3"
+edition = "2021"
+
+[dependencies]
+prost = "0.9"
+tonic = "0.6"
+tracing = "0.1"
+
+razor-tracing = { version = "0.1", path = "../tracing" }
+
+[build-dependencies]
+tonic-build = "0.6"

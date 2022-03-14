@@ -7,10 +7,7 @@ fn main() -> io::Result<()> {
 
     tonic_build::configure()
         .build_server(true)
-        .build_client(false)
-        .format(false)
-        .compile(
-            &["zfsrpc.proto", "zfstracer.proto", "zpool.proto"],
-            &[PROTO_DIR],
-        )
+        .build_client(true)
+        .format(true)
+        .compile(&["zfstracer.proto"], &[PROTO_DIR])
 }

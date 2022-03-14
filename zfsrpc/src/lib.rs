@@ -17,7 +17,6 @@ pub use razor_property as property;
 pub use razor_property::InvalidProperty as PropertyError;
 pub use zfs_server::service::ZfsRpcService;
 
-pub mod tracing_client;
 pub mod tracing_server;
 pub mod zfs_server;
 pub mod zfsrpc_proto;

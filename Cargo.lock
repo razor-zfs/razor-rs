@@ -1676,6 +1676,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tracing-client"
+version = "0.1.3"
+dependencies = [
+ "prost",
+ "razor-tracing",
+ "tonic",
+ "tonic-build",
+ "tracing",
+]
+
+[[package]]
 name = "tracing-core"
 version = "0.1.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
