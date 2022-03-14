@@ -1,5 +1,7 @@
-use anyhow::Result;
+use std::convert::TryFrom;
+use std::str::FromStr;
 
+use anyhow::Result;
 use razor_zfs as zfs;
 use tokio::task;
 use tracing::debug;
@@ -7,6 +9,8 @@ use tracing::debug;
 use zfs::{zfs_type_t, Zfs, ZfsDatasetHandle};
 
 use crate::zfsrpc_proto::ZfsType;
+use razor_zfs::DatasetError;
+use razor_zfs::NvListError;
 
 use super::error::ZfsError;
 use super::*;
@@ -41,8 +45,10 @@ pub(crate) fn list() -> Result<proto::Datasets, ZfsError> {
         .recursive()
         .get_collection()?
         .into_iter()
-        .map(proto::Dataset::from)
-        .collect();
+        .map(proto::Dataset::try_from)
+        .collect::<anyhow::Result<_>>()
+        .map_err(|e| DatasetError::NvListError(NvListError::Message(format!("{:?}", e))))
+        .map_err(ZfsError::Internal)?;
 
     let datasets = proto::Datasets { datasets };
     Ok(datasets)
@@ -54,40 +60,47 @@ pub(crate) fn destroy(name: String) -> Result<(), ZfsError> {
     Ok(())
 }
 
-impl From<ZfsDatasetHandle> for proto::Dataset {
-    fn from(ds: ZfsDatasetHandle) -> Self {
+impl TryFrom<ZfsDatasetHandle> for proto::Dataset {
+    type Error = anyhow::Error;
+    fn try_from(ds: ZfsDatasetHandle) -> Result<Self, Self::Error> {
         let name = ds.name().to_string();
-        let r#type: ZfsType = ds.r#type().into();
-        Self {
+        let r#type = ZfsType::try_from(ds.r#type())?;
+        Ok(Self {
             name,
             r#type: r#type as i32,
-        }
+        })
     }
 }
 
-impl From<zfs_type_t> for ZfsType {
-    fn from(t: zfs_type_t) -> Self {
-        match t {
+impl TryFrom<zfs_type_t> for ZfsType {
+    type Error = anyhow::Error;
+    fn try_from(t: zfs_type_t) -> Result<Self, Self::Error> {
+        Ok(match t {
             zfs_type_t::ZFS_TYPE_FILESYSTEM => Self::Filesystem,
             zfs_type_t::ZFS_TYPE_SNAPSHOT => Self::Snapshot,
             zfs_type_t::ZFS_TYPE_VOLUME => Self::Volume,
             zfs_type_t::ZFS_TYPE_POOL => Self::Pool,
             zfs_type_t::ZFS_TYPE_BOOKMARK => Self::Bookmark,
-            _ => unreachable!(),
-        }
+            t => anyhow::bail!("unsupported zfs_type {:?}", t),
+        })
     }
 }
 
-impl From<&str> for ZfsType {
-    fn from(s: &str) -> Self {
-        match s {
+impl FromStr for ZfsType {
+    type Err = anyhow::Error;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(match s {
             FILESYSTEM => Self::Filesystem,
             SNAPSHOT => Self::Snapshot,
             VOLUME => Self::Volume,
             POOL => Self::Pool,
             BOOKMARK => Self::Bookmark,
-            _ => unreachable!(),
-        }
+            _ => anyhow::bail!(
+                "{} is no in {:?}",
+                s,
+                [FILESYSTEM, SNAPSHOT, VOLUME, POOL, BOOKMARK]
+            ),
+        })
     }
 }
 

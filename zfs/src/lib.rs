@@ -13,10 +13,10 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use razor_nvpair::NvListError;
 use razor_property::InvalidProperty;
 use razor_zfscore::DatasetCollectorBuilder;
 
+pub use razor_nvpair::NvListError;
 pub use razor_zfscore::zfs_type_t;
 pub use razor_zfscore::ZfsDatasetHandle;
 
