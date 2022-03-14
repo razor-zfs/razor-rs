@@ -303,7 +303,7 @@ impl Cli {
         let this = Self::parse();
         trace!("{:?}", this);
 
-        let mut client = ZfsClient::new(this.port).await;
+        let mut client = ZfsClient::try_with_ip([0; 4].into(), this.port).await?;
 
         let resp: String = match this.command {
             Command::ZfsList => client.list().await?,

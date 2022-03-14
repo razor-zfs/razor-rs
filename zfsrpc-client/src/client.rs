@@ -38,6 +38,7 @@ pub struct Client {
 }
 
 impl Client {
+    #[deprecated(note = "panics if failed to connected to 0.0.0.0:{ip}")]
     pub async fn new(port: String) -> Self {
         let client = ZfsRpcClient::connect(format!("http://0.0.0.0:{}", port))
             .await
@@ -45,11 +46,19 @@ impl Client {
         Self { client }
     }
 
+    #[deprecated(note = "panics if failed to connected to {host}:{ip}")]
     pub async fn with_ip(host: IpAddr, port: String) -> Self {
         let client = ZfsRpcClient::connect(format!("http://{}:{}", host, port))
             .await
             .expect("Failed to connect to zfs server");
         Self { client }
+    }
+
+    pub async fn try_with_ip(host: IpAddr, port: String) -> anyhow::Result<Self> {
+        let client = ZfsRpcClient::connect(format!("http://{}:{}", host, port))
+            .await
+            .context("Failed to connect to zfs server")?;
+        Ok(Self { client })
     }
 
     pub async fn list(&mut self) -> anyhow::Result<String> {
