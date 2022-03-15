@@ -325,7 +325,7 @@ impl Cli {
 
         let mut client = ZfsClient::try_with_ip([0; 4].into(), this.port).await?;
 
-        let resp: String = match this.command {
+        let text = match this.command {
             Command::ZfsList => client.list().await?,
             Command::GetVolume { name } => client.get_volume(name).await?,
             Command::GetFilesystem { name } => client.get_filesystem(name).await?,
@@ -438,7 +438,7 @@ impl Cli {
             }
         };
 
-        info!(?resp);
+        println!("{text}");
 
         Ok(())
     }
