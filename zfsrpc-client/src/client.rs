@@ -238,6 +238,30 @@ impl Client {
             .context("Create bookmark failed")
     }
 
+    pub async fn show_bookmark(
+        &mut self,
+        bookmark: impl ToString,
+    ) -> anyhow::Result<proto::Bookmark> {
+        let name = bookmark.to_string();
+        let request = proto::BasicDatasetRequest { name };
+        self.client
+            .get_bookmark(request)
+            .await
+            .map(|response| response.into_inner())
+            .context("Show bookmark failed")
+    }
+
+    pub async fn destroy_bookmark(&mut self, bookmark: impl ToString) -> anyhow::Result<()> {
+        let name = bookmark.to_string();
+        let request = proto::BasicDatasetRequest { name };
+        self.client
+            .destroy_bookmark(request)
+            .await
+            .map(|response| response.into_inner())
+            .map(|_| ())
+            .context("Destroy bookmark failed")
+    }
+
     pub async fn send_snapshot(
         &mut self,
         source: String,

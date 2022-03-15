@@ -283,6 +283,18 @@ enum Command {
         bookmark: String,
     },
 
+    #[clap(about = "Show bookmark", visible_aliases = &["sb"])]
+    ShowBookmark {
+        #[clap(help = "Bookmark name")]
+        bookmark: String,
+    },
+
+    #[clap(about = "Destroy bookmark", visible_aliases = &["db"])]
+    DestroyBookmark {
+        #[clap(help = "Bookmark name")]
+        bookmark: String,
+    },
+
     #[clap(about = "Send snapshot")]
     Send {
         #[clap(help = "Source snapshot name")]
@@ -408,6 +420,14 @@ impl Cli {
                 .create_bookmark(snapshot, bookmark)
                 .await
                 .map(|bookmark| format!("{bookmark:#?}"))?,
+            Command::ShowBookmark { bookmark } => client
+                .show_bookmark(bookmark)
+                .await
+                .map(|bookmark| format!("{bookmark:#?}"))?,
+            Command::DestroyBookmark { bookmark } => client
+                .destroy_bookmark(bookmark)
+                .await
+                .map(|()| "Bookmark destroyed".to_string())?,
             Command::Send {
                 source,
                 output,

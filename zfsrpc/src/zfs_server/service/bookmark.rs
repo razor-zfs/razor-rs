@@ -11,10 +11,14 @@ impl proto::CreateBookmarkRequest {
     }
 }
 
-impl proto::Bookmark {
-    pub(crate) fn _get(name: &str) -> Result<Self, ZfsError> {
-        let bookmark = zfs::Zfs::get_bookmark(name).map(Into::into)?;
-        Ok(bookmark)
+impl proto::BasicDatasetRequest {
+    pub(crate) async fn get_bookmark(self) -> ZfsRpcResult<proto::Bookmark> {
+        task::spawn_blocking(|| zfs::Zfs::get_bookmark(self.name))
+            .await
+            .map_err(join_to_status)?
+            .map(proto::Bookmark::from)
+            .map(Response::new)
+            .map_err(zfs_to_status)
     }
 }
 

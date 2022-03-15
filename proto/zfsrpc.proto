@@ -16,6 +16,8 @@ service ZfsRpc {
     rpc GetSnapshot (BasicDatasetRequest) returns (Snapshot);
     rpc DestroySnapshot (BasicDatasetRequest) returns (Empty);
     rpc CreateBookmark (CreateBookmarkRequest) returns (Bookmark);
+    rpc GetBookmark (BasicDatasetRequest) returns (Bookmark);
+    rpc DestroyBookmark (BasicDatasetRequest) returns (Empty);
     rpc Send (SendRequest) returns (stream SendSegment);
     rpc Recv (stream SendSegment) returns (Empty);
 }

@@ -61,6 +61,17 @@ pub(crate) fn destroy(name: String) -> Result<(), ZfsError> {
     Ok(())
 }
 
+impl proto::BasicDatasetRequest {
+    pub(crate) async fn destroy(self) -> ZfsRpcResult<proto::Empty> {
+        task::spawn_blocking(|| zfs::Zfs::destroy_dataset(self.name))
+            .await
+            .map_err(join_to_status)?
+            .map(|()| proto::Empty {})
+            .map(Response::new)
+            .map_err(zfs_to_status)
+    }
+}
+
 impl TryFrom<ZfsDatasetHandle> for proto::Dataset {
     type Error = anyhow::Error;
     fn try_from(ds: ZfsDatasetHandle) -> Result<Self, Self::Error> {

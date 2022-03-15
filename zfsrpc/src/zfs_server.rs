@@ -244,6 +244,20 @@ impl ZfsRpc for service::ZfsRpcService {
         request.into_inner().execute().await
     }
 
+    async fn get_bookmark(
+        &self,
+        request: Request<proto::BasicDatasetRequest>,
+    ) -> ZfsRpcResult<proto::Bookmark> {
+        request.into_inner().get_bookmark().await
+    }
+
+    async fn destroy_bookmark(
+        &self,
+        request: Request<proto::BasicDatasetRequest>,
+    ) -> ZfsRpcResult<proto::Empty> {
+        request.into_inner().destroy().await
+    }
+
     async fn send(&self, request: Request<proto::SendRequest>) -> ZfsRpcResult<Self::SendStream> {
         request.into_inner().execute().await
     }
