@@ -491,5 +491,5 @@ async fn process_recv(
 
     client.recv_snapshot(snapshot, segments).await?;
 
-    Ok(String::from("finish processin receive"))
+    Ok(String::from("finish processing receive"))
 }

@@ -195,7 +195,7 @@ impl Client {
             .create_snapshot(request)
             .await
             .map(|response| response.into_inner())
-            .context("Create snapshot")
+            .context("Create snapshot failed")
     }
 
     pub async fn list_snapshots(
@@ -274,14 +274,13 @@ impl Client {
             .send(request)
             .await
             .map(|response| response.into_inner())
-            .context("Send Snapshot")
+            .context("Send snapshot failed")
     }
 
     pub async fn recv_snapshot(
         &mut self,
         snapshot: String,
         input: impl tokio_stream::Stream<Item = Vec<u8>> + std::marker::Send + 'static,
-        // input: impl tokio::io::AsyncReadExt,
     ) -> anyhow::Result<()> {
         let mut sequence = 0;
         let request = input.map(move |buffer| {
@@ -298,6 +297,6 @@ impl Client {
             .recv(request)
             .await
             .map(|_response| ())
-            .context("Receive Snapshot")
+            .context("Receive snapshot failed")
     }
 }
