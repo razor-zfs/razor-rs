@@ -41,7 +41,9 @@ impl LibZfsHandle {
 pub(crate) unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
     let types = sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
         | sys::zfs_type_t::ZFS_TYPE_VOLUME
-        | sys::zfs_type_t::ZFS_TYPE_SNAPSHOT;
+        | sys::zfs_type_t::ZFS_TYPE_SNAPSHOT
+        | sys::zfs_type_t::ZFS_TYPE_POOL
+        | sys::zfs_type_t::ZFS_TYPE_BOOKMARK;
     let types = types.0 as i32;
     sys::zfs_open(LIBZFS_HANDLE.libzfs_handle, name, types)
 }
