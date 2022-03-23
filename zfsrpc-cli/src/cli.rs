@@ -1,6 +1,7 @@
 use std::io::Cursor;
 use std::path::PathBuf;
 
+use anyhow::Context;
 use clap::{Parser, Subcommand};
 use razor_zfsrpc_client::{
     client::Client as ZfsClient, property, FilesystemProperty, VolumeProperty,
@@ -400,10 +401,9 @@ impl Cli {
                 client.unmount_filesystem(&name).await?;
                 format!("Filesystem {} is unmounted", name)
             }
-            Command::CreateSnapshot { name, recursive } => client
-                .create_snapshot(name, recursive)
-                .await
-                .map(|snapshot| format!("{snapshot:?}"))?,
+            Command::CreateSnapshot { name, recursive } => {
+                create_snapshot(&mut client, name, recursive).await?
+            }
             Command::DestroySnapshot { name } => client
                 .destroy_snapshot(name)
                 .await
@@ -442,6 +442,19 @@ impl Cli {
 
         Ok(())
     }
+}
+
+async fn create_snapshot(
+    client: &mut ZfsClient,
+    name: String,
+    recursive: bool,
+) -> anyhow::Result<String> {
+    let (dataset, name) = name.split_once('@').context("Invalid snapshot name")?;
+    client
+        .create_snapshot(dataset, name, recursive)
+        .await
+        .map(|snapshot| format!("{snapshot:?}"))
+        .context("Failed to create snapshot")
 }
 
 async fn process_send(

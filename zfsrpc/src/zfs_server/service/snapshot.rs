@@ -2,7 +2,10 @@ use super::*;
 
 impl proto::CreateSnapshotRequest {
     pub(crate) async fn execute(self) -> ZfsRpcResult<proto::Snapshot> {
-        task::spawn_blocking(|| zfs::Zfs::snapshot().create(self.name))
+        let Self { dataset, name, .. } = self;
+        let name = format!("{dataset}@{name}");
+        let snapshot = zfs::Zfs::snapshot();
+        task::spawn_blocking(|| snapshot.create(name))
             .await
             .map_err(join_to_status)?
             .map(proto::Snapshot::from)
