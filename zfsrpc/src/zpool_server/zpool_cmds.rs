@@ -107,7 +107,11 @@ pub(crate) async fn destroy(name: &str) -> anyhow::Result<()> {
 
     debug!(?output.status);
 
-    assert!(output.status.success(), "failed to destroy zpool {} ", name);
+    if !output.status.success() {
+        let msg = std::str::from_utf8(&output.stderr)?.to_string();
+        error!(?msg);
+        return Err(anyhow::anyhow!(msg));
+    }
 
     debug!("zpool {} was destroyed", name);
 
