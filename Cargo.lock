@@ -1104,6 +1104,7 @@ dependencies = [
  "anyhow",
  "async-stream",
  "itertools",
+ "libc",
  "prop-macro",
  "prost",
  "razor-property",

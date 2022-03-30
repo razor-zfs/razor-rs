@@ -1,3 +1,5 @@
+use std::os::unix::prelude::AsRawFd;
+
 use tokio::io::AsyncWriteExt;
 use tokio_pipe::pipe;
 use tonic::Status;
@@ -18,6 +20,11 @@ pub async fn recv(mut input: tonic::Streaming<proto::SendSegment>) -> ZfsRpcResu
     debug!(sequence = segment.sequence, "Receiving message");
 
     let (reader, mut writer) = pipe()?;
+    let fd = reader.as_raw_fd();
+    task::spawn_blocking(move || max_pipe_size(fd))
+        .await
+        .map_err(join_to_status)??;
+
     let receiver = task::spawn_blocking(|| zfs::Zfs::receive(snapname, origin, false, reader));
     writer.write_all(&segment.buffer).await?;
 

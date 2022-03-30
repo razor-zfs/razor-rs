@@ -18,8 +18,11 @@ use super::*;
 pub use recv::recv;
 pub use send::SendStream;
 
+use pipe::max_pipe_size;
+
 mod bookmark;
 mod filesystem;
+mod pipe;
 mod recv;
 mod send;
 mod snapshot;
