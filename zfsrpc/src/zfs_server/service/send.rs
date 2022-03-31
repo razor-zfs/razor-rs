@@ -1,11 +1,16 @@
 use std::os::unix::prelude::AsRawFd;
 use std::pin::Pin;
+use std::process::Stdio;
 
 use tokio::io::{AsyncReadExt, BufReader};
+use tokio::process::Command;
 use tokio_pipe::pipe;
 use tokio_stream::Stream;
 
 use super::*;
+
+const ZFS: &str = "/usr/sbin/zfs";
+const DEFAULT_BUF_SIZE: usize = 1024 * 1024;
 
 pub type SendStream = Pin<Box<dyn Stream<Item = Result<proto::SendSegment, tonic::Status>> + Send>>;
 
@@ -44,6 +49,56 @@ impl proto::SendRequest {
                 .await
                 .map_err(join_to_status)?
                 .map_err(zfs_to_status)?;
+        };
+        Ok(Response::new(Box::pin(send_stream)))
+    }
+
+    pub async fn execute_process(self) -> ZfsRpcResult<SendStream> {
+        let Self { from, source } = self;
+        let from = if from.is_empty() { None } else { Some(from) };
+        let name = source.clone();
+
+        let mut send = Command::new(ZFS);
+        send.arg("send");
+        if let Some(from) = from {
+            send.args(&["-i", &from]);
+        }
+        send.arg(&source).stdout(Stdio::piped()).kill_on_drop(true);
+
+        let mut send = send.spawn()?;
+        let stdout = send
+            .stdout
+            .take()
+            .ok_or_else(|| tonic::Status::internal("Failed to get stdout from 'zfs send'"))?;
+        let mut reader = BufReader::with_capacity(DEFAULT_BUF_SIZE, stdout);
+
+        let send_stream = async_stream::try_stream! {
+            let mut sequence = 0;
+            let mut _send_complete = false;
+            loop {
+                let mut buffer = Vec::with_capacity(DEFAULT_BUF_SIZE);
+                let count = reader.read_buf(&mut buffer).await?;
+                if count > 0 {
+                    let segment = proto::SendSegment {
+                            name: name.clone(),
+                            sequence,
+                            buffer,
+                        };
+                    yield segment;
+                } else {
+                    break;
+                }
+                sequence += 1;
+            }
+            let status = send.wait().await?;
+            if !status.success() {
+                if let Some(code) = status.code() {
+                    tracing::error!(code = code, "'zfs send` exit");
+                } else {
+                    tracing::error!("'zfs send` killed by signal");
+                }
+
+            }
         };
         Ok(Response::new(Box::pin(send_stream)))
     }
