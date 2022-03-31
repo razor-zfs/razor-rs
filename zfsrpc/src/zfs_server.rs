@@ -267,6 +267,6 @@ impl ZfsRpc for service::ZfsRpcService {
         request: Request<tonic::Streaming<proto::SendSegment>>,
     ) -> ZfsRpcResult<proto::Empty> {
         let input = request.into_inner();
-        service::recv(input).await
+        service::recv_process(input).await
     }
 }

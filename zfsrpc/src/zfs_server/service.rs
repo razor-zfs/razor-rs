@@ -16,6 +16,7 @@ use super::error::ZfsError;
 use super::*;
 
 pub use recv::recv;
+pub use recv::recv_process;
 pub use send::SendStream;
 
 use pipe::max_pipe_size;
