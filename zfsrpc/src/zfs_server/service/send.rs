@@ -1,15 +1,12 @@
 use std::os::unix::prelude::AsRawFd;
 use std::pin::Pin;
-use std::process::Stdio;
 
 use tokio::io::{AsyncReadExt, BufReader};
-use tokio::process::Command;
 use tokio_pipe::pipe;
 use tokio_stream::Stream;
 
 use super::*;
 
-const ZFS: &str = "/usr/sbin/zfs";
 const DEFAULT_BUF_SIZE: usize = 1024 * 1024;
 
 pub type SendStream = Pin<Box<dyn Stream<Item = Result<proto::SendSegment, tonic::Status>> + Send>>;
@@ -58,14 +55,7 @@ impl proto::SendRequest {
         let from = if from.is_empty() { None } else { Some(from) };
         let name = source.clone();
 
-        let mut send = Command::new(ZFS);
-        send.arg("send");
-        if let Some(from) = from {
-            send.args(&["-i", &from]);
-        }
-        send.arg(&source).stdout(Stdio::piped()).kill_on_drop(true);
-
-        let mut send = send.spawn()?;
+        let mut send = Zfs::send_cmd(source, from).map_err(zfs_to_status)?;
         let stdout = send
             .stdout
             .take()

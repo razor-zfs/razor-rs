@@ -1,14 +1,10 @@
 use std::os::unix::prelude::AsRawFd;
-use std::process::Stdio;
 
 use tokio::io::AsyncWriteExt;
-use tokio::process::Command;
 use tokio_pipe::pipe;
 use tonic::Status;
 
 use super::*;
-
-const ZFS: &str = "/usr/sbin/zfs";
 
 pub async fn recv(mut input: tonic::Streaming<proto::SendSegment>) -> ZfsRpcResult<proto::Empty> {
     let origin: Option<String> = None;
@@ -69,13 +65,8 @@ pub async fn recv_process(
     let mut expected_sequence = segment.sequence + 1;
     trace!(sequence = segment.sequence, "Receiving message");
 
-    let mut recv = Command::new(ZFS);
-    recv.arg("receive")
-        .arg(&snapname)
-        .stdin(Stdio::piped())
-        .kill_on_drop(true);
-
-    let mut receiver = recv.spawn()?;
+    let origin: Option<String> = None;
+    let mut receiver = Zfs::receive_cmd(snapname, origin, false).map_err(zfs_to_status)?;
     let mut stdin = receiver
         .stdin
         .take()
