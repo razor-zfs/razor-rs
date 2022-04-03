@@ -15,6 +15,8 @@ use super::DatasetCollectorBuilder;
 use super::Result;
 use super::ZfsDatasetHandle;
 
+#[cfg(feature = "cmd")]
+mod cmd;
 mod dataset;
 
 #[derive(Debug)]

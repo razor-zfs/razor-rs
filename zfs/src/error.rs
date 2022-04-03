@@ -1,3 +1,5 @@
+use std::io;
+
 use razor_zfscore::error;
 
 use thiserror::Error;
@@ -24,5 +26,12 @@ impl DatasetError {
         Self::InvalidProperty(InvalidProperty::InvalidValue(
             "Value is missing".to_string(),
         ))
+    }
+}
+
+impl From<io::Error> for DatasetError {
+    fn from(error: io::Error) -> Self {
+        let code = error.raw_os_error().unwrap_or_default();
+        Self::Unknown(code)
     }
 }
