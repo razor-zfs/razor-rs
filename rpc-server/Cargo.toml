@@ -1,14 +1,14 @@
 [package]
 name = "razor-rpc-server"
-version = "0.1.3"
+version = "0.2.0"
 edition = "2021"
 build = "build.rs"
 
 
 [dependencies]
 anyhow = "1.0"
-razor-zfsrpc = { version = "0.1", path = "../zfsrpc", features = ["dirty"] }
-razor-tracing = {version = "0.1", path = "../tracing"}
+razor-zfsrpc = { version = "0.2", path = "../zfsrpc", features = ["dirty"] }
+razor-tracing = {version = "0.2", path = "../tracing"}
 tokio = { version = "1.9", features = ["full"] }
 tonic = "0.6"
 tracing = "0.1"

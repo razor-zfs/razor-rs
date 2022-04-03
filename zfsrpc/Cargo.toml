@@ -1,6 +1,6 @@
 [package]
 name = "razor-zfsrpc"
-version = "0.1.3"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
@@ -16,11 +16,11 @@ tracing = "0.1"
 tonic = "0.6"
 prost = "0.9"
 
-prop-macro = { version = "0.1", path = "../prop-macro" }
-razor-property = { version = "0.1", path = "../property" }
-razor-tracing = { version = "0.1", path = "../tracing" }
-razor-zfs = { version = "0.1", path = "../zfs", features = ["cmd"] }
-razor-zfscore = { version = "0.1", path = "../zfscore"}
+prop-macro = { version = "0.2", path = "../prop-macro" }
+razor-property = { version = "0.2", path = "../property" }
+razor-tracing = { version = "0.2", path = "../tracing" }
+razor-zfs = { version = "0.2", path = "../zfs", features = ["cmd"] }
+razor-zfscore = { version = "0.2", path = "../zfscore"}
 
 [build-dependencies]
 tonic-build = "0.6"
