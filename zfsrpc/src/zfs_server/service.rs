@@ -4,7 +4,7 @@ use std::str::FromStr;
 use anyhow::Result;
 use razor_zfs as zfs;
 use tokio::task;
-use tracing::debug;
+use tracing::{debug, error, trace};
 
 use zfs::{zfs_type_t, Zfs, ZfsDatasetHandle};
 

@@ -21,7 +21,7 @@ pub async fn recv(mut input: tonic::Streaming<proto::SendSegment>) -> ZfsRpcResu
 
     let snapname = segment.name;
     let mut expected_sequence = segment.sequence + 1;
-    debug!(sequence = segment.sequence, "Receiving message");
+    trace!(sequence = segment.sequence, "Receiving message");
 
     let (reader, mut writer) = pipe()?;
     let fd = reader.as_raw_fd();
@@ -33,7 +33,7 @@ pub async fn recv(mut input: tonic::Streaming<proto::SendSegment>) -> ZfsRpcResu
     writer.write_all(&segment.buffer).await?;
 
     while let Some(segment) = input.message().await? {
-        debug!(sequence = segment.sequence, "Receiving message");
+        trace!(sequence = segment.sequence, "Receiving message");
         if expected_sequence == segment.sequence {
             expected_sequence = segment.sequence + 1;
         } else {
@@ -67,7 +67,7 @@ pub async fn recv_process(
 
     let snapname = segment.name;
     let mut expected_sequence = segment.sequence + 1;
-    debug!(sequence = segment.sequence, "Receiving message");
+    trace!(sequence = segment.sequence, "Receiving message");
 
     let mut recv = Command::new(ZFS);
     recv.arg("receive")
@@ -84,7 +84,7 @@ pub async fn recv_process(
     stdin.write_all(&segment.buffer).await?;
 
     while let Some(segment) = input.message().await? {
-        debug!(sequence = segment.sequence, "Receiving message");
+        trace!(sequence = segment.sequence, "Receiving message");
         if expected_sequence == segment.sequence {
             expected_sequence = segment.sequence + 1;
         } else {
@@ -102,9 +102,9 @@ pub async fn recv_process(
 
     if !status.success() {
         if let Some(code) = status.code() {
-            tracing::error!(code = code, "'zfs send` exit");
+            error!(code = code, "'zfs send` exit");
         } else {
-            tracing::error!("'zfs send` killed by signal");
+            error!("'zfs send` killed by signal");
         }
     }
 

@@ -74,7 +74,6 @@ impl proto::SendRequest {
 
         let send_stream = async_stream::try_stream! {
             let mut sequence = 0;
-            let mut _send_complete = false;
             loop {
                 let mut buffer = Vec::with_capacity(DEFAULT_BUF_SIZE);
                 let count = reader.read_buf(&mut buffer).await?;
@@ -93,9 +92,9 @@ impl proto::SendRequest {
             let status = send.wait().await?;
             if !status.success() {
                 if let Some(code) = status.code() {
-                    tracing::error!(code = code, "'zfs send` exit");
+                    error!(code = code, "'zfs send` exit");
                 } else {
-                    tracing::error!("'zfs send` killed by signal");
+                    error!("'zfs send` killed by signal");
                 }
 
             }
