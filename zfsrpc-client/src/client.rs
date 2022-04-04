@@ -186,17 +186,10 @@ impl Client {
 
     pub async fn create_snapshot(
         &mut self,
-        dataset: impl ToString,
-        name: impl ToString,
+        name: String,
         recursive: bool,
     ) -> anyhow::Result<proto::Snapshot> {
-        let dataset = dataset.to_string();
-        let name = name.to_string();
-        let request = proto::CreateSnapshotRequest {
-            dataset,
-            name,
-            recursive,
-        };
+        let request = proto::CreateSnapshotRequest { name, recursive };
 
         self.client
             .create_snapshot(request)
