@@ -93,9 +93,9 @@ pub async fn recv_process(
 
     if !status.success() {
         if let Some(code) = status.code() {
-            error!(code = code, "'zfs send` exit");
+            error!(code = code, "'zfs recv` exit");
         } else {
-            error!("'zfs send` killed by signal");
+            error!("'zfs recv` killed by signal");
         }
     }
 
