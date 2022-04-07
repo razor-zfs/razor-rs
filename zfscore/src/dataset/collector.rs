@@ -91,7 +91,7 @@ impl DatasetCollectorBuilder {
     }
 
     #[must_use]
-    pub fn _bookmarks(mut self) -> Self {
+    pub fn bookmarks(mut self) -> Self {
         self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_BOOKMARK;
 
         self
