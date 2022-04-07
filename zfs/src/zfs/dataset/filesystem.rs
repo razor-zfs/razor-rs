@@ -238,7 +238,7 @@ impl Filesystem {
             .filesystems()
             .volumes()
             .snapshots()
-            .recursive()
+            .recursive(true)
             .get_collection()?;
 
         for dataset in ns_datasets.into_iter() {

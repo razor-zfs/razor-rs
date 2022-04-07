@@ -98,9 +98,8 @@ impl DatasetCollectorBuilder {
     }
 
     #[must_use]
-    pub fn recursive(mut self) -> Self {
-        self.recursive = true;
-
+    pub fn recursive(mut self, yes: bool) -> Self {
+        self.recursive = yes;
         self
     }
 

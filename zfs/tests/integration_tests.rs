@@ -254,7 +254,7 @@ fn filesystem_snapshot() {
 
     let snapshots = Zfs::list_from(filesystem.name())
         .snapshots()
-        .recursive()
+        .recursive(true)
         .get_collection()
         .unwrap();
 
@@ -289,7 +289,7 @@ fn list_filesystems() {
     dbg!("starting list_filesystem test");
     let datasets = Zfs::list()
         .filesystems()
-        .recursive()
+        .recursive(true)
         .get_collection()
         .unwrap();
 
@@ -403,7 +403,7 @@ macro_rules! list_filesystems_from_dup {
 
     let datasets = Zfs::list_from(test.namespace.name())
         .filesystems()
-        .recursive()
+        .recursive(true)
         .get_collection()
         .unwrap();
 
@@ -440,7 +440,11 @@ list_filesystems_from_dup! {
 #[test]
 fn list_volumes() {
     dbg!("starting list_volumes test");
-    let datasets = Zfs::list().volumes().recursive().get_collection().unwrap();
+    let datasets = Zfs::list()
+        .volumes()
+        .recursive(true)
+        .get_collection()
+        .unwrap();
 
     for dataset in datasets {
         dbg!(dataset.name());
@@ -454,7 +458,7 @@ fn list_all() {
     let datasets = Zfs::list()
         .filesystems()
         .volumes()
-        .recursive()
+        .recursive(true)
         .get_collection()
         .unwrap();
 

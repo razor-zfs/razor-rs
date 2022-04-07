@@ -47,7 +47,7 @@ pub(crate) fn list() -> Result<proto::Datasets, ZfsError> {
     let datasets = Zfs::list()
         .volumes()
         .filesystems()
-        .recursive()
+        .recursive(true)
         .get_collection()?
         .into_iter()
         .map(proto::Dataset::try_from)
