@@ -284,7 +284,7 @@ impl VolumeBuilder {
         self.nvlist
             .add_uint64(VOLBLOCKSIZE.as_ref(), self.volblocksize)?;
 
-        lzc::create_volume(name.as_ref(), &self.nvlist)?;
+        lzc::create_volume(name.as_ref(), self.nvlist)?;
 
         let dataset = ZfsDatasetHandle::new(cname)?;
         let volume = Volume { dataset };

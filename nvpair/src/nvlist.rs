@@ -1,6 +1,6 @@
 use std::ffi::CString;
 use std::marker::{PhantomData, Send};
-use std::ops::Not;
+use std::ops::{Deref, DerefMut, Not};
 use std::ptr;
 
 use razor_libnvpair as libnvpair;
@@ -33,18 +33,6 @@ impl<'a, T> NvListRef<'a, T> {
     }
 }
 
-impl access::NvListAccess for NvList {
-    fn nvl(&self) -> *mut libnvpair::nvlist_t {
-        self.nvl
-    }
-}
-
-impl<'a, T> access::NvListAccess for NvListRef<'a, T> {
-    fn nvl(&self) -> *mut libnvpair::nvlist_t {
-        self.nvl
-    }
-}
-
 impl NvList {
     pub fn new(flag: NvFlag) -> Self {
         let flag = match flag {
@@ -68,6 +56,20 @@ impl Drop for NvList {
     }
 }
 
+impl Deref for NvList {
+    type Target = *mut libnvpair::nvlist_t;
+
+    fn deref(&self) -> &Self::Target {
+        &self.nvl
+    }
+}
+
+impl DerefMut for NvList {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.nvl
+    }
+}
+
 impl IntoIterator for NvList {
     type Item = NvPair;
     type IntoIter = NvListIterator;
@@ -81,6 +83,10 @@ impl IntoIterator for NvList {
 }
 
 unsafe impl Send for NvList {}
+
+impl access::NvListAccess for NvList {}
+
+impl<'a, T> NvListAccess for NvListRef<'a, T> {}
 
 #[derive(Debug, PartialEq)]
 pub struct NvListIterator {

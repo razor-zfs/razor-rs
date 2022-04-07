@@ -120,24 +120,21 @@ pub fn version() -> libzfs::Version {
     libzfs::zfs_version()
 }
 
-pub fn create_filesystem(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<()> {
+pub fn create_filesystem(name: impl AsRef<str>, nvl: nvpair::NvList) -> Result<()> {
     create_dataset(name, sys::lzc_dataset_type::LZC_DATSET_TYPE_ZFS, nvl)
 }
 
-pub fn create_volume(name: impl AsRef<str>, nvl: &nvpair::NvList) -> Result<()> {
+pub fn create_volume(name: impl AsRef<str>, nvl: nvpair::NvList) -> Result<()> {
     create_dataset(name, sys::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL, nvl)
 }
 
 fn create_dataset(
     name: impl AsRef<str>,
     dataset_type: sys::lzc_dataset_type,
-    nvl: &nvpair::NvList,
+    nvl: nvpair::NvList,
 ) -> Result<()> {
     let cname = cstring(name)?;
-    let name = cname.as_ptr();
-    let nvl = nvl.nvl();
-
-    let rc = unsafe { LIBZFS_CORE.lzc_create(name, dataset_type, nvl) };
+    let rc = unsafe { LIBZFS_CORE.lzc_create(cname.as_ptr(), dataset_type, *nvl) };
 
     value_or_err((), rc)
 }
@@ -147,8 +144,8 @@ pub fn snapshot(snapshot: impl AsRef<str>) -> Result<()> {
     let mut snaps = NvList::new(NvFlag::UniqueName);
     snaps.add_boolean(snapshot)?;
     let props = ptr::null_mut();
-    let errlist = NvList::new(NvFlag::UniqueName);
-    let rc = unsafe { LIBZFS_CORE.lzc_snapshot(snaps.nvl(), props, &mut errlist.nvl()) };
+    let mut errlist = NvList::new(NvFlag::UniqueName);
+    let rc = unsafe { LIBZFS_CORE.lzc_snapshot(*snaps, props, &mut *errlist) };
     value_or_err((), rc)
 }
 
@@ -175,7 +172,7 @@ pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
 pub fn bookmark(snapshot: impl AsRef<str>, bookmark: impl AsRef<str>) -> Result<()> {
     let mut bookmarks = NvList::new(NvFlag::UniqueName);
     bookmarks.add_string(bookmark, snapshot)?;
-    let rc = unsafe { LIBZFS_CORE.lzc_bookmark(bookmarks.nvl(), &mut ptr::null_mut()) };
+    let rc = unsafe { LIBZFS_CORE.lzc_bookmark(*bookmarks, &mut ptr::null_mut()) };
     value_or_err((), rc)
 }
 
@@ -254,8 +251,7 @@ where
     let rc = unsafe {
         let snapname = snapname.as_ptr();
         let origin = origin.map_or(ptr::null(), |origin| origin.as_ptr());
-        let props = props.nvl();
-        LIBZFS_CORE.lzc_receive(snapname, props, origin, force, raw, fd)
+        LIBZFS_CORE.lzc_receive(snapname, *props, origin, force, raw, fd)
     };
     value_or_err((), rc)
 }
@@ -284,8 +280,7 @@ pub fn receive_resumable(
     let rc = unsafe {
         let snapname = snapname.as_ptr();
         let origin = origin.as_ptr();
-        let props = props.nvl();
-        LIBZFS_CORE.lzc_receive_resumable(snapname, props, origin, force, raw, fd)
+        LIBZFS_CORE.lzc_receive_resumable(snapname, *props, origin, force, raw, fd)
     };
     value_or_err((), rc)
 }

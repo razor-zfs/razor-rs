@@ -1,10 +1,27 @@
-use super::*;
-
 use ::std::result::Result as StdResult;
 
-pub trait NvListAccess {
-    fn nvl(&self) -> *mut libnvpair::nvlist_t;
+use super::*;
 
+mod internal {
+    use super::*;
+
+    pub trait NvListAccessInternal {
+        fn nvl(&self) -> *mut libnvpair::nvlist_t;
+    }
+
+    impl NvListAccessInternal for NvList {
+        fn nvl(&self) -> *mut libnvpair::nvlist_t {
+            self.nvl
+        }
+    }
+
+    impl<'a, T> NvListAccessInternal for NvListRef<'a, T> {
+        fn nvl(&self) -> *mut libnvpair::nvlist_t {
+            self.nvl
+        }
+    }
+}
+pub trait NvListAccess: internal::NvListAccessInternal {
     fn add_boolean_value(&mut self, name: impl AsRef<str>, v: bool) -> Result<()> {
         let name = CString::new(name.as_ref())?;
         let v = match v {

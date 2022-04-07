@@ -437,7 +437,7 @@ impl FilesystemBuilder {
             return Err(err);
         }
 
-        lzc::create_filesystem(name.as_ref(), &self.nvlist)?;
+        lzc::create_filesystem(name.as_ref(), self.nvlist)?;
 
         let dataset = ZfsDatasetHandle::new(cname)?;
         let filesystem = Filesystem { dataset };

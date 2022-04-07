@@ -74,8 +74,7 @@ impl ZfsDatasetHandle {
     }
 
     pub fn set_properties(&self, nvl: nvpair::NvList) -> Result<()> {
-        let nvl = nvl.nvl();
-        value_or_err((), unsafe { libzfs::zfs_prop_set_list(self.handle, nvl) })
+        value_or_err((), unsafe { libzfs::zfs_prop_set_list(self.handle, *nvl) })
     }
 }
 
