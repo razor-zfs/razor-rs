@@ -11,9 +11,7 @@ pub use dataset::SnapshotBuilder;
 pub use dataset::Volume;
 pub use dataset::VolumeBuilder;
 
-use super::DatasetCollectorBuilder;
-use super::Result;
-use super::ZfsDatasetHandle;
+use super::*;
 
 #[cfg(feature = "cmd")]
 mod cmd;

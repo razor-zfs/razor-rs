@@ -100,18 +100,32 @@ impl Snapshot {
 #[derive(Debug)]
 pub struct SnapshotBuilder {
     props: Result<nvpair::NvList>,
+    recursive: bool,
 }
 
 impl SnapshotBuilder {
     pub fn new() -> Self {
         let props = Ok(nvpair::NvList::new(nvpair::NvFlag::UniqueName));
-        Self { props }
+        let recursive = false;
+        Self { props, recursive }
     }
 
     pub fn create(self, name: impl AsRef<str>) -> Result<Snapshot> {
         let _props = self.props?;
-        lzc::snapshot(name.as_ref())?;
+        let name = name.as_ref();
+        if let Some((dataset, snapshot)) = name.split_once('@') {
+            lzc::snapshots(dataset, snapshot, self.recursive)?;
+        } else {
+            Err(DatasetError::invalid_snapshot_name(name))?;
+        }
         Snapshot::get(name)
+    }
+
+    pub fn recursive(self) -> Self {
+        Self {
+            recursive: true,
+            ..self
+        }
     }
 }
 

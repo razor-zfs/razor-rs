@@ -15,6 +15,8 @@ pub enum DatasetError {
     InvalidProperty(#[from] InvalidProperty),
     #[error(transparent)]
     NvListError(#[from] NvListError),
+    #[error("Snapshot name must contain @ ({0})")]
+    InvalidSnapshotName(String),
     #[error(transparent)]
     CoreErr(#[from] error::CoreError),
     #[error("unknown builder error, error code: ({0})")]
@@ -26,6 +28,10 @@ impl DatasetError {
         Self::InvalidProperty(InvalidProperty::InvalidValue(
             "Value is missing".to_string(),
         ))
+    }
+
+    pub fn invalid_snapshot_name(name: impl AsRef<str>) -> Self {
+        Self::InvalidSnapshotName(name.as_ref().to_string())
     }
 }
 

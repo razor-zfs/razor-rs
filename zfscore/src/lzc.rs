@@ -139,10 +139,33 @@ fn create_dataset(
     value_or_err((), rc)
 }
 
-// TODO Pass props nvlist
 pub fn snapshot(snapshot: impl AsRef<str>) -> Result<()> {
+    snapshots_impl([snapshot])
+}
+
+pub fn snapshots(
+    dataset: impl AsRef<str>,
+    snapshot: impl AsRef<str>,
+    recursive: bool,
+) -> Result<()> {
+    let snapshot = snapshot.as_ref();
+    let snapshots = zfs_list_from(dataset)
+        .filesystems()
+        .volumes()
+        .recursive(recursive)
+        .get_collection()?
+        .into_iter()
+        .map(|dataset| format!("{}@{}", dataset.name(), snapshot));
+
+    snapshots_impl(snapshots)
+}
+
+// TODO Pass props nvlist
+fn snapshots_impl(snapshots: impl IntoIterator<Item = impl AsRef<str>>) -> Result<()> {
     let mut snaps = NvList::new(NvFlag::UniqueName);
-    snaps.add_boolean(snapshot)?;
+    for snapshot in snapshots {
+        snaps.add_boolean(snapshot)?;
+    }
     let props = ptr::null_mut();
     let mut errlist = NvList::new(NvFlag::UniqueName);
     let rc = unsafe { LIBZFS_CORE.lzc_snapshot(*snaps, props, &mut *errlist) };

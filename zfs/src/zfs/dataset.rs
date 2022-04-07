@@ -6,6 +6,7 @@ use razor_zfscore::lzc;
 use lzc::zfs_prop_t::*;
 
 use super::property;
+use super::DatasetError;
 use super::Result;
 use super::ZfsDatasetHandle;
 
