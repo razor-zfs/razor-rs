@@ -3,7 +3,7 @@ use std::str;
 
 use thiserror::Error;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 enum NvListRcInternal {
     Ok,
     InvalidArgument,
@@ -11,7 +11,7 @@ enum NvListRcInternal {
     UnknownError(i32),
 }
 
-#[derive(Error, Clone, Debug, PartialEq)]
+#[derive(Error, Clone, Debug, PartialEq, Eq)]
 pub enum NvListError {
     #[error("({0})")]
     Message(String),

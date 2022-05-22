@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct TimeStamp(DateTime<Utc>);
 
 impl fmt::Display for TimeStamp {

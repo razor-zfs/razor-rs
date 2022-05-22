@@ -6,7 +6,7 @@ use razor_libnvpair as libnvpair;
 
 use super::*;
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct NvPair {
     nvp: *mut libnvpair::nvpair_t,
 }

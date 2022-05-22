@@ -3,7 +3,7 @@ use thiserror::Error;
 
 use super::NvListError;
 
-#[derive(Error, Debug, Clone, PartialEq)]
+#[derive(Error, Clone, Debug, PartialEq, Eq)]
 pub enum CoreError {
     #[error("failed to convert string to C string")]
     StringConversionError(#[from] std::ffi::NulError),

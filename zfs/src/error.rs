@@ -7,7 +7,7 @@ use thiserror::Error;
 use super::InvalidProperty;
 use super::NvListError;
 
-#[derive(Error, Debug, Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Error)]
 pub enum DatasetError {
     #[error("failed to convert string to C string")]
     StringConversionError(#[from] std::ffi::NulError),

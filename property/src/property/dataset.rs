@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum Type {
     Filesystem,

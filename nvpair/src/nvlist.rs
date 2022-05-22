@@ -13,12 +13,12 @@ use super::*;
 
 mod access;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 pub struct NvList {
     nvl: *mut libnvpair::nvlist_t,
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone)]
 pub struct NvListRef<'a, T> {
     nvl: *mut libnvpair::nvlist_t,
     anchor: PhantomData<&'a T>,
@@ -88,7 +88,7 @@ impl access::NvListAccess for NvList {}
 
 impl<'a, T> NvListAccess for NvListRef<'a, T> {}
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct NvListIterator {
     nvlist: NvList,
     nvp: Option<*mut libnvpair::nvpair_t>,

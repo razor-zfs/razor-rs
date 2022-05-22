@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum OnOffNoAuto {
     On,
     Off,

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::error;
 
 // checksum=on|off|fletcher2|fletcher4|sha256|noparity|sha512|skein|edonr
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum CheckSum {
     On,
     Off,
