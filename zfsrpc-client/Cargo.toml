@@ -7,12 +7,12 @@ edition = "2021"
 anyhow = "1.0"
 thiserror = "1.0"
 tracing = "0.1"
-tonic = "0.6"
-prost = "0.9"
+tonic = "0.7"
+prost = "0.10"
 tokio-stream = "0.1"
 # tokio = "1.17"
 
 razor-property = { version = "0.2", path = "../property" }
 
 [build-dependencies]
-tonic-build = "0.6"
+tonic-build = "0.7"

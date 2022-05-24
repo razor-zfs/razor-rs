@@ -10,9 +10,9 @@ anyhow = "1.0"
 razor-zfsrpc = { version = "0.2", path = "../zfsrpc", features = ["dirty"] }
 razor-tracing = {version = "0.2", path = "../tracing"}
 tokio = { version = "1.9", features = ["full"] }
-tonic = "0.6"
+tonic = "0.7"
 tracing = "0.1"
-shadow-rs = "0.9"
+shadow-rs = "0.11"
 
 [build-dependencies]
-shadow-rs = "0.9"
+shadow-rs = "0.11"

@@ -4,11 +4,11 @@ version = "0.2.0"
 edition = "2021"
 
 [dependencies]
-prost = "0.9"
-tonic = "0.6"
+prost = "0.10"
+tonic = "0.7"
 tracing = "0.1"
 
 razor-tracing = { version = "0.2", path = "../tracing" }
 
 [build-dependencies]
-tonic-build = "0.6"
+tonic-build = "0.7"

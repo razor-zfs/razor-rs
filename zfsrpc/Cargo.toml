@@ -13,8 +13,8 @@ tokio = { version = "1.9", features = ["macros", "process", "rt-multi-thread"] }
 tokio-pipe = "0.2"
 tokio-stream = "0.1"
 tracing = "0.1"
-tonic = "0.6"
-prost = "0.9"
+tonic = "0.7"
+prost = "0.10"
 
 prop-macro = { version = "0.2", path = "../prop-macro" }
 razor-property = { version = "0.2", path = "../property" }
@@ -23,7 +23,7 @@ razor-zfs = { version = "0.2", path = "../zfs", features = ["cmd"] }
 razor-zfscore = { version = "0.2", path = "../zfscore"}
 
 [build-dependencies]
-tonic-build = "0.6"
+tonic-build = "0.7"
 
 [features]
 dirty = []
