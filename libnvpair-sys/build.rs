@@ -2,10 +2,8 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    // Tell cargo to tell rustc to link the system nvpair of zfs
-    // shared library.
     println!("cargo:rustc-link-lib=nvpair");
-    println!("cargo:rustc-link-lib=zfs");
+    println!("cargo:rerun-if-changed=wrapper.h");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -30,9 +28,12 @@ fn main() {
         // Unwrap the Result and panic on failure.
         .expect("Unable to generate bindings");
 
-    // Write the bindings to the $OUT_DIR/bindings.rs file.
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let nvpair = env::var("OUT_DIR")
+        .map(PathBuf::from)
+        .expect("OUT_DIR environment")
+        .join("nvpair.rs");
+
     bindings
-        .write_to_file(out_path.join("nvpair.rs"))
+        .write_to_file(nvpair)
         .expect("Couldn't write bindings!");
 }

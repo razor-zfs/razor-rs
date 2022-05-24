@@ -2,6 +2,7 @@
 name = "razor-libnvpair-sys"
 version = "0.2.0"
 edition = "2021"
+links = "nvpair"
 build = "build.rs"
 
 [dependencies]
