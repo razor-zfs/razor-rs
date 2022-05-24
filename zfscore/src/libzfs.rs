@@ -183,7 +183,7 @@ pub struct Version {
 }
 
 impl Version {
-    const ZFS_VERSION: &'static str = "zfs-0.8";
+    const ZFS_VERSION: &'static str = "zfs-2.1.2";
 
     unsafe fn new() -> Self {
         let kernel = zfs_version_kernel();
