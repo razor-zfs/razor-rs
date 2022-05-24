@@ -36,10 +36,11 @@ fn main() {
         .allowlist_function(r#"lzc\w*"#)
         .allowlist_function(r#"libzfs\w*"#)
         .blocklist_item(r#"\w*nvlist\w*"#)
-        .clang_args(vec!["-I/usr/include/libzfs", "-I/usr/include/libspl"])
         .default_enum_style(default_enum_style)
         .allowlist_type("zfs_error")
         .constified_enum_module("zfs_error")
+        .clang_arg("-D_GNU_SOURCE")
+        .clang_args(["-I/usr/include/libzfs", "-I/usr/include/libspl"])
         .generate()
         .expect("Unable to generate bindings");
 
