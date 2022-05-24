@@ -40,7 +40,7 @@ impl Client {
     pub async fn set_trace_level(&mut self, level: Level) -> Result<(), tonic::Status> {
         let level = level as i32;
         let request = TraceLevel { level };
-        let _empty = self.client.set_tracing_level(request).await?.into_inner();
+        self.client.set_tracing_level(request).await?.into_inner();
 
         Ok(())
     }
