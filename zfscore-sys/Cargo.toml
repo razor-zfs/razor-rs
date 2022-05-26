@@ -2,6 +2,13 @@
 name = "razor-zfscore-sys"
 version = "0.2.0"
 edition = "2021"
+description = "libzfs_core FFI bindings"
+repository = "https://github.com/razor-zfs/razor-rs"
+readme = "../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["zfs", "zfs_core"]
+categories = ["api-bindings", "external-ffi-bindings"]
+links = "zfs_core"
 build = "build.rs"
 
 [dependencies]

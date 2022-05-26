@@ -2,6 +2,12 @@
 name = "razor-libnvpair-sys"
 version = "0.2.0"
 edition = "2021"
+description = "libnvpair FFI bindings"
+repository = "https://github.com/razor-zfs/razor-rs"
+readme = "../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["zfs", "nvpair"]
+categories = ["api-bindings", "external-ffi-bindings"]
 links = "nvpair"
 build = "build.rs"
 

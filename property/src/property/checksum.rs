@@ -70,7 +70,7 @@ impl From<bool> for CheckSum {
     }
 }
 
-// TODO: create macto for all u and i
+// TODO: create macro for all u and i
 impl From<u64> for CheckSum {
     fn from(value: u64) -> Self {
         match value {

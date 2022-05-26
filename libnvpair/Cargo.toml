@@ -2,6 +2,12 @@
 name = "razor-libnvpair"
 version = "0.2.0"
 edition = "2021"
+description = "Low-level libnvpair interface"
+repository = "https://github.com/razor-zfs/razor-rs"
+readme = "../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["zfs", "nvpair"]
+categories = ["api-bindings", "development-tools::ffi"]
 
 [dependencies]
 anyhow = "1.0"

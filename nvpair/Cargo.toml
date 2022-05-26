@@ -2,9 +2,14 @@
 name = "razor-nvpair"
 version = "0.2.0"
 edition = "2021"
+description = "Idiomatic nvpair API"
+repository = "https://github.com/razor-zfs/razor-rs"
+readme = "../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["zfs", "nvpair"]
+categories = ["api-bindings"]
 
 [dependencies]
 libc = "0.2"
 razor-libnvpair = { version = "0.2", path = "../libnvpair" }
-serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0"
