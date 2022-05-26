@@ -1,6 +1,6 @@
 [package]
 name = "razor-zfscore-sys"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "libzfs_core FFI bindings"
 repository = "https://github.com/razor-zfs/razor-rs"
@@ -13,7 +13,8 @@ build = "build.rs"
 
 [dependencies]
 libc = "0.2"
-razor-libnvpair = { version = "0.2", path = "../libnvpair" }
+
+razor-libnvpair = { version = "0.3", path = "../libnvpair" }
 
 
 [build-dependencies]

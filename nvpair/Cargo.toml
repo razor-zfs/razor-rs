@@ -1,6 +1,6 @@
 [package]
 name = "razor-nvpair"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "Idiomatic nvpair API"
 repository = "https://github.com/razor-zfs/razor-rs"
@@ -11,5 +11,6 @@ categories = ["api-bindings"]
 
 [dependencies]
 libc = "0.2"
-razor-libnvpair = { version = "0.2", path = "../libnvpair" }
 thiserror = "1.0"
+
+razor-libnvpair = { version = "0.3", path = "../libnvpair" }
