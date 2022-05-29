@@ -2,17 +2,27 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rustc-link-lib=nvpair");
-    println!("cargo:rerun-if-changed=wrapper.h");
+    let lzc = pkg_config::Config::new()
+        .atleast_version("2.1.0")
+        .cargo_metadata(false)
+        .probe("libzfs_core")
+        .expect("ZFS development environment is not installed");
 
-    // The bindgen::Builder is the main entry point
-    // to bindgen, and lets you build up options for
-    // the resulting bindings.
+    let cflags = lzc
+        .include_paths
+        .iter()
+        .map(|path| format!("-I{}", path.display()));
+
+    let default_enum_style = bindgen::EnumVariation::Rust {
+        non_exhaustive: true,
+    };
+
+    println!("cargo:rustc-link-lib=nvpair");
+    println!("cargo:rerun-if-changed=nvpair.h");
+
     let bindings = bindgen::Builder::default()
-        // The input header we would like to generate
-        // bindings for.
-        .header("wrapper.h")
-        .clang_args(vec!["-I/usr/include/libzfs", "-I/usr/include/libspl"])
+        .header("nvpair.h")
+        .clang_args(cflags)
         .size_t_is_usize(true)
         .ctypes_prefix("libc")
         .allowlist_var(r#"(^NV_\w*)"#)
@@ -20,12 +30,8 @@ fn main() {
         .allowlist_type(r#"(\w*nvlist\w*)"#)
         .allowlist_function(r#"(\w*nvpair\w*)"#)
         .allowlist_function(r#"(\w*nvlist\w*)"#)
-        .default_enum_style(bindgen::EnumVariation::Rust {
-            non_exhaustive: (true),
-        })
-        // Finish the builder and generate the bindings.
+        .default_enum_style(default_enum_style)
         .generate()
-        // Unwrap the Result and panic on failure.
         .expect("Unable to generate bindings");
 
     let nvpair = env::var("OUT_DIR")
