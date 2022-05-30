@@ -109,3 +109,11 @@ mod nvpair;
 #[derive(Debug, thiserror::Error)]
 #[error("nvpair type mismatch")]
 pub struct NvPairTypeMismatch;
+
+#[derive(Debug, thiserror::Error)]
+pub enum NvListLookupError {
+    #[error("Invalid Argument (nvlist?)")]
+    InvalidArgument,
+    #[error("No matching name-value pair is found")]
+    NoSuchNvPair,
+}

@@ -31,219 +31,70 @@ pub unsafe fn nvlist_dup(nvl: *mut nvlist_t) -> anyhow::Result<*mut nvlist_t> {
     }
 }
 
-#[inline]
-pub unsafe fn nvlist_lookup_nvpair(nvl: *mut nvlist_t, name: *const c_char) -> *mut nvpair_t {
-    let mut nvp = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_nvpair(nvl, name, nvp.as_mut_ptr());
-    nvp.assume_init()
+macro_rules! nvlist_lookup {
+    ($lookup:ident, $output:ty) => {
+        #[inline]
+        pub unsafe fn $lookup(
+            nvl: *mut nvlist_t,
+            name: *const c_char,
+        ) -> Result<$output, NvListLookupError> {
+            let mut value = mem::MaybeUninit::uninit();
+            match sys::$lookup(nvl, name, value.as_mut_ptr()) {
+                0 => Ok(value.assume_init()),
+                libc::EINVAL => Err(NvListLookupError::InvalidArgument),
+                libc::ENOENT => Err(NvListLookupError::NoSuchNvPair),
+                other => {
+                    panic!("Impossible return value '{other}' from nvlist_lookup_xxx")
+                }
+            }
+        }
+    };
 }
 
-#[inline]
-pub unsafe fn nvlist_lookup_boolean_value(nvl: *mut nvlist_t, name: *const c_char) -> boolean_t {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_boolean_value(nvl, name, value.as_mut_ptr());
-    value.assume_init()
+nvlist_lookup!(nvlist_lookup_nvpair, *mut nvpair_t);
+nvlist_lookup!(nvlist_lookup_nvlist, *mut nvlist_t);
+nvlist_lookup!(nvlist_lookup_boolean_value, boolean_t);
+nvlist_lookup!(nvlist_lookup_byte, c_uchar);
+nvlist_lookup!(nvlist_lookup_int8, i8);
+nvlist_lookup!(nvlist_lookup_uint8, u8);
+nvlist_lookup!(nvlist_lookup_int16, i16);
+nvlist_lookup!(nvlist_lookup_uint16, u16);
+nvlist_lookup!(nvlist_lookup_int32, i32);
+nvlist_lookup!(nvlist_lookup_uint32, u32);
+nvlist_lookup!(nvlist_lookup_int64, i64);
+nvlist_lookup!(nvlist_lookup_uint64, u64);
+nvlist_lookup!(nvlist_lookup_string, *const c_char);
+
+macro_rules! nvlist_lookup_array {
+    ($lookup:ident, $output:ty) => {
+        #[inline]
+        pub unsafe fn $lookup(
+            nvl: *mut nvlist_t,
+            name: *const c_char,
+        ) -> Result<($output, u32), NvListLookupError> {
+            let mut len = 0;
+            let mut value = mem::MaybeUninit::uninit();
+            match sys::$lookup(nvl, name, value.as_mut_ptr(), &mut len) {
+                0 => Ok((value.assume_init(), len)),
+                libc::EINVAL => Err(NvListLookupError::InvalidArgument),
+                libc::ENOENT => Err(NvListLookupError::NoSuchNvPair),
+                other => {
+                    panic!("Impossible return value '{other}' from nvlist_lookup_xxx_array")
+                }
+            }
+        }
+    };
 }
 
-#[inline]
-pub unsafe fn nvlist_lookup_byte(nvl: *mut nvlist_t, name: *const c_char) -> c_uchar {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_byte(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_int8(nvl: *mut nvlist_t, name: *const c_char) -> i8 {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_int8(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_uint8(nvl: *mut nvlist_t, name: *const c_char) -> u8 {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_uint8(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_int16(nvl: *mut nvlist_t, name: *const c_char) -> i16 {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_int16(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_uint16(nvl: *mut nvlist_t, name: *const c_char) -> u16 {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_uint16(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_int32(nvl: *mut nvlist_t, name: *const c_char) -> i32 {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_int32(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_uint32(nvl: *mut nvlist_t, name: *const c_char) -> u32 {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_uint32(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_int64(nvl: *mut nvlist_t, name: *const c_char) -> i64 {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_int64(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_uint64(nvl: *mut nvlist_t, name: *const c_char) -> u64 {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_uint64(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_string(nvl: *mut nvlist_t, name: *const c_char) -> *const c_char {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_string(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_nvlist(nvl: *mut nvlist_t, name: *const c_char) -> *mut nvlist_t {
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_nvlist(nvl, name, value.as_mut_ptr());
-    value.assume_init()
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_boolean_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut boolean_t, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_boolean_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_byte_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut c_uchar, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_byte_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_int8_array(nvl: *mut nvlist_t, name: *const c_char) -> (*mut i8, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_int8_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_uint8_array(nvl: *mut nvlist_t, name: *const c_char) -> (*mut u8, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_uint8_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_int16_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut i16, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_int16_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_uint16_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut u16, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_uint16_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_int32_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut i32, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_int32_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_uint32_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut u32, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_uint32_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_int64_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut i64, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_int64_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_uint64_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut u64, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_uint64_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_string_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut *mut c_char, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_string_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
-
-#[inline]
-pub unsafe fn nvlist_lookup_nvlist_array(
-    nvl: *mut nvlist_t,
-    name: *const c_char,
-) -> (*mut *mut nvlist_t, u32) {
-    let mut len = 0;
-    let mut value = mem::MaybeUninit::uninit();
-    sys::nvlist_lookup_nvlist_array(nvl, name, value.as_mut_ptr(), &mut len);
-    (value.assume_init(), len)
-}
+nvlist_lookup_array!(nvlist_lookup_boolean_array, *mut boolean_t);
+nvlist_lookup_array!(nvlist_lookup_byte_array, *mut c_uchar);
+nvlist_lookup_array!(nvlist_lookup_int8_array, *mut i8);
+nvlist_lookup_array!(nvlist_lookup_uint8_array, *mut u8);
+nvlist_lookup_array!(nvlist_lookup_int16_array, *mut i16);
+nvlist_lookup_array!(nvlist_lookup_uint16_array, *mut u16);
+nvlist_lookup_array!(nvlist_lookup_int32_array, *mut i32);
+nvlist_lookup_array!(nvlist_lookup_uint32_array, *mut u32);
+nvlist_lookup_array!(nvlist_lookup_int64_array, *mut i64);
+nvlist_lookup_array!(nvlist_lookup_uint64_array, *mut u64);
+nvlist_lookup_array!(nvlist_lookup_string_array, *mut *mut c_char);
+nvlist_lookup_array!(nvlist_lookup_nvlist_array, *mut *mut nvlist_t);
