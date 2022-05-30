@@ -454,6 +454,7 @@ dependencies = [
  "anyhow",
  "libc",
  "razor-libnvpair-sys",
+ "thiserror",
 ]
 
 [[package]]

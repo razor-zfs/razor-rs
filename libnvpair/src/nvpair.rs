@@ -7,10 +7,13 @@ use super::*;
 macro_rules! nvpair_value {
     ($accessor:ident, $output:ty) => {
         #[inline]
-        pub unsafe fn $accessor(nvp: *mut nvpair_t) -> $output {
+        pub unsafe fn $accessor(nvp: *mut nvpair_t) -> Result<$output, NvPairTypeMismatch> {
             let mut value = mem::MaybeUninit::uninit();
-            sys::$accessor(nvp, value.as_mut_ptr());
-            value.assume_init()
+            match sys::$accessor(nvp, value.as_mut_ptr()) {
+                0 => Ok(value.assume_init()),
+                libc::EINVAL => Err(NvPairTypeMismatch),
+                other => panic!("Impossible return value '{other}' from nvpair_value accessor"),
+            }
         }
     };
 }
@@ -32,11 +35,14 @@ nvpair_value!(nvpair_value_nvlist, *mut nvlist_t);
 macro_rules! nvpair_value_array {
     ($accessor:ident, $output:ty) => {
         #[inline]
-        pub unsafe fn $accessor(nvp: *mut nvpair_t) -> ($output, u32) {
+        pub unsafe fn $accessor(nvp: *mut nvpair_t) -> Result<($output, u32), NvPairTypeMismatch> {
             let mut len = 0;
             let mut value = mem::MaybeUninit::uninit();
-            sys::$accessor(nvp, value.as_mut_ptr(), &mut len);
-            (value.assume_init(), len)
+            match sys::$accessor(nvp, value.as_mut_ptr(), &mut len) {
+                0 => Ok((value.assume_init(), len)),
+                libc::EINVAL => Err(NvPairTypeMismatch),
+                other => panic!("Impossible return value '{other}' from nvpair_value accessor"),
+            }
         }
     };
 }

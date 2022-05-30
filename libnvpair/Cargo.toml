@@ -12,5 +12,6 @@ categories = ["api-bindings", "development-tools::ffi"]
 [dependencies]
 anyhow = "1.0"
 libc = "0.2"
+thiserror = "1.0"
 
 razor-libnvpair-sys = { version = "0.3", path = "../libnvpair-sys" }

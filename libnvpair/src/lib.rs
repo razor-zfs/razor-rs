@@ -14,6 +14,8 @@
 #![allow(clippy::missing_safety_doc)]
 #![deny(warnings)]
 
+//! This module mostly re-exports things from its -sys counterpart and adds
+//! very simple ergonomic helpers
 use razor_libnvpair_sys as sys;
 
 pub use sys::boolean_t;
@@ -103,3 +105,7 @@ pub use nvpair::*;
 
 mod nvlist;
 mod nvpair;
+
+#[derive(Debug, thiserror::Error)]
+#[error("nvpair type mismatch")]
+pub struct NvPairTypeMismatch;
