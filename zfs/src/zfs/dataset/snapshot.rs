@@ -105,7 +105,7 @@ pub struct SnapshotBuilder {
 
 impl SnapshotBuilder {
     pub fn new() -> Self {
-        let props = Ok(nvpair::NvList::new(nvpair::NvFlag::UniqueName));
+        let props = Ok(nvpair::NvList::new());
         let recursive = false;
         Self { props, recursive }
     }

@@ -56,11 +56,10 @@ pub struct VolumeSetter<'a, T> {
 
 impl<'a, T> VolumeSetter<'a, T> {
     pub fn new(dataset_handler: &'a ZfsDatasetHandle, _anchor: &'a T) -> Self {
-        let nvl = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
         Self {
             dataset_handler,
             anchor: PhantomData,
-            nvl,
+            nvl: nvpair::NvList::new(),
             err: None,
         }
     }
@@ -252,7 +251,7 @@ pub struct VolumeBuilder {
 
 impl VolumeBuilder {
     pub fn new() -> Self {
-        let nvlist = nvpair::NvList::new(nvpair::NvFlag::UniqueName);
+        let nvlist = nvpair::NvList::new();
         let volblocksize = Self::calculate_default_volblocksize();
 
         Self {

@@ -3,7 +3,6 @@ use std::ffi;
 use std::os::unix::io::AsRawFd;
 use std::ptr;
 
-use nvpair::NvFlag;
 use nvpair::NvList;
 use once_cell::sync::Lazy;
 use razor_nvpair as nvpair;
@@ -162,12 +161,12 @@ pub fn snapshots(
 
 // TODO Pass props nvlist
 fn snapshots_impl(snapshots: impl IntoIterator<Item = impl AsRef<str>>) -> Result<()> {
-    let mut snaps = NvList::new(NvFlag::UniqueName);
+    let mut snaps = NvList::new();
     for snapshot in snapshots {
         snaps.add_boolean(snapshot)?;
     }
     let props = ptr::null_mut();
-    let mut errlist = NvList::new(NvFlag::UniqueName);
+    let mut errlist = NvList::new();
     let rc = unsafe { LIBZFS_CORE.lzc_snapshot(*snaps, props, &mut *errlist) };
     value_or_err((), rc)
 }
@@ -193,7 +192,7 @@ pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
 }
 
 pub fn bookmark(snapshot: impl AsRef<str>, bookmark: impl AsRef<str>) -> Result<()> {
-    let mut bookmarks = NvList::new(NvFlag::UniqueName);
+    let mut bookmarks = NvList::new();
     bookmarks.add_string(bookmark, snapshot)?;
     let rc = unsafe { LIBZFS_CORE.lzc_bookmark(*bookmarks, &mut ptr::null_mut()) };
     value_or_err((), rc)
@@ -259,7 +258,7 @@ where
 {
     let snapname = cstring(snapname)?;
     let origin = origin.map(cstring).transpose()?;
-    let props = NvList::new(NvFlag::UniqueName);
+    let props = NvList::new();
     let force = if force {
         sys::boolean_t::B_TRUE
     } else {
@@ -287,7 +286,7 @@ pub fn receive_resumable(
     file: impl AsRawFd,
 ) -> Result<()> {
     let snapname = cstring(snapname)?;
-    let props = NvList::new(NvFlag::UniqueName);
+    let props = NvList::new();
     let origin = cstring(origin)?;
     let force = if force {
         sys::boolean_t::B_TRUE
