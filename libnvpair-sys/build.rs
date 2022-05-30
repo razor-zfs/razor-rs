@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 fn main() {
     let lzc = pkg_config::Config::new()
-        .atleast_version("2.1.0")
+        .atleast_version("0.8")
         .cargo_metadata(false)
         .probe("libzfs_core")
         .expect("ZFS development environment is not installed");
