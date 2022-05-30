@@ -33,63 +33,63 @@ impl NvPair {
 
     #[inline]
     pub fn boolean(&self) -> libnvpair::boolean_t {
-        unsafe { libnvpair::nvpair_value_boolean_value(self.nvp) }
+        unsafe { libnvpair::fnvpair_value_boolean_value(self.nvp) }
     }
 
     #[inline]
     pub fn byte(&self) -> u8 {
-        unsafe { libnvpair::nvpair_value_byte(self.nvp) as u8 }
+        unsafe { libnvpair::fnvpair_value_byte(self.nvp) as u8 }
     }
 
     #[inline]
     pub fn int8(&self) -> i8 {
-        unsafe { libnvpair::nvpair_value_int8(self.nvp) }
+        unsafe { libnvpair::fnvpair_value_int8(self.nvp) }
     }
 
     #[inline]
     pub fn uint8(&self) -> u8 {
-        unsafe { libnvpair::nvpair_value_uint8(self.nvp) }
+        unsafe { libnvpair::fnvpair_value_uint8(self.nvp) }
     }
 
     #[inline]
     pub fn int16(&self) -> i16 {
-        unsafe { libnvpair::nvpair_value_int16(self.nvp) }
+        unsafe { libnvpair::fnvpair_value_int16(self.nvp) }
     }
 
     #[inline]
     pub fn uint16(&self) -> u16 {
-        unsafe { libnvpair::nvpair_value_uint16(self.nvp) }
+        unsafe { libnvpair::fnvpair_value_uint16(self.nvp) }
     }
 
     #[inline]
     pub fn int32(&self) -> i32 {
-        unsafe { libnvpair::nvpair_value_int32(self.nvp) }
+        unsafe { libnvpair::fnvpair_value_int32(self.nvp) }
     }
 
     #[inline]
     pub fn uint32(&self) -> u32 {
-        unsafe { libnvpair::nvpair_value_uint32(self.nvp) }
+        unsafe { libnvpair::fnvpair_value_uint32(self.nvp) }
     }
 
     #[inline]
     pub fn int64(&self) -> i64 {
-        unsafe { libnvpair::nvpair_value_int64(self.nvp) }
+        unsafe { libnvpair::fnvpair_value_int64(self.nvp) }
     }
 
     #[inline]
     pub fn uint64(&self) -> u64 {
-        unsafe { libnvpair::nvpair_value_uint64(self.nvp) }
+        unsafe { libnvpair::fnvpair_value_uint64(self.nvp) }
     }
 
     #[inline]
     pub fn double(&self) -> f64 {
-        unsafe { libnvpair::nvpair_value_double(self.nvp) }
+        unsafe { libnvpair::nvpair_value_double(self.nvp).expect("NvPair type is not f64") }
     }
 
     #[inline]
     pub fn string(&self) -> Cow<'_, str> {
         unsafe {
-            let cstr = libnvpair::nvpair_value_string(self.nvp);
+            let cstr = libnvpair::fnvpair_value_string(self.nvp);
             debug_assert!(!cstr.is_null());
             ffi::CStr::from_ptr(cstr).to_string_lossy()
         }
@@ -97,14 +97,15 @@ impl NvPair {
 
     #[inline]
     pub fn nvlist(&self) -> NvListRef<'_, Self> {
-        let nvl = unsafe { libnvpair::nvpair_value_nvlist(self.nvp) };
+        let nvl = unsafe { libnvpair::fnvpair_value_nvlist(self.nvp) };
         NvListRef::from_raw(nvl, self)
     }
 
     #[inline]
     pub fn byte_array(&self) -> &[u8] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_byte_array(self.nvp);
+            let (data, len) = libnvpair::nvpair_value_byte_array(self.nvp)
+                .expect("NvPair type is not byte array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -114,7 +115,8 @@ impl NvPair {
     #[inline]
     pub fn boolean_array(&self) -> &[libnvpair::boolean_t] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_boolean_array(self.nvp);
+            let (data, len) = libnvpair::nvpair_value_boolean_array(self.nvp)
+                .expect("NvPair type is not boolean array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -124,7 +126,8 @@ impl NvPair {
     #[inline]
     pub fn int8_array(&self) -> &[i8] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_int8_array(self.nvp);
+            let (data, len) =
+                libnvpair::nvpair_value_int8_array(self.nvp).expect("NvPair type is not i8 array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -134,7 +137,8 @@ impl NvPair {
     #[inline]
     pub fn uint8_array(&self) -> &[u8] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_uint8_array(self.nvp);
+            let (data, len) =
+                libnvpair::nvpair_value_uint8_array(self.nvp).expect("NvPair type is not u8 array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -144,7 +148,8 @@ impl NvPair {
     #[inline]
     pub fn int16_array(&self) -> &[i16] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_int16_array(self.nvp);
+            let (data, len) = libnvpair::nvpair_value_int16_array(self.nvp)
+                .expect("NvPair type is not i16 array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -154,7 +159,8 @@ impl NvPair {
     #[inline]
     pub fn uint16_array(&self) -> &[u16] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_uint16_array(self.nvp);
+            let (data, len) = libnvpair::nvpair_value_uint16_array(self.nvp)
+                .expect("NvPair type is not u16 array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -164,7 +170,8 @@ impl NvPair {
     #[inline]
     pub fn int32_array(&self) -> &[i32] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_int32_array(self.nvp);
+            let (data, len) = libnvpair::nvpair_value_int32_array(self.nvp)
+                .expect("NvPair type is not i32 array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -174,7 +181,8 @@ impl NvPair {
     #[inline]
     pub fn uint32_array(&self) -> &[u32] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_uint32_array(self.nvp);
+            let (data, len) = libnvpair::nvpair_value_uint32_array(self.nvp)
+                .expect("NvPair type is not u32 array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -184,7 +192,8 @@ impl NvPair {
     #[inline]
     pub fn int64_array(&self) -> &[i64] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_int64_array(self.nvp);
+            let (data, len) = libnvpair::nvpair_value_int64_array(self.nvp)
+                .expect("NvPair type is not i64 array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -194,7 +203,8 @@ impl NvPair {
     #[inline]
     pub fn uint64_array(&self) -> &[u64] {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_uint64_array(self.nvp);
+            let (data, len) = libnvpair::nvpair_value_uint64_array(self.nvp)
+                .expect("NvPair type is not u64 array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)
@@ -204,7 +214,8 @@ impl NvPair {
     #[inline]
     pub fn string_array(&self) -> Vec<Cow<'_, str>> {
         unsafe {
-            let (data, len) = libnvpair::nvpair_value_string_array(self.nvp);
+            let (data, len) = libnvpair::nvpair_value_string_array(self.nvp)
+                .expect("NvPair type is not string array");
             debug_assert!(!data.is_null());
             let len = len as usize;
             slice::from_raw_parts(data, len)

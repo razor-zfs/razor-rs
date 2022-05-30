@@ -34,13 +34,15 @@ impl<'a, T> NvListRef<'a, T> {
 }
 
 impl NvList {
-    pub fn new(flag: NvFlag) -> Self {
-        let flag = match flag {
-            NvFlag::UniqueName => libnvpair::NV_UNIQUE_NAME,
-            NvFlag::UniqueNameType => libnvpair::NV_UNIQUE_NAME_TYPE,
-        };
-        let nvl = unsafe { libnvpair::nvlist_alloc(flag) };
+    pub fn new() -> Self {
+        let nvl = unsafe { libnvpair::fnvlist_alloc() };
         Self { nvl }
+    }
+}
+
+impl Default for NvList {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -157,7 +159,7 @@ mod tests {
 
     #[test]
     fn nvlist_iter() {
-        let mut nvlist = NvList::new(NvFlag::UniqueName);
+        let mut nvlist = NvList::new();
         let arr = [1, 2, 3, 4, 5];
         nvlist.add_uint16("a", 3).unwrap();
         nvlist.add_uint32("b", 5).unwrap();

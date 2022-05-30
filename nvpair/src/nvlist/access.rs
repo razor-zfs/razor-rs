@@ -258,7 +258,7 @@ pub trait NvListAccess: internal::NvListAccessInternal {
 
     fn lookup_nvpair(&self, name: impl AsRef<str>) -> Result<NvPair> {
         let name = CString::new(name.as_ref())?;
-        let nvpair = unsafe { libnvpair::nvlist_lookup_nvpair(self.nvl(), name.as_ptr()) };
+        let nvpair = unsafe { libnvpair::fnvlist_lookup_nvpair(self.nvl(), name.as_ptr()) };
         Ok(nvpair.into())
     }
 
