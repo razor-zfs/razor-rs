@@ -1,3 +1,3 @@
 ## razor-rs
 
-Rust OpenZFS bindings and tools
+This crate is part of the Razor Project - Rust OpenZFS bindings and tools
