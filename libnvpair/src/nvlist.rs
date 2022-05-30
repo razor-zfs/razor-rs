@@ -1,13 +1,15 @@
 use std::mem;
 
-use libc::{c_char, c_uchar, size_t};
+use libc::{c_char, c_int, c_uchar, size_t};
 
 use super::*;
+
+const RESERVED_FLAG_0: c_int = 0;
 
 #[inline]
 pub unsafe fn nvlist_alloc(flag: u32) -> *mut nvlist_t {
     let mut nvl = mem::MaybeUninit::uninit();
-    sys::nvlist_alloc(nvl.as_mut_ptr(), flag, 0);
+    sys::nvlist_alloc(nvl.as_mut_ptr(), flag, RESERVED_FLAG_0);
     nvl.assume_init()
 }
 
@@ -21,7 +23,7 @@ pub unsafe fn nvlist_size(nvl: *mut nvlist_t, encoding: i32) -> size_t {
 #[inline]
 pub unsafe fn nvlist_dup(nvl: *mut nvlist_t) -> anyhow::Result<*mut nvlist_t> {
     let mut dup = mem::MaybeUninit::uninit();
-    match sys::nvlist_dup(nvl, dup.as_mut_ptr(), 0) {
+    match sys::nvlist_dup(nvl, dup.as_mut_ptr(), RESERVED_FLAG_0) {
         0 => Ok(dup.assume_init()),
         libc::EINVAL => anyhow::bail!("Nvlist clone invalid argument"),
         libc::ENOMEM => anyhow::bail!("Nvlist clone insufficient memory"),
