@@ -7,27 +7,35 @@ use super::*;
 const RESERVED_FLAG_0: c_int = 0;
 
 #[inline]
-pub unsafe fn nvlist_alloc(flag: u32) -> *mut nvlist_t {
+pub unsafe fn nvlist_alloc(flag: u32) -> Result<*mut nvlist_t, NvListError> {
     let mut nvl = mem::MaybeUninit::uninit();
-    sys::nvlist_alloc(nvl.as_mut_ptr(), flag, RESERVED_FLAG_0);
-    nvl.assume_init()
+    match sys::nvlist_alloc(nvl.as_mut_ptr(), flag, RESERVED_FLAG_0) {
+        0 => Ok(nvl.assume_init()),
+        libc::EINVAL => Err(NvListError::InvalidArgument),
+        libc::ENOMEM => Err(NvListError::OutOfMemory),
+        other => panic!("Impossible return value '{other}' from nvlist_xxx"),
+    }
 }
 
 #[inline]
-pub unsafe fn nvlist_size(nvl: *mut nvlist_t, encoding: i32) -> size_t {
+pub unsafe fn nvlist_size(nvl: *mut nvlist_t, encoding: i32) -> Result<size_t, NvListError> {
     let mut size = mem::MaybeUninit::uninit();
-    sys::nvlist_size(nvl, size.as_mut_ptr(), encoding);
-    size.assume_init()
+    match sys::nvlist_size(nvl, size.as_mut_ptr(), encoding) {
+        0 => Ok(size.assume_init()),
+        libc::EINVAL => Err(NvListError::InvalidArgument),
+        libc::ENOMEM => Err(NvListError::OutOfMemory),
+        other => panic!("Impossible return value '{other}' from nvlist_xxx"),
+    }
 }
 
 #[inline]
-pub unsafe fn nvlist_dup(nvl: *mut nvlist_t) -> anyhow::Result<*mut nvlist_t> {
+pub unsafe fn nvlist_dup(nvl: *mut nvlist_t) -> Result<*mut nvlist_t, NvListError> {
     let mut dup = mem::MaybeUninit::uninit();
     match sys::nvlist_dup(nvl, dup.as_mut_ptr(), RESERVED_FLAG_0) {
         0 => Ok(dup.assume_init()),
-        libc::EINVAL => anyhow::bail!("Nvlist clone invalid argument"),
-        libc::ENOMEM => anyhow::bail!("Nvlist clone insufficient memory"),
-        rc => anyhow::bail!("unknown error code {}", rc),
+        libc::EINVAL => Err(NvListError::InvalidArgument),
+        libc::ENOMEM => Err(NvListError::OutOfMemory),
+        other => panic!("Impossible return value '{other}' from nvlist_xxx"),
     }
 }
 
@@ -43,9 +51,7 @@ macro_rules! nvlist_lookup {
                 0 => Ok(value.assume_init()),
                 libc::EINVAL => Err(NvListLookupError::InvalidArgument),
                 libc::ENOENT => Err(NvListLookupError::NoSuchNvPair),
-                other => {
-                    panic!("Impossible return value '{other}' from nvlist_lookup_xxx")
-                }
+                other => panic!("Impossible return value '{other}' from nvlist_lookup_xxx"),
             }
         }
     };
@@ -78,9 +84,7 @@ macro_rules! nvlist_lookup_array {
                 0 => Ok((value.assume_init(), len)),
                 libc::EINVAL => Err(NvListLookupError::InvalidArgument),
                 libc::ENOENT => Err(NvListLookupError::NoSuchNvPair),
-                other => {
-                    panic!("Impossible return value '{other}' from nvlist_lookup_xxx_array")
-                }
+                other => panic!("Impossible return value '{other}' from nvlist_lookup_xxx_array"),
             }
         }
     };

@@ -144,3 +144,11 @@ pub enum NvListLookupError {
     #[error("No matching name-value pair is found")]
     NoSuchNvPair,
 }
+
+#[derive(Debug, thiserror::Error)]
+pub enum NvListError {
+    #[error("Invalid Argument (nvlist?)")]
+    InvalidArgument,
+    #[error("Insufficient memory")]
+    OutOfMemory,
+}
