@@ -1,6 +1,6 @@
 [package]
 name = "razor-zfscore"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 description = "Low-level libzfs_core interface"
 repository = "https://github.com/razor-zfs/razor-rs"
