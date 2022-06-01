@@ -443,7 +443,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libnvpair"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "libc",
  "razor-libnvpair-sys",
@@ -452,7 +452,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libnvpair-sys"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "bindgen",
  "libc",
@@ -461,7 +461,7 @@ dependencies = [
 
 [[package]]
 name = "razor-nvpair"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "libc",
  "razor-libnvpair",
@@ -470,7 +470,7 @@ dependencies = [
 
 [[package]]
 name = "razor-property"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "chrono",
  "serde",
@@ -479,7 +479,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zfs"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "libc",
  "log",
@@ -499,7 +499,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zfscore"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "chrono",
  "libc",
@@ -513,7 +513,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zfscore-sys"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "bindgen",
  "libc",
