@@ -13,20 +13,21 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-pub use error::NvListError;
+use razor_libnvpair as libnvpair;
+
+pub use libnvpair::data_type_t;
+pub use libnvpair::NvListError;
+pub use libnvpair::NvListLookupError;
+
 pub use nvlist::NvFlag;
 pub use nvlist::NvList;
-pub use nvlist::NvListAccess;
 pub use nvlist::NvListIterator;
 pub use nvlist::NvListRef;
 pub use nvpair::NvPair;
 pub use value::to_value;
 pub use value::Value;
 
-mod error;
-mod impls;
+mod debug;
 mod nvlist;
 mod nvpair;
 mod value;
-
-pub type Result<T> = std::result::Result<T, NvListError>;

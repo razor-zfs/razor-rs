@@ -3,16 +3,15 @@ use std::ffi;
 
 use razor_nvpair as nvpair;
 
-use nvpair::NvListAccess;
-
 use crate::error::value_or_err;
 use crate::libzfs;
 use crate::lzc;
-pub use collector::DatasetCollectorBuilder;
-pub use zfs_dataset_handle::ZfsDatasetHandle;
 
 use super::error::CoreError;
 use super::Result;
+
+pub use collector::DatasetCollectorBuilder;
+pub use zfs_dataset_handle::ZfsDatasetHandle;
 
 mod collector;
 mod zfs_dataset_handle;

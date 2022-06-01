@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{to_value, NvList, NvListAccess, NvListRef, NvPair};
+use crate::{to_value, NvList, NvListRef, NvPair};
 
 impl fmt::Debug for NvPair {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

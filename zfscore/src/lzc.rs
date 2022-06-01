@@ -8,8 +8,6 @@ use once_cell::sync::Lazy;
 use razor_nvpair as nvpair;
 use razor_zfscore_sys as sys;
 
-use nvpair::NvListAccess;
-
 pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
 pub use sys::zfs_type_t;

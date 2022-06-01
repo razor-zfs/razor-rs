@@ -6,8 +6,6 @@ use serde::ser::{Serialize, SerializeStruct, Serializer};
 
 use razor_zfscore::lzc;
 
-use nvpair::NvListAccess;
-
 use crate::error::DatasetError;
 
 use super::property;

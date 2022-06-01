@@ -5,19 +5,21 @@ use std::ptr;
 
 use razor_libnvpair as libnvpair;
 
-pub use self::access::NvListAccess;
-
-use crate::error::value_or_err;
-
 use super::*;
 
-mod access;
+mod impls;
 
+/// Safe idiomatic nvlist_t wrapper. Use it when you need to create your own nvlist.
+/// Cleanly frees underlying memory when dropped.
+///
 #[derive(PartialEq, Eq)]
 pub struct NvList {
     nvl: *mut libnvpair::nvlist_t,
 }
 
+/// Safe idiomatic nvlist_t wrapper. Use it when you need access to nvlist_t that is NOT owned by you.
+/// It tracks the lifetime of its parent object and does not outlive it.
+///
 #[derive(Clone)]
 pub struct NvListRef<'a, T> {
     nvl: *mut libnvpair::nvlist_t,
@@ -34,6 +36,7 @@ impl<'a, T> NvListRef<'a, T> {
 }
 
 impl NvList {
+    /// Create new empty nvlist object
     pub fn new() -> Self {
         let nvl = unsafe { libnvpair::fnvlist_alloc() };
         Self { nvl }
@@ -54,7 +57,7 @@ impl From<*mut libnvpair::nvlist_t> for NvList {
 
 impl Drop for NvList {
     fn drop(&mut self) {
-        unsafe { libnvpair::nvlist_free(self.nvl) };
+        unsafe { libnvpair::fnvlist_free(self.nvl) };
     }
 }
 
@@ -72,6 +75,18 @@ impl DerefMut for NvList {
     }
 }
 
+impl AsRef<*mut libnvpair::nvlist_t> for NvList {
+    fn as_ref(&self) -> &*mut libnvpair::nvlist_t {
+        &self.nvl
+    }
+}
+
+impl<'a, T> AsRef<*mut libnvpair::nvlist_t> for NvListRef<'a, T> {
+    fn as_ref(&self) -> &*mut libnvpair::nvlist_t {
+        &self.nvl
+    }
+}
+
 impl IntoIterator for NvList {
     type Item = NvPair;
     type IntoIter = NvListIterator;
@@ -86,10 +101,6 @@ impl IntoIterator for NvList {
 
 unsafe impl Send for NvList {}
 
-impl access::NvListAccess for NvList {}
-
-impl<'a, T> NvListAccess for NvListRef<'a, T> {}
-
 #[derive(Debug)]
 pub struct NvListIterator {
     nvlist: NvList,
@@ -102,6 +113,7 @@ impl Iterator for NvListIterator {
     fn next(&mut self) -> Option<Self::Item> {
         let nvp = self.nvp.unwrap_or_else(ptr::null_mut);
         let nvp = unsafe { libnvpair::nvlist_next_nvpair(self.nvlist.nvl, nvp) };
+        // TODO replace with .then_some(nvp) after 1.62 is stable
         self.nvp = nvp.is_null().not().then(|| nvp);
         self.nvp.map(NvPair::from)
     }
