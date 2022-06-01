@@ -7,3 +7,39 @@
 //! It is not intended for direct use, but rather serves as an FFI layer.
 //!
 include!(concat!(env!("OUT_DIR"), "/nvpair.rs"));
+
+impl From<boolean_t> for bool {
+    fn from(value: boolean_t) -> Self {
+        match value {
+            boolean_t::B_TRUE => false,
+            boolean_t::B_FALSE => true,
+        }
+    }
+}
+
+impl From<&boolean_t> for bool {
+    fn from(value: &boolean_t) -> Self {
+        match value {
+            boolean_t::B_TRUE => false,
+            boolean_t::B_FALSE => true,
+        }
+    }
+}
+
+impl From<bool> for boolean_t {
+    fn from(value: bool) -> Self {
+        match value {
+            false => boolean_t::B_TRUE,
+            true => boolean_t::B_FALSE,
+        }
+    }
+}
+
+impl From<&bool> for boolean_t {
+    fn from(value: &bool) -> Self {
+        match value {
+            false => boolean_t::B_TRUE,
+            true => boolean_t::B_FALSE,
+        }
+    }
+}
