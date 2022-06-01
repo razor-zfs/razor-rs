@@ -89,33 +89,6 @@ pub use sys::fnvpair_value_uint32;
 pub use sys::fnvpair_value_uint64;
 pub use sys::fnvpair_value_uint8;
 
-pub use sys::nvlist_add_boolean;
-pub use sys::nvlist_add_boolean_array;
-pub use sys::nvlist_add_boolean_value;
-pub use sys::nvlist_add_byte;
-pub use sys::nvlist_add_byte_array;
-pub use sys::nvlist_add_double;
-pub use sys::nvlist_add_int16;
-pub use sys::nvlist_add_int16_array;
-pub use sys::nvlist_add_int32;
-pub use sys::nvlist_add_int32_array;
-pub use sys::nvlist_add_int64;
-pub use sys::nvlist_add_int64_array;
-pub use sys::nvlist_add_int8;
-pub use sys::nvlist_add_int8_array;
-pub use sys::nvlist_add_nvlist;
-pub use sys::nvlist_add_nvlist_array;
-pub use sys::nvlist_add_nvpair;
-pub use sys::nvlist_add_string;
-pub use sys::nvlist_add_string_array;
-pub use sys::nvlist_add_uint16;
-pub use sys::nvlist_add_uint16_array;
-pub use sys::nvlist_add_uint32;
-pub use sys::nvlist_add_uint32_array;
-pub use sys::nvlist_add_uint64;
-pub use sys::nvlist_add_uint64_array;
-pub use sys::nvlist_add_uint8;
-pub use sys::nvlist_add_uint8_array;
 pub use sys::nvlist_empty;
 pub use sys::nvlist_exists;
 pub use sys::nvlist_free;
@@ -133,11 +106,11 @@ pub use nvpair::*;
 mod nvlist;
 mod nvpair;
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
 #[error("nvpair type mismatch")]
 pub struct NvPairTypeMismatch;
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
 pub enum NvListLookupError {
     #[error("Invalid Argument (nvlist?)")]
     InvalidArgument,
@@ -145,7 +118,7 @@ pub enum NvListLookupError {
     NoSuchNvPair,
 }
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
 pub enum NvListError {
     #[error("Invalid Argument (nvlist?)")]
     InvalidArgument,
