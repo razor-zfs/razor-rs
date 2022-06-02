@@ -1,7 +1,7 @@
 use std::os::unix::io::AsRawFd;
 
+use razor_libzfscore::lzc;
 use razor_property as property;
-use razor_zfscore::lzc;
 
 pub use dataset::Bookmark;
 pub use dataset::Filesystem;

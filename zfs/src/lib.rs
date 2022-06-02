@@ -13,12 +13,12 @@
 #![warn(unused)]
 #![deny(warnings)]
 
+use razor_libzfscore::DatasetCollectorBuilder;
 use razor_property::InvalidProperty;
-use razor_zfscore::DatasetCollectorBuilder;
 
+pub use razor_libzfscore::zfs_type_t;
+pub use razor_libzfscore::ZfsDatasetHandle;
 pub use razor_nvpair::NvListError;
-pub use razor_zfscore::zfs_type_t;
-pub use razor_zfscore::ZfsDatasetHandle;
 
 pub use error::DatasetError;
 pub use zfs::Bookmark;

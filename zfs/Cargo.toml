@@ -21,8 +21,7 @@ thiserror = "1.0"
 tokio = { version = "1.17", features = ["process"], optional = true }
 
 razor-nvpair = { version = "0.4", path = "../nvpair" }
-razor-zfscore-sys = { version = "0.4", path = "../zfscore-sys" }
-razor-zfscore = { version = "0.4", path = "../zfscore" }
+razor-libzfscore = { version = "0.4", path = "../libzfscore" }
 razor-property = { version = "0.4", path = "../property" }
 
 [dev-dependencies]

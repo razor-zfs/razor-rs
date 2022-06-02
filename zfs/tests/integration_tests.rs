@@ -6,10 +6,10 @@ use std::process::Command;
 
 use nanoid::nanoid;
 
+use razor_libzfscore::error::CoreError;
+use razor_libzfscore::zfs_type_t;
 use razor_property as property;
 use razor_zfs::*;
-use razor_zfscore::error::CoreError;
-use razor_zfscore_sys::zfs_type_t;
 
 #[derive(Debug)]
 struct TestNamespace {

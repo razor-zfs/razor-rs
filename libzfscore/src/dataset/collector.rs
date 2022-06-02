@@ -3,10 +3,11 @@ use std::ffi::CString;
 use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 
+use super::*;
+
 use super::Result;
 use crate::libzfs;
 use crate::ZfsDatasetHandle;
-use razor_zfscore_sys as sys;
 
 static DATASET_ITERATOR: Lazy<Mutex<DatasetIterator>> = Lazy::new(|| {
     let iterator = DatasetIterator::new();
@@ -46,7 +47,7 @@ impl DatasetIterator {
 pub struct DatasetCollectorBuilder {
     from_dataset: Option<String>,
     datasets: Vec<ZfsDatasetHandle>,
-    r#type: libzfs::zfs_type_t,
+    r#type: sys::zfs_type_t,
     recursive: bool,
 }
 
@@ -55,7 +56,7 @@ impl DatasetCollectorBuilder {
         Self {
             from_dataset: None,
             datasets: Vec::new(),
-            r#type: libzfs::zfs_type_t(0),
+            r#type: sys::zfs_type_t(0),
             recursive: false,
         }
     }
@@ -64,35 +65,35 @@ impl DatasetCollectorBuilder {
         Self {
             from_dataset: Some(dataset.as_ref().to_owned()),
             datasets: Vec::new(),
-            r#type: libzfs::zfs_type_t(0),
+            r#type: sys::zfs_type_t(0),
             recursive: false,
         }
     }
 
     #[must_use]
     pub fn filesystems(mut self) -> Self {
-        self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_FILESYSTEM;
+        self.r#type |= sys::zfs_type_t::ZFS_TYPE_FILESYSTEM;
 
         self
     }
 
     #[must_use]
     pub fn volumes(mut self) -> Self {
-        self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_VOLUME;
+        self.r#type |= sys::zfs_type_t::ZFS_TYPE_VOLUME;
 
         self
     }
 
     #[must_use]
     pub fn snapshots(mut self) -> Self {
-        self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_SNAPSHOT;
+        self.r#type |= sys::zfs_type_t::ZFS_TYPE_SNAPSHOT;
 
         self
     }
 
     #[must_use]
     pub fn bookmarks(mut self) -> Self {
-        self.r#type |= libzfs::zfs_type_t::ZFS_TYPE_BOOKMARK;
+        self.r#type |= sys::zfs_type_t::ZFS_TYPE_BOOKMARK;
 
         self
     }
@@ -108,7 +109,7 @@ impl DatasetCollectorBuilder {
 
         for child in childrens {
             self.recursive_children(Some(&child));
-            if child.r#type() & self.r#type != libzfs::zfs_type_t(0) {
+            if child.r#type() & self.r#type != sys::zfs_type_t(0) {
                 self.datasets.push(child);
             }
         }
@@ -128,7 +129,7 @@ impl DatasetCollectorBuilder {
                 self.recursive_children(Some(&child))
             }
 
-            if child.r#type() & self.r#type != libzfs::zfs_type_t(0) {
+            if child.r#type() & self.r#type != sys::zfs_type_t(0) {
                 self.datasets.push(child);
             }
         }
@@ -139,7 +140,7 @@ impl DatasetCollectorBuilder {
 
     pub fn get_children(
         parent: Option<&ZfsDatasetHandle>,
-        r#type: libzfs::zfs_type_t,
+        r#type: sys::zfs_type_t,
     ) -> impl Iterator<Item = ZfsDatasetHandle> {
         parent
             .map(|parent| parent.handle)
@@ -148,13 +149,13 @@ impl DatasetCollectorBuilder {
                 |parent| {
                     let mut fs = Vec::new();
                     let mut snapshots = Vec::new();
-                    if r#type & libzfs::zfs_type_t::ZFS_TYPE_FILESYSTEM != libzfs::zfs_type_t(0)
-                        || r#type & libzfs::zfs_type_t::ZFS_TYPE_VOLUME != libzfs::zfs_type_t(0)
+                    if r#type & sys::zfs_type_t::ZFS_TYPE_FILESYSTEM != sys::zfs_type_t(0)
+                        || r#type & sys::zfs_type_t::ZFS_TYPE_VOLUME != sys::zfs_type_t(0)
                     {
                         fs = DATASET_ITERATOR.lock().iter_filesystem(parent);
                     }
 
-                    if r#type & libzfs::zfs_type_t::ZFS_TYPE_SNAPSHOT != libzfs::zfs_type_t(0) {
+                    if r#type & sys::zfs_type_t::ZFS_TYPE_SNAPSHOT != sys::zfs_type_t(0) {
                         snapshots = DATASET_ITERATOR.lock().iter_snapshots(parent);
                     }
 

@@ -460,6 +460,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "razor-libzfscore"
+version = "0.4.0"
+dependencies = [
+ "chrono",
+ "libc",
+ "once_cell",
+ "parking_lot",
+ "razor-libnvpair",
+ "razor-libzfscore-sys",
+ "razor-nvpair",
+ "thiserror",
+]
+
+[[package]]
+name = "razor-libzfscore-sys"
+version = "0.4.0"
+dependencies = [
+ "bindgen",
+ "libc",
+ "razor-libnvpair",
+]
+
+[[package]]
 name = "razor-nvpair"
 version = "0.4.0"
 dependencies = [
@@ -486,38 +509,14 @@ dependencies = [
  "nanoid",
  "once_cell",
  "rand",
+ "razor-libzfscore",
  "razor-nvpair",
  "razor-property",
- "razor-zfscore",
- "razor-zfscore-sys",
  "serde",
  "serde_json",
  "serde_with",
  "thiserror",
  "tokio",
-]
-
-[[package]]
-name = "razor-zfscore"
-version = "0.4.0"
-dependencies = [
- "chrono",
- "libc",
- "once_cell",
- "parking_lot",
- "razor-libnvpair",
- "razor-nvpair",
- "razor-zfscore-sys",
- "thiserror",
-]
-
-[[package]]
-name = "razor-zfscore-sys"
-version = "0.4.0"
-dependencies = [
- "bindgen",
- "libc",
- "razor-libnvpair",
 ]
 
 [[package]]

@@ -1,5 +1,5 @@
 [package]
-name = "razor-zfscore-sys"
+name = "razor-libzfscore-sys"
 version = "0.4.0"
 edition = "2021"
 description = "libzfs_core FFI bindings"

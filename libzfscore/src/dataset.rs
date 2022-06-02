@@ -1,11 +1,9 @@
 use std::borrow::Cow;
 use std::ffi;
 
-use razor_nvpair as nvpair;
+use super::*;
 
 use crate::error::value_or_err;
-use crate::libzfs;
-use crate::lzc;
 
 use super::error::CoreError;
 use super::Result;
@@ -34,16 +32,16 @@ impl ZfsDatasetHandle {
         }
     }
 
-    pub fn r#type(&self) -> lzc::zfs_type_t {
+    pub fn r#type(&self) -> sys::zfs_type_t {
         unsafe { libzfs::zfs_get_type(self.handle) }
     }
 
     pub fn is_volume(&self) -> bool {
-        self.r#type() == libzfs::zfs_type_t::ZFS_TYPE_VOLUME
+        self.r#type() == sys::zfs_type_t::ZFS_TYPE_VOLUME
     }
 
     pub fn is_filesystem(&self) -> bool {
-        self.r#type() == libzfs::zfs_type_t::ZFS_TYPE_FILESYSTEM
+        self.r#type() == sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
     }
 
     pub fn numeric_property_old(&self, name: &str, property: lzc::zfs_prop_t) -> u64 {
@@ -77,8 +75,8 @@ impl ZfsDatasetHandle {
     }
 }
 
-impl From<*mut razor_zfscore_sys::zfs_handle_t> for ZfsDatasetHandle {
-    fn from(handle: *mut razor_zfscore_sys::zfs_handle_t) -> Self {
+impl From<*mut sys::zfs_handle_t> for ZfsDatasetHandle {
+    fn from(handle: *mut sys::zfs_handle_t) -> Self {
         Self { handle }
     }
 }

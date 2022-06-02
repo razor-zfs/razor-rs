@@ -1,7 +1,6 @@
-use razor_zfscore_sys as sys;
 use thiserror::Error;
 
-use super::NvListError;
+use super::*;
 
 #[derive(Error, Clone, Debug, PartialEq, Eq)]
 pub enum CoreError {

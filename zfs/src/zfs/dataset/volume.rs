@@ -5,8 +5,8 @@ use std::marker::PhantomData;
 use once_cell::sync::Lazy;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
+use razor_libzfscore::lzc;
 use razor_nvpair as nvpair;
-use razor_zfscore::lzc;
 
 use crate::error::DatasetError;
 

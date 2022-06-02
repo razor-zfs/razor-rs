@@ -1,7 +1,7 @@
 use std::ffi;
 
+use razor_libzfscore::lzc;
 use razor_nvpair as nvpair;
-use razor_zfscore::lzc;
 
 use lzc::zfs_prop_t::*;
 

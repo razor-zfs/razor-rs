@@ -15,12 +15,16 @@
 
 use razor_nvpair as nvpair;
 
+use nvpair::NvList;
 use nvpair::NvListError;
 
+use razor_libzfscore_sys as sys;
+
+pub use sys::zfs_type_t;
+
+pub use crate::dataset::DatasetCollectorBuilder;
+pub use crate::dataset::ZfsDatasetHandle;
 pub use crate::lzc::zfs_prop_t;
-pub use dataset::DatasetCollectorBuilder;
-pub use dataset::ZfsDatasetHandle;
-pub use razor_zfscore_sys::zfs_type_t;
 
 pub mod error;
 pub mod lzc;

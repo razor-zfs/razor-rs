@@ -1,6 +1,6 @@
 use std::io;
 
-use razor_zfscore::error;
+use razor_libzfscore::error;
 
 use thiserror::Error;
 

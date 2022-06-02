@@ -3,10 +3,9 @@ use std::ffi;
 use std::os::unix::io::AsRawFd;
 use std::ptr;
 
-use nvpair::NvList;
 use once_cell::sync::Lazy;
-use razor_nvpair as nvpair;
-use razor_zfscore_sys as sys;
+
+use super::*;
 
 pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
