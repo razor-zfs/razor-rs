@@ -2,27 +2,36 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    // Tell cargo to tell rustc to link the system nvpair of zfs
-    // shared library.
-    println!("cargo:rustc-link-lib=zfs_core");
-    println!("cargo:rustc-link-lib=zfs");
+    let lzc = pkg_config::Config::new()
+        .atleast_version("0.8")
+        .cargo_metadata(false)
+        .probe("libzfs_core")
+        .expect("ZFS development environment is not installed");
+
+    let cflags = lzc
+        .include_paths
+        .iter()
+        .map(|path| format!("-I{}", path.display()));
 
     let default_enum_style = bindgen::EnumVariation::Rust {
         non_exhaustive: true,
     };
-    // The bindgen::Builder is the main entry point
-    // to bindgen, and lets you build up options for
-    // the resulting bindings.
+
+    println!("cargo:rustc-link-lib=zfs_core");
+    println!("cargo:rustc-link-lib=zfs");
+    println!("cargo:rerun-if-changed=zfscore.h");
+
     let bindings = bindgen::Builder::default()
-        // The input header we would like to generate
-        // bindings for.
-        .header("wrapper.h")
+        .header("zfscore.h")
+        .clang_arg("-D_GNU_SOURCE")
+        .clang_args(cflags)
         .size_t_is_usize(true)
         .ctypes_prefix("libc")
         .allowlist_type("libzfs_handle_t")
         .allowlist_type("zfs_handle_t")
         .allowlist_type("zfs_prop_t")
         .allowlist_type("zfs_type_t")
+        .allowlist_type("zfs_error_t")
         .bitfield_enum("zfs_type_t")
         .bitfield_enum("lzc_send_flags")
         .allowlist_function("zfs_close")
@@ -37,10 +46,6 @@ fn main() {
         .allowlist_function(r#"libzfs\w*"#)
         .blocklist_item(r#"\w*nvlist\w*"#)
         .default_enum_style(default_enum_style)
-        .allowlist_type("zfs_error")
-        .constified_enum_module("zfs_error")
-        .clang_arg("-D_GNU_SOURCE")
-        .clang_args(["-I/usr/include/libzfs", "-I/usr/include/libspl"])
         .generate()
         .expect("Unable to generate bindings");
 

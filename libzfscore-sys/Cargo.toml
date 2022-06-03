@@ -19,3 +19,4 @@ razor-libnvpair = { version = "0.4", path = "../libnvpair" }
 
 [build-dependencies]
 bindgen = "0.59"
+pkg-config = "0.3"
