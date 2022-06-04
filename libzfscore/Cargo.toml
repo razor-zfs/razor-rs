@@ -9,6 +9,8 @@ license = "MIT OR Apache-2.0"
 keywords = ["zfs", "zfs_core"]
 categories = ["api-bindings", "development-tools::ffi"]
 
+publish = false
+
 [dependencies]
 chrono = "0.4"
 libc = "0.2"

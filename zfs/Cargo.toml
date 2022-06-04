@@ -9,6 +9,8 @@ license = "MIT OR Apache-2.0"
 keywords = ["zfs"]
 categories = ["api-bindings"]
 
+publish = false
+
 [dependencies]
 libc = "0.2"
 log = "0.4"
