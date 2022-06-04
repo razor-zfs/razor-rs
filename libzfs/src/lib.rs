@@ -1,10 +1,26 @@
+#![cfg_attr(feature = "pedantic", warn(clippy::pedantic))]
+#![warn(clippy::use_self)]
+#![warn(clippy::map_flatten)]
+#![warn(clippy::map_unwrap_or)]
+#![warn(deprecated_in_future)]
+#![warn(future_incompatible)]
+#![warn(noop_method_call)]
+#![warn(unreachable_pub)]
+#![warn(missing_debug_implementations)]
+#![warn(rust_2018_compatibility)]
+#![warn(rust_2021_compatibility)]
+#![warn(rust_2018_idioms)]
+#![warn(unused)]
+#![allow(clippy::missing_safety_doc)]
+#![deny(warnings)]
+
 use std::ffi;
 use std::mem;
 use std::ptr;
 
 use once_cell::sync::Lazy;
-
-use super::*;
+use razor_libnvpair as libnvpair;
+use razor_libzfscore_sys as sys;
 
 static LIBZFS_HANDLE: Lazy<LibZfsHandle> = Lazy::new(LibZfsHandle::init);
 
@@ -37,7 +53,7 @@ impl LibZfsHandle {
     }
 }
 
-pub(crate) unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
+pub unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
     let types = sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
         | sys::zfs_type_t::ZFS_TYPE_VOLUME
         | sys::zfs_type_t::ZFS_TYPE_SNAPSHOT
@@ -47,27 +63,27 @@ pub(crate) unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle
     sys::zfs_open(LIBZFS_HANDLE.libzfs_handle, name, types)
 }
 
-pub(crate) unsafe fn zfs_close(handle: *mut sys::zfs_handle_t) {
+pub unsafe fn zfs_close(handle: *mut sys::zfs_handle_t) {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_close(handle);
 }
 
-pub(crate) unsafe fn zfs_get_name(handle: *mut sys::zfs_handle_t) -> *const libc::c_char {
+pub unsafe fn zfs_get_name(handle: *mut sys::zfs_handle_t) -> *const libc::c_char {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_get_name(handle)
 }
 
-pub(crate) unsafe fn zfs_get_type(handle: *mut sys::zfs_handle_t) -> sys::zfs_type_t {
+pub unsafe fn zfs_get_type(handle: *mut sys::zfs_handle_t) -> sys::zfs_type_t {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_get_type(handle)
 }
 
-pub(crate) unsafe fn zfs_get_all_props(handle: *mut sys::zfs_handle_t) -> *mut sys::nvlist_t {
+pub unsafe fn zfs_get_all_props(handle: *mut sys::zfs_handle_t) -> *mut libnvpair::nvlist_t {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_get_all_props(handle)
 }
 
-pub(crate) unsafe fn _zfs_prop_get_numeric(
+pub unsafe fn zfs_prop_get_numeric(
     handle: *mut sys::zfs_handle_t,
     property: sys::zfs_prop_t,
 ) -> Result<u64, i32> {
@@ -91,45 +107,42 @@ pub(crate) unsafe fn _zfs_prop_get_numeric(
     }
 }
 
-pub(crate) unsafe fn zfs_prop_get_int(
-    handle: *mut sys::zfs_handle_t,
-    property: sys::zfs_prop_t,
-) -> u64 {
+pub unsafe fn zfs_prop_get_int(handle: *mut sys::zfs_handle_t, property: sys::zfs_prop_t) -> u64 {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_prop_get_int(handle, property)
 }
 
-pub(crate) unsafe fn zfs_prop_set_list(
+pub unsafe fn zfs_prop_set_list(
     dataset_handle: *mut sys::zfs_handle_t,
-    nvl: *mut sys::nvlist_t,
+    nvl: *mut libnvpair::nvlist_t,
 ) -> libc::c_int {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_prop_set_list(dataset_handle, nvl)
 }
 
-pub(crate) unsafe fn zfs_prop_to_name(property: sys::zfs_prop_t) -> *const libc::c_char {
+pub unsafe fn zfs_prop_to_name(property: sys::zfs_prop_t) -> *const libc::c_char {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_prop_to_name(property)
 }
 
-pub(crate) unsafe fn zfs_prop_default_string(property: sys::zfs_prop_t) -> *const libc::c_char {
+pub unsafe fn zfs_prop_default_string(property: sys::zfs_prop_t) -> *const libc::c_char {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_prop_default_string(property)
 }
 
-pub(crate) unsafe fn zfs_prop_default_numeric(property: sys::zfs_prop_t) -> u64 {
+pub unsafe fn zfs_prop_default_numeric(property: sys::zfs_prop_t) -> u64 {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_prop_default_numeric(property)
 }
 
-pub(crate) unsafe fn zfs_iter_root(
+pub unsafe fn zfs_iter_root(
     f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
     ptr: *mut libc::c_void,
 ) {
     sys::zfs_iter_root(LIBZFS_HANDLE.libzfs_handle, Some(f), ptr);
 }
 
-pub(crate) unsafe fn zfs_iter_filesystems(
+pub unsafe fn zfs_iter_filesystems(
     handle: *mut sys::zfs_handle_t,
     f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
     ptr: *mut libc::c_void,
@@ -138,7 +151,7 @@ pub(crate) unsafe fn zfs_iter_filesystems(
     sys::zfs_iter_filesystems(handle, Some(f), ptr);
 }
 
-pub(crate) unsafe fn zfs_iter_snapshots(
+pub unsafe fn zfs_iter_snapshots(
     handle: *mut sys::zfs_handle_t,
     simple: bool,
     f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
@@ -155,6 +168,7 @@ pub(crate) unsafe fn zfs_iter_snapshots(
 }
 
 const MAX_VERSION_LEN: usize = 128;
+
 unsafe fn zfs_version_kernel() -> String {
     let mut version = [0; MAX_VERSION_LEN];
     sys::zfs_version_kernel(version.as_mut_ptr(), MAX_VERSION_LEN as libc::c_int);
@@ -171,7 +185,7 @@ unsafe fn zfs_version_userland() -> String {
         .into_owned()
 }
 
-pub(crate) fn zfs_version() -> Version {
+pub fn zfs_version() -> Version {
     LIBZFS_HANDLE.version.clone()
 }
 

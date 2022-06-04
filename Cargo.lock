@@ -460,6 +460,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "razor-libzfs"
+version = "0.4.1"
+dependencies = [
+ "libc",
+ "once_cell",
+ "razor-libnvpair",
+ "razor-libzfscore-sys",
+ "razor-nvpair",
+]
+
+[[package]]
 name = "razor-libzfscore"
 version = "0.4.1"
 dependencies = [
@@ -468,6 +479,7 @@ dependencies = [
  "once_cell",
  "parking_lot",
  "razor-libnvpair",
+ "razor-libzfs",
  "razor-libzfscore-sys",
  "razor-nvpair",
  "thiserror",

@@ -33,7 +33,7 @@ impl Lzc {
         &self,
         name: *const libc::c_char,
         dataset_type: sys::lzc_dataset_type,
-        props: *mut sys::nvlist_t,
+        props: *mut libnvpair::nvlist_t,
     ) -> libc::c_int {
         let wkeydata = ptr::null_mut();
         let wkeylen = 0;
@@ -50,17 +50,17 @@ impl Lzc {
 
     unsafe fn lzc_snapshot(
         &self,
-        snaps: *mut sys::nvlist_t,
-        props: *mut sys::nvlist_t,
-        errlist: *mut *mut sys::nvlist_t,
+        snaps: *mut libnvpair::nvlist_t,
+        props: *mut libnvpair::nvlist_t,
+        errlist: *mut *mut libnvpair::nvlist_t,
     ) -> libc::c_int {
         sys::lzc_snapshot(snaps, props, errlist)
     }
 
     unsafe fn lzc_bookmark(
         &self,
-        bookmarks: *mut sys::nvlist_t,
-        errlist: *mut *mut sys::nvlist_t,
+        bookmarks: *mut libnvpair::nvlist_t,
+        errlist: *mut *mut libnvpair::nvlist_t,
     ) -> libc::c_int {
         sys::lzc_bookmark(bookmarks, errlist)
     }
@@ -90,7 +90,7 @@ impl Lzc {
     unsafe fn lzc_receive(
         &self,
         snapname: *const libc::c_char,
-        props: *mut sys::nvlist_t,
+        props: *mut libnvpair::nvlist_t,
         origin: *const libc::c_char,
         force: sys::boolean_t,
         raw: sys::boolean_t,
@@ -102,7 +102,7 @@ impl Lzc {
     unsafe fn lzc_receive_resumable(
         &self,
         snapname: *const libc::c_char,
-        props: *mut sys::nvlist_t,
+        props: *mut libnvpair::nvlist_t,
         origin: *const libc::c_char,
         force: sys::boolean_t,
         raw: sys::boolean_t,

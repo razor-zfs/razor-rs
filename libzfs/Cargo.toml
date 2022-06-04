@@ -1,24 +1,23 @@
 [package]
-name = "razor-libzfscore"
+name = "razor-libzfs"
 version = "0.4.1"
 edition = "2021"
-description = "Low-level libzfs_core interface"
+description = "Low-level libzfs interface"
 repository = "https://github.com/razor-zfs/razor-rs"
 readme = "../README.md"
 license = "MIT OR Apache-2.0"
-keywords = ["zfs", "zfs_core"]
+keywords = ["zfs"]
 categories = ["api-bindings", "development-tools::ffi"]
 
 publish = false
 
 [dependencies]
-chrono = "0.4"
+# chrono = "0.4"
 libc = "0.2"
 once_cell = "1.8"
-parking_lot = "0.12"
-thiserror = "1.0"
+# parking_lot = "0.12"
+# thiserror = "1.0"
 
 razor-libnvpair = { version = "0.4", path = "../libnvpair" }
 razor-nvpair = { version = "0.4", path = "../nvpair" }
-razor-libzfs = { version = "0.4", path = "../libzfs" }
 razor-libzfscore-sys = { version = "0.4", path = "../libzfscore-sys" }
