@@ -46,6 +46,7 @@ fn main() {
         .allowlist_function(r#"libzfs\w*"#)
         .allowlist_var("ZFS_MAXPROPLEN")
         .allowlist_var("ZPOOL_MAXPROPLEN")
+        .blocklist_item("boolean_t")
         .blocklist_item(r#"\w*nvlist\w*"#)
         .default_enum_style(default_enum_style)
         .generate()
