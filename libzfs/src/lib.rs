@@ -22,36 +22,15 @@ use once_cell::sync::Lazy;
 use razor_libnvpair as libnvpair;
 use razor_libzfscore_sys as sys;
 
-static LIBZFS_HANDLE: Lazy<LibZfsHandle> = Lazy::new(LibZfsHandle::init);
+pub use sys::zfs_handle_t;
+pub use sys::zfs_prop_t;
+pub use sys::zfs_type_t;
+pub use version::Version;
 
-#[derive(Debug)]
-struct LibZfsHandle {
-    libzfs_handle: *mut sys::libzfs_handle_t,
-    version: Version,
-}
+use handle::LIBZFS_HANDLE;
 
-unsafe impl Send for LibZfsHandle {}
-unsafe impl Sync for LibZfsHandle {}
-
-impl LibZfsHandle {
-    fn init() -> Self {
-        unsafe { Self::init_impl() }
-    }
-
-    unsafe fn init_impl() -> Self {
-        let libzfs_handle = sys::libzfs_init();
-        if libzfs_handle.is_null() {
-            panic!("libzfs_init failed");
-        }
-        sys::libzfs_print_on_error(libzfs_handle, sys::boolean_t::B_FALSE);
-        let version = Version::new();
-
-        Self {
-            libzfs_handle,
-            version,
-        }
-    }
-}
+mod handle;
+mod version;
 
 pub unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
     let types = sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
@@ -60,7 +39,7 @@ pub unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
         | sys::zfs_type_t::ZFS_TYPE_POOL
         | sys::zfs_type_t::ZFS_TYPE_BOOKMARK;
     let types = types.0 as i32;
-    sys::zfs_open(LIBZFS_HANDLE.libzfs_handle, name, types)
+    sys::zfs_open(LIBZFS_HANDLE.handle(), name, types)
 }
 
 pub unsafe fn zfs_close(handle: *mut sys::zfs_handle_t) {
@@ -139,7 +118,7 @@ pub unsafe fn zfs_iter_root(
     f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
     ptr: *mut libc::c_void,
 ) {
-    sys::zfs_iter_root(LIBZFS_HANDLE.libzfs_handle, Some(f), ptr);
+    sys::zfs_iter_root(LIBZFS_HANDLE.handle(), Some(f), ptr);
 }
 
 pub unsafe fn zfs_iter_filesystems(
@@ -167,58 +146,6 @@ pub unsafe fn zfs_iter_snapshots(
     sys::zfs_iter_snapshots(handle, simple, Some(f), data, min_txg, max_txg);
 }
 
-const MAX_VERSION_LEN: usize = 128;
-
-unsafe fn zfs_version_kernel() -> String {
-    let mut version = [0; MAX_VERSION_LEN];
-    sys::zfs_version_kernel(version.as_mut_ptr(), MAX_VERSION_LEN as libc::c_int);
-    ffi::CStr::from_ptr(version.as_ptr())
-        .to_string_lossy()
-        .into_owned()
-}
-
-unsafe fn zfs_version_userland() -> String {
-    let mut version = [0; MAX_VERSION_LEN];
-    sys::zfs_version_userland(version.as_mut_ptr(), MAX_VERSION_LEN as libc::c_int);
-    ffi::CStr::from_ptr(version.as_ptr())
-        .to_string_lossy()
-        .into_owned()
-}
-
 pub fn zfs_version() -> Version {
-    LIBZFS_HANDLE.version.clone()
-}
-
-#[derive(Clone, Debug)]
-pub struct Version {
-    kernel: String,
-    userland: String,
-}
-
-impl Version {
-    const ZFS_VERSION: &'static str = "zfs-2.1.2";
-
-    unsafe fn new() -> Self {
-        let kernel = zfs_version_kernel();
-        let userland = zfs_version_userland();
-        Self { kernel, userland }
-    }
-
-    pub fn ensure_compatible(&self) {
-        if !self.userland.starts_with(Self::ZFS_VERSION) {
-            panic!(
-                "libzfs version is not compatible (I was compiled against {}, but {} is found",
-                Self::ZFS_VERSION,
-                self.userland
-            );
-        }
-    }
-
-    pub fn kernel(&self) -> &str {
-        &self.kernel
-    }
-
-    pub fn userland(&self) -> &str {
-        &self.userland
-    }
+    LIBZFS_HANDLE.version().clone()
 }
