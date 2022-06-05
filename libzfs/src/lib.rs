@@ -32,6 +32,18 @@ use handle::LIBZFS_HANDLE;
 mod handle;
 mod version;
 
+pub unsafe fn libzfs_errno() -> libc::c_int {
+    sys::libzfs_errno(LIBZFS_HANDLE.handle())
+}
+
+pub unsafe fn libzfs_error_action() -> *const libc::c_char {
+    sys::libzfs_error_action(LIBZFS_HANDLE.handle())
+}
+
+pub unsafe fn libzfs_error_description() -> *const libc::c_char {
+    sys::libzfs_error_description(LIBZFS_HANDLE.handle())
+}
+
 pub unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
     let types = sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
         | sys::zfs_type_t::ZFS_TYPE_VOLUME
@@ -139,10 +151,11 @@ pub unsafe fn zfs_iter_snapshots(
     max_txg: u64,
 ) {
     Lazy::force(&LIBZFS_HANDLE);
-    let simple = match simple {
-        false => sys::boolean_t::B_TRUE,
-        true => sys::boolean_t::B_FALSE,
-    };
+    let simple = simple.into();
+    // let simple = match simple {
+    //     false => libnvpair::boolean_t::B_TRUE,
+    //     true => libnvpair::boolean_t::B_FALSE,
+    // };
     sys::zfs_iter_snapshots(handle, simple, Some(f), data, min_txg, max_txg);
 }
 

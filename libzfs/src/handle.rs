@@ -21,7 +21,7 @@ impl LibZfsHandle {
         if libzfs_handle.is_null() {
             panic!("libzfs_init failed");
         }
-        sys::libzfs_print_on_error(libzfs_handle, sys::boolean_t::B_FALSE);
+        sys::libzfs_print_on_error(libzfs_handle, libnvpair::boolean_t::B_FALSE);
         let version = Version::new();
 
         Self {
