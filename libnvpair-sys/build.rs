@@ -30,6 +30,7 @@ fn main() {
         .allowlist_type(r#"(\w*nvlist\w*)"#)
         .allowlist_function(r#"(\w*nvpair\w*)"#)
         .allowlist_function(r#"(\w*nvlist\w*)"#)
+        .rustified_enum("boolean_t")
         .default_enum_style(default_enum_style)
         .generate()
         .expect("Unable to generate bindings");
