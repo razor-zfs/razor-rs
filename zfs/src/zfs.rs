@@ -1,6 +1,5 @@
 use std::os::unix::io::AsRawFd;
 
-use razor_libzfscore::lzc;
 use razor_property as property;
 
 pub use dataset::Bookmark;
@@ -42,18 +41,18 @@ impl Zfs {
     }
 
     pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
-        lzc::destroy_dataset(name).map_err(|err| err.into())
+        lzc::destroy_dataset(name)
     }
 
-    pub fn dataset_exists(dataset: impl AsRef<str>) -> Result<()> {
-        lzc::dataset_exists(dataset).map_err(|err| err.into())
+    pub fn dataset_exists(dataset: impl AsRef<str>) -> bool {
+        lzc::dataset_exists(dataset)
     }
 
-    pub fn list() -> DatasetCollectorBuilder {
+    pub fn list() -> libzfs::DatasetCollectorBuilder {
         lzc::zfs_list()
     }
 
-    pub fn list_from(name: impl AsRef<str>) -> DatasetCollectorBuilder {
+    pub fn list_from(name: impl AsRef<str>) -> libzfs::DatasetCollectorBuilder {
         lzc::zfs_list_from(name)
     }
 

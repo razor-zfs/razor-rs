@@ -1,14 +1,9 @@
 use std::ffi;
 
-use razor_libzfscore::lzc;
+// use razor_libzfscore as lzc;
 use razor_nvpair as nvpair;
 
-use lzc::zfs_prop_t::*;
-
-use super::property;
-use super::DatasetError;
-use super::Result;
-use super::ZfsDatasetHandle;
+use super::*;
 
 pub use bookmark::Bookmark;
 pub use filesystem::Filesystem;

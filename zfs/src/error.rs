@@ -1,6 +1,7 @@
 use std::io;
 
-use razor_libzfscore::error;
+use razor_libzfs as libzfs;
+use razor_libzfscore as libzfscore;
 
 use thiserror::Error;
 
@@ -18,7 +19,7 @@ pub enum DatasetError {
     #[error("Snapshot name must contain @ ({0})")]
     InvalidSnapshotName(String),
     #[error(transparent)]
-    CoreErr(#[from] error::CoreError),
+    CoreErr(#[from] libzfscore::ZfsError),
     #[error("unknown builder error, error code: ({0})")]
     Unknown(i32),
 }
@@ -39,5 +40,14 @@ impl From<io::Error> for DatasetError {
     fn from(error: io::Error) -> Self {
         let code = error.raw_os_error().unwrap_or_default();
         Self::Unknown(code)
+    }
+}
+
+pub(crate) fn value_or_err<T>(value: T, rc: i32) -> Result<T, DatasetError> {
+    let error = libzfscore::ZfsError::from(libzfs::translate_zfs_error(rc));
+    if error.is_success() {
+        Ok(value)
+    } else {
+        Err(error.into())
     }
 }

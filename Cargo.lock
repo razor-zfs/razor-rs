@@ -474,15 +474,11 @@ dependencies = [
 name = "razor-libzfscore"
 version = "0.4.1"
 dependencies = [
- "chrono",
  "libc",
  "once_cell",
- "parking_lot",
  "razor-libnvpair",
  "razor-libzfs",
  "razor-libzfscore-sys",
- "razor-nvpair",
- "thiserror",
 ]
 
 [[package]]
@@ -521,7 +517,9 @@ dependencies = [
  "log",
  "nanoid",
  "once_cell",
+ "parking_lot",
  "rand",
+ "razor-libzfs",
  "razor-libzfscore",
  "razor-nvpair",
  "razor-property",

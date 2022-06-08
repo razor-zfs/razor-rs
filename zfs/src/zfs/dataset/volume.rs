@@ -5,55 +5,59 @@ use std::marker::PhantomData;
 use once_cell::sync::Lazy;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
-use razor_libzfscore::lzc;
-use razor_nvpair as nvpair;
+use super::*;
 
 use crate::error::DatasetError;
 
-use super::property;
-use super::Result;
-use super::ZfsDatasetHandle;
+// use super::property;
+// use super::Result;
+// use super::ZfsDatasetHandle;
 
-use lzc::zfs_prop_t::*;
+use libzfs::zfs_prop_t::*;
 
-static AVAILABLE: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_AVAILABLE));
-static VOLSIZE: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_VOLSIZE));
+static AVAILABLE: Lazy<Cow<'static, str>> =
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_AVAILABLE));
+static VOLSIZE: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_VOLSIZE));
 static VOLBLOCKSIZE: Lazy<Cow<'static, str>> =
-    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_VOLBLOCKSIZE));
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_VOLBLOCKSIZE));
 static LOGICALUSED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_LOGICALUSED));
-static CHECKSUM: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_CHECKSUM));
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_LOGICALUSED));
+static CHECKSUM: Lazy<Cow<'static, str>> =
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CHECKSUM));
 static COMPRESSION: Lazy<Cow<'static, str>> =
-    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_COMPRESSION));
-static GUID: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_GUID));
-static CREATION: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_CREATION));
-static CREATETXG: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_CREATETXG));
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_COMPRESSION));
+static GUID: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_GUID));
+static CREATION: Lazy<Cow<'static, str>> =
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CREATION));
+static CREATETXG: Lazy<Cow<'static, str>> =
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CREATETXG));
 static COMPRESSRATIO: Lazy<Cow<'static, str>> =
-    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_COMPRESSRATIO));
-static USED: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_USED));
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_COMPRESSRATIO));
+static USED: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_USED));
 static REFERENCED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_REFERENCED));
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_REFERENCED));
 static LOGICALREFERENCED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_LOGICALREFERENCED));
-static OBJSETID: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_OBJSETID));
-static VOLMODE: Lazy<Cow<'static, str>> = Lazy::new(|| lzc::zfs_prop_to_name(ZFS_PROP_VOLMODE));
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_LOGICALREFERENCED));
+static OBJSETID: Lazy<Cow<'static, str>> =
+    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_OBJSETID));
+static VOLMODE: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_VOLMODE));
 static NAME: &str = "name";
 
 #[derive(Debug)]
 pub struct Volume {
-    dataset: ZfsDatasetHandle,
+    dataset: libzfs::ZfsHandle,
 }
 
 #[derive(Debug)]
 pub struct VolumeSetter<'a, T> {
-    dataset_handler: &'a ZfsDatasetHandle,
+    dataset_handler: &'a libzfs::ZfsHandle,
     anchor: PhantomData<&'a T>,
     nvl: nvpair::NvList,
     err: Option<DatasetError>,
 }
 
 impl<'a, T> VolumeSetter<'a, T> {
-    pub fn new(dataset_handler: &'a ZfsDatasetHandle, _anchor: &'a T) -> Self {
+    pub fn new(dataset_handler: &'a libzfs::ZfsHandle, _anchor: &'a T) -> Self {
         Self {
             dataset_handler,
             anchor: PhantomData,
@@ -118,7 +122,7 @@ impl Volume {
     }
 
     pub fn destroy(self) -> Result<()> {
-        lzc::destroy_dataset(self.name()).map_err(|err| err.into())
+        lzc::destroy_dataset(self.name())
     }
 
     pub fn snapshot(&self, name: impl AsRef<str>) -> Result<()> {
@@ -132,7 +136,7 @@ impl Volume {
 
     pub fn get(name: impl AsRef<str>) -> Result<Self> {
         let cname = CString::new(name.as_ref())?;
-        let dataset = ZfsDatasetHandle::new(cname)?;
+        let dataset = libzfs::ZfsHandle::new(cname)?;
 
         Ok(Self { dataset })
     }
@@ -283,7 +287,7 @@ impl VolumeBuilder {
 
         lzc::create_volume(name.as_ref(), self.nvlist)?;
 
-        let dataset = ZfsDatasetHandle::new(cname)?;
+        let dataset = libzfs::ZfsHandle::new(cname)?;
         let volume = Volume { dataset };
 
         Ok(volume)

@@ -1,20 +1,22 @@
 use super::*;
 
+use libzfs::zfs_prop_t::*;
+
 #[derive(Debug)]
 pub struct Bookmark {
-    dataset: ZfsDatasetHandle,
+    dataset: libzfs::ZfsHandle,
 }
 
 impl Bookmark {
     pub fn get(name: impl AsRef<str>) -> Result<Self> {
         let name = ffi::CString::new(name.as_ref())?;
-        let dataset = ZfsDatasetHandle::new(name)?;
+        let dataset = libzfs::ZfsHandle::new(name)?;
 
         Ok(Self { dataset })
     }
 
     pub fn destroy(self) -> Result<()> {
-        lzc::destroy_dataset(self.name()).map_err(|err| err.into())
+        lzc::destroy_dataset(self.name())
     }
 
     pub fn name(&self) -> String {

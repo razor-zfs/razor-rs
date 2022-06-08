@@ -13,12 +13,13 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use razor_libzfscore::DatasetCollectorBuilder;
+use razor_libzfscore as libzfscore;
+use razor_nvpair as nvpair;
+
+use libzfscore::ZfsError;
 use razor_property::InvalidProperty;
 
-pub use razor_libzfscore::zfs_type_t;
-pub use razor_libzfscore::ZfsDatasetHandle;
-pub use razor_nvpair::NvListError;
+pub use nvpair::NvListError;
 
 pub use error::DatasetError;
 pub use zfs::Bookmark;
@@ -30,7 +31,11 @@ pub use zfs::Volume;
 pub use zfs::VolumeBuilder;
 pub use zfs::Zfs;
 
-mod error;
-mod zfs;
+use error::value_or_err;
 
-pub type Result<T> = std::result::Result<T, DatasetError>;
+mod error;
+pub mod libzfs;
+pub mod lzc;
+pub mod zfs;
+
+pub type Result<T, E = DatasetError> = std::result::Result<T, E>;
