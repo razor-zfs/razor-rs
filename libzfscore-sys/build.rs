@@ -32,6 +32,7 @@ fn main() {
         .allowlist_type("zfs_prop_t")
         .allowlist_type("zfs_type_t")
         .allowlist_type("zfs_error_t")
+        .constified_enum_module("zfs_error")
         .bitfield_enum("zfs_type_t")
         .bitfield_enum("lzc_send_flags")
         .allowlist_function("zfs_close")
