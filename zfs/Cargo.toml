@@ -1,6 +1,6 @@
 [package]
 name = "razor-zfs"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 description = "Idiomatic zfs API"
 repository = "https://github.com/razor-zfs/razor-rs"
@@ -23,10 +23,10 @@ serde_with = { version = "1.6", features = ["chrono"] }
 thiserror = "1.0"
 tokio = { version = "1.17", features = ["process"], optional = true }
 
-razor-nvpair = { version = "0.5", path = "../nvpair" }
-razor-libzfscore = { version = "0.5", path = "../libzfscore" }
-razor-libzfs = { version = "0.5", path = "../libzfs" }
-razor-property = { version = "0.5", path = "../property" }
+razor-nvpair = { version = "0.6", path = "../nvpair" }
+razor-libzfscore = { version = "0.6", path = "../libzfscore" }
+razor-libzfs = { version = "0.6", path = "../libzfs" }
+razor-property = { version = "0.6", path = "../property" }
 
 [dev-dependencies]
 nanoid = "0.4"
