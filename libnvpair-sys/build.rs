@@ -32,6 +32,12 @@ fn main() {
         .allowlist_function(r#"(\w*nvlist\w*)"#)
         .rustified_enum("boolean_t")
         .default_enum_style(default_enum_style)
+        .blocklist_function(r#"nvpair_value_match\w*"#)
+        .blocklist_function(r#"nvlist_print\w*"#)
+        .blocklist_function("dump_nvlist")
+        .blocklist_item(r#"nvlist_prt\w*"#)
+        .blocklist_type("regex_t")
+        .blocklist_type("re_pattern_buffer")
         .generate()
         .expect("Unable to generate bindings");
 
