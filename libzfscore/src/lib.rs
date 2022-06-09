@@ -19,16 +19,12 @@ use std::ptr;
 use once_cell::sync::Lazy;
 
 use razor_libnvpair as libnvpair;
-use razor_libzfs as libzfs;
 use razor_libzfscore_sys as sys;
 
 pub use sys::lzc_dataset_type;
 pub use sys::lzc_send_flags;
-pub use sys::translate_zfs_error;
+pub use sys::zfs_type_t;
 
-pub use error::ZfsError;
-
-mod error;
 mod lzc;
 
 pub unsafe fn lzc_create(

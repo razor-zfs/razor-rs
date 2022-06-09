@@ -20,18 +20,21 @@ use std::ptr;
 
 use once_cell::sync::Lazy;
 use razor_libnvpair as libnvpair;
-use razor_libzfscore_sys as sys;
+use razor_libzfs_sys as sys;
+use razor_libzfscore as lzc;
 
+pub use error::ZfsError;
+pub use lzc::zfs_type_t;
 pub use sys::translate_zfs_error;
 pub use sys::zfs_error;
 pub use sys::zfs_error_t;
 pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
-pub use sys::zfs_type_t;
 pub use version::Version;
 
 use handle::LIBZFS_HANDLE;
 
+mod error;
 mod handle;
 mod version;
 
@@ -48,11 +51,11 @@ pub unsafe fn libzfs_error_description() -> *const libc::c_char {
 }
 
 pub unsafe fn zfs_open(name: *const libc::c_char) -> *mut sys::zfs_handle_t {
-    let types = sys::zfs_type_t::ZFS_TYPE_FILESYSTEM
-        | sys::zfs_type_t::ZFS_TYPE_VOLUME
-        | sys::zfs_type_t::ZFS_TYPE_SNAPSHOT
-        | sys::zfs_type_t::ZFS_TYPE_POOL
-        | sys::zfs_type_t::ZFS_TYPE_BOOKMARK;
+    let types = zfs_type_t::ZFS_TYPE_FILESYSTEM
+        | zfs_type_t::ZFS_TYPE_VOLUME
+        | zfs_type_t::ZFS_TYPE_SNAPSHOT
+        | zfs_type_t::ZFS_TYPE_POOL
+        | zfs_type_t::ZFS_TYPE_BOOKMARK;
     let types = types.0 as i32;
     sys::zfs_open(LIBZFS_HANDLE.handle(), name, types)
 }
@@ -67,7 +70,7 @@ pub unsafe fn zfs_get_name(handle: *mut sys::zfs_handle_t) -> *const libc::c_cha
     sys::zfs_get_name(handle)
 }
 
-pub unsafe fn zfs_get_type(handle: *mut sys::zfs_handle_t) -> sys::zfs_type_t {
+pub unsafe fn zfs_get_type(handle: *mut sys::zfs_handle_t) -> zfs_type_t {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_get_type(handle)
 }
@@ -129,26 +132,23 @@ pub unsafe fn zfs_prop_default_numeric(property: sys::zfs_prop_t) -> u64 {
     sys::zfs_prop_default_numeric(property)
 }
 
-pub unsafe fn zfs_iter_root(
-    f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
-    ptr: *mut libc::c_void,
-) {
-    sys::zfs_iter_root(LIBZFS_HANDLE.handle(), Some(f), ptr);
+pub unsafe fn zfs_iter_root(callback: sys::zfs_iter_f, ptr: *mut libc::c_void) {
+    sys::zfs_iter_root(LIBZFS_HANDLE.handle(), callback, ptr);
 }
 
 pub unsafe fn zfs_iter_filesystems(
     handle: *mut sys::zfs_handle_t,
-    f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
+    callback: sys::zfs_iter_f,
     ptr: *mut libc::c_void,
 ) {
     Lazy::force(&LIBZFS_HANDLE);
-    sys::zfs_iter_filesystems(handle, Some(f), ptr);
+    sys::zfs_iter_filesystems(handle, callback, ptr);
 }
 
 pub unsafe fn zfs_iter_snapshots(
     handle: *mut sys::zfs_handle_t,
     simple: bool,
-    f: unsafe extern "C" fn(*mut sys::zfs_handle_t, *mut libc::c_void) -> libc::c_int,
+    callback: sys::zfs_iter_f,
     data: *mut libc::c_void,
     min_txg: u64,
     max_txg: u64,
@@ -159,7 +159,7 @@ pub unsafe fn zfs_iter_snapshots(
     //     false => libnvpair::boolean_t::B_TRUE,
     //     true => libnvpair::boolean_t::B_FALSE,
     // };
-    sys::zfs_iter_snapshots(handle, simple, Some(f), data, min_txg, max_txg);
+    sys::zfs_iter_snapshots(handle, simple, callback, data, min_txg, max_txg);
 }
 
 pub fn zfs_version() -> Version {

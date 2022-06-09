@@ -1,6 +1,6 @@
 use std::ffi;
 
-use razor_libzfscore_sys as sys;
+use razor_libzfs_sys as sys;
 
 const MAX_VERSION_LEN: usize = 128;
 

@@ -13,10 +13,8 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use razor_libzfscore as libzfscore;
 use razor_nvpair as nvpair;
 
-use libzfscore::ZfsError;
 use razor_property::InvalidProperty;
 
 pub use nvpair::NvListError;

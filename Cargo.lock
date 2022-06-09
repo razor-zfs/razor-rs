@@ -488,8 +488,19 @@ dependencies = [
  "libc",
  "once_cell",
  "razor-libnvpair",
- "razor-libzfscore-sys",
- "razor-nvpair",
+ "razor-libzfs-sys",
+ "razor-libzfscore",
+]
+
+[[package]]
+name = "razor-libzfs-sys"
+version = "0.5.0"
+dependencies = [
+ "bindgen",
+ "libc",
+ "pkg-config",
+ "razor-libnvpair",
+ "razor-libzfscore",
 ]
 
 [[package]]
@@ -499,7 +510,6 @@ dependencies = [
  "libc",
  "once_cell",
  "razor-libnvpair",
- "razor-libzfs",
  "razor-libzfscore-sys",
 ]
 

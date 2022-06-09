@@ -4,6 +4,7 @@ use std::ffi;
 use razor_libzfs as libzfs;
 
 pub use libzfs::zfs_prop_t;
+pub use libzfs::ZfsError;
 
 use super::*;
 
