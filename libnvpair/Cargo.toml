@@ -1,6 +1,6 @@
 [package]
 name = "razor-libnvpair"
-version = "0.6.0"
+version = "0.6.1"
 edition = "2021"
 description = "Low-level libnvpair interface"
 repository = "https://github.com/razor-zfs/razor-rs"

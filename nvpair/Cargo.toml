@@ -1,6 +1,6 @@
 [package]
 name = "razor-nvpair"
-version = "0.6.0"
+version = "0.6.1"
 edition = "2021"
 description = "Idiomatic nvpair API"
 repository = "https://github.com/razor-zfs/razor-rs"
