@@ -1,6 +1,6 @@
 [package]
 name = "razor-libzfscore"
-version = "0.4.1"
+version = "0.5.0"
 edition = "2021"
 description = "Low-level libzfs_core interface"
 repository = "https://github.com/razor-zfs/razor-rs"
@@ -15,6 +15,6 @@ publish = false
 libc = "0.2"
 once_cell = "1.8"
 
-razor-libnvpair = { version = "0.4", path = "../libnvpair" }
-razor-libzfs = { version = "0.4", path = "../libzfs" }
-razor-libzfscore-sys = { version = "0.4", path = "../libzfscore-sys" }
+razor-libnvpair = { version = "0.5", path = "../libnvpair" }
+razor-libzfs = { version = "0.5", path = "../libzfs" }
+razor-libzfscore-sys = { version = "0.5", path = "../libzfscore-sys" }

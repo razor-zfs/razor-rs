@@ -1,6 +1,6 @@
 [package]
 name = "razor-libnvpair-sys"
-version = "0.4.1"
+version = "0.5.0"
 edition = "2021"
 description = "libnvpair FFI bindings"
 repository = "https://github.com/razor-zfs/razor-rs"
