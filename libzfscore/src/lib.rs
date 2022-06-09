@@ -27,6 +27,15 @@ pub use sys::zfs_type_t;
 
 mod lzc;
 
+pub unsafe fn lzc_snapshot(
+    snaps: *mut libnvpair::nvlist_t,
+    props: *mut libnvpair::nvlist_t,
+    errlist: *mut *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_snapshot(snaps, props, errlist)
+}
+
 pub unsafe fn lzc_create(
     name: *const libc::c_char,
     dataset_type: sys::lzc_dataset_type,
@@ -38,22 +47,32 @@ pub unsafe fn lzc_create(
     sys::lzc_create(name, dataset_type, props, wkeydata, wkeylen)
 }
 
-pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
-    Lazy::force(&lzc::LIBZFS_CORE);
-    sys::lzc_destroy(name)
-}
-
-pub unsafe fn lzc_exists(name: *const libc::c_char) -> bool {
-    sys::lzc_exists(name).into()
-}
-
-pub unsafe fn lzc_snapshot(
-    snaps: *mut libnvpair::nvlist_t,
+pub unsafe fn lzc_clone(
+    fsname: *const libc::c_char,
+    origin: *const libc::c_char,
     props: *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_clone(fsname, origin, props)
+}
+
+pub unsafe fn lzc_promote(
+    fsname: *const libc::c_char,
+    snapnamebuf: *mut libc::c_char,
+    snapnamelen: libc::c_int,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_promote(fsname, snapnamebuf, snapnamelen)
+}
+
+pub unsafe fn lzc_destroy_snaps(
+    snaps: *mut libnvpair::nvlist_t,
+    defer: bool,
     errlist: *mut *mut libnvpair::nvlist_t,
 ) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
-    sys::lzc_snapshot(snaps, props, errlist)
+    let defer = defer.into();
+    sys::lzc_destroy_snaps(snaps, defer, errlist)
 }
 
 pub unsafe fn lzc_bookmark(
@@ -62,6 +81,41 @@ pub unsafe fn lzc_bookmark(
 ) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_bookmark(bookmarks, errlist)
+}
+
+pub unsafe fn lzc_get_bookmarks(
+    fsname: *const libc::c_char,
+    props: *mut libnvpair::nvlist_t,
+    bookmarks: *mut *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_get_bookmarks(fsname, props, bookmarks)
+}
+
+pub unsafe fn lzc_get_bookmark_props(
+    bookmark: *const libc::c_char,
+    props: *mut *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_get_bookmark_props(bookmark, props)
+}
+
+pub unsafe fn lzc_destroy_bookmarks(
+    bookmarks: *mut libnvpair::nvlist_t,
+    errlist: *mut *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_destroy_bookmarks(bookmarks, errlist)
+}
+
+pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_destroy(name)
+}
+
+pub unsafe fn lzc_exists(name: *const libc::c_char) -> bool {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_exists(name).into()
 }
 
 pub unsafe fn lzc_send(
