@@ -10,6 +10,8 @@ keywords = ["zfs", "zfs_core"]
 categories = ["api-bindings", "external-ffi-bindings"]
 links = "zfs_core"
 build = "build.rs"
+rust-version = "1.62"
+
 
 [dependencies]
 libc = "0.2"

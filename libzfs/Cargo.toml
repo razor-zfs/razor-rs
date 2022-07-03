@@ -9,6 +9,7 @@ license = "MIT OR Apache-2.0"
 keywords = ["zfs"]
 categories = ["api-bindings", "development-tools::ffi"]
 build = "build.rs"
+rust-version = "1.62"
 
 
 [dependencies]

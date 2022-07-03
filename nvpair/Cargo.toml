@@ -8,6 +8,8 @@ readme = "../README.md"
 license = "MIT OR Apache-2.0"
 keywords = ["zfs", "nvpair"]
 categories = ["api-bindings"]
+rust-version = "1.62"
+
 
 [dependencies]
 libc = "0.2"

@@ -8,6 +8,7 @@ readme = "../README.md"
 license = "MIT OR Apache-2.0"
 keywords = ["zfs", "zfs_core"]
 categories = ["api-bindings", "development-tools::ffi"]
+rust-version = "1.62"
 
 
 [dependencies]

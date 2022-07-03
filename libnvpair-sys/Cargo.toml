@@ -10,9 +10,12 @@ keywords = ["zfs", "nvpair"]
 categories = ["api-bindings", "external-ffi-bindings"]
 links = "nvpair"
 build = "build.rs"
+rust-version = "1.62"
+
 
 [dependencies]
 libc = "0.2"
+
 
 [build-dependencies]
 bindgen = "0.60"
