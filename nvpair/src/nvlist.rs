@@ -113,8 +113,7 @@ impl Iterator for NvListIterator {
     fn next(&mut self) -> Option<Self::Item> {
         let nvp = self.nvp.unwrap_or_else(ptr::null_mut);
         let nvp = unsafe { libnvpair::nvlist_next_nvpair(self.nvlist.nvl, nvp) };
-        // TODO replace with .then_some(nvp) after 1.62 is stable
-        self.nvp = nvp.is_null().not().then(|| nvp);
+        self.nvp = nvp.is_null().not().then_some(nvp);
         self.nvp.map(NvPair::from)
     }
 }
