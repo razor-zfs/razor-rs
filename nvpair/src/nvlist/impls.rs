@@ -371,11 +371,11 @@ where
 }
 
 #[inline]
-fn cstring(text: impl AsRef<str>) -> Result<CString, NvListError> {
-    CString::new(text.as_ref()).map_err(|_| NvListError::InvalidArgument)
+fn cstring(text: impl AsRef<str>) -> Result<ffi::CString, NvListError> {
+    ffi::CString::new(text.as_ref()).map_err(|_| NvListError::InvalidArgument)
 }
 
 #[inline]
-fn fcstring(text: impl AsRef<str>) -> CString {
-    CString::new(text.as_ref()).expect("Failed to convert {text} to CString")
+fn fcstring(text: impl AsRef<str>) -> ffi::CString {
+    ffi::CString::new(text.as_ref()).expect("Failed to convert {text} to CString")
 }

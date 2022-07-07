@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::ffi;
 use std::marker::{PhantomData, Send};
 use std::ops;
 
