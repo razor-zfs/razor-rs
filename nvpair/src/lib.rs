@@ -17,7 +17,6 @@ use razor_libnvpair as libnvpair;
 
 pub use libnvpair::data_type_t;
 pub use libnvpair::NvListError;
-pub use libnvpair::NvListLookupError;
 
 pub use nvlist::NvFlag;
 pub use nvlist::NvList;

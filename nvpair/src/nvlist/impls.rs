@@ -236,10 +236,13 @@ impl NvList {
     }
 
     /// Lookup nvpair by name
-    pub fn lookup_nvpair(&self, name: impl AsRef<str>) -> Result<NvPair, NvListLookupError> {
-        let name = cstring(name).map_err(|_| NvListLookupError::InvalidArgument)?;
-        let nvp = unsafe { libnvpair::nvlist_lookup_nvpair(self.nvl, name.as_ptr()) }?;
-        Ok(NvPair::from(nvp))
+    pub fn lookup_nvpair(&self, name: impl AsRef<str>) -> Result<Option<NvPair>, NvListError> {
+        let name = cstring(name).map_err(|_| NvListError::InvalidArgument)?;
+        match unsafe { libnvpair::nvlist_lookup_nvpair(self.nvl, name.as_ptr()) } {
+            Ok(nvp) => Ok(Some(NvPair::from(nvp))),
+            Err(NvListError::NotFound) => Ok(None),
+            Err(err) => Err(err),
+        }
     }
 
     /// Iterator over NvPair objects in this NvList
@@ -300,10 +303,13 @@ impl<'a, T> NvListRef<'a, T> {
     }
 
     /// Lookup nvpair by name
-    pub fn lookup_nvpair(&self, name: impl AsRef<str>) -> Result<NvPair, NvListLookupError> {
-        let name = cstring(name).map_err(|_| NvListLookupError::InvalidArgument)?;
-        let nvp = unsafe { libnvpair::nvlist_lookup_nvpair(self.nvl, name.as_ptr()) }?;
-        Ok(NvPair::from(nvp))
+    pub fn lookup_nvpair(&self, name: impl AsRef<str>) -> Result<Option<NvPair>, NvListError> {
+        let name = cstring(name).map_err(|_| NvListError::InvalidArgument)?;
+        match unsafe { libnvpair::nvlist_lookup_nvpair(self.nvl, name.as_ptr()) } {
+            Ok(nvp) => Ok(Some(NvPair::from(nvp))),
+            Err(NvListError::NotFound) => Ok(None),
+            Err(err) => Err(err),
+        }
     }
 
     /// Iterator over NvPair objects in this NvList

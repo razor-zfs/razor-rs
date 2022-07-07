@@ -111,17 +111,11 @@ mod nvpair;
 pub struct NvPairTypeMismatch;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
-pub enum NvListLookupError {
-    #[error("Invalid Argument (nvlist?)")]
-    InvalidArgument,
-    #[error("No matching name-value pair is found")]
-    NoSuchNvPair,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
 pub enum NvListError {
     #[error("Invalid Argument (nvlist?)")]
     InvalidArgument,
     #[error("Insufficient memory")]
     OutOfMemory,
+    #[error("No matching name-value pair is found")]
+    NotFound,
 }

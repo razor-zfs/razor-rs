@@ -56,7 +56,7 @@ impl ZfsHandle {
         let nvl = unsafe { libzfs::zfs_get_all_props(self.handle) };
         let nvl = nvpair::NvListRef::from_raw(nvl, self);
 
-        if let Ok(nvp) = nvl.lookup_nvpair(name) {
+        if let Ok(Some(nvp)) = nvl.lookup_nvpair(name) {
             nvp.uint64()
         } else {
             zfs_prop_default_numeric(property)
@@ -71,7 +71,7 @@ impl ZfsHandle {
         let nvl = unsafe { libzfs::zfs_get_all_props(self.handle) };
         let nvl = nvpair::NvListRef::from_raw(nvl, self);
 
-        if let Ok(nvp) = nvl.lookup_nvpair(name) {
+        if let Ok(Some(nvp)) = nvl.lookup_nvpair(name) {
             nvp.string().to_string()
         } else {
             zfs_prop_default_string(property).to_string()

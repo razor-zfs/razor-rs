@@ -45,12 +45,12 @@ macro_rules! nvlist_lookup {
         pub unsafe fn $lookup(
             nvl: *mut nvlist_t,
             name: *const c_char,
-        ) -> Result<$output, NvListLookupError> {
+        ) -> Result<$output, NvListError> {
             let mut value = mem::MaybeUninit::uninit();
             match sys::$lookup(nvl, name, value.as_mut_ptr()) {
                 0 => Ok(value.assume_init()),
-                libc::EINVAL => Err(NvListLookupError::InvalidArgument),
-                libc::ENOENT => Err(NvListLookupError::NoSuchNvPair),
+                libc::ENOENT => Err(NvListError::NotFound),
+                libc::EINVAL => Err(NvListError::InvalidArgument),
                 other => panic!(
                     "Impossible return value '{other}' from '{}()'",
                     stringify!($lookup)
@@ -80,13 +80,13 @@ macro_rules! nvlist_lookup_array {
         pub unsafe fn $lookup(
             nvl: *mut nvlist_t,
             name: *const c_char,
-        ) -> Result<($output, c_uint), NvListLookupError> {
+        ) -> Result<($output, c_uint), NvListError> {
             let mut len = 0;
             let mut value = mem::MaybeUninit::uninit();
             match sys::$lookup(nvl, name, value.as_mut_ptr(), &mut len) {
                 0 => Ok((value.assume_init(), len)),
-                libc::EINVAL => Err(NvListLookupError::InvalidArgument),
-                libc::ENOENT => Err(NvListLookupError::NoSuchNvPair),
+                libc::ENOENT => Err(NvListError::NotFound),
+                libc::EINVAL => Err(NvListError::InvalidArgument),
                 other => panic!(
                     "Impossible return value '{other}' from '{}()'",
                     stringify!($add)
