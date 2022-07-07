@@ -126,8 +126,8 @@ impl Iterator for NvListIterator {
     type Item = NvPair;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let nvpair = self.nvpair.unwrap_or_else(NvPair::null);
-        let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, *nvpair) };
+        let nvp = NvPair::as_ptr(self.nvpair);
+        let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, nvp) };
         self.nvpair = if !nvp.is_null() {
             Some(NvPair::from(nvp))
         } else {
@@ -147,8 +147,8 @@ impl<'a, T> Iterator for Iter<'a, T> {
     type Item = NvPair;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let nvpair = self.nvpair.unwrap_or_else(NvPair::null);
-        let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, *nvpair) };
+        let nvp = NvPair::as_ptr(self.nvpair);
+        let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, nvp) };
         self.nvpair = if !nvp.is_null() {
             Some(NvPair::from(nvp))
         } else {
@@ -168,8 +168,8 @@ impl<'a, T> Iterator for Items<'a, T> {
     type Item = (String, Value);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let nvpair = self.nvpair.unwrap_or_else(NvPair::null);
-        let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, *nvpair) };
+        let nvp = NvPair::as_ptr(self.nvpair);
+        let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, nvp) };
         self.nvpair = if !nvp.is_null() {
             Some(NvPair::from(nvp))
         } else {

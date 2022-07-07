@@ -382,9 +382,10 @@ impl NvPair {
 }
 
 impl NvPair {
-    pub(super) fn null() -> Self {
-        Self {
-            nvp: ptr::null_mut(),
+    pub(super) fn as_ptr(nvp: Option<Self>) -> *mut libnvpair::nvpair_t {
+        match nvp {
+            Some(nvp) => nvp.nvp,
+            None => ptr::null_mut(),
         }
     }
 }
