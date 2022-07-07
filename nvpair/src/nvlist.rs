@@ -33,6 +33,10 @@ impl<'a, T> NvListRef<'a, T> {
             anchor: PhantomData,
         }
     }
+
+    fn borrow(&self) -> NvListRef<'_, Self> {
+        NvListRef::from_raw(self.nvl, self)
+    }
 }
 
 impl NvList {
@@ -40,6 +44,10 @@ impl NvList {
     pub fn new() -> Self {
         let nvl = unsafe { libnvpair::fnvlist_alloc() };
         Self { nvl }
+    }
+
+    fn borrow(&self) -> NvListRef<'_, Self> {
+        NvListRef::from_raw(self.nvl, self)
     }
 }
 
@@ -62,6 +70,14 @@ impl Drop for NvList {
 }
 
 impl Deref for NvList {
+    type Target = *mut libnvpair::nvlist_t;
+
+    fn deref(&self) -> &Self::Target {
+        &self.nvl
+    }
+}
+
+impl<'a, T> Deref for NvListRef<'a, T> {
     type Target = *mut libnvpair::nvlist_t;
 
     fn deref(&self) -> &Self::Target {
@@ -123,20 +139,23 @@ impl Iterator for NvListIterator {
 }
 
 #[derive(Debug)]
-pub struct Iter<'a> {
-    nvl: *mut libnvpair::nvlist_t,
-    nvp: Option<*mut libnvpair::nvpair_t>,
-    anchor: PhantomData<&'a NvList>,
+pub struct Iter<'a, T> {
+    nvlist: NvListRef<'a, T>,
+    nvpair: Option<NvPair>,
 }
 
-impl<'a> Iterator for Iter<'a> {
+impl<'a, T> Iterator for Iter<'a, T> {
     type Item = NvPair;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let nvp = self.nvp.unwrap_or_else(ptr::null_mut);
-        let nvp = unsafe { libnvpair::nvlist_next_nvpair(self.nvl, nvp) };
-        self.nvp = nvp.is_null().not().then(|| nvp);
-        self.nvp.map(NvPair::from)
+        let nvpair = self.nvpair.unwrap_or_else(Self::Item::null);
+        let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, *nvpair) };
+        self.nvpair = if !nvp.is_null() {
+            Some(NvPair::from(nvp))
+        } else {
+            None
+        };
+        self.nvpair
     }
 }
 

@@ -246,11 +246,10 @@ impl NvList {
     }
 
     /// Iterator over NvPair objects in this NvList
-    pub fn iter(&self) -> Iter<'_> {
+    pub fn iter(&self) -> Iter<'_, Self> {
         Iter {
-            nvl: self.nvl,
-            nvp: None,
-            anchor: PhantomData,
+            nvlist: self.borrow(),
+            nvpair: None,
         }
     }
 
@@ -313,11 +312,10 @@ impl<'a, T> NvListRef<'a, T> {
     }
 
     /// Iterator over NvPair objects in this NvList
-    pub fn iter(&self) -> Iter<'_> {
+    pub fn iter(&self) -> Iter<'_, Self> {
         Iter {
-            nvl: self.nvl,
-            nvp: None,
-            anchor: PhantomData,
+            nvlist: self.borrow(),
+            nvpair: None,
         }
     }
 
