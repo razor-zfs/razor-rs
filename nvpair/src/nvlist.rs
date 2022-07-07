@@ -1,7 +1,6 @@
 use std::ffi::CString;
 use std::marker::{PhantomData, Send};
-use std::ops::{Deref, DerefMut, Not};
-use std::ptr;
+use std::ops;
 
 use razor_libnvpair as libnvpair;
 
@@ -69,7 +68,7 @@ impl Drop for NvList {
     }
 }
 
-impl Deref for NvList {
+impl ops::Deref for NvList {
     type Target = *mut libnvpair::nvlist_t;
 
     fn deref(&self) -> &Self::Target {
@@ -77,7 +76,7 @@ impl Deref for NvList {
     }
 }
 
-impl<'a, T> Deref for NvListRef<'a, T> {
+impl<'a, T> ops::Deref for NvListRef<'a, T> {
     type Target = *mut libnvpair::nvlist_t;
 
     fn deref(&self) -> &Self::Target {
@@ -85,7 +84,7 @@ impl<'a, T> Deref for NvListRef<'a, T> {
     }
 }
 
-impl DerefMut for NvList {
+impl ops::DerefMut for NvList {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.nvl
     }
@@ -127,7 +126,7 @@ impl Iterator for NvListIterator {
     type Item = NvPair;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let nvpair = self.nvpair.unwrap_or_else(Self::Item::null);
+        let nvpair = self.nvpair.unwrap_or_else(NvPair::null);
         let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, *nvpair) };
         self.nvpair = if !nvp.is_null() {
             Some(NvPair::from(nvp))
@@ -148,7 +147,7 @@ impl<'a, T> Iterator for Iter<'a, T> {
     type Item = NvPair;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let nvpair = self.nvpair.unwrap_or_else(Self::Item::null);
+        let nvpair = self.nvpair.unwrap_or_else(NvPair::null);
         let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, *nvpair) };
         self.nvpair = if !nvp.is_null() {
             Some(NvPair::from(nvp))
@@ -160,21 +159,23 @@ impl<'a, T> Iterator for Iter<'a, T> {
 }
 
 #[derive(Debug)]
-pub struct Items<'a> {
-    nvl: *mut libnvpair::nvlist_t,
-    nvp: Option<*mut libnvpair::nvpair_t>,
-    anchor: PhantomData<&'a NvList>,
+pub struct Items<'a, T> {
+    nvlist: NvListRef<'a, T>,
+    nvpair: Option<NvPair>,
 }
 
-impl<'a> Iterator for Items<'a> {
+impl<'a, T> Iterator for Items<'a, T> {
     type Item = (String, Value);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let nvp = self.nvp.unwrap_or_else(ptr::null_mut);
-        let nvp = unsafe { libnvpair::nvlist_next_nvpair(self.nvl, nvp) };
-        self.nvp = nvp.is_null().not().then(|| nvp);
-        self.nvp
-            .map(NvPair::from)
+        let nvpair = self.nvpair.unwrap_or_else(NvPair::null);
+        let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, *nvpair) };
+        self.nvpair = if !nvp.is_null() {
+            Some(NvPair::from(nvp))
+        } else {
+            None
+        };
+        self.nvpair
             .map(|nvpair| (nvpair.name().to_string(), to_value(&nvpair)))
     }
 }
