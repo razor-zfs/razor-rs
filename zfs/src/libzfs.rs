@@ -26,8 +26,6 @@ impl ZfsHandle {
         if handle.is_null() {
             let error = unsafe { libzfs::libzfs_errno() };
             Err(ZfsError::from(libzfs::translate_zfs_error(error)))?;
-            // let error = ZfsError::from(libzfs::translate_zfs_error(error));
-            // return Err(error.into());
         }
 
         Ok(Self { handle })
