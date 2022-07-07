@@ -94,7 +94,7 @@ impl IntoIterator for NvList {
     fn into_iter(self) -> Self::IntoIter {
         NvListIterator {
             nvlist: self,
-            nvp: None,
+            nvpair: None,
         }
     }
 }
@@ -104,17 +104,21 @@ unsafe impl Send for NvList {}
 #[derive(Debug)]
 pub struct NvListIterator {
     nvlist: NvList,
-    nvp: Option<*mut libnvpair::nvpair_t>,
+    nvpair: Option<NvPair>,
 }
 
 impl Iterator for NvListIterator {
     type Item = NvPair;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let nvp = self.nvp.unwrap_or_else(ptr::null_mut);
-        let nvp = unsafe { libnvpair::nvlist_next_nvpair(self.nvlist.nvl, nvp) };
-        self.nvp = nvp.is_null().not().then_some(nvp);
-        self.nvp.map(NvPair::from)
+        let nvpair = self.nvpair.unwrap_or_else(Self::Item::null);
+        let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, *nvpair) };
+        self.nvpair = if !nvp.is_null() {
+            Some(NvPair::from(nvp))
+        } else {
+            None
+        };
+        self.nvpair
     }
 }
 

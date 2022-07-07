@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 use std::ffi;
 use std::ops;
+use std::ptr;
 use std::slice;
 
 use razor_libnvpair as libnvpair;
@@ -380,6 +381,14 @@ impl NvPair {
     }
 }
 
+impl NvPair {
+    pub(super) fn null() -> Self {
+        Self {
+            nvp: ptr::null_mut(),
+        }
+    }
+}
+
 impl ops::Deref for NvPair {
     type Target = *mut libnvpair::nvpair_t;
 
@@ -391,5 +400,11 @@ impl ops::Deref for NvPair {
 impl From<*mut libnvpair::nvpair_t> for NvPair {
     fn from(nvp: *mut libnvpair::nvpair_t) -> Self {
         Self { nvp }
+    }
+}
+
+impl AsRef<*mut libnvpair::nvpair_t> for NvPair {
+    fn as_ref(&self) -> &*mut libnvpair::nvpair_t {
+        &self.nvp
     }
 }
