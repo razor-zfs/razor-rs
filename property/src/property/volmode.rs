@@ -50,7 +50,7 @@ impl str::FromStr for VolMode {
     }
 }
 
-// TODO: * create macto for all u and i
+// TODO: * create macro for all u and i
 //       * in C geom == full
 impl From<u64> for VolMode {
     fn from(value: u64) -> Self {
