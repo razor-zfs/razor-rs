@@ -47,16 +47,6 @@ impl From<YesNo> for bool {
     }
 }
 
-// TODO: write macro for all u and i
-impl From<u64> for YesNo {
-    fn from(value: u64) -> Self {
-        match value {
-            0 => Self::No,
-            _ => Self::Yes,
-        }
-    }
-}
-
 impl From<bool> for YesNo {
     fn from(v: bool) -> Self {
         match v {
@@ -65,3 +55,34 @@ impl From<bool> for YesNo {
         }
     }
 }
+
+macro_rules! numeric {
+    ($numeric:ty) => {
+        impl From<$numeric> for YesNo {
+            fn from(value: $numeric) -> Self {
+                match value {
+                    0 => Self::No,
+                    _ => Self::Yes,
+                }
+            }
+        }
+
+        impl From<YesNo> for $numeric {
+            fn from(value: YesNo) -> Self {
+                match value {
+                    YesNo::No => 0,
+                    YesNo::Yes => 1,
+                }
+            }
+        }
+    };
+}
+
+numeric!(i8);
+numeric!(i16);
+numeric!(i32);
+numeric!(i64);
+numeric!(u8);
+numeric!(u16);
+numeric!(u32);
+numeric!(u64);
