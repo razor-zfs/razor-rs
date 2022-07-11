@@ -48,25 +48,6 @@ impl From<bool> for OnOff {
     }
 }
 
-// TODO: write macro for all u and i
-impl From<u64> for OnOff {
-    fn from(value: u64) -> Self {
-        match value {
-            0 => Self::Off,
-            _ => Self::On,
-        }
-    }
-}
-
-impl From<OnOff> for u64 {
-    fn from(value: OnOff) -> Self {
-        match value {
-            OnOff::Off => 0,
-            OnOff::On => 1,
-        }
-    }
-}
-
 impl From<OnOff> for bool {
     fn from(onoff: OnOff) -> Self {
         match onoff {
@@ -75,3 +56,34 @@ impl From<OnOff> for bool {
         }
     }
 }
+
+macro_rules! numeric {
+    ($numeric:ty) => {
+        impl From<$numeric> for OnOff {
+            fn from(value: $numeric) -> Self {
+                match value {
+                    0 => Self::Off,
+                    _ => Self::On,
+                }
+            }
+        }
+
+        impl From<OnOff> for $numeric {
+            fn from(value: OnOff) -> Self {
+                match value {
+                    OnOff::Off => 0,
+                    OnOff::On => 1,
+                }
+            }
+        }
+    };
+}
+
+numeric!(i8);
+numeric!(i16);
+numeric!(i32);
+numeric!(i64);
+numeric!(u8);
+numeric!(u16);
+numeric!(u32);
+numeric!(u64);
