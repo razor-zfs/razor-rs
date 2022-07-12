@@ -43,10 +43,5 @@ impl From<io::Error> for DatasetError {
 }
 
 pub(crate) fn value_or_err<T>(value: T, rc: i32) -> Result<T, DatasetError> {
-    let error = libzfs::ZfsError::from(libzfs::translate_zfs_error(rc));
-    if error.is_success() {
-        Ok(value)
-    } else {
-        Err(error.into())
-    }
+    libzfs::ZfsError::from(libzfs::translate_zfs_error(rc)).result(value)
 }
