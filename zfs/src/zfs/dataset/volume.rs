@@ -1,6 +1,5 @@
 use std::borrow::Cow;
 use std::ffi::CString;
-use std::marker::PhantomData;
 
 use once_cell::sync::Lazy;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
@@ -8,10 +7,6 @@ use serde::ser::{Serialize, SerializeStruct, Serializer};
 use super::*;
 
 use crate::error::DatasetError;
-
-// use super::property;
-// use super::Result;
-// use super::ZfsDatasetHandle;
 
 use libzfs::zfs_prop_t::*;
 
@@ -49,18 +44,16 @@ pub struct Volume {
 }
 
 #[derive(Debug)]
-pub struct VolumeSetter<'a, T> {
-    dataset_handler: &'a libzfs::ZfsHandle,
-    anchor: PhantomData<&'a T>,
+pub struct VolumeSetter<'a> {
+    volume: &'a Volume,
     nvl: nvpair::NvList,
     err: Option<DatasetError>,
 }
 
-impl<'a, T> VolumeSetter<'a, T> {
-    pub fn new(dataset_handler: &'a libzfs::ZfsHandle, _anchor: &'a T) -> Self {
+impl<'a> VolumeSetter<'a> {
+    pub fn new(volume: &'a Volume) -> Self {
         Self {
-            dataset_handler,
-            anchor: PhantomData,
+            volume,
             nvl: nvpair::NvList::new(),
             err: None,
         }
@@ -111,14 +104,14 @@ impl<'a, T> VolumeSetter<'a, T> {
     }
 
     pub fn add(self) -> Result<()> {
-        self.dataset_handler.set_properties(self.nvl)?;
+        self.volume.dataset.set_properties(self.nvl)?;
         Ok(())
     }
 }
 
 impl Volume {
-    pub fn set(&self) -> VolumeSetter<'_, Self> {
-        VolumeSetter::new(&self.dataset, self)
+    pub fn set(&self) -> VolumeSetter<'_> {
+        VolumeSetter::new(self)
     }
 
     pub fn destroy(self) -> Result<()> {

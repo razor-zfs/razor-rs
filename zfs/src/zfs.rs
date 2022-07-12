@@ -1,7 +1,5 @@
 use std::os::unix::io::AsRawFd;
 
-use razor_property as property;
-
 pub use dataset::Bookmark;
 pub use dataset::Filesystem;
 pub use dataset::FilesystemBuilder;
