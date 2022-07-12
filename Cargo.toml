@@ -9,6 +9,7 @@ members = [
     "libzfs",
     "zfs",
     "property",
+    "cli",
     #    "zfsrpc",
     #    "zfsrpc-cli",
     #    "zfsrpc-client",
