@@ -155,10 +155,6 @@ pub unsafe fn zfs_iter_snapshots(
 ) {
     Lazy::force(&LIBZFS_HANDLE);
     let simple = simple.into();
-    // let simple = match simple {
-    //     false => libnvpair::boolean_t::B_TRUE,
-    //     true => libnvpair::boolean_t::B_FALSE,
-    // };
     sys::zfs_iter_snapshots(handle, simple, callback, data, min_txg, max_txg);
 }
 
