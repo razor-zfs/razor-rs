@@ -63,7 +63,7 @@ impl<'a> VolumeSetter<'a> {
     pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value) {
             self.err = Some(err.into());
         }
 

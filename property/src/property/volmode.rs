@@ -29,6 +29,12 @@ impl VolMode {
     }
 }
 
+impl AsRef<str> for VolMode {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
 impl fmt::Display for VolMode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.as_str().fmt(f)

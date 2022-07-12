@@ -41,6 +41,12 @@ impl fmt::Display for CheckSum {
     }
 }
 
+impl AsRef<str> for CheckSum {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
 impl str::FromStr for CheckSum {
     type Err = error::InvalidProperty;
 

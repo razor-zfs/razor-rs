@@ -22,6 +22,12 @@ impl OnOffNoAuto {
     }
 }
 
+impl AsRef<str> for OnOffNoAuto {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
 impl fmt::Display for OnOffNoAuto {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.as_str().fmt(f)

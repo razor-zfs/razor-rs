@@ -76,7 +76,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(ATIME.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(ATIME.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -87,7 +87,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(CANMOUNT.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(CANMOUNT.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -97,7 +97,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     #[must_use]
     pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
-        if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -108,7 +108,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(DEVICES.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(DEVICES.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -118,7 +118,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     #[must_use]
     pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
-        if let Err(err) = self.nvl.add_string(NBMAND.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(NBMAND.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -129,7 +129,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(OVERLAY.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(OVERLAY.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -140,7 +140,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(READONLY.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(READONLY.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -151,7 +151,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(RELATIME.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(RELATIME.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -162,7 +162,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(SETUID.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(SETUID.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -173,7 +173,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(VSCAN.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(VSCAN.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -184,7 +184,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(ZONED.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(ZONED.as_ref(), value) {
             self.err = Some(err.into());
         }
 
@@ -206,7 +206,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
     pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvl.add_string(EXEC.as_ref(), value.as_str()) {
+        if let Err(err) = self.nvl.add_string(EXEC.as_ref(), value) {
             self.err = Some(err.into());
         }
 

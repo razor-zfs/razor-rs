@@ -20,6 +20,12 @@ impl OnOff {
     }
 }
 
+impl AsRef<str> for OnOff {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
 impl fmt::Display for OnOff {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.as_str().fmt(f)
