@@ -26,6 +26,12 @@ impl ZfsError {
         self.error == sys::zfs_error::EZFS_SUCCESS
     }
 
+    pub fn from_libzfs_errno() -> Self {
+        let error = unsafe { libzfs_errno() };
+        let error = translate_zfs_error(error);
+        Self { error }
+    }
+
     pub fn result<T, U>(self, ok: T) -> Result<T, U>
     where
         U: From<Self>,

@@ -23,12 +23,11 @@ impl ZfsHandle {
     pub fn new(name: ffi::CString) -> Result<Self> {
         let handle = unsafe { libzfs::zfs_open(name.as_ptr()) };
 
-        if handle.is_null() {
-            let error = unsafe { libzfs::libzfs_errno() };
-            Err(ZfsError::from(libzfs::translate_zfs_error(error)))?;
+        if !handle.is_null() {
+            Ok(Self { handle })
+        } else {
+            Err(ZfsError::from_libzfs_errno())?
         }
-
-        Ok(Self { handle })
     }
 
     pub fn name(&self) -> Cow<'_, str> {
