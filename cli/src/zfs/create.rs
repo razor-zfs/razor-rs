@@ -1,17 +1,49 @@
 use super::*;
 
-#[derive(Debug, Parser)]
+#[derive(Debug, clap::Args)]
 pub struct Create {
-    #[clap(short = 'V', help = "Volume size; if specified ZVOL will be created")]
+    /// Volume size; if specified ZVOL will be created
+    #[clap(short = 'V')]
     volsize: Option<u64>,
-    #[clap(short = 'o')]
-    properties: Vec<String>,
-    #[clap(help = "Name of the dataset to create")]
+
+    /// Volume block size (equivalent to -o volblocksize=<value>)
+    #[clap(short = 'b', requires = "volsize")]
+    volblocksize: Option<u64>,
+
+    /// Create a sparse volume with no reservation
+    #[clap(short, requires = "volsize")]
+    sparse: bool,
+
+    /// Dataset property in property=value format
+    #[clap(
+        short = 'o',
+        // number_of_values = 2,
+        // value_names = &["property", "value"],
+        // value_delimiter = '=',
+        // require_value_delimiter = true,
+        value_parser = key_value::parse::<String, String>,
+    )]
+    properties: Vec<(String, String)>,
+
+    /// Create all the non-existing parent datasets
+    #[clap(short)]
+    parent: bool,
+
+    /// Do a dry-run creation
+    #[clap(short = 'n')]
+    dry_run: bool,
+
+    /// Print verbose information about created dataset
+    #[clap(short)]
+    verbose: bool,
+
+    /// Name of the dataset to create
     dataset: String,
 }
 
 impl Create {
     pub fn exec(self) -> anyhow::Result<String> {
+        println!("{self:?}");
         let text = if let Some(volsize) = self.volsize {
             format!("Creating volume {} with size {}", self.dataset, volsize)
         } else {

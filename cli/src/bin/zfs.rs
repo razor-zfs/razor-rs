@@ -20,8 +20,9 @@ use cli::zfs::Create;
 
 #[derive(Debug, Parser)]
 enum Command {
-    #[clap(help = "Version of various ZFS components")]
+    /// Version of various ZFS components
     Version,
+    /// Create new ZFS dataset
     Create {
         #[clap(flatten)]
         create: Create,

@@ -15,5 +15,6 @@
 
 use clap::Parser;
 
+pub mod key_value;
 pub mod zfs;
 pub mod zpool;
