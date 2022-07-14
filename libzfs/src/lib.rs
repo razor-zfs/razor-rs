@@ -29,12 +29,10 @@ pub use sys::zfs_error_t;
 pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
 
-pub use error::ZfsError;
 pub use version::Version;
 
 use handle::LIBZFS_HANDLE;
 
-mod error;
 mod handle;
 mod version;
 
@@ -160,17 +158,4 @@ pub unsafe fn zfs_iter_snapshots(
 
 pub fn zfs_version() -> Version {
     LIBZFS_HANDLE.version().clone()
-}
-
-pub fn translate_zfs_error(code: i32) -> zfs_error_t {
-    let code = code as u32;
-    if code == zfs_error::EZFS_SUCCESS {
-        code
-    } else if code < zfs_error::EZFS_NOMEM {
-        zfs_error::EZFS_UNKNOWN
-    } else if code < zfs_error::EZFS_UNKNOWN {
-        code
-    } else {
-        zfs_error::EZFS_UNKNOWN
-    }
 }

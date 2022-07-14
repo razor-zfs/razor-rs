@@ -1,11 +1,8 @@
 use std::io;
 
-use razor_libzfs as libzfs;
-
 use thiserror::Error;
 
-use super::InvalidProperty;
-use super::NvListError;
+use super::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Error)]
 pub enum DatasetError {
@@ -43,5 +40,5 @@ impl From<io::Error> for DatasetError {
 }
 
 pub(crate) fn value_or_err<T>(value: T, rc: i32) -> Result<T, DatasetError> {
-    libzfs::ZfsError::from(libzfs::translate_zfs_error(rc)).result(value)
+    libzfs::ZfsError::from_rc(rc).result(value)
 }

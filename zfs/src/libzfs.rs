@@ -4,13 +4,14 @@ use std::ffi;
 use razor_libzfs as libzfs;
 
 pub use libzfs::zfs_prop_t;
-pub use libzfs::ZfsError;
 
 use super::*;
 
 pub use self::collector::DatasetCollectorBuilder;
+pub use self::error::ZfsError;
 
 mod collector;
+mod error;
 
 #[derive(Debug)]
 pub struct ZfsHandle {
@@ -108,4 +109,15 @@ pub fn zfs_prop_to_name(property: zfs_prop_t) -> Cow<'static, str> {
         let cstr = libzfs::zfs_prop_to_name(property);
         ffi::CStr::from_ptr(cstr).to_string_lossy()
     }
+}
+
+pub fn libzfs_error_description() -> Cow<'static, str> {
+    unsafe {
+        let cstr = libzfs::libzfs_error_description();
+        ffi::CStr::from_ptr(cstr).to_string_lossy()
+    }
+}
+
+pub fn libzfs_errno() -> i32 {
+    unsafe { libzfs::libzfs_errno() }
 }
