@@ -44,9 +44,11 @@ pub struct Create {
 impl Create {
     pub fn exec(self) -> anyhow::Result<String> {
         println!("{self:?}");
-        let text = if let Some(volsize) = self.volsize {
-            format!("Creating volume {} with size {}", self.dataset, volsize)
+        let text = if let Some(size) = self.volsize {
+            zfs::Zfs::volume().create(&self.dataset, size)?;
+            format!("Creating volume {} with size {}", self.dataset, size)
         } else {
+            zfs::Zfs::filesystem().create(&self.dataset)?;
             format!("Creating filesystem {}", self.dataset)
         };
         Ok(text)
