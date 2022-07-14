@@ -1,6 +1,6 @@
 [package]
 name = "razor-property"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 description = "High-level ZFS properties"
 repository = "https://github.com/razor-zfs/razor-rs"
