@@ -492,7 +492,7 @@ dependencies = [
 
 [[package]]
 name = "razor-cli"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -501,7 +501,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libnvpair"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "libc",
  "razor-libnvpair-sys",
@@ -510,7 +510,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libnvpair-sys"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "bindgen",
  "libc",
@@ -519,7 +519,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libzfs"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "libc",
  "once_cell",
@@ -529,7 +529,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libzfs-sys"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "bindgen",
  "libc",
@@ -539,7 +539,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libzfscore"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "libc",
  "once_cell",
@@ -549,7 +549,7 @@ dependencies = [
 
 [[package]]
 name = "razor-libzfscore-sys"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "bindgen",
  "libc",
@@ -559,7 +559,7 @@ dependencies = [
 
 [[package]]
 name = "razor-nvpair"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "libc",
  "razor-libnvpair",
@@ -568,7 +568,7 @@ dependencies = [
 
 [[package]]
 name = "razor-property"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "serde",
  "thiserror",
@@ -577,7 +577,7 @@ dependencies = [
 
 [[package]]
 name = "razor-zfs"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "libc",
  "log",

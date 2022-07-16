@@ -1,6 +1,6 @@
 [package]
 name = "razor-cli"
-version = "0.9.0"
+version = "0.10.0"
 edition = "2021"
 description = "ZFS cli tools"
 repository = "https://github.com/razor-zfs/razor-rs"
@@ -16,4 +16,4 @@ publish = false
 anyhow = "1.0"
 clap = { version = "3.2", features = ["cargo", "derive"] }
 
-razor-zfs = { version = "0.9", path = "../zfs" }
+razor-zfs = { version = "0.10", path = "../zfs" }
