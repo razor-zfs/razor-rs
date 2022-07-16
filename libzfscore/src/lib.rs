@@ -23,7 +23,6 @@ use razor_libzfscore_sys as sys;
 
 pub use sys::lzc_dataset_type;
 pub use sys::lzc_send_flags;
-pub use sys::zfs_type_t;
 
 mod lzc;
 

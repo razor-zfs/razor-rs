@@ -525,7 +525,6 @@ dependencies = [
  "once_cell",
  "razor-libnvpair",
  "razor-libzfs-sys",
- "razor-libzfscore",
 ]
 
 [[package]]
@@ -536,7 +535,6 @@ dependencies = [
  "libc",
  "pkg-config",
  "razor-libnvpair",
- "razor-libzfscore",
 ]
 
 [[package]]

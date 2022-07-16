@@ -21,13 +21,14 @@ use std::ptr;
 use once_cell::sync::Lazy;
 use razor_libnvpair as libnvpair;
 use razor_libzfs_sys as sys;
-use razor_libzfscore as lzc;
 
-pub use lzc::zfs_type_t;
 pub use sys::zfs_error;
 pub use sys::zfs_error_t;
 pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
+pub use sys::zfs_type_t;
+pub use sys::zfs_userquota_prop_t;
+pub use sys::zpool_prop_t;
 
 pub use version::Version;
 

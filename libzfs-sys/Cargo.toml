@@ -17,7 +17,6 @@ rust-version = "1.62"
 libc = "0.2"
 
 razor-libnvpair = { version = "0.8", path = "../libnvpair" }
-razor-libzfscore = { version = "0.8", path = "../libzfscore" }
 
 
 [build-dependencies]
