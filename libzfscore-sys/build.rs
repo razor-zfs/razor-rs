@@ -27,6 +27,7 @@ fn main() {
         .size_t_is_usize(true)
         .ctypes_prefix("libc")
         .allowlist_type("zfs_prop_t")
+        .allowlist_type("zfs_userquota_prop_t")
         .allowlist_type("zfs_type_t")
         .bitfield_enum("zfs_type_t")
         .bitfield_enum("lzc_send_flags")
