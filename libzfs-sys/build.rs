@@ -40,6 +40,8 @@ fn main() {
         .allowlist_function(r#"libzfs_\w*"#)
         .allowlist_function(r#"zpool_\w*"#)
         .allowlist_function(r#"zfs_\w*"#)
+        .allowlist_var(r#"ZPOOL_CONFIG_\w*"#)
+        .allowlist_var(r#"ZPOOL_LOAD_\w*"#)
         .allowlist_var("ZFS_MAXPROPLEN")
         .allowlist_var("ZPOOL_MAXPROPLEN")
         .blocklist_item("boolean_t")
