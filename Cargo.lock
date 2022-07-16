@@ -511,6 +511,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "razor-libzpool-sys"
+version = "0.12.0"
+dependencies = [
+ "bindgen",
+ "libc",
+ "pkg-config",
+ "razor-libnvpair",
+ "razor-libzfscore",
+]
+
+[[package]]
 name = "razor-nvpair"
 version = "0.12.0"
 dependencies = [

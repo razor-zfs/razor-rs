@@ -1,0 +1,27 @@
+[package]
+name = "razor-libzpool-sys"
+version = "0.12.0"
+edition = "2021"
+description = "libzpool FFI bindings"
+repository = "https://github.com/razor-zfs/razor-rs"
+readme = "../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["zfs"]
+categories = ["api-bindings", "external-ffi-bindings"]
+links = "zpool"
+build = "build.rs"
+rust-version = "1.62"
+
+publish = false
+
+
+[dependencies]
+libc = "0.2"
+
+razor-libnvpair = { version = "0.12", path = "../libnvpair" }
+razor-libzfscore = { version = "0.12", path = "../libzfscore" }
+
+
+[build-dependencies]
+bindgen = "0.60"
+pkg-config = "0.3"
