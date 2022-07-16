@@ -37,9 +37,10 @@ fn main() {
         .blocklist_function("dump_nvlist")
         .blocklist_item(r#"nvlist_prt\w*"#)
         .blocklist_type("regex_t")
+        .blocklist_type("reg_syntax_t")
         .blocklist_type("re_pattern_buffer")
         .blocklist_type("FILE")
-        .blocklist_type("_IO_FILE")
+        .blocklist_item(r#"_IO_\w*"#)
         .generate()
         .expect("Unable to generate bindings");
 
