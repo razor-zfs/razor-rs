@@ -38,6 +38,8 @@ fn main() {
         .blocklist_item(r#"nvlist_prt\w*"#)
         .blocklist_type("regex_t")
         .blocklist_type("re_pattern_buffer")
+        .blocklist_type("FILE")
+        .blocklist_type("_IO_FILE")
         .generate()
         .expect("Unable to generate bindings");
 
