@@ -119,7 +119,8 @@ impl Volume {
     }
 
     pub fn snapshot(&self, name: impl AsRef<str>) -> Result<()> {
-        lzc::snapshot(format!("{}@{}", self.name(), name.as_ref()))?;
+        let snapshot = format!("{}@{}", self.name(), name.as_ref());
+        lzc::snapshot(snapshot, None)?;
         Ok(())
     }
 

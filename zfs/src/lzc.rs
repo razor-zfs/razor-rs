@@ -1,3 +1,5 @@
+//! High level safe wrappers on top of libzfs_core (lzc)
+//!
 use std::ffi;
 use std::os::unix::io::AsRawFd;
 use std::ptr;
@@ -28,7 +30,11 @@ fn create_dataset(
     value_or_err((), rc)
 }
 
-pub fn snapshot(snapshot: impl AsRef<str>) -> Result<()> {
+/// Create new ZFS snapshot, with optional properties
+pub fn snapshot(snapshot: impl AsRef<str>, props: impl Into<Option<nvpair::NvList>>) -> Result<()> {
+    if let Some(_props) = props.into() {
+        todo!("snapshot with props not supported yet")
+    }
     snapshots_impl([snapshot])
 }
 
@@ -72,7 +78,6 @@ pub fn dataset_exists(name: impl AsRef<str>) -> bool {
 pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
     let name = cstring(name)?;
     let rc = unsafe { lzc::lzc_destroy(name.as_ptr()) };
-
     value_or_err((), rc)
 }
 
