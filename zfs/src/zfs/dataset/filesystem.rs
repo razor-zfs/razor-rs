@@ -213,7 +213,7 @@ impl<'a, T> FilesytemSetter<'a, T> {
         self
     }
 
-    pub fn add(self) -> Result<()> {
+    pub fn commit(self) -> Result<()> {
         self.dataset_handler.set_properties(self.nvl)?;
         Ok(())
     }
