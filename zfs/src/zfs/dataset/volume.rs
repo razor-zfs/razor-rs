@@ -103,7 +103,7 @@ impl<'a> VolumeSetter<'a> {
         self
     }
 
-    pub fn add(self) -> Result<()> {
+    pub fn commit(self) -> Result<()> {
         self.volume.dataset.set_properties(self.nvl)?;
         Ok(())
     }

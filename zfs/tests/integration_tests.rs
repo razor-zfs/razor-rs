@@ -107,7 +107,7 @@ fn set_properties_filesystem() {
         .relatime(property::OnOff::On)
         .setuid(property::OnOff::On)
         .zoned(property::OnOff::On)
-        .add()
+        .commit()
         .unwrap();
     assert_eq!(property::OnOffNoAuto::On, filesystem.canmount());
     assert_eq!(property::CheckSum::On, filesystem.checksum());
@@ -144,7 +144,7 @@ fn set_properties_volume() {
         .set()
         .checksum(property::CheckSum::On)
         .compression(property::Compression::On)
-        .add()
+        .commit()
         .unwrap();
     assert_eq!(property::CheckSum::On, filesystem.checksum());
     assert_eq!(property::Compression::On, filesystem.compression());
