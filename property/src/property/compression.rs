@@ -56,6 +56,12 @@ impl fmt::Display for Compression {
     }
 }
 
+impl AsRef<str> for Compression {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
 impl str::FromStr for Compression {
     type Err = error::InvalidProperty;
 

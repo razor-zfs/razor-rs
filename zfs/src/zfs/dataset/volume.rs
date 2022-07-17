@@ -44,74 +44,64 @@ pub struct Volume {
 }
 
 #[derive(Debug)]
-pub struct VolumeSetter<'a> {
+pub struct VolumePropsSetter<'a> {
     volume: &'a Volume,
-    nvl: nvpair::NvList,
-    err: Option<DatasetError>,
+    props: nvpair::NvList,
 }
 
-impl<'a> VolumeSetter<'a> {
+impl<'a> VolumePropsSetter<'a> {
     pub fn new(volume: &'a Volume) -> Self {
         Self {
             volume,
-            nvl: nvpair::NvList::new(),
-            err: None,
+            props: nvpair::NvList::new(),
         }
     }
 
     #[must_use]
-    pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value) {
-            self.err = Some(err.into());
-        }
+    pub fn checksum(mut self, value: impl Into<property::CheckSum>) -> Self {
+        self.props += (
+            libzfs::zfs_prop_to_name(ZFS_PROP_CHECKSUM).as_ref(),
+            value.into().as_ref(),
+        );
 
         self
     }
 
     #[must_use]
-    pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(COMPRESSION.as_ref(), value.as_str()) {
-            self.err = Some(err.into());
-        }
+    pub fn compression(mut self, value: impl Into<property::Compression>) -> Self {
+        self.props += (
+            libzfs::zfs_prop_to_name(ZFS_PROP_COMPRESSION).as_ref(),
+            value.into().as_ref(),
+        );
 
         self
     }
 
     #[must_use]
     pub fn blocksize(mut self, v: u64) -> Self {
-        let value = v;
-
-        if let Err(err) = self.nvl.add_uint64(VOLBLOCKSIZE.as_ref(), value) {
-            self.err = Some(err.into());
-        }
+        self.props += (libzfs::zfs_prop_to_name(ZFS_PROP_VOLBLOCKSIZE).as_ref(), v);
 
         self
     }
 
     #[must_use]
-    pub fn volmode(mut self, v: impl Into<property::VolMode>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_uint64(VOLMODE.as_ref(), value.into()) {
-            self.err = Some(err.into());
-        }
+    pub fn volmode(mut self, value: impl Into<property::VolMode>) -> Self {
+        self.props += (
+            libzfs::zfs_prop_to_name(ZFS_PROP_VOLMODE).as_ref(),
+            value.into().as_ref(),
+        );
 
         self
     }
 
     pub fn commit(self) -> Result<()> {
-        self.volume.dataset.set_properties(self.nvl)?;
-        Ok(())
+        self.volume.dataset.set_properties(self.props)
     }
 }
 
 impl Volume {
-    pub fn set(&self) -> VolumeSetter<'_> {
-        VolumeSetter::new(self)
+    pub fn set(&self) -> VolumePropsSetter<'_> {
+        VolumePropsSetter::new(self)
     }
 
     pub fn destroy(self) -> Result<()> {
