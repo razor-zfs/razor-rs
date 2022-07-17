@@ -131,6 +131,11 @@ pub unsafe fn zfs_prop_default_numeric(property: sys::zfs_prop_t) -> u64 {
     sys::zfs_prop_default_numeric(property)
 }
 
+pub unsafe fn zfs_refresh_properties(dataset_handle: *mut sys::zfs_handle_t) {
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zfs_refresh_properties(dataset_handle)
+}
+
 pub unsafe fn zfs_iter_root(callback: sys::zfs_iter_f, ptr: *mut libc::c_void) {
     sys::zfs_iter_root(LIBZFS_HANDLE.handle(), callback, ptr);
 }

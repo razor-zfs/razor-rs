@@ -76,8 +76,11 @@ impl ZfsHandle {
         }
     }
 
-    pub fn set_properties(&self, nvl: nvpair::NvList) -> Result<()> {
-        value_or_err((), unsafe { libzfs::zfs_prop_set_list(self.handle, *nvl) })
+    pub fn set_properties(&mut self, nvl: nvpair::NvList) -> Result<()> {
+        let rc = unsafe { libzfs::zfs_prop_set_list(self.handle, *nvl) };
+        value_or_err((), rc)?;
+        unsafe { libzfs::zfs_refresh_properties(self.handle) };
+        Ok(())
     }
 }
 

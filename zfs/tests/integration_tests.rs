@@ -28,7 +28,7 @@ impl TestNamespace {
             ])
             .output()
             .expect("failed to execute process");
-        let namespace = format!("dpool/{}", nanoid!());
+        let namespace = format!("rpool/{}", nanoid!());
         let namespace = Zfs::filesystem().create(&namespace).unwrap();
         Self { namespace }
     }
@@ -61,7 +61,7 @@ fn set_properties_filesystem() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "set_filesystem");
     dbg!("requesting to create filesystem");
-    let filesystem = Zfs::filesystem()
+    let mut filesystem = Zfs::filesystem()
         .canmount(property::OnOffNoAuto::Off)
         .checksum(property::CheckSum::Off)
         .readonly(property::OnOff::Off)
@@ -130,24 +130,24 @@ fn set_properties_volume() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "set_volume");
     dbg!("requesting to create volume");
-    let filesystem = Zfs::volume()
+    let mut volume = Zfs::volume()
         .checksum(property::CheckSum::Off)
         .compression(property::Compression::Off)
         .volmode(property::VolMode::None)
         .create(&name, 128 * 1024)
         .unwrap();
-    dbg!("filesystem created");
-    assert_eq!(property::CheckSum::Off, filesystem.checksum());
-    assert_eq!(property::Compression::Off, filesystem.compression());
+    dbg!("volume created");
+    assert_eq!(property::CheckSum::Off, volume.checksum());
+    assert_eq!(property::Compression::Off, volume.compression());
     dbg!("passed creation test");
-    filesystem
+    volume
         .set()
         .checksum(property::CheckSum::On)
         .compression(property::Compression::On)
         .commit()
         .unwrap();
-    assert_eq!(property::CheckSum::On, filesystem.checksum());
-    assert_eq!(property::Compression::On, filesystem.compression());
+    assert_eq!(property::CheckSum::On, volume.checksum());
+    assert_eq!(property::Compression::On, volume.compression());
 }
 
 #[test]

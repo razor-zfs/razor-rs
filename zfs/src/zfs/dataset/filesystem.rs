@@ -1,5 +1,4 @@
 use std::borrow::Cow;
-use std::marker::PhantomData;
 
 use once_cell::sync::Lazy;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
@@ -55,18 +54,16 @@ pub struct Filesystem {
 }
 
 #[derive(Debug)]
-pub struct FilesytemSetter<'a, T> {
-    dataset_handler: &'a libzfs::ZfsHandle,
-    anchor: PhantomData<&'a T>,
+pub struct FilesytemPropsSetter<'a> {
+    filesystem: &'a mut Filesystem,
     nvl: nvpair::NvList,
     err: Option<DatasetError>,
 }
 
-impl<'a, T> FilesytemSetter<'a, T> {
-    pub fn new(dataset_handler: &'a libzfs::ZfsHandle, _anchor: &'a T) -> Self {
+impl<'a> FilesytemPropsSetter<'a> {
+    pub fn new(filesystem: &'a mut Filesystem) -> Self {
         Self {
-            dataset_handler,
-            anchor: PhantomData,
+            filesystem,
             nvl: nvpair::NvList::new(),
             err: None,
         }
@@ -214,14 +211,14 @@ impl<'a, T> FilesytemSetter<'a, T> {
     }
 
     pub fn commit(self) -> Result<()> {
-        self.dataset_handler.set_properties(self.nvl)?;
+        self.filesystem.dataset.set_properties(self.nvl)?;
         Ok(())
     }
 }
 
 impl Filesystem {
-    pub fn set(&self) -> FilesytemSetter<'_, Self> {
-        FilesytemSetter::new(&self.dataset, self)
+    pub fn set(&mut self) -> FilesytemPropsSetter<'_> {
+        FilesytemPropsSetter::new(self)
     }
 
     pub fn destroy(&self) -> Result<()> {

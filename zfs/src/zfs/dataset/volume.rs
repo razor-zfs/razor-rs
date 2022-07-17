@@ -45,12 +45,12 @@ pub struct Volume {
 
 #[derive(Debug)]
 pub struct VolumePropsSetter<'a> {
-    volume: &'a Volume,
+    volume: &'a mut Volume,
     props: nvpair::NvList,
 }
 
 impl<'a> VolumePropsSetter<'a> {
-    pub fn new(volume: &'a Volume) -> Self {
+    pub fn new(volume: &'a mut Volume) -> Self {
         Self {
             volume,
             props: nvpair::NvList::new(),
@@ -100,7 +100,7 @@ impl<'a> VolumePropsSetter<'a> {
 }
 
 impl Volume {
-    pub fn set(&self) -> VolumePropsSetter<'_> {
+    pub fn set(&mut self) -> VolumePropsSetter<'_> {
         VolumePropsSetter::new(self)
     }
 
