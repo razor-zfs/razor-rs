@@ -167,7 +167,7 @@ impl Volume {
 
     #[inline]
     pub fn volmode(&self) -> property::VolMode {
-        self.dataset.numeric_property(ZFS_PROP_COMPRESSION).into()
+        self.dataset.numeric_property(ZFS_PROP_VOLMODE).into()
     }
 
     #[inline]
