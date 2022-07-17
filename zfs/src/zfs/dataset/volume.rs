@@ -239,18 +239,18 @@ impl Serialize for Volume {
 
 #[derive(Debug)]
 pub struct VolumeBuilder {
-    nvlist: nvpair::NvList,
+    props: nvpair::NvList,
     volblocksize: u64,
     err: Option<DatasetError>,
 }
 
 impl VolumeBuilder {
     pub fn new() -> Self {
-        let nvlist = nvpair::NvList::new();
+        let props = nvpair::NvList::new();
         let volblocksize = Self::calculate_default_volblocksize();
 
         Self {
-            nvlist,
+            props,
             volblocksize,
             err: None,
         }
@@ -267,18 +267,19 @@ impl VolumeBuilder {
             (num != 0) && ((num & (num - 1)) == 0)
         }
 
-        let cname = CString::new(name.as_ref())?;
-
         if let Some(err) = self.err {
             return Err(err);
         }
 
-        self.nvlist.add_uint64(VOLSIZE.as_ref(), size)?;
+        let name = name.as_ref();
+        let cname = CString::new(name)?;
+
+        self.props.add_uint64(VOLSIZE.as_ref(), size)?;
         // TODO: check if volblocksize is power of 2 and between 512 and 128000
-        self.nvlist
+        self.props
             .add_uint64(VOLBLOCKSIZE.as_ref(), self.volblocksize)?;
 
-        lzc::create_volume(name.as_ref(), self.nvlist)?;
+        lzc::create_volume(name, self.props)?;
 
         let dataset = libzfs::ZfsHandle::new(cname)?;
         let volume = Volume { dataset };
@@ -290,7 +291,7 @@ impl VolumeBuilder {
     pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_uint64(CHECKSUM.as_ref(), u64::from(value)) {
+        if let Err(err) = self.props.add_uint64(CHECKSUM.as_ref(), u64::from(value)) {
             self.err = Some(err.into());
         }
 
@@ -302,7 +303,7 @@ impl VolumeBuilder {
         let value = v.into();
 
         if let Err(err) = self
-            .nvlist
+            .props
             .add_uint64(COMPRESSION.as_ref(), u64::from(value))
         {
             self.err = Some(err.into());
@@ -326,7 +327,7 @@ impl VolumeBuilder {
     pub fn volmode(mut self, v: impl Into<property::VolMode>) -> Self {
         let value = v.into();
 
-        if let Err(err) = self.nvlist.add_uint64(VOLMODE.as_ref(), value.into()) {
+        if let Err(err) = self.props.add_uint64(VOLMODE.as_ref(), value.into()) {
             self.err = Some(err.into());
         }
 

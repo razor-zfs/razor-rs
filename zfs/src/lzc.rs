@@ -6,22 +6,25 @@ use razor_libzfscore as lzc;
 
 use super::*;
 
-pub fn create_filesystem(name: impl AsRef<str>, nvl: nvpair::NvList) -> Result<()> {
-    create_dataset(name, lzc::lzc_dataset_type::LZC_DATSET_TYPE_ZFS, nvl)
+/// Create new ZFS filesystem
+///
+pub fn create_filesystem(name: impl AsRef<str>, props: nvpair::NvList) -> Result<()> {
+    create_dataset(name, lzc::lzc_dataset_type::LZC_DATSET_TYPE_ZFS, props)
 }
 
-pub fn create_volume(name: impl AsRef<str>, nvl: nvpair::NvList) -> Result<()> {
-    create_dataset(name, lzc::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL, nvl)
+/// Create new ZFS volume
+///
+pub fn create_volume(name: impl AsRef<str>, props: nvpair::NvList) -> Result<()> {
+    create_dataset(name, lzc::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL, props)
 }
 
 fn create_dataset(
     name: impl AsRef<str>,
     dataset_type: lzc::lzc_dataset_type,
-    nvl: nvpair::NvList,
+    props: nvpair::NvList,
 ) -> Result<()> {
     let cname = cstring(name)?;
-    let rc = unsafe { lzc::lzc_create(cname.as_ptr(), dataset_type, *nvl) };
-
+    let rc = unsafe { lzc::lzc_create(cname.as_ptr(), dataset_type, *props) };
     value_or_err((), rc)
 }
 
