@@ -29,6 +29,7 @@ pub use sys::zfs_handle_t;
 pub use sys::zfs_prop_t;
 pub use sys::zfs_type_t;
 pub use sys::zfs_userquota_prop_t;
+pub use sys::zpool_handle_t;
 pub use sys::zpool_prop_t;
 
 pub use version::Version;
@@ -135,6 +136,38 @@ pub unsafe fn zfs_prop_default_numeric(property: sys::zfs_prop_t) -> u64 {
 pub unsafe fn zfs_refresh_properties(dataset_handle: *mut sys::zfs_handle_t) {
     Lazy::force(&LIBZFS_HANDLE);
     sys::zfs_refresh_properties(dataset_handle)
+}
+
+pub unsafe fn zfs_valid_proplist(
+    r#type: zfs_type_t,
+    nvl: *mut libnvpair::nvlist_t,
+    zoned: bool,
+    dataset_handle: *mut sys::zfs_handle_t,
+    zpool_handle: *mut zpool_handle_t,
+    key_params_ok: bool,
+    err_buf: *const libc::c_char,
+) -> *mut libnvpair::nvlist_t {
+    let zoned = zoned.into();
+    let key_params_ok = key_params_ok.into();
+    sys::zfs_valid_proplist(
+        LIBZFS_HANDLE.handle(),
+        r#type,
+        nvl,
+        zoned,
+        dataset_handle,
+        zpool_handle,
+        key_params_ok,
+        err_buf,
+    )
+}
+
+pub unsafe fn zvol_volsize_to_reservation(
+    zpool_handle: *mut zpool_handle_t,
+    volsize: u64,
+    props: *mut libnvpair::nvlist_t,
+) -> u64 {
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zvol_volsize_to_reservation(zpool_handle, volsize, props)
 }
 
 pub unsafe fn zfs_iter_root(callback: sys::zfs_iter_f, ptr: *mut libc::c_void) {
