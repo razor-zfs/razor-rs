@@ -37,6 +37,7 @@ fn main() {
         .allowlist_type("zfs_handle_t")
         .allowlist_type("zpool_handle_t")
         .allowlist_type("libzfs_handle_t")
+        .allowlist_type("zfs_canmount_type_t")
         .allowlist_function(r#"libzfs_\w*"#)
         .allowlist_function(r#"zpool_\w*"#)
         .allowlist_function(r#"zfs_\w*"#)
