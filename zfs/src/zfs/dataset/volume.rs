@@ -1,7 +1,5 @@
-use std::borrow::Cow;
 use std::ffi::CString;
 
-use once_cell::sync::Lazy;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
 use super::*;
@@ -9,34 +7,7 @@ use super::*;
 use crate::error::DatasetError;
 
 use libzfs::zfs_prop_t::*;
-
-static AVAILABLE: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_AVAILABLE));
-static VOLSIZE: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_VOLSIZE));
-static VOLBLOCKSIZE: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_VOLBLOCKSIZE));
-static LOGICALUSED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_LOGICALUSED));
-static CHECKSUM: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CHECKSUM));
-static COMPRESSION: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_COMPRESSION));
-static GUID: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_GUID));
-static CREATION: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CREATION));
-static CREATETXG: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CREATETXG));
-static COMPRESSRATIO: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_COMPRESSRATIO));
-static USED: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_USED));
-static REFERENCED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_REFERENCED));
-static LOGICALREFERENCED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_LOGICALREFERENCED));
-static OBJSETID: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_OBJSETID));
-static VOLMODE: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_VOLMODE));
-static NAME: &str = "name";
+use property::*;
 
 #[derive(Debug)]
 pub struct Volume {
@@ -44,53 +15,36 @@ pub struct Volume {
 }
 
 #[derive(Debug)]
-pub struct VolumePropsSetter<'a> {
+pub struct VolumePropSetter<'a> {
     volume: &'a mut Volume,
-    props: nvpair::NvList,
+    props: Properties,
 }
 
-impl<'a> VolumePropsSetter<'a> {
+impl<'a> VolumePropSetter<'a> {
     pub fn new(volume: &'a mut Volume) -> Self {
         Self {
             volume,
-            props: nvpair::NvList::new(),
+            props: Properties::new(),
         }
     }
 
-    #[must_use]
     pub fn checksum(mut self, value: impl Into<property::CheckSum>) -> Self {
-        self.props += (
-            libzfs::zfs_prop_to_name(ZFS_PROP_CHECKSUM).as_ref(),
-            value.into().as_ref(),
-        );
-
+        self.props.checksum(value);
         self
     }
 
-    #[must_use]
     pub fn compression(mut self, value: impl Into<property::Compression>) -> Self {
-        self.props += (
-            libzfs::zfs_prop_to_name(ZFS_PROP_COMPRESSION).as_ref(),
-            value.into().as_ref(),
-        );
-
+        self.props.compression(value);
         self
     }
 
-    #[must_use]
-    pub fn blocksize(mut self, v: u64) -> Self {
-        self.props += (libzfs::zfs_prop_to_name(ZFS_PROP_VOLBLOCKSIZE).as_ref(), v);
-
+    pub fn blocksize(mut self, value: u64) -> Self {
+        self.props.volblocksize(value);
         self
     }
 
-    #[must_use]
     pub fn volmode(mut self, value: impl Into<property::VolMode>) -> Self {
-        self.props += (
-            libzfs::zfs_prop_to_name(ZFS_PROP_VOLMODE).as_ref(),
-            value.into().as_ref(),
-        );
-
+        self.props.volmode(value);
         self
     }
 
@@ -100,8 +54,8 @@ impl<'a> VolumePropsSetter<'a> {
 }
 
 impl Volume {
-    pub fn set(&mut self) -> VolumePropsSetter<'_> {
-        VolumePropsSetter::new(self)
+    pub fn set(&mut self) -> VolumePropSetter<'_> {
+        VolumePropSetter::new(self)
     }
 
     pub fn destroy(self) -> Result<()> {
@@ -207,22 +161,22 @@ impl Serialize for Volume {
         S: Serializer,
     {
         let mut state = serializer.serialize_struct("Volume", 16)?;
-        state.serialize_field(NAME.as_ref(), &self.name())?;
-        state.serialize_field(AVAILABLE.as_ref(), &self.available())?;
-        state.serialize_field(VOLSIZE.as_ref(), &self.volsize())?;
-        state.serialize_field(VOLBLOCKSIZE.as_ref(), &self.volblocksize())?;
-        state.serialize_field(VOLMODE.as_ref(), &self.volmode())?;
-        state.serialize_field(LOGICALUSED.as_ref(), &self.logicalused())?;
-        state.serialize_field(CHECKSUM.as_ref(), &self.checksum())?;
-        state.serialize_field(COMPRESSION.as_ref(), &self.compression())?;
-        state.serialize_field(GUID.as_ref(), &self.guid())?;
-        state.serialize_field(CREATION.as_ref(), &self.creation())?;
-        state.serialize_field(CREATETXG.as_ref(), &self.createtxg())?;
-        state.serialize_field(COMPRESSRATIO.as_ref(), &self.compressratio())?;
-        state.serialize_field(USED.as_ref(), &self.used())?;
-        state.serialize_field(REFERENCED.as_ref(), &self.referenced())?;
-        state.serialize_field(LOGICALREFERENCED.as_ref(), &self.logicalreferenced())?;
-        state.serialize_field(OBJSETID.as_ref(), &self.objsetid())?;
+        state.serialize_field(&property::NAME, &self.name())?;
+        state.serialize_field(&property::AVAILABLE, &self.available())?;
+        state.serialize_field(&property::VOLSIZE, &self.volsize())?;
+        state.serialize_field(&property::VOLBLOCKSIZE, &self.volblocksize())?;
+        state.serialize_field(&property::VOLMODE, &self.volmode())?;
+        state.serialize_field(&property::LOGICALUSED, &self.logicalused())?;
+        state.serialize_field(&property::CHECKSUM, &self.checksum())?;
+        state.serialize_field(&property::COMPRESSION, &self.compression())?;
+        state.serialize_field(&property::GUID, &self.guid())?;
+        state.serialize_field(&property::CREATION, &self.creation())?;
+        state.serialize_field(&property::CREATETXG, &self.createtxg())?;
+        state.serialize_field(&property::COMPRESSRATIO, &self.compressratio())?;
+        state.serialize_field(&property::USED, &self.used())?;
+        state.serialize_field(&property::REFERENCED, &self.referenced())?;
+        state.serialize_field(&property::LOGICALREFERENCED, &self.logicalreferenced())?;
+        state.serialize_field(&property::OBJSETID, &self.objsetid())?;
 
         state.end()
     }
@@ -230,14 +184,14 @@ impl Serialize for Volume {
 
 #[derive(Debug)]
 pub struct VolumeBuilder {
-    props: nvpair::NvList,
+    props: Properties,
     volblocksize: u64,
     err: Option<DatasetError>,
 }
 
 impl VolumeBuilder {
     pub fn new() -> Self {
-        let props = nvpair::NvList::new();
+        let props = Properties::new();
         let volblocksize = Self::calculate_default_volblocksize();
 
         Self {
@@ -265,12 +219,10 @@ impl VolumeBuilder {
         let name = name.as_ref();
         let cname = CString::new(name)?;
 
-        self.props.add_uint64(VOLSIZE.as_ref(), size)?;
-        // TODO: check if volblocksize is power of 2 and between 512 and 128000
-        self.props
-            .add_uint64(VOLBLOCKSIZE.as_ref(), self.volblocksize)?;
+        self.props.volsize(size);
+        self.props.volblocksize(self.volblocksize);
 
-        lzc::create_volume(name, self.props)?;
+        lzc::create_volume(name, self.props.into())?;
 
         let dataset = libzfs::ZfsHandle::new(cname)?;
         let volume = Volume { dataset };
@@ -278,32 +230,16 @@ impl VolumeBuilder {
         Ok(volume)
     }
 
-    #[must_use]
-    pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.props.add_uint64(CHECKSUM.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn checksum(mut self, value: impl Into<property::CheckSum>) -> Self {
+        self.props.checksum(value);
         self
     }
 
-    #[must_use]
-    pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self
-            .props
-            .add_uint64(COMPRESSION.as_ref(), u64::from(value))
-        {
-            self.err = Some(err.into());
-        }
-
+    pub fn compression(mut self, value: impl Into<property::Compression>) -> Self {
+        self.props.compression(value);
         self
     }
 
-    #[must_use]
     pub fn blocksize(mut self, v: u64) -> Self {
         self.volblocksize = v;
         self
@@ -314,14 +250,13 @@ impl VolumeBuilder {
         8192
     }
 
-    #[must_use]
-    pub fn volmode(mut self, v: impl Into<property::VolMode>) -> Self {
-        let value = v.into();
+    pub fn volmode(mut self, value: impl Into<property::VolMode>) -> Self {
+        self.props.volmode(value);
+        self
+    }
 
-        if let Err(err) = self.props.add_uint64(VOLMODE.as_ref(), value.into()) {
-            self.err = Some(err.into());
-        }
-
+    pub fn property(mut self, property: &str, value: &str) -> Self {
+        self.props.string_property(property, value);
         self
     }
 }

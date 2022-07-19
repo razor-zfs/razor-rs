@@ -1,8 +1,6 @@
 use std::ffi;
 
-// use razor_libzfscore as lzc;
 use razor_nvpair as nvpair;
-use razor_property as property;
 
 use super::*;
 

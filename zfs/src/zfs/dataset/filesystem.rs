@@ -1,52 +1,9 @@
-use std::borrow::Cow;
-
-use once_cell::sync::Lazy;
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
 use super::*;
 
 use libzfs::zfs_prop_t::*;
-
-use crate::error::DatasetError;
-
-static AVAILABLE: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_AVAILABLE));
-static LOGICALUSED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_LOGICALUSED));
-static CHECKSUM: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CHECKSUM));
-static COMPRESSION: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_COMPRESSION));
-static GUID: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_GUID));
-static CREATION: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CREATION));
-static CREATETXG: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CREATETXG));
-static COMPRESSRATIO: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_COMPRESSRATIO));
-static USED: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_USED));
-static REFERENCED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_REFERENCED));
-static LOGICALREFERENCED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_LOGICALREFERENCED));
-static OBJSETID: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_OBJSETID));
-static ATIME: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_ATIME));
-static CANMOUNT: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_CANMOUNT));
-static MOUNTED: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_MOUNTED));
-static DEVICES: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_DEVICES));
-static NBMAND: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_NBMAND));
-static OVERLAY: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_OVERLAY));
-static READONLY: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_READONLY));
-static RELATIME: Lazy<Cow<'static, str>> =
-    Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_RELATIME));
-static SETUID: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_SETUID));
-static VSCAN: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_VSCAN));
-static EXEC: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_EXEC));
-static ZONED: Lazy<Cow<'static, str>> = Lazy::new(|| libzfs::zfs_prop_to_name(ZFS_PROP_ZONED));
-static NAME: &str = "name";
+use property::*;
 
 #[derive(Debug)]
 pub struct Filesystem {
@@ -54,171 +11,93 @@ pub struct Filesystem {
 }
 
 #[derive(Debug)]
-pub struct FilesytemPropsSetter<'a> {
+pub struct FilesytemPropSetter<'a> {
     filesystem: &'a mut Filesystem,
-    nvl: nvpair::NvList,
-    err: Option<DatasetError>,
+    props: Properties,
 }
 
-impl<'a> FilesytemPropsSetter<'a> {
+impl<'a> FilesytemPropSetter<'a> {
     pub fn new(filesystem: &'a mut Filesystem) -> Self {
         Self {
             filesystem,
-            nvl: nvpair::NvList::new(),
-            err: None,
+            props: Properties::new(),
         }
     }
 
-    #[must_use]
-    pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(ATIME.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn atime(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.atime(value);
         self
     }
 
-    #[must_use]
-    pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(CANMOUNT.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn canmount(mut self, value: impl Into<property::CanMount>) -> Self {
+        self.props.canmount(value);
         self
     }
 
-    #[must_use]
-    pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
-        let value = v.into();
-        if let Err(err) = self.nvl.add_string(CHECKSUM.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn checksum(mut self, value: impl Into<property::CheckSum>) -> Self {
+        self.props.checksum(value);
         self
     }
 
-    #[must_use]
-    pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(DEVICES.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn devices(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.devices(value);
         self
     }
 
-    #[must_use]
-    pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-        if let Err(err) = self.nvl.add_string(NBMAND.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn nbmand(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.nbmand(value);
         self
     }
 
-    #[must_use]
-    pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(OVERLAY.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn overlay(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.overlay(value);
         self
     }
 
-    #[must_use]
-    pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(READONLY.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn readonly(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.readonly(value);
         self
     }
 
-    #[must_use]
-    pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(RELATIME.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn relatime(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.relatime(value);
         self
     }
 
-    #[must_use]
-    pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(SETUID.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn setuid(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.setuid(value);
         self
     }
 
-    #[must_use]
-    pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(VSCAN.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn vscan(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.vscan(value);
         self
     }
 
-    #[must_use]
-    pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(ZONED.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn zoned(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.zoned(value);
         self
     }
 
-    #[must_use]
-    pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(COMPRESSION.as_ref(), value.as_str()) {
-            self.err = Some(err.into());
-        }
-
+    pub fn compression(mut self, value: impl Into<property::Compression>) -> Self {
+        self.props.compression(value);
         self
     }
 
-    #[must_use]
-    pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvl.add_string(EXEC.as_ref(), value) {
-            self.err = Some(err.into());
-        }
-
+    pub fn exec(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.exec(value);
         self
     }
 
     pub fn commit(self) -> Result<()> {
-        self.filesystem.dataset.set_properties(self.nvl)?;
+        self.filesystem.dataset.set_properties(self.props)?;
         Ok(())
     }
 }
 
 impl Filesystem {
-    pub fn set(&mut self) -> FilesytemPropsSetter<'_> {
-        FilesytemPropsSetter::new(self)
+    pub fn set(&mut self) -> FilesytemPropSetter<'_> {
+        FilesytemPropSetter::new(self)
     }
 
     pub fn destroy(&self) -> Result<()> {
@@ -310,7 +189,7 @@ impl Filesystem {
     }
 
     #[inline]
-    pub fn canmount(&self) -> property::OnOffNoAuto {
+    pub fn canmount(&self) -> property::CanMount {
         self.dataset.numeric_property(ZFS_PROP_CANMOUNT).into()
     }
 
@@ -417,24 +296,19 @@ impl Serialize for Filesystem {
 
 #[derive(Debug)]
 pub struct FilesystemBuilder {
-    nvlist: nvpair::NvList,
-    err: Option<DatasetError>,
+    props: Properties,
 }
 
 impl FilesystemBuilder {
     pub fn new() -> Self {
-        let nvlist = nvpair::NvList::new();
-        Self { nvlist, err: None }
+        let props = Properties::new();
+        Self { props }
     }
 
     // TODO: should check mount options and mount the FS if needed
     pub fn create(self, name: impl AsRef<str>) -> Result<Filesystem> {
         let cname = ffi::CString::new(name.as_ref())?;
-        if let Some(err) = self.err {
-            return Err(err);
-        }
-
-        lzc::create_filesystem(name.as_ref(), self.nvlist)?;
+        lzc::create_filesystem(name.as_ref(), self.props.into())?;
 
         let dataset = libzfs::ZfsHandle::new(cname)?;
         let filesystem = Filesystem { dataset };
@@ -442,147 +316,68 @@ impl FilesystemBuilder {
         Ok(filesystem)
     }
 
-    #[must_use]
-    pub fn atime(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(ATIME.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn atime(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.atime(value);
         self
     }
 
-    #[must_use]
-    pub fn canmount(mut self, v: impl Into<property::OnOffNoAuto>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(CANMOUNT.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn canmount(mut self, value: impl Into<property::CanMount>) -> Self {
+        self.props.canmount(value);
         self
     }
 
-    #[must_use]
-    pub fn checksum(mut self, v: impl Into<property::CheckSum>) -> Self {
-        let value = v.into();
-        if let Err(err) = self.nvlist.add_uint64(CHECKSUM.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn checksum(mut self, value: impl Into<property::CheckSum>) -> Self {
+        self.props.checksum(value);
         self
     }
 
-    #[must_use]
-    pub fn devices(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(DEVICES.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn devices(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.devices(value);
         self
     }
 
-    #[must_use]
-    pub fn nbmand(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-        if let Err(err) = self.nvlist.add_uint64(NBMAND.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn nbmand(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.nbmand(value);
         self
     }
 
-    #[must_use]
-    pub fn overlay(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(OVERLAY.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn overlay(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.overlay(value);
         self
     }
 
-    #[must_use]
-    pub fn readonly(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(READONLY.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn readonly(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.readonly(value);
         self
     }
 
-    #[must_use]
-    pub fn relatime(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(RELATIME.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn relatime(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.relatime(value);
         self
     }
 
-    #[must_use]
-    pub fn setuid(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(SETUID.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn setuid(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.setuid(value);
         self
     }
 
-    #[must_use]
-    pub fn vscan(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(VSCAN.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn vscan(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.vscan(value);
         self
     }
 
-    #[must_use]
-    pub fn zoned(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(ZONED.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn zoned(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.zoned(value);
         self
     }
 
-    #[must_use]
-    pub fn compression(mut self, v: impl Into<property::Compression>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self
-            .nvlist
-            .add_uint64(COMPRESSION.as_ref(), u64::from(value))
-        {
-            self.err = Some(err.into());
-        }
-
+    pub fn compression(mut self, value: impl Into<property::Compression>) -> Self {
+        self.props.compression(value);
         self
     }
 
-    #[must_use]
-    pub fn exec(mut self, v: impl Into<property::OnOff>) -> Self {
-        let value = v.into();
-
-        if let Err(err) = self.nvlist.add_uint64(EXEC.as_ref(), u64::from(value)) {
-            self.err = Some(err.into());
-        }
-
+    pub fn exec(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.exec(value);
         self
     }
 }
