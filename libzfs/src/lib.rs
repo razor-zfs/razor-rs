@@ -22,6 +22,7 @@ use once_cell::sync::Lazy;
 use razor_libnvpair as libnvpair;
 use razor_libzfs_sys as sys;
 
+pub use sys::zfs_canmount_type_t;
 pub use sys::zfs_error;
 pub use sys::zfs_error_t;
 pub use sys::zfs_handle_t;
