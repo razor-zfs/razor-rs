@@ -9,7 +9,7 @@ pub enum DatasetError {
     #[error("failed to convert string to C string")]
     StringConversionError(#[from] std::ffi::NulError),
     #[error(transparent)]
-    InvalidProperty(#[from] InvalidProperty),
+    InvalidProperty(#[from] zfs::property::InvalidProperty),
     #[error(transparent)]
     NvListError(#[from] NvListError),
     #[error("Snapshot name must contain @ ({0})")]
@@ -22,9 +22,7 @@ pub enum DatasetError {
 
 impl DatasetError {
     pub fn missing_value() -> Self {
-        Self::InvalidProperty(InvalidProperty::InvalidValue(
-            "Value is missing".to_string(),
-        ))
+        zfs::property::InvalidProperty::invalid_value("Value is missing").into()
     }
 
     pub fn invalid_snapshot_name(name: impl AsRef<str>) -> Self {

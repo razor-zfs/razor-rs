@@ -7,12 +7,14 @@ pub use dataset::Snapshot;
 pub use dataset::SnapshotBuilder;
 pub use dataset::Volume;
 pub use dataset::VolumeBuilder;
+pub use property::Properties;
 
 use super::*;
 
 #[cfg(feature = "cmd")]
 mod cmd;
 mod dataset;
+pub mod property;
 
 #[derive(Debug)]
 pub struct Zfs {}

@@ -15,8 +15,6 @@
 
 use razor_nvpair as nvpair;
 
-use razor_property::InvalidProperty;
-
 pub use nvpair::NvListError;
 
 pub use error::DatasetError;

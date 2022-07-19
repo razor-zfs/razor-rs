@@ -8,8 +8,11 @@ use nanoid::nanoid;
 
 // use razor_libzfscore::error::CoreError;
 // use razor_libzfscore::zfs_type_t;
-use razor_property as property;
-use razor_zfs::*;
+use razor_zfs as zfs;
+
+use zfs::zfs::property;
+use zfs::Filesystem;
+use zfs::Zfs;
 
 #[derive(Debug)]
 struct TestNamespace {
@@ -62,7 +65,7 @@ fn set_properties_filesystem() {
     let name = format!("{}/{}", test.namespace.name(), "set_filesystem");
     dbg!("requesting to create filesystem");
     let mut filesystem = Zfs::filesystem()
-        .canmount(property::OnOffNoAuto::Off)
+        .canmount(property::CanMount::Off)
         .checksum(property::CheckSum::Off)
         .readonly(property::OnOff::Off)
         .compression(property::Compression::Off)
@@ -78,7 +81,7 @@ fn set_properties_filesystem() {
         .create(&name)
         .unwrap();
     dbg!("filesystem created");
-    assert_eq!(property::OnOffNoAuto::Off, filesystem.canmount());
+    assert_eq!(property::CanMount::Off, filesystem.canmount());
     assert_eq!(property::CheckSum::Off, filesystem.checksum());
     assert_eq!(property::OnOff::Off, filesystem.readonly());
     assert_eq!(property::Compression::Off, filesystem.compression());
@@ -94,7 +97,7 @@ fn set_properties_filesystem() {
     dbg!("passed creation test");
     filesystem
         .set()
-        .canmount(property::OnOffNoAuto::On)
+        .canmount(property::CanMount::On)
         .checksum(property::CheckSum::On)
         .readonly(property::OnOff::On)
         .compression(property::Compression::On)
@@ -109,7 +112,7 @@ fn set_properties_filesystem() {
         .zoned(property::OnOff::On)
         .commit()
         .unwrap();
-    assert_eq!(property::OnOffNoAuto::On, filesystem.canmount());
+    assert_eq!(property::CanMount::On, filesystem.canmount());
     assert_eq!(property::CheckSum::On, filesystem.checksum());
     assert_eq!(property::OnOff::On, filesystem.readonly());
     assert_eq!(property::Compression::On, filesystem.compression());
@@ -236,12 +239,12 @@ fn filesystem_snapshot() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "fs_snapshot");
     let filesystem = Zfs::filesystem()
-        .canmount(property::OnOffNoAuto::On)
+        .canmount(property::CanMount::On)
         .create(&name)
         .unwrap();
     let name = format!("{}/{}", filesystem.name(), "another_fs_snapshot");
     let _another_filesystem = Zfs::filesystem()
-        .canmount(property::OnOffNoAuto::On)
+        .canmount(property::CanMount::On)
         .create(&name)
         .unwrap();
     filesystem.snapshot("snap1").unwrap();

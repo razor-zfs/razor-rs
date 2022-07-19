@@ -3,6 +3,7 @@ use std::ffi;
 
 use razor_libzfs as libzfs;
 
+pub use libzfs::zfs_canmount_type_t;
 pub use libzfs::zfs_prop_t;
 
 use super::*;
@@ -76,7 +77,8 @@ impl ZfsHandle {
         }
     }
 
-    pub fn set_properties(&mut self, nvl: nvpair::NvList) -> Result<()> {
+    pub fn set_properties(&mut self, nvl: impl Into<nvpair::NvList>) -> Result<()> {
+        let nvl = nvl.into();
         let rc = unsafe { libzfs::zfs_prop_set_list(self.handle, *nvl) };
         value_or_err((), rc)?;
         unsafe { libzfs::zfs_refresh_properties(self.handle) };

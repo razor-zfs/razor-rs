@@ -27,7 +27,7 @@ pub struct Create {
 
     /// Create all the non-existing parent datasets
     #[clap(short)]
-    parent: bool,
+    parents: bool,
 
     /// Do a dry-run creation
     #[clap(short = 'n')]
@@ -45,7 +45,10 @@ impl Create {
     pub fn exec(self) -> anyhow::Result<String> {
         println!("{self:?}");
         let text = if let Some(size) = self.volsize {
-            zfs::Zfs::volume().create(&self.dataset, size)?;
+            self.properties
+                .iter()
+                .fold(zfs::Zfs::volume(), |zvol, (k, v)| zvol.property(k, v))
+                .create(&self.dataset, size)?;
             format!("Creating volume {} with size {}", self.dataset, size)
         } else {
             zfs::Zfs::filesystem().create(&self.dataset)?;
@@ -54,3 +57,17 @@ impl Create {
         Ok(text)
     }
 }
+
+// fn volume_properties(
+//     builder: zfs::VolumeBuilder,
+//     (property, value): (&str, &str),
+// ) -> anyhow::Result<zfs::VolumeBuilder> {
+//     let builder = match property {
+//         "compression" | "compress" => builder.compression(value.parse::<property::Compression>()?),
+//         // "volblocksize" => builder.volblocksize(value.parse::<u64>().unwrap()),
+//         // "sparse" => builder.sparse(value.parse::<bool>().unwrap()),
+//         "checksum" => builder.checksum(value.parse()?),
+//         _ => anyhow::bail!("Unknown property: {}", property),
+//     };
+//     Ok(builder)
+// }
