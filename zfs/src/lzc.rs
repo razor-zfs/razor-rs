@@ -177,6 +177,14 @@ pub fn receive_resumable(
     value_or_err((), rc)
 }
 
+pub fn sync(pool: impl AsRef<str>, force: bool) -> Result<()> {
+    let pool = cstring(pool)?;
+    let mut params = nvpair::NvList::new();
+    params += ("force", force);
+    let rc = unsafe { lzc::lzc_sync(pool.as_ptr(), *params) };
+    value_or_err((), rc)
+}
+
 pub fn zfs_list() -> libzfs::DatasetCollectorBuilder {
     libzfs::DatasetCollectorBuilder::new()
 }
