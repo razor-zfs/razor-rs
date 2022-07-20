@@ -14,45 +14,6 @@ pub struct Volume {
     dataset: libzfs::ZfsHandle,
 }
 
-#[derive(Debug)]
-pub struct VolumePropSetter<'a> {
-    volume: &'a mut Volume,
-    props: Properties,
-}
-
-impl<'a> VolumePropSetter<'a> {
-    pub fn new(volume: &'a mut Volume) -> Self {
-        Self {
-            volume,
-            props: Properties::new(),
-        }
-    }
-
-    pub fn checksum(mut self, value: impl Into<property::CheckSum>) -> Self {
-        self.props.checksum(value);
-        self
-    }
-
-    pub fn compression(mut self, value: impl Into<property::Compression>) -> Self {
-        self.props.compression(value);
-        self
-    }
-
-    pub fn blocksize(mut self, value: u64) -> Self {
-        self.props.volblocksize(value);
-        self
-    }
-
-    pub fn volmode(mut self, value: impl Into<property::VolMode>) -> Self {
-        self.props.volmode(value);
-        self
-    }
-
-    pub fn commit(self) -> Result<()> {
-        self.volume.dataset.set_properties(self.props)
-    }
-}
-
 impl Volume {
     pub fn set(&mut self) -> VolumePropSetter<'_> {
         VolumePropSetter::new(self)
@@ -264,5 +225,44 @@ impl VolumeBuilder {
 impl Default for VolumeBuilder {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[derive(Debug)]
+pub struct VolumePropSetter<'a> {
+    volume: &'a mut Volume,
+    props: Properties,
+}
+
+impl<'a> VolumePropSetter<'a> {
+    pub fn new(volume: &'a mut Volume) -> Self {
+        Self {
+            volume,
+            props: Properties::new(),
+        }
+    }
+
+    pub fn checksum(mut self, value: impl Into<property::CheckSum>) -> Self {
+        self.props.checksum(value);
+        self
+    }
+
+    pub fn compression(mut self, value: impl Into<property::Compression>) -> Self {
+        self.props.compression(value);
+        self
+    }
+
+    pub fn blocksize(mut self, value: u64) -> Self {
+        self.props.volblocksize(value);
+        self
+    }
+
+    pub fn volmode(mut self, value: impl Into<property::VolMode>) -> Self {
+        self.props.volmode(value);
+        self
+    }
+
+    pub fn commit(self) -> Result<()> {
+        self.volume.dataset.set_properties(self.props)
     }
 }
