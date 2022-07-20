@@ -201,6 +201,14 @@ pub unsafe fn zfs_iter_snapshots(
     sys::zfs_iter_snapshots(handle, simple, callback, data, min_txg, max_txg);
 }
 
+pub unsafe fn zfs_create(
+    path: *const libc::c_char,
+    r#type: sys::zfs_type_t,
+    props: *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    sys::zfs_create(LIBZFS_HANDLE.handle(), path, r#type, props)
+}
+
 pub fn zfs_version() -> Version {
     LIBZFS_HANDLE.version().clone()
 }
