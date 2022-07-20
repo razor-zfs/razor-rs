@@ -23,6 +23,8 @@ use razor_libzfscore_sys as sys;
 
 pub use sys::lzc_dataset_type;
 pub use sys::lzc_send_flags;
+#[cfg(feature = "wait")]
+pub use sys::zfs_wait_activity_t;
 
 mod lzc;
 
@@ -169,4 +171,14 @@ pub unsafe fn lzc_sync(
 ) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_sync(pool_name, params, ptr::null_mut())
+}
+
+#[cfg(feature = "wait")]
+pub unsafe fn lzc_wait_fs(
+    name: *const libc::c_char,
+    activity: zfs_wait_activity_t,
+    waited: *mut libnvpair::boolean_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_wait_fs(name, activity, waited)
 }
