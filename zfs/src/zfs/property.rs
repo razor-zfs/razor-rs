@@ -24,48 +24,48 @@ mod onfoff;
 mod volmode;
 mod yesno;
 
-pub static TYPE: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_TYPE));
-pub static CREATION: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_CREATION));
-pub static USED: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_USED));
-pub static AVAILABLE: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_AVAILABLE));
-pub static REFERENCED: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_REFERENCED));
-pub static COMPRESSRATIO: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_COMPRESSRATIO));
-pub static MOUNTED: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_MOUNTED));
-pub static ORIGIN: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_ORIGIN));
-pub static QUOTA: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_QUOTA));
-pub static RESERVATION: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_RESERVATION));
-pub static VOLSIZE: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_VOLSIZE));
-pub static VOLBLOCKSIZE: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_VOLBLOCKSIZE));
-pub static RECORDSIZE: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_RECORDSIZE));
-pub static MOUNTPOINT: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_MOUNTPOINT));
-pub static SHARENFS: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_SHARENFS));
-pub static CHECKSUM: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_CHECKSUM));
-pub static COMPRESSION: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_COMPRESSION));
-pub static ATIME: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_ATIME));
-pub static DEVICES: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_DEVICES));
-pub static EXEC: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_EXEC));
-pub static SETUID: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_SETUID));
-pub static READONLY: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_READONLY));
-pub static ZONED: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_ZONED));
+type PropName = Lazy<Cow<'static, str>>;
 
-pub static CREATETXG: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_CREATETXG));
-pub static NAME: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_NAME));
-pub static CANMOUNT: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_CANMOUNT));
+pub static TYPE: PropName = Lazy::new(|| prop_name(ZFS_PROP_TYPE));
+pub static CREATION: PropName = Lazy::new(|| prop_name(ZFS_PROP_CREATION));
+pub static USED: PropName = Lazy::new(|| prop_name(ZFS_PROP_USED));
+pub static AVAILABLE: PropName = Lazy::new(|| prop_name(ZFS_PROP_AVAILABLE));
+pub static REFERENCED: PropName = Lazy::new(|| prop_name(ZFS_PROP_REFERENCED));
+pub static COMPRESSRATIO: PropName = Lazy::new(|| prop_name(ZFS_PROP_COMPRESSRATIO));
+pub static MOUNTED: PropName = Lazy::new(|| prop_name(ZFS_PROP_MOUNTED));
+pub static ORIGIN: PropName = Lazy::new(|| prop_name(ZFS_PROP_ORIGIN));
+pub static QUOTA: PropName = Lazy::new(|| prop_name(ZFS_PROP_QUOTA));
+pub static RESERVATION: PropName = Lazy::new(|| prop_name(ZFS_PROP_RESERVATION));
+pub static VOLSIZE: PropName = Lazy::new(|| prop_name(ZFS_PROP_VOLSIZE));
+pub static VOLBLOCKSIZE: PropName = Lazy::new(|| prop_name(ZFS_PROP_VOLBLOCKSIZE));
+pub static RECORDSIZE: PropName = Lazy::new(|| prop_name(ZFS_PROP_RECORDSIZE));
+pub static MOUNTPOINT: PropName = Lazy::new(|| prop_name(ZFS_PROP_MOUNTPOINT));
+pub static SHARENFS: PropName = Lazy::new(|| prop_name(ZFS_PROP_SHARENFS));
+pub static CHECKSUM: PropName = Lazy::new(|| prop_name(ZFS_PROP_CHECKSUM));
+pub static COMPRESSION: PropName = Lazy::new(|| prop_name(ZFS_PROP_COMPRESSION));
+pub static ATIME: PropName = Lazy::new(|| prop_name(ZFS_PROP_ATIME));
+pub static DEVICES: PropName = Lazy::new(|| prop_name(ZFS_PROP_DEVICES));
+pub static EXEC: PropName = Lazy::new(|| prop_name(ZFS_PROP_EXEC));
+pub static SETUID: PropName = Lazy::new(|| prop_name(ZFS_PROP_SETUID));
+pub static READONLY: PropName = Lazy::new(|| prop_name(ZFS_PROP_READONLY));
+pub static ZONED: PropName = Lazy::new(|| prop_name(ZFS_PROP_ZONED));
 
-pub static REFRESERVATION: Lazy<Cow<'static, str>> =
-    Lazy::new(|| prop_name(ZFS_PROP_REFRESERVATION));
-pub static GUID: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_GUID));
+pub static CREATETXG: PropName = Lazy::new(|| prop_name(ZFS_PROP_CREATETXG));
+pub static NAME: PropName = Lazy::new(|| prop_name(ZFS_PROP_NAME));
+pub static CANMOUNT: PropName = Lazy::new(|| prop_name(ZFS_PROP_CANMOUNT));
 
-pub static LOGICALUSED: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_LOGICALUSED));
-pub static LOGICALREFERENCED: Lazy<Cow<'static, str>> =
-    Lazy::new(|| prop_name(ZFS_PROP_LOGICALREFERENCED));
-pub static OBJSETID: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_OBJSETID));
-pub static VOLMODE: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_VOLMODE));
+pub static REFRESERVATION: PropName = Lazy::new(|| prop_name(ZFS_PROP_REFRESERVATION));
+pub static GUID: PropName = Lazy::new(|| prop_name(ZFS_PROP_GUID));
 
-pub static NBMAND: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_NBMAND));
-pub static RELATIME: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_RELATIME));
-pub static VSCAN: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_VSCAN));
-pub static OVERLAY: Lazy<Cow<'static, str>> = Lazy::new(|| prop_name(ZFS_PROP_OVERLAY));
+pub static LOGICALUSED: PropName = Lazy::new(|| prop_name(ZFS_PROP_LOGICALUSED));
+pub static LOGICALREFERENCED: PropName = Lazy::new(|| prop_name(ZFS_PROP_LOGICALREFERENCED));
+pub static OBJSETID: PropName = Lazy::new(|| prop_name(ZFS_PROP_OBJSETID));
+pub static VOLMODE: PropName = Lazy::new(|| prop_name(ZFS_PROP_VOLMODE));
+
+pub static NBMAND: PropName = Lazy::new(|| prop_name(ZFS_PROP_NBMAND));
+pub static RELATIME: PropName = Lazy::new(|| prop_name(ZFS_PROP_RELATIME));
+pub static VSCAN: PropName = Lazy::new(|| prop_name(ZFS_PROP_VSCAN));
+pub static OVERLAY: PropName = Lazy::new(|| prop_name(ZFS_PROP_OVERLAY));
 
 #[inline]
 pub fn prop_name(prop: libzfs::zfs_prop_t) -> Cow<'static, str> {
