@@ -10,91 +10,6 @@ pub struct Filesystem {
     dataset: libzfs::ZfsHandle,
 }
 
-#[derive(Debug)]
-pub struct FilesytemPropSetter<'a> {
-    filesystem: &'a mut Filesystem,
-    props: Properties,
-}
-
-impl<'a> FilesytemPropSetter<'a> {
-    pub fn new(filesystem: &'a mut Filesystem) -> Self {
-        Self {
-            filesystem,
-            props: Properties::new(),
-        }
-    }
-
-    pub fn atime(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.atime(value);
-        self
-    }
-
-    pub fn canmount(mut self, value: impl Into<property::CanMount>) -> Self {
-        self.props.canmount(value);
-        self
-    }
-
-    pub fn checksum(mut self, value: impl Into<property::CheckSum>) -> Self {
-        self.props.checksum(value);
-        self
-    }
-
-    pub fn devices(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.devices(value);
-        self
-    }
-
-    pub fn nbmand(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.nbmand(value);
-        self
-    }
-
-    pub fn overlay(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.overlay(value);
-        self
-    }
-
-    pub fn readonly(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.readonly(value);
-        self
-    }
-
-    pub fn relatime(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.relatime(value);
-        self
-    }
-
-    pub fn setuid(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.setuid(value);
-        self
-    }
-
-    pub fn vscan(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.vscan(value);
-        self
-    }
-
-    pub fn zoned(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.zoned(value);
-        self
-    }
-
-    pub fn compression(mut self, value: impl Into<property::Compression>) -> Self {
-        self.props.compression(value);
-        self
-    }
-
-    pub fn exec(mut self, value: impl Into<property::OnOff>) -> Self {
-        self.props.exec(value);
-        self
-    }
-
-    pub fn commit(self) -> Result<()> {
-        self.filesystem.dataset.set_properties(self.props)?;
-        Ok(())
-    }
-}
-
 impl Filesystem {
     pub fn set(&mut self) -> FilesytemPropSetter<'_> {
         FilesytemPropSetter::new(self)
@@ -385,5 +300,90 @@ impl FilesystemBuilder {
 impl Default for FilesystemBuilder {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[derive(Debug)]
+pub struct FilesytemPropSetter<'a> {
+    filesystem: &'a mut Filesystem,
+    props: Properties,
+}
+
+impl<'a> FilesytemPropSetter<'a> {
+    pub fn new(filesystem: &'a mut Filesystem) -> Self {
+        Self {
+            filesystem,
+            props: Properties::new(),
+        }
+    }
+
+    pub fn atime(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.atime(value);
+        self
+    }
+
+    pub fn canmount(mut self, value: impl Into<property::CanMount>) -> Self {
+        self.props.canmount(value);
+        self
+    }
+
+    pub fn checksum(mut self, value: impl Into<property::CheckSum>) -> Self {
+        self.props.checksum(value);
+        self
+    }
+
+    pub fn devices(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.devices(value);
+        self
+    }
+
+    pub fn nbmand(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.nbmand(value);
+        self
+    }
+
+    pub fn overlay(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.overlay(value);
+        self
+    }
+
+    pub fn readonly(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.readonly(value);
+        self
+    }
+
+    pub fn relatime(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.relatime(value);
+        self
+    }
+
+    pub fn setuid(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.setuid(value);
+        self
+    }
+
+    pub fn vscan(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.vscan(value);
+        self
+    }
+
+    pub fn zoned(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.zoned(value);
+        self
+    }
+
+    pub fn compression(mut self, value: impl Into<property::Compression>) -> Self {
+        self.props.compression(value);
+        self
+    }
+
+    pub fn exec(mut self, value: impl Into<property::OnOff>) -> Self {
+        self.props.exec(value);
+        self
+    }
+
+    pub fn commit(self) -> Result<()> {
+        self.filesystem.dataset.set_properties(self.props)?;
+        Ok(())
     }
 }
