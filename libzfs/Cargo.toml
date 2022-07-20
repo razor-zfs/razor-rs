@@ -1,6 +1,6 @@
 [package]
 name = "razor-libzfs"
-version = "0.10.0"
+version = "0.10.1"
 edition = "2021"
 description = "Low-level libzfs interface"
 repository = "https://github.com/razor-zfs/razor-rs"
