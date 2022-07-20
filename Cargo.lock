@@ -527,6 +527,7 @@ dependencies = [
 name = "razor-zfs"
 version = "0.10.1"
 dependencies = [
+ "anyhow",
  "libc",
  "log",
  "nanoid",
@@ -535,6 +536,7 @@ dependencies = [
  "rand",
  "razor-libzfs",
  "razor-libzfscore",
+ "razor-lzc",
  "razor-nvpair",
  "serde",
  "serde_json",

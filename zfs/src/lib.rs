@@ -13,6 +13,7 @@
 #![warn(unused)]
 #![deny(warnings)]
 
+use razor_lzc as lzc;
 use razor_nvpair as nvpair;
 
 pub use nvpair::NvListError;
@@ -31,7 +32,6 @@ use error::value_or_err;
 
 mod error;
 pub mod libzfs;
-pub mod lzc;
 pub mod zfs;
 
 pub type Result<T, E = DatasetError> = std::result::Result<T, E>;
