@@ -10,8 +10,8 @@ use nanoid::nanoid;
 
 // use razor_libzfscore::error::CoreError;
 // use razor_libzfscore::zfs_type_t;
-use razor_zfs as zfs;
 use razor_lzc as lzc;
+use razor_zfs as zfs;
 
 use zfs::zfs::property;
 use zfs::Filesystem;
@@ -20,6 +20,8 @@ use zfs::Zfs;
 #[derive(Debug)]
 struct TestNamespace {
     namespace: Filesystem,
+    sync: bool,
+    delay: Duration,
 }
 
 impl TestNamespace {
@@ -31,12 +33,20 @@ impl TestNamespace {
 
         let namespace = format!("{}/razor-test/{}", Self::POOL, nanoid!());
         let namespace = Zfs::filesystem().create(&namespace).unwrap();
-        Self { namespace }
+        let sync = false;
+        let delay = Duration::from_millis(0);
+        Self {
+            namespace,
+            sync,
+            delay,
+        }
     }
 
-    fn destroy_delay(&self) {
-        lzc::sync_pool(Self::POOL, true).unwrap();
-        sleep(Duration::from_secs(1));
+    fn sync_delay(&self) {
+        if self.sync {
+            lzc::sync_pool(Self::POOL, true).unwrap();
+        }
+        sleep(self.delay);
     }
 }
 
@@ -52,8 +62,9 @@ fn create_basic_filesystem() -> anyhow::Result<()> {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem");
     dbg!("requesting to create filesystem");
-    let filesystem = Zfs::filesystem().create(&name).unwrap();
-    dbg!("filesystem created");
+    let filesystem = Zfs::filesystem().create(&name)?;
+    assert_eq!(filesystem.name(), name);
+    test.sync_delay();
     assert!(
         Zfs::dataset_exists(filesystem.name()),
         "couldnt find filesystem"
@@ -185,6 +196,7 @@ fn create_basic_volume() {
         .create(name, 128 * 1024)
         .unwrap();
     dbg!("volume created");
+    test.sync_delay();
     assert!(Zfs::dataset_exists(volume.name()), "couldnt find volume");
     dbg!("create_basic_volume finished");
 }
@@ -302,65 +314,6 @@ fn list_filesystems() {
         assert!(dataset.r#type().is_filesystem());
     }
 }
-
-// #[test]
-// fn list_filesystems_from() {
-//     dbg!("starting list filesystems from");
-//     let test = TestNamespace::new();
-//     let mut names = Vec::new();
-
-//     for i in 1..rand::thread_rng().gen_range(5..10) {
-//         names.push(format!(
-//             "{}/{}{}",
-//             test.namespace.name(),
-//             "from_filesystem",
-//             i.to_string()
-//         ));
-
-//         Zfs::filesystem().create(names.last().unwrap()).unwrap();
-//     }
-
-//     let mut accamulator = Vec::new();
-
-//     for name in names.iter() {
-//         let mut children_names = Vec::new();
-//         let rnd = rand::thread_rng().gen_range(1..10);
-
-//         for _i in 0..rnd {
-//             children_names.push(format!("{}/{}", name, nanoid!()));
-//             Zfs::filesystem()
-//                 .create(children_names.last().unwrap())
-//                 .unwrap();
-//         }
-
-//         accamulator.append(&mut children_names);
-//     }
-
-//     names.append(&mut accamulator);
-
-//     let datasets = Zfs::list_from(test.namespace.name())
-//         .filesystems()
-//         .recursive()
-//         .get_collection()
-//         .unwrap();
-
-//     dbg!("names i created: ", &names);
-
-//     dbg!("wanted lenght: ", names.len());
-//     dbg!("got lenght: ", datasets.len());
-//     assert_eq!(names.len(), datasets.len());
-
-//     for dataset in datasets.into_iter() {
-//         dbg!(dataset.name());
-//         assert!(
-//             names.contains(&dataset.name().to_string()),
-//             "received dataset dont exist in names vector"
-//         );
-//         assert_eq!(zfs_type_t::ZFS_TYPE_FILESYSTEM, dataset.r#type());
-//     }
-
-//     dbg!("finished asserting: all good");
-// }
 
 macro_rules! list_filesystems_from_dup {
     ($($name:ident: $num_of_parents:expr, $vec_of_childrens:expr,)*) => {
@@ -487,37 +440,25 @@ fn list_all_non_recursive() {
 
 #[test]
 fn create_delete_volume() -> anyhow::Result<()> {
-    dbg!("starting delete volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "volume_to_delete");
-    dbg!("requesting to create volume in create_delete_volume");
     let volume = Zfs::volume()
         .volmode(property::VolMode::None)
-        .create(name, 128 * 1024)?;
-    dbg!("volume created in create_delete_volume");
-    dbg!("requesting to delete volume in create_delete_volume");
-    Zfs::destroy_dataset(volume.name())?;
-    dbg!("volume deleted in create_delete_volume");
-    test.destroy_delay();
-    assert!(!Zfs::dataset_exists(volume.name()));
-    dbg!("create_delete_volume finished");
+        .create(&name, 128 * 1024)?;
+    volume.destroy()?;
+    test.sync_delay();
+    assert!(!Zfs::dataset_exists(name));
     Ok(())
 }
 
 #[test]
 fn create_delete_filesystem() -> anyhow::Result<()> {
-    dbg!("starting delete filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem_to_delete");
-    dbg!("requesting to create filesystem in create_delete_filesystem");
     let filesystem = Zfs::filesystem().create(&name)?;
-    dbg!("filesystem created in create_delete_filesystem");
-    dbg!("requesting to delete filesystem in create_delete_filesystem");
-    Zfs::destroy_dataset(filesystem.name())?;
-    dbg!("filesystem deleted in create_delete_filesystem");
-    test.destroy_delay();
-    assert!(!Zfs::dataset_exists(filesystem.name()));
-    dbg!("create_delete_filesystem finished");
+    filesystem.destroy()?;
+    test.sync_delay();
+    assert!(!Zfs::dataset_exists(name));
     Ok(())
 }
 
