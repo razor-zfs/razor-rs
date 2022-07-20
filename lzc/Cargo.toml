@@ -1,0 +1,19 @@
+[package]
+name = "razor-lzc"
+version = "0.10.1"
+edition = "2021"
+description = "Safe libzfs_core (lzc) API"
+repository = "https://github.com/razor-zfs/razor-rs"
+readme = "../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["zfs", "zfs_core", "lzc"]
+categories = ["api-bindings"]
+rust-version = "1.62"
+
+
+[dependencies]
+libc = "0.2"
+thiserror = "1.0"
+
+razor-nvpair = { version = "0.10", path = "../nvpair" }
+razor-libzfscore = { version = "0.10", path = "../libzfscore" }

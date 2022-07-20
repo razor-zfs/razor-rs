@@ -505,6 +505,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "razor-lzc"
+version = "0.10.1"
+dependencies = [
+ "libc",
+ "razor-libzfscore",
+ "razor-nvpair",
+ "thiserror",
+]
+
+[[package]]
 name = "razor-nvpair"
 version = "0.10.1"
 dependencies = [
