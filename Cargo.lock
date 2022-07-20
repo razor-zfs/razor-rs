@@ -524,20 +524,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "razor-safe-libzfs"
+version = "0.10.1"
+dependencies = [
+ "libc",
+ "once_cell",
+ "parking_lot",
+ "razor-libzfs",
+ "razor-nvpair",
+]
+
+[[package]]
 name = "razor-zfs"
 version = "0.10.1"
 dependencies = [
  "anyhow",
  "libc",
- "log",
  "nanoid",
  "once_cell",
- "parking_lot",
- "rand",
- "razor-libzfs",
- "razor-libzfscore",
  "razor-lzc",
  "razor-nvpair",
+ "razor-safe-libzfs",
  "serde",
  "serde_json",
  "thiserror",

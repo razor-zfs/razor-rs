@@ -264,6 +264,7 @@ impl<'a> VolumePropSetter<'a> {
     }
 
     pub fn commit(self) -> Result<()> {
-        self.volume.dataset.set_properties(self.props)
+        self.volume.dataset.set_properties(self.props)?;
+        Ok(())
     }
 }

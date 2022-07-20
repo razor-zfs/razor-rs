@@ -15,6 +15,7 @@
 
 use razor_lzc as lzc;
 use razor_nvpair as nvpair;
+use razor_safe_libzfs as libzfs;
 
 pub use nvpair::NvListError;
 
@@ -28,10 +29,7 @@ pub use zfs::Volume;
 pub use zfs::VolumeBuilder;
 pub use zfs::Zfs;
 
-use error::value_or_err;
-
 mod error;
-pub mod libzfs;
 pub mod zfs;
 
 pub type Result<T, E = DatasetError> = std::result::Result<T, E>;

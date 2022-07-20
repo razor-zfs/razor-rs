@@ -138,17 +138,13 @@ impl Default for SnapshotBuilder {
     }
 }
 
-fn snapshots(
-    dataset: impl AsRef<str>,
-    snapshot: impl AsRef<str>,
-    recursive: bool,
-) -> Result<()> {
+fn snapshots(dataset: impl AsRef<str>, snapshot: impl AsRef<str>, recursive: bool) -> Result<()> {
     let snapshot = snapshot.as_ref();
     let snapshots = libzfs::zfs_list_from(dataset)
         .filesystems()
         .volumes()
         .recursive(recursive)
-        .get_collection()?
+        .get_collection()
         .into_iter()
         .map(|dataset| format!("{}@{}", dataset.name(), snapshot));
 
