@@ -11,8 +11,8 @@ include!(concat!(env!("OUT_DIR"), "/nvpair.rs"));
 impl From<boolean_t> for bool {
     fn from(value: boolean_t) -> Self {
         match value {
-            boolean_t::B_TRUE => false,
-            boolean_t::B_FALSE => true,
+            boolean_t::B_FALSE => false,
+            boolean_t::B_TRUE => true,
         }
     }
 }
@@ -20,8 +20,8 @@ impl From<boolean_t> for bool {
 impl From<&boolean_t> for bool {
     fn from(value: &boolean_t) -> Self {
         match value {
-            boolean_t::B_TRUE => false,
-            boolean_t::B_FALSE => true,
+            boolean_t::B_FALSE => false,
+            boolean_t::B_TRUE => true,
         }
     }
 }
@@ -29,8 +29,8 @@ impl From<&boolean_t> for bool {
 impl From<bool> for boolean_t {
     fn from(value: bool) -> Self {
         match value {
-            false => boolean_t::B_TRUE,
-            true => boolean_t::B_FALSE,
+            false => boolean_t::B_FALSE,
+            true => boolean_t::B_TRUE,
         }
     }
 }
@@ -38,8 +38,8 @@ impl From<bool> for boolean_t {
 impl From<&bool> for boolean_t {
     fn from(value: &bool) -> Self {
         match value {
-            false => boolean_t::B_TRUE,
-            true => boolean_t::B_FALSE,
+            false => boolean_t::B_FALSE,
+            true => boolean_t::B_TRUE,
         }
     }
 }
