@@ -5,10 +5,6 @@ use parking_lot::Mutex;
 
 use super::*;
 
-// use super::Result;
-// use crate::libzfs;
-// use crate::ZfsDatasetHandle;
-
 static DATASET_ITERATOR: Lazy<Mutex<DatasetIterator>> = Lazy::new(|| {
     let iterator = DatasetIterator::new();
     Mutex::new(iterator)
@@ -115,7 +111,7 @@ impl DatasetCollectorBuilder {
         }
     }
 
-    pub fn get_collection(mut self) -> Result<DatasetCollector> {
+    pub fn get_collection(mut self) -> DatasetCollector {
         let handle = self
             .from_dataset
             .as_ref()
@@ -134,8 +130,7 @@ impl DatasetCollectorBuilder {
             }
         }
 
-        let collector = DatasetCollector::new(self.datasets);
-        Ok(collector)
+        DatasetCollector::new(self.datasets)
     }
 
     pub fn get_children(

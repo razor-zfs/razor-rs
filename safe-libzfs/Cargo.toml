@@ -1,0 +1,20 @@
+[package]
+name = "razor-safe-libzfs"
+version = "0.10.1"
+edition = "2021"
+description = "Safe libzfs API"
+repository = "https://github.com/razor-zfs/razor-rs"
+readme = "../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["zfs", "libzfs"]
+categories = ["api-bindings"]
+rust-version = "1.62"
+
+
+[dependencies]
+libc = "0.2"
+once_cell = { version = "1.13", features = ["parking_lot"] }
+parking_lot = "0.12"
+
+razor-nvpair = { version = "0.10", path = "../nvpair" }
+razor-libzfs = { version = "0.10", path = "../libzfs" }
