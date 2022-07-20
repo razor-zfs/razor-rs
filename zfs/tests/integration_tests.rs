@@ -2,13 +2,16 @@
 // echo 3 | sudo tee /sys/module/zfs/parameters/zvol_volmode
 // before running this test.
 
-use std::process::Command;
+use std::fs;
+use std::thread::sleep;
+use std::time::Duration;
 
 use nanoid::nanoid;
 
 // use razor_libzfscore::error::CoreError;
 // use razor_libzfscore::zfs_type_t;
 use razor_zfs as zfs;
+use razor_lzc as lzc;
 
 use zfs::zfs::property;
 use zfs::Filesystem;
@@ -20,20 +23,20 @@ struct TestNamespace {
 }
 
 impl TestNamespace {
+    const POOL: &'static str = "rpool";
+
     fn new() -> Self {
-        Command::new("echo")
-            .args([
-                "3",
-                "|",
-                "sudo",
-                "tee",
-                "/sys/module/zfs/parameters/zvol_volmode",
-            ])
-            .output()
-            .expect("failed to execute process");
-        let namespace = format!("rpool/{}", nanoid!());
+        fs::write("/sys/module/zfs/parameters/zvol_volmode", "3")
+            .expect("Failed to set zvol_volmod to 3");
+
+        let namespace = format!("{}/razor-test/{}", Self::POOL, nanoid!());
         let namespace = Zfs::filesystem().create(&namespace).unwrap();
         Self { namespace }
+    }
+
+    fn destroy_delay(&self) {
+        lzc::sync_pool(Self::POOL, true).unwrap();
+        sleep(Duration::from_secs(1));
     }
 }
 
@@ -44,7 +47,7 @@ impl Drop for TestNamespace {
 }
 
 #[test]
-fn create_basic_filesystem() {
+fn create_basic_filesystem() -> anyhow::Result<()> {
     dbg!("starting create basic filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem");
@@ -56,6 +59,7 @@ fn create_basic_filesystem() {
         "couldnt find filesystem"
     );
     dbg!("create_basic_filesystem finished");
+    Ok(())
 }
 
 #[test]
@@ -265,8 +269,8 @@ fn filesystem_snapshot() {
 }
 
 #[test]
-fn get_invalid_volume() {
-    dbg!("starting get invalid volume");
+fn get_non_existent_volume() {
+    dbg!("starting get non-existent volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), nanoid!());
     let _res_vol = Zfs::get_volume(name).unwrap_err();
@@ -275,8 +279,8 @@ fn get_invalid_volume() {
 }
 
 #[test]
-fn get_invalid_filesystem() {
-    dbg!("starting get invalid filesystem");
+fn get_non_existent_filesystem() {
+    dbg!("starting get non-existent filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "get_fs");
     let _res_filesystem = Zfs::get_filesystem(name).unwrap_err();
@@ -482,40 +486,43 @@ fn list_all_non_recursive() {
 }
 
 #[test]
-fn create_delete_volume() {
+fn create_delete_volume() -> anyhow::Result<()> {
     dbg!("starting delete volume");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "volume_to_delete");
     dbg!("requesting to create volume in create_delete_volume");
     let volume = Zfs::volume()
         .volmode(property::VolMode::None)
-        .create(name, 128 * 1024)
-        .unwrap();
+        .create(name, 128 * 1024)?;
     dbg!("volume created in create_delete_volume");
     dbg!("requesting to delete volume in create_delete_volume");
-    Zfs::destroy_dataset(volume.name()).unwrap();
+    Zfs::destroy_dataset(volume.name())?;
     dbg!("volume deleted in create_delete_volume");
+    test.destroy_delay();
     assert!(!Zfs::dataset_exists(volume.name()));
     dbg!("create_delete_volume finished");
+    Ok(())
 }
 
 #[test]
-fn create_delete_filesystem() {
+fn create_delete_filesystem() -> anyhow::Result<()> {
     dbg!("starting delete filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "filesystem_to_delete");
     dbg!("requesting to create filesystem in create_delete_filesystem");
-    let filesystem = Zfs::filesystem().create(&name).unwrap();
+    let filesystem = Zfs::filesystem().create(&name)?;
     dbg!("filesystem created in create_delete_filesystem");
     dbg!("requesting to delete filesystem in create_delete_filesystem");
-    Zfs::destroy_dataset(filesystem.name()).unwrap();
+    Zfs::destroy_dataset(filesystem.name())?;
     dbg!("filesystem deleted in create_delete_filesystem");
+    test.destroy_delay();
     assert!(!Zfs::dataset_exists(filesystem.name()));
     dbg!("create_delete_filesystem finished");
+    Ok(())
 }
 
 #[test]
-fn delete_invalid_filesystem() {
+fn delete_non_existent_filesystem() {
     let test = TestNamespace::new();
     let name = format!(
         "{}/{}",
@@ -531,7 +538,7 @@ fn delete_invalid_filesystem() {
 }
 
 #[test]
-fn delete_invalid_volume() {
+fn delete_non_existent_volume() {
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "invalid_volume_to_delete");
     let _res = Zfs::destroy_dataset(name).unwrap_err();

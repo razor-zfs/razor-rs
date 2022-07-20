@@ -126,3 +126,11 @@ pub fn libzfs_error_description() -> Cow<'static, str> {
 pub fn libzfs_errno() -> i32 {
     unsafe { libzfs::libzfs_errno() }
 }
+
+pub fn zfs_list() -> DatasetCollectorBuilder {
+    DatasetCollectorBuilder::new()
+}
+
+pub fn zfs_list_from(name: impl AsRef<str>) -> DatasetCollectorBuilder {
+    DatasetCollectorBuilder::from(name)
+}

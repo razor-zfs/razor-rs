@@ -16,7 +16,8 @@ impl Snapshot {
     }
 
     pub fn destroy(self) -> Result<()> {
-        lzc::destroy_dataset(self.name())
+        lzc::destroy_dataset(self.name())?;
+        Ok(())
     }
 
     pub fn name(&self) -> String {
@@ -116,7 +117,7 @@ impl SnapshotBuilder {
         let _props = self.props?;
         let name = name.as_ref();
         if let Some((dataset, snapshot)) = name.split_once('@') {
-            lzc::snapshots(dataset, snapshot, self.recursive)?;
+            snapshots(dataset, snapshot, self.recursive)?;
         } else {
             Err(DatasetError::invalid_snapshot_name(name))?;
         }
@@ -135,4 +136,22 @@ impl Default for SnapshotBuilder {
     fn default() -> Self {
         Self::new()
     }
+}
+
+fn snapshots(
+    dataset: impl AsRef<str>,
+    snapshot: impl AsRef<str>,
+    recursive: bool,
+) -> Result<()> {
+    let snapshot = snapshot.as_ref();
+    let snapshots = libzfs::zfs_list_from(dataset)
+        .filesystems()
+        .volumes()
+        .recursive(recursive)
+        .get_collection()?
+        .into_iter()
+        .map(|dataset| format!("{}@{}", dataset.name(), snapshot));
+
+    lzc::create_snapshots(snapshots, None)?;
+    Ok(())
 }

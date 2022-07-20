@@ -36,12 +36,13 @@ impl Zfs {
         snapshot: impl AsRef<str>,
         bookmark: impl AsRef<str>,
     ) -> Result<Bookmark> {
-        lzc::bookmark(snapshot, &bookmark)?;
+        lzc::create_bookmark(snapshot, &bookmark)?;
         Bookmark::get(bookmark)
     }
 
     pub fn destroy_dataset(name: impl AsRef<str>) -> Result<()> {
-        lzc::destroy_dataset(name)
+        lzc::destroy_dataset(name)?;
+        Ok(())
     }
 
     pub fn dataset_exists(dataset: impl AsRef<str>) -> bool {
@@ -49,11 +50,11 @@ impl Zfs {
     }
 
     pub fn list() -> libzfs::DatasetCollectorBuilder {
-        lzc::zfs_list()
+        libzfs::zfs_list()
     }
 
     pub fn list_from(name: impl AsRef<str>) -> libzfs::DatasetCollectorBuilder {
-        lzc::zfs_list_from(name)
+        libzfs::zfs_list_from(name)
     }
 
     pub fn get_filesystem(name: impl AsRef<str>) -> Result<Filesystem> {

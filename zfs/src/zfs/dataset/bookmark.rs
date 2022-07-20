@@ -16,7 +16,8 @@ impl Bookmark {
     }
 
     pub fn destroy(self) -> Result<()> {
-        lzc::destroy_dataset(self.name())
+        lzc::destroy_dataset(self.name())?;
+        Ok(())
     }
 
     pub fn name(&self) -> String {

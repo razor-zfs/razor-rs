@@ -20,12 +20,13 @@ impl Volume {
     }
 
     pub fn destroy(self) -> Result<()> {
-        lzc::destroy_dataset(self.name())
+        lzc::destroy_dataset(self.name())?;
+        Ok(())
     }
 
     pub fn snapshot(&self, name: impl AsRef<str>) -> Result<()> {
         let snapshot = format!("{}@{}", self.name(), name.as_ref());
-        lzc::snapshot(snapshot, None)?;
+        lzc::create_snapshot(snapshot, None)?;
         Ok(())
     }
 

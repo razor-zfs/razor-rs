@@ -15,17 +15,19 @@ impl Filesystem {
         FilesytemPropSetter::new(self)
     }
 
-    pub fn destroy(&self) -> Result<()> {
-        lzc::destroy_dataset(self.name())
+    pub fn destroy(self) -> Result<()> {
+        lzc::destroy_dataset(self.name())?;
+        Ok(())
     }
 
     pub fn snapshot(&self, name: impl AsRef<str>) -> Result<()> {
         let snapshot = format!("{}@{}", self.name(), name.as_ref());
-        lzc::snapshot(snapshot, None)
+        lzc::create_snapshot(snapshot, None)?;
+        Ok(())
     }
 
     pub fn destroy_recursive(&self) -> Result<()> {
-        let ns_datasets = lzc::zfs_list_from(self.name())
+        let ns_datasets = libzfs::zfs_list_from(self.name())
             .filesystems()
             .volumes()
             .snapshots()
@@ -36,7 +38,8 @@ impl Filesystem {
             lzc::destroy_dataset(dataset.name())?;
         }
 
-        lzc::destroy_dataset(self.name())
+        lzc::destroy_dataset(self.name())?;
+        Ok(())
     }
 
     pub fn name(&self) -> String {
