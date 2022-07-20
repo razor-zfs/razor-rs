@@ -162,3 +162,11 @@ pub unsafe fn lzc_receive_resumable(
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_receive_resumable(snapname, props, origin, force.into(), raw.into(), fd)
 }
+
+pub unsafe fn lzc_sync(
+    pool_name: *const libc::c_char,
+    params: *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_sync(pool_name, params, ptr::null_mut())
+}
