@@ -33,27 +33,32 @@ impl ZfsError {
     }
 
     pub fn from_rc(code: i32) -> Self {
-        let libzfs_error = libzfs_errno();
-        let error = code as u32;
-        let description = if error == zfs_error::EZFS_SUCCESS {
-            "success".into()
-        } else if error < zfs_error::EZFS_NOMEM {
-            libc_strerror(code)
-        } else if error < zfs_error::EZFS_UNKNOWN {
-            if code == libzfs_error {
-                libzfs_error_description()
-            } else {
-                format!(
-                    "rc ({}) and library errno ({}) mismatch",
-                    code, libzfs_error
-                )
-                .into()
-            }
+        if code == -1 {
+            Self::from_libzfs_errno()
         } else {
-            "unknown".into()
-        };
+            let libzfs_error = dbg!(libzfs_errno());
+            let error = dbg!(code) as u32;
 
-        Self { error, description }
+            let description = if error == zfs_error::EZFS_SUCCESS {
+                "success".into()
+            } else if error < zfs_error::EZFS_NOMEM {
+                libc_strerror(code)
+            } else if error < zfs_error::EZFS_UNKNOWN {
+                if code == libzfs_error {
+                    libzfs_error_description()
+                } else {
+                    format!(
+                        "rc ({}) and library errno ({}) mismatch",
+                        code, libzfs_error
+                    )
+                    .into()
+                }
+            } else {
+                "unknown".into()
+            };
+
+            Self { error, description }
+        }
     }
 
     pub fn result<T, U>(self, ok: T) -> Result<T, U>
@@ -64,6 +69,15 @@ impl ZfsError {
             Ok(ok)
         } else {
             Err(self)?
+        }
+    }
+}
+
+impl From<ffi::NulError> for ZfsError {
+    fn from(e: ffi::NulError) -> Self {
+        Self {
+            error: zfs_error::EZFS_INVALIDNAME,
+            description: e.to_string().into(),
         }
     }
 }
