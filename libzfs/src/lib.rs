@@ -161,6 +161,11 @@ pub unsafe fn zfs_valid_proplist(
     )
 }
 
+pub unsafe fn zfs_get_pool_handle(dataset_handle: *mut sys::zfs_handle_t) -> *mut zpool_handle_t {
+    Lazy::force(&LIBZFS_HANDLE);
+    sys::zfs_get_pool_handle(dataset_handle)
+}
+
 pub unsafe fn zvol_volsize_to_reservation(
     zpool_handle: *mut zpool_handle_t,
     volsize: u64,
