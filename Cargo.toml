@@ -7,6 +7,7 @@ members = [
     "libzfscore",
     "libzfs-sys",
     "libzfs",
+    "lzc",
     "zfs",
     "cli",
     #    "property",
