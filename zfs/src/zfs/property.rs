@@ -133,7 +133,7 @@ impl Properties {
     }
 
     pub fn compression(&mut self, compression: impl Into<Compression>) {
-        self.set_numeric(ZFS_PROP_COMPRESSION, compression.into());
+        self.set_string(ZFS_PROP_COMPRESSION, compression.into());
     }
 
     pub fn volblocksize(&mut self, blocksize: u64) {
@@ -149,6 +149,14 @@ impl Properties {
     }
 
     pub fn string_property<'a>(
+        &mut self,
+        property: impl Into<Cow<'a, str>>,
+        value: impl AsRef<str>,
+    ) -> &mut Self {
+        self.set_string(property, value)
+    }
+
+    fn set_string<'a>(
         &mut self,
         property: impl Into<Cow<'a, str>>,
         value: impl AsRef<str>,

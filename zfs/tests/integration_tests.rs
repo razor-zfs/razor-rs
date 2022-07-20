@@ -74,7 +74,7 @@ fn create_basic_filesystem() -> anyhow::Result<()> {
 }
 
 #[test]
-fn set_properties_filesystem() {
+fn set_properties_filesystem() -> anyhow::Result<()> {
     dbg!("starting set_properties_filesystem");
     let test = TestNamespace::new();
     let name = format!("{}/{}", test.namespace.name(), "set_filesystem");
@@ -93,8 +93,7 @@ fn set_properties_filesystem() {
         .relatime(property::OnOff::Off)
         .setuid(property::OnOff::Off)
         .zoned(property::OnOff::Off)
-        .create(&name)
-        .unwrap();
+        .create(&name)?;
     dbg!("filesystem created");
     assert_eq!(property::CanMount::Off, filesystem.canmount());
     assert_eq!(property::CheckSum::Off, filesystem.checksum());
@@ -125,8 +124,7 @@ fn set_properties_filesystem() {
         .relatime(property::OnOff::On)
         .setuid(property::OnOff::On)
         .zoned(property::OnOff::On)
-        .commit()
-        .unwrap();
+        .commit()?;
     assert_eq!(property::CanMount::On, filesystem.canmount());
     assert_eq!(property::CheckSum::On, filesystem.checksum());
     assert_eq!(property::OnOff::On, filesystem.readonly());
@@ -140,6 +138,8 @@ fn set_properties_filesystem() {
     assert_eq!(property::OnOff::On, filesystem.relatime());
     assert_eq!(property::OnOff::On, filesystem.setuid());
     assert_eq!(property::OnOff::On, filesystem.zoned());
+
+    Ok(())
 }
 
 #[test]
@@ -271,8 +271,7 @@ fn filesystem_snapshot() {
     let snapshots = Zfs::list_from(filesystem.name())
         .snapshots()
         .recursive(true)
-        .get_collection()
-        .unwrap();
+        .get_collection();
 
     for snapshot in snapshots {
         dbg!(snapshot.name());
@@ -303,11 +302,7 @@ fn get_non_existent_filesystem() {
 #[test]
 fn list_filesystems() {
     dbg!("starting list_filesystem test");
-    let datasets = Zfs::list()
-        .filesystems()
-        .recursive(true)
-        .get_collection()
-        .unwrap();
+    let datasets = Zfs::list().filesystems().recursive(true).get_collection();
 
     for dataset in datasets {
         dbg!(dataset.name());
@@ -361,8 +356,7 @@ macro_rules! list_filesystems_from_dup {
     let datasets = Zfs::list_from(test.namespace.name())
         .filesystems()
         .recursive(true)
-        .get_collection()
-        .unwrap();
+        .get_collection();
 
     dbg!("names i created: ", &names);
 
@@ -397,11 +391,7 @@ list_filesystems_from_dup! {
 #[test]
 fn list_volumes() {
     dbg!("starting list_volumes test");
-    let datasets = Zfs::list()
-        .volumes()
-        .recursive(true)
-        .get_collection()
-        .unwrap();
+    let datasets = Zfs::list().volumes().recursive(true).get_collection();
 
     for dataset in datasets {
         dbg!(dataset.name());
@@ -416,8 +406,7 @@ fn list_all() {
         .filesystems()
         .volumes()
         .recursive(true)
-        .get_collection()
-        .unwrap();
+        .get_collection();
 
     for dataset in datasets {
         dbg!(dataset.name());
@@ -427,11 +416,7 @@ fn list_all() {
 #[test]
 fn list_all_non_recursive() {
     dbg!("starting list_all_non_recursive test");
-    let datasets = Zfs::list()
-        .filesystems()
-        .volumes()
-        .get_collection()
-        .unwrap();
+    let datasets = Zfs::list().filesystems().volumes().get_collection();
 
     for dataset in datasets {
         dbg!(dataset.name());

@@ -32,7 +32,7 @@ impl Filesystem {
             .volumes()
             .snapshots()
             .recursive(true)
-            .get_collection()?;
+            .get_collection();
 
         for dataset in ns_datasets.into_iter() {
             lzc::destroy_dataset(dataset.name())?;
@@ -226,8 +226,7 @@ impl FilesystemBuilder {
     // TODO: should check mount options and mount the FS if needed
     pub fn create(self, name: impl AsRef<str>) -> Result<Filesystem> {
         let cname = ffi::CString::new(name.as_ref())?;
-        lzc::create_filesystem(name.as_ref(), self.props.into())?;
-
+        libzfs::create_filesystem(name, self.props)?;
         let dataset = libzfs::ZfsHandle::new(cname)?;
         let filesystem = Filesystem { dataset };
 

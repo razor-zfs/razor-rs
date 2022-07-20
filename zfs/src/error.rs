@@ -42,7 +42,3 @@ impl From<lzc::LzcError> for DatasetError {
         libzfs::ZfsError::from_rc(e.code).into()
     }
 }
-
-pub(crate) fn value_or_err<T>(value: T, rc: i32) -> Result<T, DatasetError> {
-    libzfs::ZfsError::from_rc(rc).result(value)
-}
