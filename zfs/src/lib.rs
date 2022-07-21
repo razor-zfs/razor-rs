@@ -11,6 +11,7 @@
 #![warn(rust_2021_compatibility)]
 #![warn(rust_2018_idioms)]
 #![warn(unused)]
+#![warn(unsafe_code)]
 #![deny(warnings)]
 
 use razor_nvpair as nvpair;
