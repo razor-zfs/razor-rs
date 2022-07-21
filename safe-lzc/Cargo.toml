@@ -1,5 +1,5 @@
 [package]
-name = "razor-lzc"
+name = "razor-safe-lzc"
 version = "0.10.1"
 edition = "2021"
 description = "Safe libzfs_core (lzc) API"

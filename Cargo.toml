@@ -5,7 +5,7 @@ members = [
     "nvpair",
     "libzfscore-sys",
     "libzfscore",
-    "lzc",
+    "safe-lzc",
     "libzfs-sys",
     "libzfs",
     "safe-libzfs",

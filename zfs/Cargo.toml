@@ -21,13 +21,13 @@ tokio = { version = "1.17", features = ["process"], optional = true }
 
 razor-nvpair = { version = "0.10", path = "../nvpair" }
 razor-safe-libzfs = { version = "0.10", path = "../safe-libzfs" }
-razor-lzc = { version = "0.10", path = "../lzc" }
+razor-safe-lzc = { version = "0.10", path = "../safe-lzc" }
 
 [dev-dependencies]
 anyhow = "1.0"
 nanoid = "0.4"
 
-razor-lzc = { version = "0.10", path = "../lzc" }
+razor-safe-lzc = { version = "0.10", path = "../safe-lzc" }
 
 [features]
 cmd = ["tokio"]

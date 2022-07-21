@@ -13,9 +13,9 @@
 #![warn(unused)]
 #![deny(warnings)]
 
-use razor_lzc as lzc;
 use razor_nvpair as nvpair;
 use razor_safe_libzfs as libzfs;
+use razor_safe_lzc as lzc;
 
 pub use nvpair::NvListError;
 
