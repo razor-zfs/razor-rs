@@ -297,6 +297,11 @@ impl FilesystemBuilder {
         self.props.exec(value);
         self
     }
+
+    pub fn property(mut self, property: &str, value: &str) -> Self {
+        self.props.string_property(property, value);
+        self
+    }
 }
 
 impl Default for FilesystemBuilder {
