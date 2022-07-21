@@ -505,16 +505,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "razor-lzc"
-version = "0.10.1"
-dependencies = [
- "libc",
- "razor-libzfscore",
- "razor-nvpair",
- "thiserror",
-]
-
-[[package]]
 name = "razor-nvpair"
 version = "0.10.1"
 dependencies = [
@@ -535,6 +525,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "razor-safe-lzc"
+version = "0.10.1"
+dependencies = [
+ "libc",
+ "razor-libzfscore",
+ "razor-nvpair",
+ "thiserror",
+]
+
+[[package]]
 name = "razor-zfs"
 version = "0.10.1"
 dependencies = [
@@ -542,9 +542,9 @@ dependencies = [
  "libc",
  "nanoid",
  "once_cell",
- "razor-lzc",
  "razor-nvpair",
  "razor-safe-libzfs",
+ "razor-safe-lzc",
  "serde",
  "serde_json",
  "thiserror",
