@@ -36,8 +36,8 @@ impl ZfsError {
         if code == -1 {
             Self::from_libzfs_errno()
         } else {
-            let libzfs_error = dbg!(libzfs_errno());
-            let error = dbg!(code) as u32;
+            let libzfs_error = libzfs_errno();
+            let error = code as u32;
 
             let description = if error == zfs_error::EZFS_SUCCESS {
                 "success".into()
