@@ -109,6 +109,17 @@ pub unsafe fn lzc_destroy_bookmarks(
     sys::lzc_destroy_bookmarks(bookmarks, errlist)
 }
 
+pub unsafe fn lzc_load_key(
+    fsname: *const libc::c_char,
+    noop: impl Into<libnvpair::boolean_t>,
+    wkeydata: *mut u8,
+    wkeylen: libc::c_uint,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    let noop = noop.into();
+    sys::lzc_load_key(fsname, noop, wkeydata, wkeylen)
+}
+
 pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_destroy(name)
