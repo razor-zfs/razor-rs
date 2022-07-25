@@ -125,6 +125,17 @@ pub unsafe fn lzc_unload_key(fsname: *const libc::c_char) -> libc::c_int {
     sys::lzc_unload_key(fsname)
 }
 
+pub unsafe fn lzc_change_key(
+    fsname: *const libc::c_char,
+    cryptcmd: u64,
+    props: *mut libnvpair::nvlist_t,
+    wkeydata: *mut u8,
+    wkeylen: libc::c_uint,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_change_key(fsname, cryptcmd, props, wkeydata, wkeylen)
+}
+
 pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_destroy(name)
