@@ -24,6 +24,7 @@ use razor_libzfscore_sys as sys;
 pub use sys::lzc_dataset_type;
 pub use sys::lzc_send_flags;
 pub use sys::pool_initialize_func_t;
+pub use sys::pool_trim_func_t;
 
 #[cfg(feature = "wait")]
 pub use sys::zfs_wait_activity_t;
@@ -146,6 +147,19 @@ pub unsafe fn lzc_initialize(
 ) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_initialize(poolname, cmd_type, vdevs, errlist)
+}
+
+pub unsafe fn lzc_trim(
+    poolname: *const libc::c_char,
+    cmd_type: pool_trim_func_t,
+    rate: u64,
+    secure: impl Into<libnvpair::boolean_t>,
+    vdevs: *mut libnvpair::nvlist_t,
+    errlist: *mut *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    let secure = secure.into();
+    sys::lzc_trim(poolname, cmd_type, rate, secure, vdevs, errlist)
 }
 
 pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
