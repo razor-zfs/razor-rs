@@ -120,6 +120,11 @@ pub unsafe fn lzc_load_key(
     sys::lzc_load_key(fsname, noop, wkeydata, wkeylen)
 }
 
+pub unsafe fn lzc_unload_key(fsname: *const libc::c_char) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_unload_key(fsname)
+}
+
 pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_destroy(name)
