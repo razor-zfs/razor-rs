@@ -219,7 +219,7 @@ pub unsafe fn lzc_send(
     snapname: *const libc::c_char,
     from: *const libc::c_char,
     fd: libc::c_int,
-    flags: sys::lzc_send_flags,
+    flags: lzc_send_flags,
 ) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_send(snapname, from, fd, flags)
@@ -229,12 +229,22 @@ pub unsafe fn lzc_send_resume(
     snapname: *const libc::c_char,
     from: *const libc::c_char,
     fd: libc::c_int,
-    flags: sys::lzc_send_flags,
+    flags: lzc_send_flags,
     resumeobj: u64,
     resumeoff: u64,
 ) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_send_resume(snapname, from, fd, flags, resumeobj, resumeoff)
+}
+
+pub unsafe fn lzc_send_space(
+    snapname: *const libc::c_char,
+    from: *const libc::c_char,
+    flags: lzc_send_flags,
+    spacep: *mut u64,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_send_space(snapname, from, flags, spacep)
 }
 
 pub unsafe fn lzc_receive(
