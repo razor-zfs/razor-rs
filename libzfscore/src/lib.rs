@@ -180,6 +180,15 @@ pub unsafe fn lzc_snaprange_space(
     sys::lzc_snaprange_space(firstsnap, lastsnap, usedp)
 }
 
+pub unsafe fn lzc_hold(
+    holds: *mut libnvpair::nvlist_t,
+    cleanup_fd: libc::c_int,
+    errlist: *mut *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_hold(holds, cleanup_fd, errlist)
+}
+
 pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_destroy(name)
