@@ -162,6 +162,15 @@ pub unsafe fn lzc_trim(
     sys::lzc_trim(poolname, cmd_type, rate, secure, vdevs, errlist)
 }
 
+pub unsafe fn lzc_redact(
+    snapshot: *const libc::c_char,
+    bookname: *const libc::c_char,
+    snapnv: *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_redact(snapshot, bookname, snapnv)
+}
+
 pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_destroy(name)
