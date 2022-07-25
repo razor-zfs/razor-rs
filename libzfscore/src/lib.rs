@@ -189,6 +189,14 @@ pub unsafe fn lzc_hold(
     sys::lzc_hold(holds, cleanup_fd, errlist)
 }
 
+pub unsafe fn lzc_release(
+    holds: *mut libnvpair::nvlist_t,
+    errlist: *mut *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_release(holds, errlist)
+}
+
 pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_destroy(name)
