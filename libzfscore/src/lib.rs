@@ -171,6 +171,15 @@ pub unsafe fn lzc_redact(
     sys::lzc_redact(snapshot, bookname, snapnv)
 }
 
+pub unsafe fn lzc_snaprange_space(
+    firstsnap: *const libc::c_char,
+    lastsnap: *const libc::c_char,
+    usedp: *mut u64,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_snaprange_space(firstsnap, lastsnap, usedp)
+}
+
 pub unsafe fn lzc_destroy(name: *const libc::c_char) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_destroy(name)
