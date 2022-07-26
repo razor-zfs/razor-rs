@@ -71,7 +71,7 @@ pub unsafe fn lzc_promote(
 
 pub unsafe fn lzc_destroy_snaps(
     snaps: *mut libnvpair::nvlist_t,
-    defer: bool,
+    defer: impl Into<libnvpair::boolean_t>,
     errlist: *mut *mut libnvpair::nvlist_t,
 ) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
