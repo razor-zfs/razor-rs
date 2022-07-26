@@ -1,6 +1,6 @@
 [package]
 name = "razor-libzfs"
-version = "0.11.0"
+version = "0.12.0"
 edition = "2021"
 description = "Low-level libzfs interface"
 repository = "https://github.com/razor-zfs/razor-rs"
@@ -16,11 +16,11 @@ rust-version = "1.62"
 libc = "0.2"
 once_cell = "1.8"
 
-razor-libnvpair = { version = "0.11", path = "../libnvpair" }
-razor-libzfs-sys = { version = "0.11", path = "../libzfs-sys" }
+razor-libnvpair = { version = "0.12", path = "../libnvpair" }
+razor-libzfs-sys = { version = "0.12", path = "../libzfs-sys" }
 
 
 [build-dependencies]
 libc = "0.2"
 
-razor-libzfs-sys = { version = "0.11", path = "../libzfs-sys" }
+razor-libzfs-sys = { version = "0.12", path = "../libzfs-sys" }
