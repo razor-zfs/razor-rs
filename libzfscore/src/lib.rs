@@ -456,6 +456,15 @@ pub unsafe fn lzc_sync(
     sys::lzc_sync(pool_name, params, ptr::null_mut())
 }
 
+pub unsafe fn lzc_reopen(
+    pool_name: *const libc::c_char,
+    scrub_restart: impl Into<libnvpair::boolean_t>,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    let scrub_restart = scrub_restart.into();
+    sys::lzc_reopen(pool_name, scrub_restart)
+}
+
 #[cfg(feature = "wait")]
 pub unsafe fn lzc_wait_fs(
     name: *const libc::c_char,
