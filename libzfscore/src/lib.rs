@@ -426,6 +426,15 @@ pub unsafe fn lzc_send_space_resume_redacted(
     )
 }
 
+pub unsafe fn lzc_rollback(
+    fsname: *const libc::c_char,
+    snapnamebuf: *mut libc::c_char,
+    snapnamelen: libc::c_int,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_rollback(fsname, snapnamebuf, snapnamelen)
+}
+
 pub unsafe fn lzc_sync(
     pool_name: *const libc::c_char,
     params: *mut libnvpair::nvlist_t,
