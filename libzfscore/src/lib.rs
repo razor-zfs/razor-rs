@@ -12,6 +12,7 @@
 #![warn(rust_2018_idioms)]
 #![warn(unused)]
 #![allow(clippy::missing_safety_doc)]
+#![allow(clippy::too_many_arguments)]
 #![deny(warnings)]
 
 use std::ptr;
@@ -21,6 +22,7 @@ use once_cell::sync::Lazy;
 use razor_libnvpair as libnvpair;
 use razor_libzfscore_sys as sys;
 
+pub use sys::dmu_replay_record;
 pub use sys::lzc_dataset_type;
 pub use sys::lzc_send_flags;
 pub use sys::pool_initialize_func_t;
@@ -293,6 +295,32 @@ pub unsafe fn lzc_receive_resumable(
 ) -> libc::c_int {
     Lazy::force(&lzc::LIBZFS_CORE);
     sys::lzc_receive_resumable(snapname, props, origin, force.into(), raw.into(), fd)
+}
+
+pub unsafe fn lzc_receive_with_header(
+    snapname: *const libc::c_char,
+    props: *mut libnvpair::nvlist_t,
+    origin: *const libc::c_char,
+    force: impl Into<libnvpair::boolean_t>,
+    resumable: impl Into<libnvpair::boolean_t>,
+    raw: impl Into<libnvpair::boolean_t>,
+    fd: libc::c_int,
+    begin_record: *const dmu_replay_record,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    let force = force.into();
+    let resumable = resumable.into();
+    let raw = raw.into();
+    sys::lzc_receive_with_header(
+        snapname,
+        props,
+        origin,
+        force,
+        resumable,
+        raw,
+        fd,
+        begin_record,
+    )
 }
 
 pub unsafe fn lzc_sync(
