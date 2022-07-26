@@ -443,6 +443,11 @@ pub unsafe fn lzc_rollback_to(
     sys::lzc_rollback_to(fsname, snapname)
 }
 
+pub unsafe fn lzc_rename(source: *const libc::c_char, target: *const libc::c_char) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_rename(source, target)
+}
+
 pub unsafe fn lzc_sync(
     pool_name: *const libc::c_char,
     params: *mut libnvpair::nvlist_t,
