@@ -470,6 +470,11 @@ pub unsafe fn lzc_pool_checkpoint(pool: *const libc::c_char) -> libc::c_int {
     sys::lzc_pool_checkpoint(pool)
 }
 
+pub unsafe fn lzc_pool_checkpoint_discard(pool: *const libc::c_char) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_pool_checkpoint_discard(pool)
+}
+
 #[cfg(feature = "wait")]
 pub unsafe fn lzc_wait_fs(
     name: *const libc::c_char,
