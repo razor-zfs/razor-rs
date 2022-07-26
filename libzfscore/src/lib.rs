@@ -401,6 +401,31 @@ pub unsafe fn lzc_receive_with_cmdprops(
     )
 }
 
+pub unsafe fn lzc_send_space_resume_redacted(
+    snapname: *const libc::c_char,
+    from: *const libc::c_char,
+    flags: lzc_send_flags,
+    resumeobj: u64,
+    resumeoff: u64,
+    resume_bytes: u64,
+    redactbook: *const libc::c_char,
+    fd: libc::c_int,
+    spacep: *mut u64,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_send_space_resume_redacted(
+        snapname,
+        from,
+        flags,
+        resumeobj,
+        resumeoff,
+        resume_bytes,
+        redactbook,
+        fd,
+        spacep,
+    )
+}
+
 pub unsafe fn lzc_sync(
     pool_name: *const libc::c_char,
     params: *mut libnvpair::nvlist_t,
