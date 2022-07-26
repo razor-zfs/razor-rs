@@ -247,6 +247,17 @@ pub unsafe fn lzc_send_space(
     sys::lzc_send_space(snapname, from, flags, spacep)
 }
 
+pub unsafe fn lzc_send_redacted(
+    snapname: *const libc::c_char,
+    from: *const libc::c_char,
+    fd: libc::c_int,
+    flags: lzc_send_flags,
+    redactbook: *const libc::c_char,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    sys::lzc_send_redacted(snapname, from, fd, flags, redactbook)
+}
+
 pub unsafe fn lzc_receive(
     snapname: *const libc::c_char,
     props: *mut libnvpair::nvlist_t,
