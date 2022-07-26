@@ -359,6 +359,48 @@ pub unsafe fn lzc_receive_one(
     )
 }
 
+pub unsafe fn lzc_receive_with_cmdprops(
+    snapname: *const libc::c_char,
+    props: *mut libnvpair::nvlist_t,
+    cmdprops: *mut libnvpair::nvlist_t,
+    wkeydata: *mut u8,
+    wkeylen: libc::c_uint,
+    origin: *const libc::c_char,
+    force: impl Into<libnvpair::boolean_t>,
+    resumable: impl Into<libnvpair::boolean_t>,
+    raw: impl Into<libnvpair::boolean_t>,
+    input_fd: libc::c_int,
+    begin_record: *const dmu_replay_record,
+    cleanup_fd: libc::c_int,
+    read_bytes: *mut u64,
+    errflags: *mut u64,
+    action_handle: *mut u64,
+    errors: *mut *mut libnvpair::nvlist_t,
+) -> libc::c_int {
+    Lazy::force(&lzc::LIBZFS_CORE);
+    let force = force.into();
+    let resumable = resumable.into();
+    let raw = raw.into();
+    sys::lzc_receive_with_cmdprops(
+        snapname,
+        props,
+        cmdprops,
+        wkeydata,
+        wkeylen,
+        origin,
+        force,
+        resumable,
+        raw,
+        input_fd,
+        begin_record,
+        cleanup_fd,
+        read_bytes,
+        errflags,
+        action_handle,
+        errors,
+    )
+}
+
 pub unsafe fn lzc_sync(
     pool_name: *const libc::c_char,
     params: *mut libnvpair::nvlist_t,
