@@ -540,7 +540,6 @@ dependencies = [
  "razor-libzfscore",
  "razor-nvpair",
  "razor-test",
- "thiserror",
 ]
 
 [[package]]

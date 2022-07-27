@@ -1,9 +1,10 @@
-use thiserror::Error;
+use std::borrow::Cow;
+use std::ffi;
+use std::fmt;
 
 use super::*;
 
-#[derive(Clone, Debug, Error, PartialEq, Eq)]
-#[error("LZC error: {code}")]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct LzcError {
     pub code: libc::c_int,
 }
@@ -16,6 +17,14 @@ impl LzcError {
         }
     }
 }
+
+impl fmt::Display for LzcError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "LZC error: {} ({})", libc_strerror(self.code), self.code)
+    }
+}
+
+impl ::std::error::Error for LzcError {}
 
 impl From<ffi::NulError> for LzcError {
     fn from(_: ffi::NulError) -> Self {
@@ -30,5 +39,12 @@ impl From<nvpair::NvListError> for LzcError {
             nvpair::NvListError::OutOfMemory => Self { code: libc::ENOMEM },
             nvpair::NvListError::NotFound => Self { code: libc::ENOENT },
         }
+    }
+}
+
+fn libc_strerror(code: i32) -> Cow<'static, str> {
+    unsafe {
+        let cstr = libc::strerror(code);
+        ffi::CStr::from_ptr(cstr).to_string_lossy()
     }
 }
