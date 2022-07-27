@@ -125,7 +125,7 @@ impl Properties {
     }
 
     pub fn canmount(&mut self, canmount: impl Into<CanMount>) {
-        self.set_numeric(ZFS_PROP_CANMOUNT, canmount.into());
+        self.set_string(ZFS_PROP_CANMOUNT, canmount.into());
     }
 
     pub fn checksum(&mut self, checksum: impl Into<CheckSum>) {
