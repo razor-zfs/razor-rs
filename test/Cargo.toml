@@ -1,0 +1,12 @@
+[package]
+name = "razor-test"
+version = "0.12.0"
+edition = "2021"
+rust-version = "1.64.0"
+
+[dependencies]
+nanoid = "0.4"
+nanoid-dictionary = "0.4"
+
+razor-zfs = { version = "0.12", path = "../zfs" }
+razor-safe-lzc = { version = "0.12", path = "../safe-lzc" }
