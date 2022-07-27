@@ -12,7 +12,8 @@ build:
     cargo build --workspace --all-targets
 clean:
     cargo clean
-test:
+test $RAZOR_TEST_NAMESPACE = "rpool/razor-test":
+    echo $RAZOR_TEST_NAMESPACE
     cargo test --workspace
 
 clippy:
