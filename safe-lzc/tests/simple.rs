@@ -30,7 +30,7 @@ fn filesystem_create_destroy() {
     let namespace = TestNamespace::unique();
     let name = dbg!(namespace.unique_name());
     let mut props = nvpair::NvList::new();
-    props += ("razor-test:mountpoint", "/xxx");
+    props += ("razor-test:clean", "yes");
     lzc::create_filesystem(&name, props).unwrap();
     assert!(lzc::dataset_exists(&name));
     lzc::destroy_dataset(&name).unwrap();
@@ -42,6 +42,7 @@ fn zvol_create_destroy() {
     let namespace = LzcTestNamespace::new();
     let name = dbg!(namespace.name());
     let mut props = nvpair::NvList::new();
+    props += ("razor-test:clean", "yes");
     props += ("volsize", 1024_u64 * 1024 * 1024);
     props += ("volblocksize", 4096_u64);
     lzc::create_volume(&name, props).unwrap();
