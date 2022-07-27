@@ -1,5 +1,7 @@
 use std::env;
 
+use razor_test::TestNamespace;
+
 use nanoid::nanoid;
 use nanoid_dictionary::ALPHANUMERIC;
 
@@ -25,8 +27,8 @@ impl LzcTestNamespace {
 
 #[test]
 fn filesystem_create_destroy() {
-    let namespace = LzcTestNamespace::new();
-    let name = dbg!(namespace.name());
+    let namespace = TestNamespace::unique();
+    let name = dbg!(namespace.unique_name());
     let mut props = nvpair::NvList::new();
     props += ("razor-test:mountpoint", "/xxx");
     lzc::create_filesystem(&name, props).unwrap();

@@ -11,6 +11,7 @@ members = [
     "safe-libzfs",
     "zfs",
     "cli",
+    "test",
     #    "property",
     #    "zfsrpc",
     #    "zfsrpc-cli",

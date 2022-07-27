@@ -298,6 +298,11 @@ impl FilesystemBuilder {
         self
     }
 
+    pub fn mountpoint(mut self, value: impl AsRef<str>) -> Self {
+        self.props.mountpoint(value);
+        self
+    }
+
     pub fn property(mut self, property: &str, value: &str) -> Self {
         self.props.string_property(property, value);
         self

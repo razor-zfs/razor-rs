@@ -539,7 +539,18 @@ dependencies = [
  "nanoid-dictionary",
  "razor-libzfscore",
  "razor-nvpair",
+ "razor-test",
  "thiserror",
+]
+
+[[package]]
+name = "razor-test"
+version = "0.12.0"
+dependencies = [
+ "nanoid",
+ "nanoid-dictionary",
+ "razor-safe-lzc",
+ "razor-zfs",
 ]
 
 [[package]]

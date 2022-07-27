@@ -11,6 +11,7 @@ pub use error::InvalidProperty;
 pub use canmount::CanMount;
 pub use checksum::CheckSum;
 pub use compression::Compression;
+pub use mountpoint::MountPoint;
 pub use onfoff::OnOff;
 pub use volmode::VolMode;
 pub use yesno::YesNo;
@@ -20,6 +21,7 @@ mod error;
 mod canmount;
 mod checksum;
 mod compression;
+mod mountpoint;
 mod onfoff;
 mod volmode;
 mod yesno;
@@ -136,16 +138,19 @@ impl Properties {
         self.set_string(ZFS_PROP_COMPRESSION, compression.into());
     }
 
+    pub fn volsize(&mut self, size: u64) {
+        self.set_numeric(ZFS_PROP_VOLSIZE, size);
+    }
+
     pub fn volblocksize(&mut self, blocksize: u64) {
         self.set_numeric(ZFS_PROP_VOLBLOCKSIZE, blocksize);
     }
 
+    pub fn mountpoint(&mut self, mountpoint: impl AsRef<str>) {
+        self.set_string(ZFS_PROP_MOUNTPOINT, mountpoint.as_ref());
+    }
     pub fn volmode(&mut self, volmode: impl Into<VolMode>) {
         self.set_numeric(ZFS_PROP_VOLMODE, volmode.into());
-    }
-
-    pub fn volsize(&mut self, size: u64) {
-        self.set_numeric(ZFS_PROP_VOLSIZE, size);
     }
 
     pub fn string_property<'a>(
