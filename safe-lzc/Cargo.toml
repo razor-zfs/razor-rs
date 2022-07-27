@@ -13,10 +13,10 @@ rust-version = "1.62"
 
 [dependencies]
 libc = "0.2"
-thiserror = "1.0"
 
 razor-nvpair = { version = "0.12", path = "../nvpair" }
 razor-libzfscore = { version = "0.12", path = "../libzfscore" }
+
 
 [dev-dependencies]
 nanoid = "0.4"
