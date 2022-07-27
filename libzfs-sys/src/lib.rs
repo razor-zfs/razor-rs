@@ -40,12 +40,3 @@ impl zfs_type_t {
         *self & other != zfs_type_t(0)
     }
 }
-
-impl From<zfs_prop_t> for ::std::borrow::Cow<'static, str> {
-    fn from(property: zfs_prop_t) -> Self {
-        unsafe {
-            let cstr = zfs_prop_to_name(property);
-            ::std::ffi::CStr::from_ptr(cstr).to_string_lossy()
-        }
-    }
-}

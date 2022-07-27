@@ -150,27 +150,19 @@ impl Properties {
 
     pub fn string_property<'a>(
         &mut self,
-        property: impl Into<Cow<'a, str>>,
+        property: impl Property<'a>,
         value: impl AsRef<str>,
     ) -> &mut Self {
         self.set_string(property, value)
     }
 
-    fn set_string<'a>(
-        &mut self,
-        property: impl Into<Cow<'a, str>>,
-        value: impl AsRef<str>,
-    ) -> &mut Self {
-        self.props += (property.into().as_ref(), value.as_ref());
+    fn set_string<'a>(&mut self, property: impl Property<'a>, value: impl AsRef<str>) -> &mut Self {
+        self.props += (property.name().as_ref(), value.as_ref());
         self
     }
 
-    fn set_numeric(
-        &mut self,
-        property: impl Into<Cow<'static, str>>,
-        value: impl Into<u64>,
-    ) -> &mut Self {
-        self.props += (property.into().as_ref(), value.into());
+    fn set_numeric<'a>(&mut self, property: impl Property<'a>, value: impl Into<u64>) -> &mut Self {
+        self.props += (property.name().as_ref(), value.into());
         self
     }
 }
@@ -184,5 +176,27 @@ impl Default for Properties {
 impl From<Properties> for nvpair::NvList {
     fn from(props: Properties) -> Self {
         props.props
+    }
+}
+
+pub trait Property<'a> {
+    fn name(self) -> Cow<'a, str>;
+}
+
+impl Property<'static> for libzfs::zfs_prop_t {
+    fn name(self) -> Cow<'static, str> {
+        libzfs::zfs_prop_to_name(self)
+    }
+}
+
+impl<'a> Property<'a> for String {
+    fn name(self) -> Cow<'a, str> {
+        self.into()
+    }
+}
+
+impl<'a> Property<'a> for &'a str {
+    fn name(self) -> Cow<'a, str> {
+        self.into()
     }
 }
