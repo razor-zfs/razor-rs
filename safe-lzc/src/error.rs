@@ -4,7 +4,7 @@ use std::fmt;
 
 use super::*;
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct LzcError {
     pub code: libc::c_int,
 }
@@ -21,6 +21,15 @@ impl LzcError {
 impl fmt::Display for LzcError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "LZC error: {} ({})", libc_strerror(self.code), self.code)
+    }
+}
+
+impl fmt::Debug for LzcError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("LzcError")
+            .field("code", &self.code)
+            .finish()
+            .and_then(|_| write!(f, " [{}]", libc_strerror(self.code)))
     }
 }
 
