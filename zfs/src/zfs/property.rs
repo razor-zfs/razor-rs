@@ -161,6 +161,10 @@ impl Properties {
         self.set_string(property, value)
     }
 
+    pub(crate) fn into_inner(self) -> nvpair::NvList {
+        self.props
+    }
+
     fn set_string<'a>(&mut self, property: impl Property<'a>, value: impl AsRef<str>) -> &mut Self {
         self.props += (property.name().as_ref(), value.as_ref());
         self

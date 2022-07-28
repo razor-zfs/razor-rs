@@ -184,7 +184,7 @@ impl VolumeBuilder {
         self.props.volsize(size);
         self.props.volblocksize(self.volblocksize);
 
-        lzc::create_volume(name, self.props.into())?;
+        lzc::create_volume(name, self.props.into_inner())?;
 
         let dataset = libzfs::ZfsHandle::new(cname)?;
         let volume = Volume { dataset };
