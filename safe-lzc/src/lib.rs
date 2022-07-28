@@ -67,18 +67,16 @@ pub fn create_snapshots(
     snapshots: impl IntoIterator<Item = impl AsRef<str>>,
     props: impl Into<Option<nvpair::NvList>>,
 ) -> Result<(), LzcError> {
-    let props = if let Some(_props) = props.into() {
-        todo!("snapshot with props not supported yet")
-    } else {
-        ptr::null_mut()
-    };
+    let props = props.into();
     let mut snaps = nvpair::NvList::new();
     for snapshot in snapshots {
         snaps.add_boolean(snapshot)?;
     }
-
     let mut errlist = nvpair::NvList::new();
-    let code = unsafe { lzc::lzc_snapshot(*snaps, props, &mut *errlist) };
+    let code = unsafe {
+        let props = props.as_deref().map_or_else(ptr::null_mut, |p| *p);
+        lzc::lzc_snapshot(*snaps, props, &mut *errlist)
+    };
     LzcError::err(code)
 }
 
