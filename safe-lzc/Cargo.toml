@@ -19,7 +19,4 @@ razor-libzfscore = { version = "0.12", path = "../libzfscore" }
 
 
 [dev-dependencies]
-nanoid = "0.4"
-nanoid-dictionary = "0.4"
-
 razor-test = { version = "0.12", path = "../test" }

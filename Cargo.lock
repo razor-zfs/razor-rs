@@ -535,8 +535,6 @@ name = "razor-safe-lzc"
 version = "0.12.0"
 dependencies = [
  "libc",
- "nanoid",
- "nanoid-dictionary",
  "razor-libzfscore",
  "razor-nvpair",
  "razor-test",
