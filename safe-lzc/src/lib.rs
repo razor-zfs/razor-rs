@@ -29,23 +29,26 @@ mod error;
 
 /// Create new ZFS filesystem
 ///
-pub fn create_filesystem(name: impl AsRef<str>, props: nvpair::NvList) -> Result<(), LzcError> {
+pub fn create_filesystem(
+    name: impl AsRef<str>,
+    props: impl nvpair::ToNvList,
+) -> Result<(), LzcError> {
     create_dataset(name, lzc::lzc_dataset_type::LZC_DATSET_TYPE_ZFS, props)
 }
 
 /// Create new ZFS volume
 ///
-pub fn create_volume(name: impl AsRef<str>, props: nvpair::NvList) -> Result<(), LzcError> {
+pub fn create_volume(name: impl AsRef<str>, props: impl nvpair::ToNvList) -> Result<(), LzcError> {
     create_dataset(name, lzc::lzc_dataset_type::LZC_DATSET_TYPE_ZVOL, props)
 }
 
 fn create_dataset(
     name: impl AsRef<str>,
     dataset_type: lzc::lzc_dataset_type,
-    props: nvpair::NvList,
+    props: impl nvpair::ToNvList,
 ) -> Result<(), LzcError> {
     let cname = cstring(name)?;
-    let code = unsafe { lzc::lzc_create(cname.as_ptr(), dataset_type, *props) };
+    let code = unsafe { lzc::lzc_create(cname.as_ptr(), dataset_type, props.to_nvlist()) };
     LzcError::err(code)
 }
 
