@@ -1,6 +1,6 @@
 [package]
 name = "razor-ztb"
-version = "0.1.0"
+version = "0.13.0"
 edition = "2021"
 description = "ZFS toolbox"
 repository = "https://github.com/razor-zfs/razor-rs"
@@ -17,4 +17,4 @@ publish = false
 anyhow = "1.0"
 clap = { version = "3.2", features = ["cargo", "derive"] }
 
-razor-zfs = { version = "0.12", path = "../zfs" }
+razor-zfs = { version = "0.13", path = "../zfs" }

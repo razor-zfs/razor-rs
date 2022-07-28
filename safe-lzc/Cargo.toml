@@ -1,6 +1,6 @@
 [package]
 name = "razor-safe-lzc"
-version = "0.12.0"
+version = "0.13.0"
 edition = "2021"
 description = "Safe libzfs_core (lzc) API"
 repository = "https://github.com/razor-zfs/razor-rs"
@@ -14,9 +14,9 @@ rust-version = "1.62"
 [dependencies]
 libc = "0.2"
 
-razor-nvpair = { version = "0.12", path = "../nvpair" }
-razor-libzfscore = { version = "0.12", path = "../libzfscore" }
+razor-nvpair = { version = "0.13", path = "../nvpair" }
+razor-libzfscore = { version = "0.13", path = "../libzfscore" }
 
 
 [dev-dependencies]
-razor-test = { version = "0.12", path = "../test" }
+razor-test = { version = "0.13", path = "../test" }
