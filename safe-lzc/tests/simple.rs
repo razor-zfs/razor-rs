@@ -65,3 +65,39 @@ fn destroy_non_existing() {
     let e = lzc::destroy_dataset(&name).unwrap_err();
     assert_eq!(e.code, libc::ENOENT);
 }
+
+#[test]
+fn snapshot_without_properties() {
+    let namespace = TestNamespace::unique();
+    let name = namespace.unique_name();
+    let mut props = nvpair::NvList::new();
+    props += ("razor-test:clean", "yes");
+    lzc::create_filesystem(&name, props).unwrap();
+    assert!(lzc::dataset_exists(&name));
+    let snap = format!("{name}@snapshot_without_properties");
+    lzc::create_snapshot(&snap, None).unwrap();
+    assert!(lzc::dataset_exists(&snap));
+    lzc::destroy_dataset(&snap).unwrap();
+    assert!(!lzc::dataset_exists(&snap));
+    lzc::destroy_dataset(&name).unwrap();
+    assert!(!lzc::dataset_exists(&name));
+}
+
+#[test]
+fn snapshot_with_properties() {
+    let namespace = TestNamespace::unique();
+    let name = namespace.unique_name();
+    let mut props = nvpair::NvList::new();
+    props += ("razor-test:clean", "yes");
+    lzc::create_filesystem(&name, props).expect("create filesystem");
+    assert!(lzc::dataset_exists(&name));
+    let snap = format!("{name}@snapshot_with_properties");
+    let mut props = nvpair::NvList::new();
+    props += ("razor-test:key", "value");
+    lzc::create_snapshot(&snap, props).expect("create snapshot");
+    assert!(lzc::dataset_exists(&snap));
+    lzc::destroy_dataset(&snap).expect("destroy snapshot");
+    assert!(!lzc::dataset_exists(&snap));
+    lzc::destroy_dataset(&name).expect("destroy filesystem");
+    assert!(!lzc::dataset_exists(&name));
+}
