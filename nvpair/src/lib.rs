@@ -22,6 +22,7 @@ pub use nvlist::NvFlag;
 pub use nvlist::NvList;
 pub use nvlist::NvListIterator;
 pub use nvlist::NvListRef;
+pub use nvlist::ToNvList;
 pub use nvpair::NvPair;
 pub use value::to_value;
 pub use value::Value;
