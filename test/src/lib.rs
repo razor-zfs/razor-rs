@@ -10,8 +10,6 @@ use std::time::Duration;
 use nanoid::nanoid;
 use nanoid_dictionary::ALPHANUMERIC;
 
-// use razor_libzfscore::error::CoreError;
-// use razor_libzfscore::zfs_type_t;
 use razor_safe_lzc as lzc;
 use razor_zfs as zfs;
 

@@ -575,11 +575,11 @@ version = "0.13.0"
 dependencies = [
  "anyhow",
  "libc",
- "nanoid",
  "once_cell",
  "razor-nvpair",
  "razor-safe-libzfs",
  "razor-safe-lzc",
+ "razor-test",
  "serde",
  "serde_json",
  "thiserror",
