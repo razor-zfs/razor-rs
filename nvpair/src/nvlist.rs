@@ -102,6 +102,28 @@ impl<'a, T> AsRef<*mut libnvpair::nvlist_t> for NvListRef<'a, T> {
     }
 }
 
+pub trait ToNvList {
+    fn to_nvlist(&self) -> *mut libnvpair::nvlist_t;
+}
+
+impl ToNvList for NvList {
+    fn to_nvlist(&self) -> *mut libnvpair::nvlist_t {
+        self.nvl
+    }
+}
+
+impl ToNvList for &NvList {
+    fn to_nvlist(&self) -> *mut libnvpair::nvlist_t {
+        self.nvl
+    }
+}
+
+impl<'a, T> ToNvList for NvListRef<'a, T> {
+    fn to_nvlist(&self) -> *mut libnvpair::nvlist_t {
+        self.nvl
+    }
+}
+
 impl IntoIterator for NvList {
     type Item = NvPair;
     type IntoIter = NvListIterator;
