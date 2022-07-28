@@ -511,6 +511,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "razor-libzpool"
+version = "0.12.0"
+dependencies = [
+ "libc",
+ "razor-libzpool-sys",
+]
+
+[[package]]
 name = "razor-libzpool-sys"
 version = "0.12.0"
 dependencies = [

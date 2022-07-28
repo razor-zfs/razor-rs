@@ -10,6 +10,7 @@ members = [
     "libzfs",
     "safe-libzfs",
     "libzpool-sys",
+    "libzpool",
     "zfs",
     "cli",
     "test",

@@ -1,0 +1,19 @@
+[package]
+name = "razor-libzpool"
+version = "0.12.0"
+edition = "2021"
+description = "Low-level libzpool interface"
+repository = "https://github.com/razor-zfs/razor-rs"
+readme = "../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["zfs"]
+categories = ["api-bindings", "external-ffi-bindings"]
+rust-version = "1.62"
+
+publish = false
+
+
+[dependencies]
+libc = "0.2"
+
+razor-libzpool-sys = { version = "0.12", path = "../libzpool-sys" }
