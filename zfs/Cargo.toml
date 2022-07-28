@@ -25,9 +25,8 @@ razor-safe-lzc = { version = "0.13", path = "../safe-lzc" }
 
 [dev-dependencies]
 anyhow = "1.0"
-nanoid = "0.4"
 
-razor-safe-lzc = { version = "0.13", path = "../safe-lzc" }
+razor-test = { version = "0.13", path = "../test" }
 
 [features]
 cmd = ["tokio"]
