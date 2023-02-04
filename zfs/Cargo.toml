@@ -17,7 +17,7 @@ once_cell = { version = "1.13", features = ["parking_lot"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror = "1.0"
-tokio = { version = "1.17", features = ["process"], optional = true }
+tokio = { version = "1.20", features = ["process"], optional = true }
 
 razor-nvpair = { version = "0.13", path = "../nvpair" }
 razor-safe-libzfs = { version = "0.13", path = "../safe-libzfs" }
