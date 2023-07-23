@@ -14,6 +14,6 @@ publish = false
 
 [dependencies]
 anyhow = "1.0"
-clap = { version = "3.2", features = ["cargo", "derive"] }
+clap = { version = "4.3", features = ["cargo", "derive"] }
 
 razor-zfs = { version = "0.13", path = "../zfs" }
