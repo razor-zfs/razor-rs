@@ -65,12 +65,16 @@ impl TestNamespace {
     }
 
     fn pool_and_container() -> (String, String) {
-        if let Ok(name) = env::var("RAZOR_TEST") &&
-            let Some((pool, container)) = name.split_once('/') {
-                (pool.to_string(), container.to_string())
-        } else {
-            (Self::POOL.to_string(), Self::TOP_LEVEL_CONTAINER.to_string())
+        if let Ok(name) = env::var("RAZOR_TEST") {
+            if let Some((pool, container)) = name.split_once('/') {
+                return (pool.to_string(), container.to_string());
+            }
         }
+
+        (
+            Self::POOL.to_string(),
+            Self::TOP_LEVEL_CONTAINER.to_string(),
+        )
     }
 }
 
