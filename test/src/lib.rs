@@ -37,7 +37,7 @@ impl TestNamespace {
         let namespace = Zfs::filesystem()
             .canmount(false)
             .mountpoint(MountPoint::None)
-            .create(&namespace)
+            .create(namespace)
             .unwrap();
         let sync = false;
         let delay = Duration::from_millis(0);

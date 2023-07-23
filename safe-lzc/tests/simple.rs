@@ -62,7 +62,7 @@ fn zvol_create_existing() {
 fn destroy_non_existing() {
     let namespace = TestNamespace::unique();
     let name = dbg!(namespace.unique_name());
-    let e = lzc::destroy_dataset(&name).unwrap_err();
+    let e = lzc::destroy_dataset(name).unwrap_err();
     assert_eq!(e.code, libc::ENOENT);
 }
 

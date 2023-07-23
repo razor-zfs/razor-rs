@@ -40,7 +40,7 @@ fn set_properties_filesystem() -> anyhow::Result<()> {
         .relatime(property::OnOff::Off)
         .setuid(property::OnOff::Off)
         .zoned(property::OnOff::Off)
-        .create(&name)?;
+        .create(name)?;
     assert_eq!(property::CanMount::Off, filesystem.canmount());
     assert_eq!(property::CheckSum::Off, filesystem.checksum());
     assert_eq!(property::OnOff::Off, filesystem.readonly());
@@ -94,7 +94,7 @@ fn set_properties_volume() {
         .checksum(property::CheckSum::Off)
         .compression(property::Compression::Off)
         .volmode(property::VolMode::None)
-        .create(&name, 128 * 1024)
+        .create(name, 128 * 1024)
         .unwrap();
     assert_eq!(property::CheckSum::Off, volume.checksum());
     assert_eq!(property::Compression::Off, volume.compression());
@@ -176,7 +176,7 @@ fn get_volume() {
 fn get_filesystem() {
     let namespace = TestNamespace::unique();
     let name = namespace.unique_name();
-    let filesystem = Zfs::filesystem().create(&name).unwrap();
+    let filesystem = Zfs::filesystem().create(name).unwrap();
     let res_filesystem = Zfs::get_filesystem(filesystem.name());
     assert!(res_filesystem.is_ok(), "couldnt get filesystem");
 }
