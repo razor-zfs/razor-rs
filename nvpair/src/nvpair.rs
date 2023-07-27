@@ -383,10 +383,7 @@ impl NvPair {
 
 impl NvPair {
     pub(super) fn as_ptr(nvp: Option<Self>) -> *mut libnvpair::nvpair_t {
-        match nvp {
-            Some(nvp) => nvp.nvp,
-            None => ptr::null_mut(),
-        }
+        nvp.map_or_else(ptr::null_mut, |nvp| nvp.nvp)
     }
 }
 
