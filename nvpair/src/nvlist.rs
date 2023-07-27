@@ -1,6 +1,6 @@
 use std::ffi;
 use std::marker::{PhantomData, Send};
-use std::ops;
+use std::ops::{self, Not};
 
 use razor_libnvpair as libnvpair;
 
@@ -150,11 +150,7 @@ impl Iterator for NvListIterator {
     fn next(&mut self) -> Option<Self::Item> {
         let nvp = NvPair::as_ptr(self.nvpair);
         let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, nvp) };
-        self.nvpair = if !nvp.is_null() {
-            Some(NvPair::from(nvp))
-        } else {
-            None
-        };
+        self.nvpair = nvp.is_null().not().then(|| NvPair::from(nvp));
         self.nvpair
     }
 }
@@ -171,11 +167,7 @@ impl<'a, T> Iterator for Iter<'a, T> {
     fn next(&mut self) -> Option<Self::Item> {
         let nvp = NvPair::as_ptr(self.nvpair);
         let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, nvp) };
-        self.nvpair = if !nvp.is_null() {
-            Some(NvPair::from(nvp))
-        } else {
-            None
-        };
+        self.nvpair = nvp.is_null().not().then(|| NvPair::from(nvp));
         self.nvpair
     }
 }
@@ -192,11 +184,7 @@ impl<'a, T> Iterator for Items<'a, T> {
     fn next(&mut self) -> Option<Self::Item> {
         let nvp = NvPair::as_ptr(self.nvpair);
         let nvp = unsafe { libnvpair::nvlist_next_nvpair(*self.nvlist, nvp) };
-        self.nvpair = if !nvp.is_null() {
-            Some(NvPair::from(nvp))
-        } else {
-            None
-        };
+        self.nvpair = nvp.is_null().not().then(|| NvPair::from(nvp));
         self.nvpair
             .map(|nvpair| (nvpair.name().to_string(), to_value(&nvpair)))
     }
