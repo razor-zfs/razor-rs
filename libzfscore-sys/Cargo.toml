@@ -1,6 +1,6 @@
 [package]
 name = "razor-libzfscore-sys"
-version = "0.13.0"
+version = "0.13.1"
 edition = "2021"
 description = "libzfs_core FFI bindings"
 repository = "https://github.com/razor-zfs/razor-rs"

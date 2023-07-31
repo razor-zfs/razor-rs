@@ -1,6 +1,6 @@
 [package]
 name = "razor-safe-libzfs"
-version = "0.13.0"
+version = "0.13.1"
 edition = "2021"
 description = "Safe libzfs API"
 repository = "https://github.com/razor-zfs/razor-rs"

@@ -1,6 +1,6 @@
 [package]
 name = "razor-libzpool"
-version = "0.13.0"
+version = "0.13.1"
 edition = "2021"
 description = "Low-level libzpool interface"
 repository = "https://github.com/razor-zfs/razor-rs"
