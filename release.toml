@@ -3,7 +3,5 @@ publish = true
 pre-release-commit-message = "Bump version to {{version}}"
 shared-version = true
 consolidate-commits = true
-consolidate-pushes = true
 tag-message = "{{tag_name}}"
 tag-name = "{{version}}"
-dev-version = false
