@@ -3,6 +3,7 @@ name = "razor-test"
 version = "0.13.0"
 edition = "2021"
 rust-version = "1.64.0"
+publish = false
 
 [dependencies]
 nanoid = "0.4"
